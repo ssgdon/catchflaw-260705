@@ -1,0 +1,333 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>캐치플로</title>
+    <link rel="stylesheet" type="text/css" href="./css/common.css">
+    <link rel="stylesheet" type="text/css" href="./css/layout.css">
+    <link rel="stylesheet" type="text/css" href="./css/swiper.css">
+    <link rel="stylesheet" type="text/css" href="./css/uplift.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="./js/common.js"></script>
+    <script type="text/javascript" src="./js/swiper.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <!-- header -->
+    <header id="header">
+        <div class="header">
+            <div class="inner">
+                <h1 class="logo"><a href="./"><img src="./img/logo.svg" alt="CATCHFLAW"></a></h1>
+                <div class="btn">
+                    <a href="javascript:;" class="btn-menu"><img src="./img/menu.svg" alt="전체메뉴"></a>
+                </div>
+            </div>
+        </div>
+        <div class="allmenu">
+            <div class="cont">
+                <div class="btn"><a href="javascript:;" class="btn-menu-close"><img src="./img/close.svg" alt="전체메뉴 닫기"></a></div>
+                <nav class="gnb">
+                    <a href="./wishlist.html">관심 호텔</a>
+                    <a href="./recent.html">최근 본 호텔</a>
+                </nav>
+            </div>
+            <div class="dimmed"></div>
+        </div>
+        <script>
+            $(function(){
+                const $allmenu = $(".allmenu");
+                const $openBtn = $(".btn-menu");
+                const $closeTarget = $(".btn-menu-close, .dimmed");
+                $openBtn.on("click", function(e){
+                    e.preventDefault();
+                    $allmenu.addClass("is-active"); // active 클래스 활성화
+                });
+                $closeTarget.on("click", function(e){
+                    e.preventDefault();
+                    closeMenu();
+                });
+                $(document).on("keydown", function(e){
+                    if(e.key === "Escape" && $allmenu.hasClass("active")){
+                        closeMenu();
+                    }
+                });
+                function closeMenu(){
+                    $allmenu.removeClass("is-active");
+                }
+            });
+        </script>
+    </header>
+    <!-- main -->
+    <main id="container">
+        <section id="main">
+            <article class="section sec-1">
+                <div class="search-box init">
+                    <div class="text">
+                        <ul>
+                            <li>
+                                <div class="subject">직원이 불친절해요</div>
+                                <div class="star"><i style="width:20%"></i></div>
+                            </li>
+                            <li>
+                                <div class="subject">너무 시끄러워요</div>
+                                <div class="star"><i style="width:40%"></i></div>
+                            </li>
+                            <li>
+                                <div class="subject">침대에서 벌레가 나왔어요</div>
+                                <div class="star"><i style="width:40%"></i></div>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="title">
+                        <div class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</div>
+                        <div class="txt">AI가 수만 개의 리뷰를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
+                    </div>
+                    <div class="input">
+                        <input type="text" placeholder="호텔 오로라 등 입력">
+                        <button type="button"><img src="./img/search.svg" alt="검색"></button>
+                    </div>
+                </div>
+            </article>
+            <article class="section sec-2">
+                <div class="hotel-list init">
+                    <div class="head">
+                        <div class="title">바퀴벌레 나온 숙소</div>
+                        <div class="desc">리뷰에 바퀴벌레 언급이 있는 숙소입니다</div>
+                    </div>
+                    <div class="list hotel-slider">
+                        <ul class="swiper-wrapper">
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-danger">위험</div>
+                                            <div class="badge-item badge-down">실망 확률 80%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item1.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">호텔 힐러리스 아카사카</h3>
+                                        <div class="eng">Akasaka</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                        <div class="text">"<span>바퀴벌레</span>가 많아요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-danger">위험</div>
+                                            <div class="badge-item badge-down">실망 확률 80%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item2.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">센츄리온 호텔 이케부쿠로 스테이션</h3>
+                                        <div class="eng">HIgashiikebukuro</div>
+                                        <div class="star"><i style="width:20%"></i></div>
+                                        <div class="text">"<span>바퀴벌레</span>가 많아요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-danger">위험</div>
+                                            <div class="badge-item badge-down">실망 확률 80%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item1.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">호텔 힐러리스 아카사카</h3>
+                                        <div class="eng">Akasaka</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                        <div class="text">"<span>바퀴벌레</span>가 많아요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-danger">위험</div>
+                                            <div class="badge-item badge-down">실망 확률 80%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item2.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">센츄리온 호텔 이케부쿠로 스테이션</h3>
+                                        <div class="eng">HIgashiikebukuro</div>
+                                        <div class="star"><i style="width:20%"></i></div>
+                                        <div class="text">"<span>바퀴벌레</span>가 많아요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="hotel-list init">
+                    <div class="head">
+                        <div class="title">악취가 심한 숙소</div>
+                        <div class="desc">리뷰에 냄새 관련 언급이 있는 숙소입니다</div>
+                    </div>
+                    <div class="list hotel-slider">
+                        <ul class="swiper-wrapper">
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-warning">주의</div>
+                                            <div class="badge-item badge-down">실망 확률 60%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item3.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">아파 호텔 스가모 에키마에</h3>
+                                        <div class="eng">Sugamo</div>
+                                        <div class="star"><i style="width:40%"></i></div>
+                                        <div class="text">"<span>곰팡이 냄새</span>가 심했어요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 50%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item4.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">아키하바라 워싱턴 호텔</h3>
+                                        <div class="eng">Chiyoda city</div>
+                                        <div class="star"><i style="width:40%"></i></div>
+                                        <div class="text">"<span>곰팡이 냄새</span>가 심했어요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-warning">주의</div>
+                                            <div class="badge-item badge-down">실망 확률 60%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item3.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">아파 호텔 스가모 에키마에</h3>
+                                        <div class="eng">Sugamo</div>
+                                        <div class="star"><i style="width:40%"></i></div>
+                                        <div class="text">"<span>곰팡이 냄새</span>가 심했어요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 50%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_item4.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">아키하바라 워싱턴 호텔</h3>
+                                        <div class="eng">Chiyoda city</div>
+                                        <div class="star"><i style="width:40%"></i></div>
+                                        <div class="text">"<span>곰팡이 냄새</span>가 심했어요"</div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <script>
+                    $(function(){
+                        $('.hotel-slider').each(function(index, element){
+                            const $this = $(this);
+                            new Swiper(element, {
+                                slidesPerView: 'auto',
+                                spaceBetween: 10,
+                                observer: true,
+                                observeParents: true,
+                            });
+                        });
+                    });
+                </script>
+            </article>
+            <article class="section sec-3">
+                <div class="safety init">
+                    <div class="head">
+                        <div class="title">검증 완료 숙소</div>
+                        <div class="desc">AI가 꼼꼼하게 검증한 안전한 숙소입니다</div>
+                    </div>
+                    <div class="content">
+                        <ul>
+                            <li class="w100p">
+                                <a href="#" class="item">
+                                    <div class="text">
+                                        <div class="tit">벌레 없는 숙소</div>
+                                        <div class="txt">최근 리뷰 중 벌레 없는 숙소들만 모아보았어요!</div>
+                                    </div>
+                                    <div class="background"><img src="./img/safety_item1.png"></div>
+                                </a>
+                            </li>
+                            <li class="w50p">
+                                <a href="#" class="item">
+                                    <div class="text">
+                                        <div class="tit">냄새에 <br>예민하다면?</div>
+                                        <div class="txt">악취 없는 숙소만 <br>모았습니다</div>
+                                    </div>
+                                    <div class="background"><img src="./img/safety_item2.png"></div>
+                                </a>
+                            </li>
+                            <li class="w50p">
+                                <a href="#" class="item">
+                                    <div class="text">
+                                        <div class="tit">소음은 <br>못참으시나요?</div>
+                                        <div class="txt">소음 관련 <br>문제가 없는 숙소</div>
+                                    </div>
+                                    <div class="background"><img src="./img/safety_item3.png"></div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </article>
+        </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.9/SmoothScroll.min.js"></script>
+    <script>
+        SmoothScroll({
+            // Scrolling Core
+            animationTime: 500, // [ms]
+            stepSize: 100, // [px]
+
+            // Acceleration
+            accelerationDelta: 50, // 50
+            accelerationMax: 3, // 3
+
+            // Keyboard Settings
+            keyboardSupport: true, // option
+            arrowScroll: 50, // [px]
+
+            // Pulse (less tweakable)
+            // ratio of &quot;tail&quot; to &quot;acceleration&quot;
+            pulseAlgorithm: true,
+            pulseScale: 4,
+            pulseNormalize: 1,
+
+            // Other
+            touchpadSupport: false, // ignore touchpad by default
+            fixedBackground: true,
+            excluded: '' });
+        //# sourceURL=pen.js
+    </script>
+</div>
+</body>
+</html>

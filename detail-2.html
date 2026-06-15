@@ -1,0 +1,620 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>캐치플로</title>
+    <link rel="stylesheet" type="text/css" href="./css/common.css">
+    <link rel="stylesheet" type="text/css" href="./css/layout.css">
+    <link rel="stylesheet" type="text/css" href="./css/swiper.css">
+    <link rel="stylesheet" type="text/css" href="./css/uplift.css">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script type="text/javascript" src="./js/common.js"></script>
+    <script type="text/javascript" src="./js/swiper.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <!-- main -->
+    <main id="container">
+        <section id="detail">
+            <div class="header">
+                <div class="back">
+                    <a href="javascript:history.back();" class="btn-back"><img src="./img/back.svg" alt="뒤로가기"></a>
+                </div>
+                <div class="share">
+                    <button type="button" class="btn-share"><img src="./img/share.svg" alt="공유하기"></button>
+                </div>
+            </div>
+            <div class="content">
+                <div class="visual"><img src="./img/detail_bg.png" alt="호텔 로즈가든 신주쿠"></div>
+                <div class="sect information">
+                    <div class="info-wish">
+                        <button type="button" class="btn-wish on"><i></i><span class="blind">찜하기</span></button>
+                    </div>
+                    <div class="info-cont">
+                        <div class="meta">
+                            <span>Shinjuku City, JP</span>
+                            <span>3성급</span>
+                        </div>
+                        <div class="name">
+                            <h2 class="name-ko">호텔 로즈가든 신주쿠</h2>
+                            <p class="name-en">ホテルローズガーデン新宿</p>
+                        </div>
+                    </div>
+                    <div class="info-bottom">
+                        <a href="#" class="btn-link btn-google">
+                            <div class="ico"><img src="./img/google.svg"></div>
+                            <div class="txt">
+                                <span class="label">구글 평점 4.2</span>
+                                <span class="count">(6,350개)</span>
+                            </div>
+                        </a>
+                        <a href="./review.html" class="btn-link btn-audit">
+                            <div class="ico"><img src="./img/audit.svg"></div>
+                            <div class="txt">
+                                <span class="label">분석 리뷰 200개</span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="sect disappear">
+                    <div class="head">
+                        <div class="tit">홍길동님이 실망할 확률</div>
+                        <div class="num">7.2%</div>
+                        <div class="txt">도쿄 지역 호텔 리뷰를 수집하고 있어요. <br>충분한 데이터가 쌓이면 알려드릴게요!</div>
+                    </div>
+                    <div class="gauge">
+                        <div class="bar">
+                            <div class="pointer" style="left: 72%;">
+                                <span class="arrow"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </div>
+                        <div class="label">
+                            <span>우수</span>
+                            <span class="analysis">분석중...</span>
+                            <span>위험</span>
+                        </div>
+                    </div>
+                    <div class="alarm"><a href="#"><img src="./img/alarm.svg"><span>분석 완료 시 알림 받기</span></a></div>
+                </div>
+                <div class="sect risk">
+                    <div class="head">
+                        <div class="title">6대 리스크 분석</div>
+                    </div>
+                    <div class="chart">
+                        <canvas id="riskChart"></canvas>
+                        <div id="custom-legend" class="custom-legend"></div>
+                    </div>
+                    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+                    <script>
+                        const ctx = document.getElementById('riskChart').getContext('2d');
+
+                        // 1. 이미지 객체 사전 로드
+                        const imgSad = new Image();
+                        imgSad.src = './img/imoji_sad.svg';
+                        const imgHappy = new Image();
+                        imgHappy.src = './img/imoji_happy.svg';
+
+                        // 2. 데이터 정의
+                        const hotelData = [6, 14, 17, 11, 13, 16];
+                        const averageData = [8, 9, 10, 8, 9, 10];
+                        const labels = ['위생경보', '오감지옥', '안전그림자', '동선파괴자', '불친절레이더', '시설사기단'];
+
+                        // 3. 커스텀 플러그인: 텍스트 위에 SVG 이미지 그리기
+                        const imageLabelsPlugin = {
+                            id: 'imageLabels',
+                            // 데이터셋을 그리기 직전에 좌표를 가로채서 수정
+                            beforeDatasetsDraw: (chart) => {
+                                const scale = chart.scales.r;
+                                if (!scale || !scale._pointLabelItems) return;
+
+                                // 6시 방향(인덱스 3) 라벨 좌표 강제 수정
+                                const targetLabel = scale._pointLabelItems[3];
+                                if (targetLabel && !targetLabel.isShifted) {
+                                    targetLabel.y += 25; // 30px만큼 아래로 밀기
+                                    targetLabel.isShifted = true; // 중복 방지 플래그
+                                }
+                            },
+                            afterDraw: (chart) => {
+                                const { ctx, scales: { r } } = chart;
+                                const centerX = r.xCenter;
+
+                                r._pointLabelItems.forEach((label, i) => {
+                                    const { x, y } = label;
+                                    const img = hotelData[i] > averageData[i] ? imgSad : imgHappy;
+                                    const imgSize = 24;
+                                    const padding = 6;
+
+                                    let imgX;
+                                    // 정렬 로직 (중앙/좌/우)
+                                    if (Math.abs(x - centerX) < 10) {
+                                        imgX = x - imgSize / 2;
+                                    } else if (x > centerX) {
+                                        imgX = x;
+                                    } else {
+                                        imgX = x - imgSize;
+                                    }
+
+                                    if (img.complete) {
+                                        // 수정된 y값 기준으로 이모지 배치
+                                        ctx.drawImage(img, imgX, y - imgSize - padding, imgSize, imgSize);
+                                    } else {
+                                        img.onload = () => chart.draw();
+                                    }
+                                });
+                            }
+                        };
+
+                        // 4. 차트 설정
+                        const config = {
+                            type: 'radar',
+                            data: {
+                                labels: labels,
+                                datasets: [
+                                    {
+                                        label: '호텔 로즈가든 신주쿠',
+                                        data: hotelData,
+                                        fill: true,
+                                        backgroundColor: 'rgba(141, 91, 253, 0.1)',
+                                        borderColor: '#8D5BFD',
+                                        pointBackgroundColor: '#8D5BFD',
+                                        pointBorderColor: '#8D5BFD',
+                                        pointBorderWidth: 2,
+                                        pointRadius: 2,
+                                        borderWidth: 2,
+                                        zIndex: 2
+                                    },
+                                    {
+                                        label: '도쿄 평균',
+                                        data: averageData,
+                                        fill: false,
+                                        borderColor: '#CCCCCC',
+                                        borderDash: [4, 4],
+                                        pointBackgroundColor: '#999',
+                                        pointRadius: 1,
+                                        borderWidth: 1,
+                                        zIndex: 1
+                                    }
+                                ]
+                            },
+                            options: {
+                                responsive: true,
+                                layout: {
+                                    padding: {
+                                        top: 0, // 상단 이모지 잘림 방지
+                                        bottom: 0
+                                    }
+                                },
+                                plugins: {
+                                    legend: { display: false },
+                                    tooltip: { enabled: false }
+                                },
+                                scales: {
+                                    r: {
+                                        angleLines: { display: true, color: '#efefef' },
+                                        grid: { color: '#efefef' },
+                                        suggestedMin: 0,
+                                        suggestedMax: 20,
+                                        ticks: {
+                                            stepSize: 5,
+                                            display: true,
+                                            backdropColor: 'transparent',
+                                            font: { size: 10, color: '#aaa' },
+                                            callback: function(value) {
+                                                return value + '%';
+                                            }
+                                        },
+                                        pointLabels: {
+                                            font: { size: 13, weight: '600' },
+                                            color: '#232323',
+                                            padding: 4 // 텍스트와 이미지 사이 공간 확보
+                                        }
+                                    }
+                                }
+                            },
+                            plugins: [imageLabelsPlugin] // 플러그인 활성화
+                        };
+
+                        function createCustomLegend() {
+                            const legendContainer = document.getElementById('custom-legend');
+
+                            legendContainer.innerHTML = `
+                                <div class="legend-item legend-hotel">
+                                    <span class="legend-symbol"></span>
+                                    <span class="hotel-text">호텔 로즈가든 신주쿠</span>
+                                </div>
+                                <div class="legend-item legend-average">
+                                    <span class="legend-symbol"></span>
+                                    <span class="hotel-text">도쿄 평균</span>
+                                </div>
+                            `;
+                        }
+                        // 차트 생성
+                        const myChart = new Chart(ctx, config);
+                        createCustomLegend();
+
+                    </script>
+                </div>
+                <div class="sect analysis">
+                    <div class="head">
+                        <div class="title">리스크 별 분석</div>
+                        <div class="tabs tabs-slider">
+                            <ul class="swiper-wrapper">
+                                <li class="swiper-slide"><button type="button" class="tabs-item on"><i class="happy"></i><span>위생 경보</span></button></li>
+                                <li class="swiper-slide"><button type="button" class="tabs-item"><i class="sad"></i><span>시설사기단</span></button></li>
+                                <li class="swiper-slide"><button type="button" class="tabs-item"><i class="sad"></i><span>오감지옥</span></button></li>
+                                <li class="swiper-slide"><button type="button" class="tabs-item"><i class="sad"></i><span>안전그림자</span></button></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div class="result-top">
+                            <div class="tit"><strong>청결, 위생 관련</strong> 불만리뷰 건수가 <br> <strong>도쿄 평균 대비</strong> <span>36%</span> 적어요</div>
+                            <div class="txt">도쿄 평균보다 불만이 적은 편이에요</div>
+                        </div>
+                        <div class="result-bottom">
+                            <div class="info"><strong>3개월 간</strong> 청결, 위생 리뷰가 <br><span>안정적인 수준</span>을 보이고 있어요!</div>
+                            <div class="icon">
+                                <img src="./img/up.svg" alt="추이 그래프">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="result">
+                        <div class="result-top">
+                            <div class="tit"><strong>도쿄 지역 호텔 리뷰를 수집하고 있어요.</strong></div>
+                            <div class="txt">충분한 데이터가 쌓이면 알려드릴게요!</div>
+                            <div class="btn"><a href="#"><img src="./img/alarm.svg"><span>분석 완료 시 알림 받기</span></a></div>
+                        </div>
+                        <div class="result-bottom">
+                            <div class="info"><strong>3개월 간</strong> 청결, 위생 리뷰가 <br><span>안정적인 수준</span>을 보이고 있어요!</div>
+                            <div class="icon">
+                                <img src="./img/up.svg" alt="추이 그래프">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="summary">
+                        <div class="sub-title">위생경보 핵심 요약</div>
+                        <div class="stat-board">
+                            <div class="stat-axis">
+                                <span class="ax safe">안전</span>
+                                <span class="ax avg">평균</span>
+                                <span class="ax danger">위험</span>
+                            </div>
+                            <ul class="stat-list">
+                                <li class="stat-row is-danger">
+                                    <a href="./review.html">
+                                        <div class="stat-info">
+                                            <div class="factor">침구 바닥 청결</div>
+                                            <div class="keywords">얼룩 · 머리카락 · 먼지</div>
+                                        </div>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width:92%"><i class="bubble">92</i></div>
+                                        </div>
+                                        <div class="stat-count">5건</div>
+                                    </a>
+                                </li>
+                                <li class="stat-row is-warning">
+                                    <a href="./review.html">
+                                        <div class="stat-info">
+                                            <div class="factor">해충 / 곰팡이</div>
+                                            <div class="keywords">벌레 · 빈대 · 곰팡이</div>
+                                        </div>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width:68%"><i class="bubble">68</i></div>
+                                        </div>
+                                        <div class="stat-count">5건</div>
+                                    </a>
+                                </li>
+                                <li class="stat-row is-warning">
+                                    <a href="./review.html">
+                                        <div class="stat-info">
+                                            <div class="factor">청소 서비스</div>
+                                            <div class="keywords">청소 불량 · 쓰레기 방치</div>
+                                        </div>
+                                        <div class="stat-track">
+                                            <div class="stat-fill" style="width:55%"><i class="bubble">55</i></div>
+                                        </div>
+                                        <div class="stat-count">5건</div>
+                                    </a>
+                                </li>
+                            </ul>
+                            <div class="stat-legend">
+                                <span class="lg is-danger">심각</span>
+                                <span class="lg is-warning">경고</span>
+                                <span class="lg is-safe">정상</span>
+                                <span class="note">숫자는 불만 리뷰 기반 위험도 점수예요</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="review">
+                        <div class="sub-title">위생경보 리뷰</div>
+                        <!-- member only -->
+                        <div class="tab tab-slider">
+                            <ul class="swiper-wrapper">
+                                <li class="swiper-slide"><button type="button" class="tab-btn on">심각</button></li>
+                                <li class="swiper-slide"><button type="button" class="tab-btn">경고</button></li>
+                                <li class="swiper-slide"><button type="button" class="tab-btn">정상</button></li>
+                            </ul>
+                        </div>
+                        <div class="list review-slider">
+                            <ul class="swiper-wrapper">
+                                <li class="swiper-slide">
+                                    <div class="item">
+                                        <div class="item-top">
+                                            <div class="name">Jihoon Lee</div>
+                                            <div class="status">
+                                                <div class="status-item danger">심각</div>
+                                            </div>
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="star"><i style="width:20%;"></i></div>
+                                            <div class="web"><img src="./img/google.svg">google</div>
+                                        </div>
+                                        <div class="item-bottom">
+                                            <div class="text">침대 밑에 <span>먼지와 머리카락</span>이 굴러다니고 청소 상태가 최악입니다..!</div>
+                                            <div class="date">2026. 03. 10</div>
+                                        </div>
+                                    </div>
+                                </li>
+                                <li class="swiper-slide">
+                                    <div class="item">
+                                        <div class="item-top">
+                                            <div class="name">Jihoon Lee</div>
+                                            <div class="status">
+                                                <div class="status-item danger">심각</div>
+                                            </div>
+                                        </div>
+                                        <div class="item-info">
+                                            <div class="star"><i style="width:20%;"></i></div>
+                                            <div class="web"><img src="./img/google.svg">google</div>
+                                        </div>
+                                        <div class="item-bottom">
+                                            <div class="text">침대 밑에 <span>먼지와 머리카락</span>이 굴러다니고 청소 상태가 최악입니다..!</div>
+                                            <div class="date">2026. 03. 10</div>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="more"><a href="./review.html"><strong>위생 경보</strong> 리뷰 전체보기</a></div>
+                        <br>
+                        <!-- member not -->
+                        <div class="none">
+                            <div class="btn"><a href="#"><img src="./img/kakao.svg"> <span>3초만에 로그인하고 리뷰 보기</span></a></div>
+                            <div class="bg"><img src="./img/blind.png"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="sect recent">
+                    <div class="head">
+                        <div class="title">최근 별점 분포</div>
+                        <div class="desc">최근 1년 2점 이하의 리뷰의 비율은 <span>23%</span> 입니다.</div>
+                        <div class="count">총 200건</div>
+                    </div>
+                    <div class="list">
+                        <ul>
+                            <li>
+                                <div class="num">1점</div>
+                                <div class="bar"><i style="width:30%;"></i></div>
+                                <div class="per">30%</div>
+                            </li>
+                            <li>
+                                <div class="num">2점</div>
+                                <div class="bar"><i style="width:20%;"></i></div>
+                                <div class="per">20%</div>
+                            </li>
+                            <li>
+                                <div class="num">3점</div>
+                                <div class="bar"><i style="width:10%;"></i></div>
+                                <div class="per">10%</div>
+                            </li>
+                            <li>
+                                <div class="num">4점</div>
+                                <div class="bar"><i style="width:5%;"></i></div>
+                                <div class="per">5%</div>
+                            </li>
+                            <li>
+                                <div class="num">5점</div>
+                                <div class="bar"><i style="width:2%;"></i></div>
+                                <div class="per">2%</div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sect hotel">
+                    <div class="head">
+                        <div class="title">이 호텔이 불안하다면?</div>
+                        <div class="desc">같은 지역, 더 높은 점수의 호텔을 추천해요</div>
+                    </div>
+                    <div class="list hotel-slider">
+                        <ul class="swiper-wrapper">
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 10%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_detail.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">시바 파크 호텔</h3>
+                                        <div class="eng">Minato city</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 10%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_detail.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">시바 파크 호텔</h3>
+                                        <div class="eng">Minato city</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 10%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_detail.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">시바 파크 호텔</h3>
+                                        <div class="eng">Minato city</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="swiper-slide">
+                                <a href="./detail.html" class="item">
+                                    <div class="thumb">
+                                        <div class="badge">
+                                            <div class="badge-item badge-normal">보통</div>
+                                            <div class="badge-item badge-down">실망 확률 10%</div>
+                                        </div>
+                                        <div class="image"><img src="./img/hotel_detail.png"></div>
+                                    </div>
+                                    <div class="info">
+                                        <h3 class="name">시바 파크 호텔</h3>
+                                        <div class="eng">Minato city</div>
+                                        <div class="star"><i style="width:60%"></i></div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="sect share">
+                    <div class="tit">내 친구와 <br>이 호텔 가도 될까?</div>
+                    <div class="txt">친구에게 호텔 리스크 분석을 공유해보세요!</div>
+                    <div class="img"><img src="./img/hotel.png"></div>
+                    <div class="btn">
+                        <a href="#" class="btn-kakao"><img src="./img/kakao.svg" alt="카카오톡"></a>
+                        <a href="#" class="btn-blank"><img src="./img/blank.svg" alt="새창으로 이동"></a>
+                    </div>
+                </div>
+                <div class="button">
+                    <a href="#" class="btn-reservate">🔥 최저가로 예약하기</a>
+                </div>
+            </div>
+            <script>
+                $(document).ready(function () {
+                    // 위시리스트 버튼
+                    $('.btn-wish').on('click', function(e) {
+                        e.preventDefault();
+
+                        $(this).toggleClass('on');
+
+                        const isActive = $(this).hasClass('on');
+                        if (isActive) {
+                            console.log('찜 목록에 추가되었습니다.');
+                        } else {
+                            console.log('찜 목록에서 제거되었습니다.');
+                        }
+                    });
+
+                    // 상단 리스크 카테고리 탭 (위생경보, 시설사기단 등)
+                    const tabsSlider = new Swiper('.tabs-slider', {
+                        slidesPerView: 'auto', // 탭 너비에 맞게 자동 조절
+                        spaceBetween: 8,      // 탭 사이 간격
+                        freeMode: true,        // 자유로운 스와이프
+                    });
+
+                    // 리뷰 등급 탭 (심각, 경고, 정상)
+                    const tabSlider = new Swiper('.tab-slider', {
+                        slidesPerView: 'auto',
+                        spaceBetween: 8,
+                        freeMode: true
+                    });
+
+                    // 리뷰 리스트 카드 슬라이더
+                    const reviewSlider = new Swiper('.review-slider', {
+                        slidesPerView: 'auto',   // 다음 카드가 살짝 보이도록 설정
+                        spaceBetween: 10,
+                        centeredSlides: false
+                    });
+
+                    // 탭 클릭 시 활성화(on) 클래스 이동 로직
+                    $('.tabs-item, .tab-btn').on('click', function() {
+                        $(this).closest('.swiper-wrapper').find('.on').removeClass('on');
+                        $(this).addClass('on');
+                    });
+                });
+                $(function(){
+                    $('.hotel-slider').each(function(index, element){
+                        const $this = $(this);
+                        new Swiper(element, {
+                            slidesPerView: 'auto',
+                            spaceBetween: 10,
+                            observer: true,
+                            observeParents: true,
+                        });
+                    });
+                });
+            </script>
+        </section>
+        <section id="float">
+            <div class="float">
+                <a href="#" class="btn-top"><img src="./img/b_top.svg" alt="상단으로"></a>
+            </div>
+            <script>
+                $(function() {
+                    $(window).on('scroll', function() {
+                        if ($(window).scrollTop() > 50) {
+                            $('#float').addClass('is-active');
+                        } else {
+                            $('#float').removeClass('is-active');
+                        }
+                    });
+                    $('.btn-top').on('click', function(e) {
+                        e.preventDefault();
+                        $('html, body').stop().animate({
+                            scrollTop: 0
+                        }, 400);
+                    });
+                });
+            </script>
+        </section>
+    </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/smoothscroll/1.4.9/SmoothScroll.min.js"></script>
+    <script>
+        SmoothScroll({
+            // Scrolling Core
+            animationTime: 500, // [ms]
+            stepSize: 100, // [px]
+
+            // Acceleration
+            accelerationDelta: 50, // 50
+            accelerationMax: 3, // 3
+
+            // Keyboard Settings
+            keyboardSupport: true, // option
+            arrowScroll: 50, // [px]
+
+            // Pulse (less tweakable)
+            // ratio of &quot;tail&quot; to &quot;acceleration&quot;
+            pulseAlgorithm: true,
+            pulseScale: 4,
+            pulseNormalize: 1,
+
+            // Other
+            touchpadSupport: false, // ignore touchpad by default
+            fixedBackground: true,
+            excluded: '' });
+        //# sourceURL=pen.js
+    </script>
+</div>
+</body>
+</html>
