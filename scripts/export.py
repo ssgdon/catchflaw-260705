@@ -53,9 +53,11 @@ QUERIES = {
         select place_id, raw_json->>'imageUrl' img0,
           raw_json->'imageUrls'->>1 img1, raw_json->'imageUrls'->>2 img2
         from hotels_new""",
+    # 분석 대상 모수(denominator) = 텍스트 분석 리뷰 + 별점만 있는 리뷰.
+    # 별점-only도 '평가'이므로 포함 → 텍스트 작성자 선택편향 교정, 200컷 정확화.
     'agg_denom.json': f"""
         select place_id, {BUCKET} bucket, count(*) n
-        from reviews_new r where is_analyzed group by 1,2""",
+        from reviews_new r where is_analyzed or stars is not null group by 1,2""",
     'agg_reviewlevel.json': f"""
         select r.place_id, {BUCKET} bucket, count(*) analyzed,
           count(*) filter (where exists (select 1 from reviews_analysis_new a where a.review_id=r.review_id and a.grade='심각')) has_crit,

@@ -20,7 +20,7 @@ v1 · 2026-07-05 작성 · 실행 담당: 내일 다른 PC의 Opus 세션 (이 �
 
 핵심 수치 (설계 판단 근거):
 - 최근 90일 리뷰 5,844건 → **주간 신규 약 450건** (호텔당 ~3건/주)
-- 분석 리뷰 200건 이상 호텔 = **91/150**, 100건 이상 = 117/150 (§7 노출 정책에 영향)
+- **분석 대상 모수 = 텍스트 분석 리뷰 + 별점-only 리뷰** (§7.0). 이 기준으로 200건 이상 호텔 = **104/150**(전체기간)·**71/150**(최근1년), 100건 이상 = 126/150. (텍스트만 세면 91/58/117 — 별점-only 제외 시 과소집계)
 - 리뷰 중 이미지 보유 8,018건 / 이미지 총 40,976장 (전부 URL 만료 → §5.5 백필 판단 필요)
 
 ---
@@ -131,12 +131,15 @@ create table reviews (
   review_origin varchar,                    -- Google | Trip.com | ...
   likes_count int,
   image_urls  jsonb,                        -- 스크랩 시점 원본 URL (만료성 — 즉시 다운로드용)
-  is_analyzed boolean default false,
+  is_analyzed boolean default false,        -- 텍스트가 있어 LLM을 태운 리뷰만 true
+  is_evaluation boolean generated always as (is_analyzed or stars is not null) stored,
+                                            -- 분석 대상 모수 플래그: 텍스트분석 OR 별점만 있어도 '평가' (§7.0)
   analysis_run_id bigint,
   scraped_at  timestamptz default now()
 );
 create index on reviews (place_id, published_at desc);
 create index on reviews (is_analyzed) where not is_analyzed;
+create index on reviews (place_id) where is_evaluation;   -- 모수 카운트/점수 계산용
 
 create table review_images (
   review_id   varchar references reviews(review_id),
@@ -359,7 +362,18 @@ select review_id from reviews r where jsonb_array_length(image_urls) > 0
 
 ---
 
-## 7. 점수 재계산 & 노출 정책 (변경 2건)
+## 7. 점수 재계산 & 노출 정책 (변경 3건)
+
+### 7.0 분석 대상 모수 = 텍스트 분석 리뷰 + 별점-only 리뷰 (사용자 정책 · 적용 완료)
+
+**핵심 원칙**: 별점만 있고 텍스트가 없는 리뷰도 "평가"다. 분석 대상 모수(denominator)에 포함한다.
+
+- **이유**: 텍스트를 쓰는 사람은 불만을 남길 확률이 높다(선택편향). 별점-only 리뷰(=문제 언급 안 한 투숙객)를 분모에서 빼면 실망확률이 과대평가된다. 포함하면 "전체 투숙객 중 심각 문제를 언급한 비율"이 되어 더 정확하다.
+- **모수 정의**: `is_analyzed(텍스트 분석) OR stars IS NOT NULL(별점 있음)` = `is_evaluation`. 후쿠오카 기준 별점-only 10,097건(호텔당 평균 67건)이 새로 포함됨.
+- **분자는 그대로**: 심각/주의 findings는 텍스트 리뷰에서만 나온다. 별점-only는 분모에만 들어가는 "무언급" 데이터.
+- **적용 효과 (실측)**: 도시평균 실망확률 12% → **9.5%**, 개별 호텔 예) 28% → 24%. 카테고리 위험도는 도시평균 대비 상대값이라 순위·분포 거의 안 변함(중앙값 42~48). **200 컷 통과 91→104개**로 정확해짐.
+- **구현**: `reviews.is_evaluation` 컬럼 + 점수 denominator를 이 플래그로 카운트. (현행 MVP에는 `export.py`의 agg_denom 쿼리를 `where is_analyzed or stars is not null`로 이미 반영 완료.)
+- **표시 라벨**: "분석 리뷰 N건" = 이 모수 기준(텍스트+별점). 별점-only 리뷰 자체는 리뷰 목록에 노출하지 않되(인용문 없음) 모수에는 포함.
 
 ### 7.1 "최근 1년 리뷰만" (사용자 정책)
 
@@ -369,17 +383,17 @@ select review_id from reviews r where jsonb_array_length(image_urls) > 0
 
 ### 7.2 노출 최소 기준 200건 (사용자 정책 — 영향 큼, 결정 필요)
 
-현재 분석 200건 이상 호텔 = **91/150**. 하드컷하면 사이트 호텔이 91개로 줄어든다. 1년 컷까지 적용하면 더 줄 수 있다.
+§7.0 모수(텍스트+별점) 기준 분석 200건 이상 호텔 = **104/150**(전체기간), 최근1년 컷 적용 시 **71/150**. (텍스트만 세던 옛 방식은 91/58 — 별점-only 포함으로 컷이 정확해짐.)
 
 권고안 — **3단계 노출**:
 
-| 단계 | 조건 | 노출 |
+| 단계 | 조건 (모수 = 텍스트+별점) | 노출 |
 |---|---|---|
-| 정식 | 분석 리뷰 200건 이상 | 등급 배지 + 실망확률 + 전체 분석 (현행 UI 그대로) |
+| 정식 | 200건 이상 | 등급 배지 + 실망확률 + 전체 분석 (현행 UI 그대로) |
 | 참고 | 30~199건 | 점수는 보여주되 "분석 {n}건 기준 · 참고용" 라벨, 큐레이션/추천에서 제외 |
 | 수집중 | 30건 미만 | "리뷰 수집중" (현행) |
 
-이렇게 하면 후쿠오카 커버리지(150개)를 유지하면서 "믿을 만한 점수"와 "참고 점수"를 구분한다. 사용자가 200 하드컷을 원하면 §11 결정#1에서 선택. 캐치업 스크랩(300건 상한)이 돌면 200+ 호텔이 91→100+로 늘어날 것.
+이렇게 하면 후쿠오카 커버리지(150개)를 유지하면서 "믿을 만한 점수"와 "참고 점수"를 구분한다. 사용자가 200 하드컷을 원하면 §11 결정#1에서 선택. 캐치업 스크랩(300건 상한)이 돌면 200+ 호텔이 더 늘어난다.
 
 ### 7.3 재계산 규칙 (기존 유지)
 
@@ -421,7 +435,7 @@ select review_id from reviews r where jsonb_array_length(image_urls) > 0
 1. VM에 PostgreSQL 설치, §2 DDL 적용
 2. Supabase에서 CSV 추출 (psql `\copy`): hotels_new, reviews_new, reviews_analysis_new(주의/심각 & quote 정규화), analysis_cost_log
 3. 신 스키마 적재 + §2.1 매핑/정제 (정상행 제거, category 복원, 표기 통일 — 기존 export.py의 CASE문 재사용)
-4. 검증: 행 수 대조표 + 점수 v2 재계산 결과가 현행 사이트 수치(도시평균 실망확률 12%, 리브맥스 28% 등)와 일치하는지 스팟 체크
+4. 검증: 행 수 대조표 + 점수 v2 재계산 결과가 현행 사이트 수치(§7.0 모수 적용 후 도시평균 실망확률 **9.5%**, 리브맥스 **24%**, 200+ 호텔 104개 등)와 일치하는지 스팟 체크
 5. 기존 자체호스팅 호텔 이미지 127장 → R2 이관 (`assets/hotels/*.jpg` → WebP 변환 후 업로드, hotel_images 등록)
 6. `scripts/export.py`를 "Supabase Management API" → "로컬 Postgres 직결(psycopg)"로 교체. generate.py는 입력 JSON 규약이 같으므로 거의 무수정
 7. Supabase는 읽기전용으로 두고 2주 병행 후 정리 (mvp_feedbacks만 유지)
