@@ -4,14 +4,17 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
     <title>캐치플로 — 검색</title>
-    <link rel="stylesheet" href="css/tokens.css?v=1783224476">
-    <link rel="stylesheet" href="css/common.css?v=1783224476">
-    <link rel="stylesheet" href="css/layout.css?v=1783224476">
-    <link rel="stylesheet" href="css/swiper.css?v=1783224476">
-    <link rel="stylesheet" href="css/uplift.css?v=1783224476">
-    <link rel="stylesheet" href="css/mvp.css?v=1783224476">
+    <link rel="stylesheet" href="css/tokens.css?v=1783246652">
+    <link rel="stylesheet" href="css/common.css?v=1783246652">
+    <link rel="stylesheet" href="css/layout.css?v=1783246652">
+    <link rel="stylesheet" href="css/swiper.css?v=1783246652">
+    <link rel="stylesheet" href="css/uplift.css?v=1783246652">
+    <link rel="stylesheet" href="css/mvp.css?v=1783246652">
+    <script src="js/backnav.js?v=1783246652"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/swiper.js"></script>
+    <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];</script>
+    <script src="js/engage.js?v=1783246652" defer></script>
 </head>
 <body>
 <div id="wrapper">
@@ -26,19 +29,25 @@
         </section>
         <section id="search">
             <div class="filters">
+                <div class="f-row" id="f-city">
+                    <span class="f-label">도시</span>
+                    <button type="button" class="f-chip city-on" data-v="fukuoka">후쿠오카</button>
+                    <button type="button" class="f-chip disabled" title="준비 중">도쿄</button>
+                    <button type="button" class="f-chip disabled" title="준비 중">오사카</button>
+                    <button type="button" class="f-chip disabled" title="준비 중">교토</button>
+                </div>
+                <div class="f-row" id="f-area">
+                    <span class="f-label">지역</span>
+                    <button type="button" class="f-chip on" data-area="">전체</button>
+                    <button type="button" class="f-chip" data-area="hakata">하카타역</button><button type="button" class="f-chip" data-area="tenjin">텐진</button><button type="button" class="f-chip" data-area="nakasu">나카스·캐널시티</button><button type="button" class="f-chip" data-area="gion">기온·오호리</button>
+                </div>
                 <div class="f-row" id="f-price">
                     <span class="f-label">가격</span>
                     <button type="button" class="f-chip on" data-v="">전체</button>
                     <button type="button" class="f-chip" data-v="b1">10만원 미만</button>
                     <button type="button" class="f-chip" data-v="b2">10~20만원</button>
                     <button type="button" class="f-chip" data-v="b3">20만원 이상</button>
-                </div>
-                <div class="f-row" id="f-band">
-                    <span class="f-label">등급</span>
-                    <button type="button" class="f-chip on" data-v="">전체</button>
-                    <button type="button" class="f-chip" data-v="safe">양호</button>
-                    <button type="button" class="f-chip" data-v="warning">주의</button>
-                    <button type="button" class="f-chip" data-v="danger">위험</button>
+                    <button type="button" class="f-more" id="open-catfilter">⚙ 항목별 필터</button>
                 </div>
             </div>
             <div class="map-wrap"><div id="map"></div>
@@ -46,134 +55,239 @@
                     <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
                 </div>
             </div>
+            <div class="map-hint" id="map-hint"></div>
             <div class="total" id="total"></div>
             <div class="notice" id="notice" style="display:none"></div>
+            <div class="list-head" id="list-head" style="display:none">
+                <div class="lh-count" id="lh-count"></div>
+                <div class="lh-sort" id="lh-sort">
+                    <button type="button" class="lh-sort-btn" id="lh-sort-btn">실망 확률 낮은 순</button>
+                    <div class="lh-sort-box">
+                        <button type="button" class="on" data-sort="p">실망 확률 낮은 순</button>
+                        <button type="button" data-sort="price">1박 가격 낮은 순</button>
+                        <button type="button" data-sort="rc">구글 리뷰 많은 순</button>
+                        <button type="button" data-sort="g">구글 평점 높은 순</button>
+                    </div>
+                </div>
+            </div>
             <div class="list"><ul id="results"></ul></div>
         </section>
     </main>
-    <script src="./data/index.js?v=1783224476"></script>
+
+    <div class="cf-modal" id="cf-catfilter">
+        <div class="cf-modal-dim"></div>
+        <div class="cf-modal-card">
+            <div class="cft-tit">걱정되는 항목을 골라주세요</div>
+            <div class="cft-txt">선택한 항목이 <b>&lsquo;위험&rsquo; 등급</b>인 호텔을 결과에서 빼드려요. (여러 개 선택 가능)</div>
+            <div class="cft-grid" id="cft-grid"></div>
+            <div class="cf-modal-btns">
+                <button type="button" class="cf-btn cf-btn-ghost" data-act="reset">초기화</button>
+                <button type="button" class="cf-btn cf-btn-primary" data-act="apply">적용하기</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="./data/index.js?v=1783246652"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     (function(){
         var CITY_KO = '후쿠오카', CITY_AVG = 12;
         var OTHER = ["도쿄", "tokyo", "오사카", "osaka", "교토", "kyoto", "삿포로", "sapporo", "나고야", "nagoya", "오키나와", "okinawa", "서울", "seoul", "부산", "busan", "제주", "jeju", "방콕", "bangkok", "다낭", "danang", "나트랑", "타이베이", "taipei", "싱가포르", "singapore", "홍콩", "hongkong", "hong kong", "괌", "guam", "세부", "cebu", "파리", "paris", "런던", "london"];
+        var CATS = [{"ko": "위생 경보", "ico": "🧼"}, {"ko": "오감 지옥", "ico": "👂"}, {"ko": "시설 사기단", "ico": "🏚️"}, {"ko": "동선 파괴자", "ico": "🗺️"}, {"ko": "불친절 레이더", "ico": "💬"}, {"ko": "안전 그림자", "ico": "🔒"}];
+        var AREAS = window.CF_AREAS || [];
         var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
-        var fPrice = '', fBand = '';
+        var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
+        var fPrice = '', fBand = '', fArea = '', fCats = [], sortBy = 'p';
+        var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
+        var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
 
         function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
+        function km(a1,o1,a2,o2){ var R=6371,p1=a1*Math.PI/180,p2=a2*Math.PI/180,dp=(a2-a1)*Math.PI/180,dl=(o2-o1)*Math.PI/180;
+            var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }
 
-        // ───── 지도 (Leaflet + OSM, 키 불필요) ─────
+        // ───── 지도 ─────
         var BAND_COLOR = {safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'};
-        var map = L.map('map', {scrollWheelZoom: false}).setView([33.5902, 130.4017], 13);
+        var map = L.map('map', {scrollWheelZoom:false}).setView([33.5902,130.4017], 13);
         L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ko',
-            {maxZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '&copy; Google'}).addTo(map);
+            {maxZoom:19, subdomains:['mt0','mt1','mt2','mt3'], attribution:'&copy; Google'}).addTo(map);
         map.on('click', function(){ map.scrollWheelZoom.enable(); });
         var markers = L.layerGroup().addTo(map);
+        // 컨테이너 레이아웃 완료 후 크기 재계산 (초기 0폭 방지) + 리스트 재동기화
+        setTimeout(function(){ map.invalidateSize(); if (baseList.length) { drawMap(baseList, true); } }, 80);
+        $(window).on('load', function(){ map.invalidateSize(); });
 
-        function drawMap(list){
+        function popupHtml(h){
+            var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
+            var chip = h.p != null ? '<span class="pop-p" style="background:'+col+'">실망 확률 '+h.p+'%</span>'
+                                   : '<span class="pop-p" style="background:#9CA3AF">리뷰 수집중</span>';
+            return '<div class="map-pop"><b>'+h.name+'</b>'
+                + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'
+                + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
+                + '<a class="pop-link" href="./hotels/'+h.id+'.html">캐치플로 분석 보기 →</a></div>';
+        }
+        function drawMap(list, fit){
             markers.clearLayers();
             var pts = [];
             list.forEach(function(h){
                 if (h.lat == null) return;
                 var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
-                var mk = L.circleMarker([h.lat, h.lng], {
-                    radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95
-                });
-                var chip = h.p != null
-                    ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
-                    : '<span class="pop-p" style="background:#9CA3AF">리뷰 수집중</span>';
-                mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
-                    + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
-                    + (h.pt ? ' · 1박 ' + h.pt : '') + '</div>'
-                    + chip
-                    + '<a class="pop-link" href="./hotels/' + h.id + '.html">캐치플로 분석 보기 →</a></div>');
+                var mk = L.circleMarker([h.lat,h.lng], {radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95});
+                mk.bindPopup(popupHtml(h));
                 markers.addLayer(mk);
-                pts.push([h.lat, h.lng]);
+                pts.push([h.lat,h.lng]);
             });
-            if (pts.length) map.fitBounds(pts, {padding: [24, 24], maxZoom: 15});
+            if (fit && pts.length) { syncMap = false; map.once('moveend', function(){ syncMap = true; renderVisible(); }); map.fitBounds(pts, {padding:[28,28], maxZoom:15}); }
         }
 
+        // ───── 정렬 ─────
+        function sortList(arr){
+            var a = arr.slice();
+            if (sortBy === 'price') a.sort(function(x,y){ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); });
+            else if (sortBy === 'rc') a.sort(function(x,y){ return (y.rc||0)-(x.rc||0); });
+            else if (sortBy === 'g') a.sort(function(x,y){ return (y.g||0)-(x.g||0); });
+            else a.sort(function(x,y){ return (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); });  // 실망확률 낮은순(기본)
+            return a;
+        }
+
+        // ───── 리스트 렌더 ─────
         function bandChip(h){
             if(!h.scored) return '<div class="badge-item badge-collect">리뷰 수집중</div>';
             return '<div class="badge-item badge-'+h.band+'">'+h.label+'</div>'
                  + '<div class="badge-item badge-down">실망 확률 '+h.p+'%</div>';
         }
         function row(h){
-            var img = h.img ? './' + h.img : './img/placeholder.svg';
+            var img = h.img ? './'+h.img : './img/placeholder.svg';
+            var priceTxt = h.pt ? '<div class="price-txt">1박 '+h.pt+'</div>' : '';
             return '<li><div class="item">'
                 + '<div class="thumb"><a href="./hotels/'+h.id+'.html"><img src="'+img+'" loading="lazy"></a></div>'
                 + '<div class="cont"><div class="info">'
                 + '<div class="name"><a href="./hotels/'+h.id+'.html">'+h.name+'</a></div>'
                 + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+'</div></div>'
                 + '<div class="bottom"><div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
-                + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div></div>'
+                + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div>'
+                + priceTxt + '</div>'
                 + '<div class="badge">'+bandChip(h)+'</div></div>'
                 + '</div></div></li>';
         }
-        function unsupported(q){
-            $total.html('');
-            $res.html('');
-            $notice.show().html(
-                '<div class="notice-card">'
-                + '<div class="notice-emoji">🙏</div>'
-                + '<div class="notice-tit">아직 <b>'+CITY_KO+'</b>만 지원해요</div>'
-                + '<div class="notice-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요.<br>'+CITY_KO+' 호텔은 전부 분석되어 있으니 먼저 둘러보세요!</div>'
-                + '<a class="notice-btn" href="./search.html">'+CITY_KO+' 호텔 전체 보기</a>'
-                + '</div>');
-            renderList(HOTELS.slice().sort(function(a,b){return (a.p==null)-(b.p==null) || a.p-b.p;}).slice(0,5), true);
+        function renderRows(list){
+            if (!list.length) { $res.html('<li class="sub-head">이 조건에 맞는 호텔이 없어요. 필터를 조정해 보세요.</li>'); return; }
+            $res.html(sortList(list).map(row).join(''));
         }
-        function renderList(list, append){
-            var htmlStr = list.map(row).join('');
-            if(append){
-                $res.html('<li class="sub-head">'+CITY_KO+' 인기 호텔 미리보기</li>'+htmlStr);
-            } else { $res.html(htmlStr); }
+
+        // 지도 뷰포트 안의 호텔만 리스트에 (C-3)
+        function renderVisible(){
+            var b = map.getBounds();
+            var vis = baseList.filter(function(h){ return h.lat != null && b.contains([h.lat, h.lng]); });
+            $lcount.text('지도 영역 내 ' + vis.length + '곳');
+            $lhead.toggle(baseList.length > 0);
+            renderRows(vis);
+            $hint.html(baseList.length ? '지도를 움직이면 <b>보이는 영역</b>의 호텔만 아래 목록에 나와요' : '');
         }
-        function applyFilters(list){
-            return list.filter(function(h){
-                if (fPrice && h.pb !== fPrice) return false;
-                if (fBand && h.band !== fBand) return false;
-                return true;
-            });
+
+        // ───── 필터 적용 ─────
+        function passFilters(h){
+            if (fPrice && h.pb !== fPrice) return false;
+            if (fBand && h.band !== fBand) return false;
+            if (fArea){
+                var a = AREAS.filter(function(x){ return x.code === fArea; })[0];
+                if (a){ if (h.lat == null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; }
+            }
+            if (fCats.length){
+                for (var i=0;i<fCats.length;i++){ if (h.cb && h.cb[fCats[i]] === 'danger') return false; }
+            }
+            return true;
         }
         function filterLabel(){
             var t = [];
+            if (fArea){ var a=AREAS.filter(function(x){return x.code===fArea;})[0]; if(a) t.push(a.ko); }
             if (fPrice) t.push($('#f-price .f-chip[data-v="'+fPrice+'"]').text());
             if (fBand) t.push($('#f-band .f-chip[data-v="'+fBand+'"]').text());
+            if (fCats.length) t.push(fCats.length + '개 항목 안심');
             return t.length ? ' · ' + t.join(' · ') : '';
         }
+        function unsupported(q){
+            $total.html(''); $lhead.hide(); $hint.html('');
+            $notice.show().html(
+                '<div class="notice-card"><div class="notice-emoji">🙏</div>'
+                + '<div class="notice-tit">아직 <b>'+CITY_KO+'</b>만 지원해요</div>'
+                + '<div class="notice-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요.<br>'+CITY_KO+' 호텔은 전부 분석되어 있으니 먼저 둘러보세요!</div>'
+                + '<a class="notice-btn" href="./search.html">'+CITY_KO+' 호텔 전체 보기</a></div>');
+            $res.html('');
+        }
+
         function run(){
             var q = $q.val().trim();
             $notice.hide();
-            if(!q){
-                var all = applyFilters(HOTELS.slice()).sort(function(a,b){return (a.p==null)-(b.p==null) || a.p-b.p;});
-                $total.html(CITY_KO+' 호텔 <span class="highlight">'+all.length+'곳</span> · 실망 확률 낮은 순'+filterLabel()+' (도시 평균 '+CITY_AVG+'%)');
-                renderList(all);
-                drawMap(all);
-                return;
+            var pool = HOTELS.filter(passFilters);
+            if (q){
+                var nq = norm(q);
+                if (OTHER.some(function(k){ return nq.indexOf(norm(k)) >= 0; })) { unsupported(q); drawMap(HOTELS.filter(passFilters), true); return; }
+                pool = pool.filter(function(h){ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; });
+                if (!pool.length) { unsupported(q); drawMap(HOTELS.filter(passFilters), true); return; }
+                $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
+            } else {
+                $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망확률 '+CITY_AVG+'%');
             }
-            var nq = norm(q);
-            var isOther = OTHER.some(function(k){ return nq.indexOf(norm(k)) >= 0; });
-            if(isOther){ unsupported(q); drawMap(applyFilters(HOTELS)); return; }
-            var hits = applyFilters(HOTELS.filter(function(h){
-                return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0;
-            }));
-            if(!hits.length){ unsupported(q); drawMap(applyFilters(HOTELS)); return; }
-            $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+hits.length+'건</span>'+filterLabel());
-            renderList(hits);
-            drawMap(hits);
+            baseList = pool;
+            drawMap(pool, true);   // fitBounds → moveend → renderVisible
+            renderVisible();
         }
-        $('.f-row').on('click', '.f-chip', function(){
-            var $c = $(this), $row = $c.closest('.f-row');
-            $row.find('.f-chip').removeClass('on'); $c.addClass('on');
-            if ($row.attr('id') === 'f-price') fPrice = $c.data('v') || '';
-            else fBand = $c.data('v') || '';
-            run();
+
+        // ───── 이벤트 ─────
+        map.on('moveend', function(){ if (syncMap) renderVisible(); });
+
+        $('#f-area').on('click', '.f-chip', function(){
+            var $c = $(this); $('#f-area .f-chip').removeClass('on'); $c.addClass('on');
+            fArea = $c.data('area') || ''; run();
         });
+        $('#f-price').on('click', '.f-chip', function(){
+            var $c = $(this); $('#f-price .f-chip').removeClass('on'); $c.addClass('on');
+            fPrice = $c.data('v') || ''; run();
+        });
+        $('#f-city').on('click', '.f-chip.disabled', function(){
+            alert('아직 '+CITY_KO+'만 지원해요. 다른 도시는 준비 중이에요!');
+        });
+
+        // 정렬 드롭다운
+        $('#lh-sort-btn').on('click', function(e){ e.stopPropagation(); $('#lh-sort').toggleClass('open'); });
+        $('#lh-sort .lh-sort-box button').on('click', function(){
+            sortBy = $(this).data('sort');
+            $('#lh-sort .lh-sort-box button').removeClass('on'); $(this).addClass('on');
+            $('#lh-sort-btn').text($(this).text());
+            $('#lh-sort').removeClass('open');
+            renderVisible();
+        });
+        $(document).on('click', function(){ $('#lh-sort').removeClass('open'); });
+
+        // 카테고리 위험 필터 시트
+        var $cft = $('#cf-catfilter');
+        $('#cft-grid').html(CATS.map(function(c){
+            return '<button type="button" class="cft-chip" data-cat="'+c.ko+'"><span class="cft-ico">'+c.ico+'</span>'+c.ko+'</button>';
+        }).join(''));
+        function openCatFilter(){
+            $('#cft-grid .cft-chip').each(function(){ $(this).toggleClass('on', fCats.indexOf($(this).data('cat'))>=0); });
+            $cft.addClass('is-open'); $('body').css('overflow','hidden');
+            CFNav.push(function(){ $cft.removeClass('is-open'); $('body').css('overflow',''); });
+        }
+        $('#open-catfilter').on('click', openCatFilter);
+        $cft.on('click', '.cft-chip', function(){ $(this).toggleClass('on'); });
+        $cft.find('.cf-modal-dim').on('click', function(){ CFNav.pop(); });
+        $cft.find('[data-act="reset"]').on('click', function(){ $('#cft-grid .cft-chip').removeClass('on'); });
+        $cft.find('[data-act="apply"]').on('click', function(){
+            fCats = $('#cft-grid .cft-chip.on').map(function(){ return $(this).data('cat'); }).get();
+            $('#open-catfilter').toggleClass('active', fCats.length>0).text(fCats.length ? '⚙ 항목 '+fCats.length : '⚙ 항목별 필터');
+            CFNav.pop(); run();
+        });
+
         $('#btn-search').on('click', run);
         $q.on('keyup', function(e){ if(e.key==='Enter') run(); });
         $q.on('input', function(){ if(!$q.val().trim()) run(); });
-        var init = new URLSearchParams(location.search).get('q');
-        if(init){ $q.val(init); }
+
+        // URL 파라미터: ?area= / ?q=
+        var sp = new URLSearchParams(location.search);
+        var initArea = sp.get('area'), initQ = sp.get('q');
+        if (initArea){ fArea = initArea; $('#f-area .f-chip').removeClass('on'); $('#f-area .f-chip[data-area="'+initArea+'"]').addClass('on'); }
+        if (initQ){ $q.val(initQ); }
         run();
     })();
     </script></div>

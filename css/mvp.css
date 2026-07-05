@@ -213,3 +213,97 @@
 #detail .analysis .review .list .item .item-top .status .status-item.danger{background:var(--danger-soft);color:var(--danger-text);}
 #detail .analysis .review .list .item .item-top .status .status-item.warning{background:var(--warning-soft);color:var(--warning-text);}
 #detail .analysis .review .list .item .item-info .web{display:flex;align-items:center;gap:4px;font-size:12px;font-weight:500;color:var(--ink-3);}
+
+/* ============================================================
+   추가 컴포넌트 (2차 피드백) — 모달 · 공유시트 · 필터시트 · 지역칩 · 소팅
+   ============================================================ */
+
+/* ---------- 공통 모달 (종료확인 · 피드백) ---------- */
+.cf-modal{position:fixed;z-index:400;inset:0;display:none;}
+.cf-modal.is-open{display:block;}
+.cf-modal .cf-modal-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);}
+.cf-modal .cf-modal-card{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:var(--width);max-width:100%;padding:28px 22px calc(24px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:#fff;text-align:center;animation:cf-slide-up .28s ease;}
+@keyframes cf-slide-up{from{transform:translate(-50%,100%);}to{transform:translate(-50%,0);}}
+.cf-modal .cf-modal-emoji{font-size:34px;line-height:1;}
+.cf-modal .cf-modal-tit{margin:12px 0 8px;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
+.cf-modal .cf-modal-txt{line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink-2);}
+.cf-modal .cf-modal-btns{display:flex;gap:8px;margin:22px 0 0;}
+.cf-modal .cf-btn{flex:1;display:flex;align-items:center;justify-content:center;height:52px;border-radius:var(--radius-btn);font-size:var(--fs-body);font-weight:var(--fw-bold);}
+.cf-modal .cf-btn-primary{background:var(--primary);color:#fff;}
+.cf-modal .cf-btn-ghost{background:var(--surface);color:var(--ink-2);}
+
+/* ---------- 이탈 전 피드백 모달 ---------- */
+#cf-feedback-modal .cf-modal-card{text-align:left;padding-top:22px;}
+#cf-feedback-modal .fb-head{display:flex;align-items:flex-start;gap:8px;}
+#cf-feedback-modal .fb-emoji{font-size:26px;line-height:1.1;}
+#cf-feedback-modal .fb-tit{flex:1;line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
+#cf-feedback-modal .fb-close{width:28px;height:28px;font-size:16px;color:var(--ink-3);}
+#cf-feedback-modal .fb-txt{margin:6px 0 14px;line-height:1.5;font-size:var(--fs-caption);color:var(--ink-2);}
+#cf-feedback-modal textarea{width:100%;height:80px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;font-size:15px;font-family:inherit;color:var(--ink);resize:none;background:#fff;}
+#cf-feedback-modal textarea:focus{border-color:var(--primary);}
+#cf-feedback-modal input[type=tel]{width:100%;margin:8px 0 0;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;font-size:15px;font-family:inherit;color:var(--ink);background:#fff;}
+#cf-feedback-modal input[type=tel]:focus{border-color:var(--primary);}
+#cf-feedback-modal .fb-phone-note{margin:6px 2px 0;font-size:11.5px;color:var(--ink-3);}
+#cf-feedback-modal .cf-modal-btns{flex-direction:column;gap:8px;margin-top:16px;}
+#cf-feedback-modal .fb-skip{background:transparent;color:var(--ink-3);height:40px;font-size:var(--fs-caption);font-weight:var(--fw-medium);}
+#cf-feedback-modal .fb-done{padding:20px 0;text-align:center;}
+#cf-feedback-modal .fb-done .big{font-size:32px;}
+#cf-feedback-modal .fb-done .msg{margin:10px 0 0;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
+
+/* ---------- 공유 시트 (navigator.share 폴백) ---------- */
+#cf-share-sheet .cf-modal-card{padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
+#cf-share-sheet .sh-tit{margin:0 0 16px;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);text-align:center;}
+#cf-share-sheet .sh-list{display:flex;flex-direction:column;gap:8px;}
+#cf-share-sheet .sh-item{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-radius:12px;background:var(--surface);font-size:15px;font-weight:var(--fw-medium);color:var(--ink);}
+#cf-share-sheet .sh-item .sh-ico{width:24px;height:24px;flex:0 0 auto;}
+#cf-share-sheet .sh-item.kakao{background:#FEE500;}
+
+/* ---------- 메인: CTA 강조 버튼 ---------- */
+#main .home-map .map-more a{background:var(--primary);color:#fff;font-weight:var(--fw-bold);box-shadow:0 6px 16px rgb(141 91 253 / 28%);}
+
+/* ---------- 메인: 인기 지역 자동완성 헤더 ---------- */
+#main .search-box .ac-box .ac-section{padding:10px 16px 4px;font-size:12px;font-weight:var(--fw-bold);color:var(--ink-3);}
+#main .search-box .ac-box .ac-area{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:14.5px;color:var(--ink);}
+#main .search-box .ac-box .ac-area + .ac-area{border-top:1px solid var(--line);}
+#main .search-box .ac-box .ac-area:active{background:var(--primary-soft);}
+#main .search-box .ac-box .ac-area .ac-emoji{font-size:16px;}
+#main .search-box .ac-box .ac-area .ac-sub{margin-left:auto;font-size:12px;color:var(--ink-3);}
+
+/* ---------- 검색: 도시/지역 필터 행 ---------- */
+#search .filters .f-chip.disabled{opacity:.4;pointer-events:none;position:relative;}
+#search .filters .f-chip.city-on{background:var(--primary);color:#fff;font-weight:var(--fw-bold);}
+#search .filters .f-more{flex:0 0 auto;display:flex;align-items:center;gap:4px;height:32px;padding:0 12px;border-radius:32px;background:var(--primary-soft);font-size:13px;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
+#search .filters .f-more.active{background:var(--primary);color:#fff;}
+
+/* ---------- 검색: 리스트 헤더(정렬 + 개수) ---------- */
+#search .list-head{display:flex;align-items:center;justify-content:space-between;padding:6px var(--page-x) 0;}
+#search .list-head .lh-sort{position:relative;}
+#search .list-head .lh-sort-btn{display:flex;align-items:center;gap:6px;height:32px;font-size:13.5px;font-weight:var(--fw-medium);color:var(--ink-2);}
+#search .list-head .lh-sort-btn:after{content:'';width:9px;height:5px;background:url("../img/dropdown.svg") no-repeat center / contain;}
+#search .list-head .lh-sort.open .lh-sort-btn:after{transform:rotate(180deg);}
+#search .list-head .lh-sort-box{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:150px;padding:6px;border-radius:12px;background:#fff;box-shadow:0 8px 24px rgb(0 0 0 / 16%);display:none;}
+#search .list-head .lh-sort.open .lh-sort-box{display:block;}
+#search .list-head .lh-sort-box button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--ink-2);white-space:nowrap;}
+#search .list-head .lh-sort-box button.on{background:var(--primary-soft);color:var(--primary);font-weight:var(--fw-bold);}
+
+/* ---------- 검색: 리스트 가격 표기 ---------- */
+#search .list .cont .info .meta span.price b{color:var(--ink);font-weight:var(--fw-bold);}
+#search .list .cont .bottom .price-txt{font-size:13px;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
+
+/* ---------- 검색: 지도 영역 안내 ---------- */
+#search .map-hint{padding:8px var(--page-x) 0;font-size:12px;color:var(--ink-3);}
+#search .map-hint b{color:var(--primary);font-weight:var(--fw-bold);}
+
+/* ---------- 카테고리 위험 필터 시트 ---------- */
+#cf-catfilter .cf-modal-card{text-align:left;padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
+#cf-catfilter .cft-tit{font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
+#cf-catfilter .cft-txt{margin:6px 0 16px;line-height:1.5;font-size:var(--fs-caption);color:var(--ink-2);}
+#cf-catfilter .cft-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+#cf-catfilter .cft-chip{display:flex;align-items:center;gap:6px;padding:13px 12px;border-radius:12px;border:1.5px solid var(--line-strong);background:#fff;font-size:14px;font-weight:var(--fw-medium);color:var(--ink);}
+#cf-catfilter .cft-chip .cft-ico{font-size:16px;}
+#cf-catfilter .cft-chip.on{border-color:var(--danger);background:var(--danger-soft);color:var(--danger-text);font-weight:var(--fw-bold);}
+#cf-catfilter .cf-modal-btns{margin-top:18px;}
+
+/* ---------- 토스트 ---------- */
+.cf-toast{position:fixed;z-index:500;left:50%;bottom:80px;transform:translate(-50%,10px);padding:12px 20px;border-radius:24px;background:rgb(25 27 31 / 92%);color:#fff;font-size:14px;font-weight:var(--fw-medium);opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;white-space:nowrap;}
+.cf-toast.show{opacity:1;transform:translate(-50%,0);}

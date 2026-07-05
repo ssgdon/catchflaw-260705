@@ -4,17 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
     <title>THE HOTELS HAKATA HARUSHIGE HONKAN — 캐치플로</title>
-    <link rel="stylesheet" href="../css/tokens.css?v=1783224476">
-    <link rel="stylesheet" href="../css/common.css?v=1783224476">
-    <link rel="stylesheet" href="../css/layout.css?v=1783224476">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783224476">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783224476">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783224476">
+    <link rel="stylesheet" href="../css/tokens.css?v=1783246652">
+    <link rel="stylesheet" href="../css/common.css?v=1783246652">
+    <link rel="stylesheet" href="../css/layout.css?v=1783246652">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783246652">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783246652">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783246652">
+    <script src="../js/backnav.js?v=1783246652"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
+    <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];</script>
+    <script src="../js/engage.js?v=1783246652" defer></script>
 </head>
 <body>
 <div id="wrapper">
+    <script>window.CF_HOTEL={pid:"ChIJUfZ165aRQTUR3d5Snm-UjXk",name:"THE HOTELS HAKATA HARUSHIGE HONKAN",gmap:"https://www.google.com/maps/place/?q=place_id:ChIJUfZ165aRQTUR3d5Snm-UjXk"};</script>
     <main id="container">
         <section id="detail">
             <div class="header">
@@ -202,14 +206,7 @@
                 e.preventDefault();
                 $('html, body').stop().animate({scrollTop: 0}, 400);
             });
-            $('.btn-share').on('click', function(e){
-                e.preventDefault();
-                var data = {title: document.title, url: location.href};
-                if (navigator.share) { navigator.share(data).catch(function(){}); }
-                else if (navigator.clipboard) {
-                    navigator.clipboard.writeText(location.href).then(function(){ alert('링크가 복사되었어요!'); });
-                }
-            });
+            // 공유(.btn-share)는 js/engage.js 에서 처리 (OS 공유시트 + 카카오 인앱 폴백)
 
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
@@ -229,8 +226,17 @@
                         + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
                         + '</div>';
                 }
+                // 링크: 구글은 원본, Booking.com 등은 구글 리뷰로 우회, Trip.com은 원본
+                var linkHtml = '<span></span>';
+                var isBooking = (q.o && q.o.toLowerCase().indexOf('booking') >= 0) || (q.u && q.u.toLowerCase().indexOf('booking.com') >= 0);
+                if (isBooking || (!q.u && window.CF_GREVIEWS)) {
+                    linkHtml = '<a class="orig-link" href="' + esc(window.CF_GREVIEWS) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
+                } else if (q.u) {
+                    var lbl = (q.o === 'Google') ? '구글 리뷰 보기' : '원본 바로가기';
+                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">' + lbl + ' ↗</a>';
+                }
                 var foot = '<div class="item-foot">'
-                    + (q.u ? '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">원본 바로가기 ↗</a>' : '<span></span>')
+                    + linkHtml
                     + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
                     + '</div>';
                 return '<li><div class="item">'
@@ -261,18 +267,20 @@
                 $('#sheet-list').scrollTop(0);
             }
 
+            function closeVisual(){
+                $sheet.removeClass('is-open');
+                $('body').css('overflow', '');
+                setTimeout(function(){ $sheet.prop('hidden', true); }, 300);
+            }
             function open(cat, sub){
                 curCat = cat; curSub = sub || null;
                 render();
                 $sheet.prop('hidden', false);
                 requestAnimationFrame(function(){ $sheet.addClass('is-open'); });
                 $('body').css('overflow', 'hidden');
+                if (window.CFNav) CFNav.push(closeVisual);  // 뒤로가기로 시트만 닫힘
             }
-            function close(){
-                $sheet.removeClass('is-open');
-                $('body').css('overflow', '');
-                setTimeout(function(){ $sheet.prop('hidden', true); }, 300);
-            }
+            function close(){ if (window.CFNav) CFNav.pop(); else closeVisual(); }
 
             $(document).on('click', '.stat-count.has-reviews', function(){
                 open($(this).data('cat'), $(this).data('sub'));
