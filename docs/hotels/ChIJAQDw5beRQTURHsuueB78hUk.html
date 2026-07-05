@@ -1,0 +1,879 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>리치몬드 호텔 하카타 에키마에 — 캐치플로</title>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783224476">
+    <link rel="stylesheet" href="../css/common.css?v=1783224476">
+    <link rel="stylesheet" href="../css/layout.css?v=1783224476">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783224476">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783224476">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783224476">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="../js/swiper.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <main id="container">
+        <section id="detail">
+            <div class="header">
+                <div class="back"><a href="../search.html"><img src="../img/back.svg" alt="뒤로가기"></a></div>
+            </div>
+            <div class="content">
+                <div class="visual"><img src="../img/hotels/ChIJAQDw5beRQTURHsuueB78hUk.jpg" alt="리치몬드 호텔 하카타 에키마에"></div>
+                <div class="sect information">
+                    <div class="info-top"><div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 3%</div></div></div>
+                    <div class="info-cont">
+                        <div class="name">
+                            <h2 class="name-ko">리치몬드 호텔 하카타 에키마에</h2>
+                            <p class="name-en">リッチモンドホテル博多駅前</p>
+                        </div>
+                        <div class="meta"><span>후쿠오카, JP</span><span>3성급 호텔</span><span class='price'>1박 <b>약 8만원</b></span></div>
+                    </div>
+                    <div class="info-bottom">
+                        <a class="btn-link btn-google" href="https://www.google.com/maps/place/?q=place_id:ChIJAQDw5beRQTURHsuueB78hUk" target="_blank" rel="noopener">
+                            <span class="ico"><img src="../img/google.svg" alt=""></span>
+                            <span class="txt"><span class="label">구글 평점 4.1</span><span class="count">(989개)</span></span>
+                        </a>
+                        <a class="btn-link btn-audit" href="#risk-detail">
+                            <span class="ico"><img src="../img/audit.svg" alt=""></span>
+                            <span class="txt"><span class="label">분석 리뷰 379개</span><span class="count">AI 분석 리포트</span></span>
+                        </a>
+                    </div>
+                </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div>
+            <div class="desc">6-17 Hakataekichuogai, Hakata Ward, Fukuoka, 812-0012 일본 · 1박 약 8만원 (10만원 미만 가격대)</div></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5881080,130.4220636&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="리치몬드 호텔 하카타 에키마에 지도"></iframe></div>
+            <a class="map-link" href="https://www.google.com/maps/place/?q=place_id:ChIJAQDw5beRQTURHsuueB78hUk" target="_blank" rel="noopener">구글 지도 앱에서 열기 ↗</a>
+        </div>
+                
+        <div class="sect disappear">
+            <div class="head">
+                <div class="tit">이 호텔에서 실망할 확률</div>
+                <div class="num">3%</div>
+                <div class="txt">후쿠오카 평균(<span>12%</span>)보다 안심할 수 있는 수준이에요 <br>최근 투숙객 100명 중 <span>3명</span>이 심각한 문제를 언급했어요</div>
+            </div>
+            <div class="gauge">
+        <div class="bar">
+            <div class="pointer" style="left:calc(14.3% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
+        </div>
+        <div class="label">
+            <span>우수</span>
+            <span class="analysis">평균 12%</span>
+            <span>위험</span>
+        </div>
+    </div>
+            <div class="result">
+        <div class="text">모든 카테고리가 <span>후쿠오카 평균 수준 이하</span>로 <br>관리되고 있는 호텔이에요 👍</div>
+        <div class="tags"><div class="tags-item">#허위 위치 정보 양호</div><div class="tags-item">#소통 불가 양호</div><div class="tags-item">#해충/곰팡이 양호</div><div class="tags-item">#주변 치안 양호</div></div>
+    </div>
+            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 379건 · 기준 2026년 3월</div>
+        </div>
+        <div class="sect risk">
+            <div class="head"><div class="title">카테고리별 위험도</div>
+            <div class="desc">후쿠오카 평균 = 50 · 3배 나쁘면 100</div></div>
+            <div class="chart"><canvas id="radar"></canvas>
+                <div class="custom-legend">
+                    <div class="legend-item legend-hotel"><span class="legend-symbol"></span><span class="hotel-text">리치몬드 호텔 하카타 에키마에</span></div>
+                    <div class="legend-item legend-average"><span class="legend-symbol"></span><span class="hotel-text">후쿠오카 평균</span></div>
+                </div>
+            </div>
+            <script>
+            document.addEventListener('DOMContentLoaded', function(){
+                var ctx = document.getElementById('radar').getContext('2d');
+                new Chart(ctx, {
+                    type: 'radar',
+                    data: {
+                        labels: ["위생 경보", "오감 지옥", "시설 사기단", "동선 파괴자", "불친절 레이더", "안전 그림자"],
+                        datasets: [
+                            {label: '리치몬드 호텔 하카타 에키마에', data: [31, 27, 40, 17, 23, 21], fill: true,
+                              backgroundColor: 'rgba(141,91,253,0.15)', borderColor: '#8D5BFD',
+                              pointBackgroundColor: '#8D5BFD', pointRadius: 3, borderWidth: 2},
+                            {label: '후쿠오카 평균', data: [50,50,50,50,50,50], fill: false,
+                              borderColor: '#CCCCCC', borderDash: [4,4], pointRadius: 0, borderWidth: 1}
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {legend: {display: false}, tooltip: {enabled: false}},
+                        scales: {r: {angleLines: {color: '#efefef'}, grid: {color: '#efefef'},
+                            suggestedMin: 0, suggestedMax: 100,
+                            ticks: {stepSize: 25, backdropColor: 'transparent', font: {size: 10}},
+                            pointLabels: {font: {size: 12, weight: '600'}, color: '#232323'}}}
+                    }
+                });
+            });
+            </script>
+        </div>
+        <div class="sect analysis" id="risk-detail">
+            <div class="head"><div class="title">리스크 상세 분석</div>
+            <div class="desc">대분류 6개 · 소분류 20개 전체 — 숫자는 위험도(0~100), 후쿠오카 평균이면 50이에요</div></div>
+            <div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">🧼</span>위생 경보</div>
+                    <div class="cat-score is-safe">양호 · 위험도 31<span class="pctl"> · 후쿠오카 상위 27%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">침구/바닥 청결</div><div class="keywords">얼룩 · 머리카락 · 먼지</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:13%"><i class="bubble">13</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="위생 경보" data-sub="침구/바닥 청결">6건</button>
+                </li><li class="stat-row is-warning">
+                    <div class="stat-info"><div class="factor">청소 서비스</div><div class="keywords">청소 불량 · 쓰레기 방치</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:55%"><i class="bubble">55</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="위생 경보" data-sub="청소 서비스">14건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">해충/곰팡이</div><div class="keywords">벌레 · 빈대 · 곰팡이</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:6%"><i class="bubble">6</i></div></div>
+                    <span class="stat-count zero">0건</span>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">多多</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:100%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">엘리베이터 바닥 카펫은 <span>먼지투성이</span>라 매일 청소를 안 하는 건가요?!</div>
+                <div class="date">2026. 02. 01 · 청소 서비스</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>위생 상태가 좋지 않습니다</span>.</div>
+                <div class="date">2025. 12. 20 · 청소 서비스</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">3일동안 <span>청소는 한번도 하지않고</span> 침구류만 정리한다</div>
+                <div class="date">2025. 12. 10 · 청소 서비스</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>어매니티는 직접 챙겨야하는 번거로움</span>이 있습니다.</div>
+                <div class="date">2025. 12. 04 · 청소 서비스</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">비위생적인 <span>낡은 슬리퍼를 사용하도록 강요</span>하며, 세척이나 소독된 <span>밀봉 포장이 전혀 없었습니다</span>.</div>
+                <div class="date">2025. 11. 21 · 청소 서비스</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">光一</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">어메니티는 최소한이었고, 적어도 <span>커피나 차, 생수는 객실에 상비</span>해 두었으면 좋겠습니다.</div>
+                <div class="date">2025. 10. 20 · 청소 서비스</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="위생 경보"><strong>위생 경보</strong> 리뷰 전체보기 (20건)</button></div>
+            </div><div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">👂</span>오감 지옥</div>
+                    <div class="cat-score is-safe">양호 · 위험도 27<span class="pctl"> · 후쿠오카 상위 19%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">벽간/외부 소음</div><div class="keywords">옆방 소리 · 도로 소음</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:17%"><i class="bubble">17</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="오감 지옥" data-sub="벽간/외부 소음">6건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">악취 역류</div><div class="keywords">하수구 · 담배 · 곰팡내</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:29%"><i class="bubble">29</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="오감 지옥" data-sub="악취 역류">9건</button>
+                </li><li class="stat-row is-warning">
+                    <div class="stat-info"><div class="factor">기기 소음</div><div class="keywords">에어컨 · 냉장고 소음</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:55%"><i class="bubble">55</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="오감 지옥" data-sub="기기 소음">5건</button>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Kanchana Sinbumrung</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:40%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>담배 연기 냄새가 너무 압도적</span>이라 세 명 모두 힘들었고, 특히 저는 <span>심한 두통</span>을 느끼며 깼습니다.</div>
+                <div class="date">2025. 11. 30 · 악취 역류</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">방에서 <span>담배 냄새</span>가 났습니다.</div>
+                <div class="date">2025. 09. 14 · 악취 역류</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">울랄라짱가</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>담배냄새 꿉꿉한 곰팡내</span>가 많이 스며있네요. 화장실도 ... <span>꿉꿉한 냄새</span>가</div>
+                <div class="date">2025. 09. 08 · 악취 역류</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">방에 <span>담배 냄새가 너무 심했고</span>, 공기청정기를 하루 종일 돌려도 <span>담배 냄새가 났습니다</span>.</div>
+                <div class="date">2025. 05. 04 · 악취 역류</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">mi ta</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>벽이 얇은 데다</span> 복도에서 큰 소리로 떠드는 소리가 다 들려서 <span>시끄러웠고 잠을 잘 수 없었습니다</span>.</div>
+                <div class="date">2024. 07. 30 · 벽간/외부 소음</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Mountain “SIK6SIK6”</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">복도와 방 안이 <span>심한 담배 냄새로 가득 찼고</span> 악몽 같았습니다.</div>
+                <div class="date">2024. 06. 21 · 악취 역류</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="오감 지옥"><strong>오감 지옥</strong> 리뷰 전체보기 (20건)</button></div>
+            </div><div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">🏚️</span>시설 사기단</div>
+                    <div class="cat-score is-safe">양호 · 위험도 40<span class="pctl"> · 후쿠오카 상위 30%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">공간/노후화</div><div class="keywords">비좁음 · 낡은 시설</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:44%"><i class="bubble">44</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="시설 사기단" data-sub="공간/노후화">70건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">냉난방/수압</div><div class="keywords">냉난방 불량 · 수압 약함</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="시설 사기단" data-sub="냉난방/수압">7건</button>
+                </li><li class="stat-row is-warning">
+                    <div class="stat-info"><div class="factor">네트워크/TV</div><div class="keywords">와이파이 · TV 불량</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:50%"><i class="bubble">50</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="시설 사기단" data-sub="네트워크/TV">8건</button>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">낡고 관리가 안 됨, <span>사진보다 훨씬 낡았고</span> 예약한 26평미가 아닌 <span>24평미 방</span>이었습니다.</div>
+                <div class="date">2025. 05. 02 · 공간/노후화</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">醤油の魔神</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:80%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>매우 낡았고 욕실 바닥이 푹 꺼져 있었습니다</span>.</div>
+                <div class="date">2024. 12. 30 · 공간/노후화</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">David Fung</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:20%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>창문 없는 방</span>에 사는 것과 같았고, 방이 <span>낡고 시설이 노후화</span>되었습니다.</div>
+                <div class="date">2024. 11. 13 · 공간/노후화</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Hiro A</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:20%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>와이파이 상태가 형편없고</span>, 한 시간에 한 번은 <span>회선이 끊깁니다</span>.</div>
+                <div class="date">2024. 11. 12 · 네트워크/TV</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">JOY JAY</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:80%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">너무 <span>깜깜한 벽뷰</span>라 당황스러웠습니다.</div>
+                <div class="date">2026. 02. 25 · 공간/노후화</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">tze wai pak</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:100%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">세탁기 <span>건조 기능이 비교적 약한</span> 점이 아쉽습니다.</div>
+                <div class="date">2026. 02. 19 · 공간/노후화</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="시설 사기단"><strong>시설 사기단</strong> 리뷰 전체보기 (79건)</button></div>
+            </div><div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">🗺️</span>동선 파괴자</div>
+                    <div class="cat-score is-safe">양호 · 위험도 17<span class="pctl"> · 후쿠오카 상위 8%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">역/거점 접근성</div><div class="keywords">역에서 멀다 · 찾기 어려움</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:10%"><i class="bubble">10</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="동선 파괴자" data-sub="역/거점 접근성">3건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">지형적 난관</div><div class="keywords">언덕 · 계단</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:11%"><i class="bubble">11</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="동선 파괴자" data-sub="지형적 난관">2건</button>
+                </li><li class="stat-row is-warning">
+                    <div class="stat-info"><div class="factor">주변 편의성</div><div class="keywords">편의점 · 식당 없음</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:45%"><i class="bubble">45</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="동선 파괴자" data-sub="주변 편의성">3건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">허위 위치 정보</div><div class="keywords">위치 정보 불일치</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:6%"><i class="bubble">6</i></div></div>
+                    <span class="stat-count zero">0건</span>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">leo隊長</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:100%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">유일한 아쉬움은 가장 가까운 <span>마트가 저녁 8시까지만 영업하고 현금만 가능</span>하다는 점입니다.</div>
+                <div class="date">2026. 03. 11 · 주변 편의성</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">정지희</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:80%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>정수기</span>는 방 근처라 다행이지만 <span>왔다갔다 조금 번거로움</span>.</div>
+                <div class="date">2025. 11. 29 · 주변 편의성</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">지하철역에서 <span>조금 더 걸어야 하는 것</span> 외에는 모든 것이 좋았습니다.</div>
+                <div class="date">2025. 09. 18 · 역/거점 접근성</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Tomy Iwa</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:80%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">입구가 인도와 가까워 <span>눈에 띄지 않아 지나쳐 버렸습니다</span>.</div>
+                <div class="date">2025. 01. 08 · 역/거점 접근성</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">중심가에 위치해 있지만 <span>어떤 곳과도 가깝지 않습니다</span>.</div>
+                <div class="date">2024. 10. 28 · 주변 편의성</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">요도바시카메라 옆이라 <span>생각보다는 역에서 멀어요</span></div>
+                <div class="date">2024. 07. 03 · 역/거점 접근성</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="동선 파괴자"><strong>동선 파괴자</strong> 리뷰 전체보기 (8건)</button></div>
+            </div><div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">💬</span>불친절 레이더</div>
+                    <div class="cat-score is-safe">양호 · 위험도 23<span class="pctl"> · 후쿠오카 상위 8%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">응대 태도</div><div class="keywords">불친절 · 무시</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:21%"><i class="bubble">21</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="불친절 레이더" data-sub="응대 태도">5건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">처리 지연</div><div class="keywords">체크인 지연 · 대기</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:23%"><i class="bubble">23</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="불친절 레이더" data-sub="처리 지연">5건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">사후 대처</div><div class="keywords">보상 거부 · 무대응</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:34%"><i class="bubble">34</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="불친절 레이더" data-sub="사후 대처">4건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">소통 불가</div><div class="keywords">언어 소통 문제</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:6%"><i class="bubble">6</i></div></div>
+                    <span class="stat-count zero">0건</span>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Kanchana Sinbumrung</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:40%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">금연실 3개를 예약했지만 <span>호텔 측에서 제공하지 않았습니다</span>.</div>
+                <div class="date">2025. 11. 30 · 사후 대처</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text"><span>30분 가까이 다툰 끝에</span> 겨우 조식을 얻었지만 <span>일정이 엉망이 되었습니다</span>.</div>
+                <div class="date">2025. 05. 02 · 처리 지연</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">호텔 측은 계속 <span>동일한 방 타입이라고 고집</span>했습니다.</div>
+                <div class="date">2025. 05. 02 · 응대 태도</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Trip.com Member</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="web">Trip.com</div></div>
+            <div class="item-bottom">
+                <div class="text">호텔 측은 <span>방을 바꿔주려 하지 않았습니다</span>.</div>
+                <div class="date">2025. 05. 02 · 사후 대처</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Mountain “SIK6SIK6”</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">금연실을 예약했지만 직원은 <span>흡연실만 가능하다고 했습니다</span>.</div>
+                <div class="date">2024. 06. 21 · 사후 대처</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">mkt</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:100%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">포인트를 사용하려 할 때 <span>카드 사전 결제가 되지 않는 점</span>은 조금 불편합니다.</div>
+                <div class="date">2026. 03. 10 · 처리 지연</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="불친절 레이더"><strong>불친절 레이더</strong> 리뷰 전체보기 (11건)</button></div>
+            </div><div class="cat-group">
+                <div class="cat-head">
+                    <div class="cat-name"><span class="ico">🔒</span>안전 그림자</div>
+                    <div class="cat-score is-safe">양호 · 위험도 21<span class="pctl"> · 후쿠오카 상위 27%</span></div>
+                </div>
+                <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
+                <ul class="stat-list"><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">보안 시설</div><div class="keywords">도어락 · CCTV</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:36%"><i class="bubble">36</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="안전 그림자" data-sub="보안 시설">2건</button>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">주변 치안</div><div class="keywords">밤길 · 우범지대</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:6%"><i class="bubble">6</i></div></div>
+                    <span class="stat-count zero">0건</span>
+                </li><li class="stat-row is-safe">
+                    <div class="stat-info"><div class="factor">사생활 보호</div><div class="keywords">방음 · 프라이버시</div></div>
+                    <div class="stat-track"><div class="stat-fill" style="width:13%"><i class="bubble">13</i></div></div>
+                    <button type="button" class="stat-count has-reviews" data-cat="안전 그림자" data-sub="사생활 보호">1건</button>
+                </li></ul>
+                <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Sora Yahisa</div>
+                <div class="status"><div class="status-item danger">심각</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">캐리어 안의 <span>대만 달러가 기묘하게 사라진 것</span>을 발견했습니다.</div>
+                <div class="date">2025. 09. 21 · 보안 시설</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">sorada kaworu</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:80%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">커튼을 여니 <span>맞은편 호텔 방이 훤히 보여서</span> 놀랐습니다.</div>
+                <div class="date">2024. 12. 14 · 사생활 보호</div>
+            </div>
+        </div></li>
+<li class="swiper-slide"><div class="item">
+            <div class="item-top">
+                <div class="name">Eug Tg</div>
+                <div class="status"><div class="status-item warning">주의</div></div>
+            </div>
+            <div class="item-info"><div class="star"><i style="width:60%"></i></div><div class="web">Google</div></div>
+            <div class="item-bottom">
+                <div class="text">귀중품 보관을 위한 <span>금고가 없습니다</span>.</div>
+                <div class="date">2024. 10. 04 · 보안 시설</div>
+            </div>
+        </div></li></ul></div></div><div class="more"><button type="button" class="more-btn" data-cat="안전 그림자"><strong>안전 그림자</strong> 리뷰 전체보기 (3건)</button></div>
+            </div>
+            <div class="stat-legend">
+                <span class="lg is-danger">위험 70+</span><span class="lg is-warning">주의 45~70</span><span class="lg is-safe">양호 ~45</span>
+                <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요 · 인용문은 리뷰 원문 발췌입니다</span>
+            </div>
+        </div>
+        <div class="sect recent">
+                <div class="head"><div class="title">구글 별점 분포</div>
+                <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 5%</b> 입니다.</div>
+                <div class="count">총 294건</div></div>
+                <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:2%"></i></div><div class="per">2%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:3%"></i></div><div class="per">3%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:12%"></i></div><div class="per">12%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:33%"></i></div><div class="per">33%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:51%"></i></div><div class="per">51%</div></li></ul></div>
+            </div>
+        <div class="review-sheet" id="review-sheet" hidden>
+            <div class="sheet-dim"></div>
+            <div class="sheet-panel">
+                <div class="sheet-head">
+                    <div class="sheet-grab"></div>
+                    <div class="sheet-title">
+                        <button type="button" class="sheet-nav" id="sheet-prev" aria-label="이전 카테고리">‹</button>
+                        <span class="tit"><span id="sheet-cat"></span> 리뷰 <span class="cnt" id="sheet-cnt"></span></span>
+                        <button type="button" class="sheet-nav" id="sheet-next" aria-label="다음 카테고리">›</button>
+                    </div>
+                    <button type="button" class="sheet-close" aria-label="닫기">✕</button>
+                    <div class="sheet-chips" id="sheet-chips"></div>
+                    <div class="sheet-sort">심각도 · 최신순</div>
+                </div>
+                <ul class="sheet-list" id="sheet-list"></ul>
+            </div>
+        </div>
+        <script>
+        window.QDATA = {"위생 경보": [{"s": "청소 서비스", "g": "주의", "q": "엘리베이터 바닥 카펫은 **먼지투성이**라 매일 청소를 안 하는 건가요?!", "d": "2026-02-01", "n": "多多", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGR1NpMVJaMmcxVW5OM1JVMUthM1pzU2tWcmFGRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjFGSi1RZ2g1UnN3RU1Ka3ZsSkVraFE%7C%7C?hl=ko", "tf": "1 월 또 머무는 업데이트 감상 :\n1층 엘리베이터 앞에\n이니야의 CM 모니터\n새로 두고\n매우 방해라고 생각합니다.\n비좁은 공간이 될 것입니다.\n\n가끔 먹으러 가면\n레몬 스테이크는\n얇은 쇠고기로\n그것도 스테이크로 읽고 있습니까?\n샐러드 바도 또 하나 부족한 느낌으로\n매우 실망했습니다.\n\n아주 좋아하는 호텔입니다.\n여러 번 묵었습니다.\n그러나\n한 가지 말하고 싶은 일이 있다면\n엘리베이터 바닥 카펫은\n청소하고 싶습니다.\n이른 아침에도\n심야에서도 눈에 띄는 먼지 투성이로\n매일도 No Cleaning?!", "of": "一月また泊まるの更新感想:\n一階のエレベーター前に\nいねやのCMモニターが\n新しく置いてて\nとても邪魔だと思うんです\n窮屈なスペースになっちゃいます\n\n實際に食べに行ったら\nレモンステーキは\n薄い牛肉で\nあれもステーキと読んでるんですか\nサラダバーももうひとつ足りない感じで\nとてもがっかりしたんです\n\nとても大好きなホテルです\n何度も泊まりました\nでも\n一つ言わせたいことがあれば\nエレベーター床のカーペットは\n掃除してほしいです\n早朝でも\n深夜でも目立つのホコリだらけで\n毎日も  No Cleaning ?!"}, {"s": "청소 서비스", "g": "주의", "q": "**위생 상태가 좋지 않습니다**.", "d": "2025-12-20", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "방은 가구가 부실했고, 침대 위치도 부적절했으며, 위생 상태도 좋지 않았습니다.", "of": "房內設施不足, 睡床安置不好, 衛生情況不太好"}, {"s": "청소 서비스", "g": "주의", "q": "3일동안 **청소는 한번도 하지않고** 침구류만 정리한다", "d": "2025-12-10", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "하카타역에서 5분정도 거리에 있어 위치는 좋으나 호텔 숙박비에 비해 물도 제공이 되지않으나 어메니티는 직접 가져다 쓸수 있는데 가져갈수 있는 종류는 많다 3박 했는데 3일동안 청소는 한번도 하지않고 침구류만 정리한다"}, {"s": "청소 서비스", "g": "주의", "q": "**어매니티는 직접 챙겨야하는 번거로움**이 있습니다.", "d": "2025-12-04", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "혼자자기엔 넓고 좋습니다 29인치캐리어 펼칠수 있었어요모두들 넘 친절하시고 어매니티는 직접 챙겨야하는 번거로움이 있습니다. 위치는 하카타역이랑 가까워서 좋았습니다."}, {"s": "청소 서비스", "g": "주의", "q": "비위생적인 **낡은 슬리퍼를 사용하도록 강요**하며, 세척이나 소독된 **밀봉 포장이 전혀 없었습니다**.", "d": "2025-11-21", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "객실은 다소 작았지만 기본적인 서비스는 괜찮았습니다. 하지만 일회용 슬리퍼가 제공되지 않아 실망스러웠습니다. 프런트 데스크에 문의했더니 없다고 해서 결국 다이소에 가서 직접 사야 했습니다. 호텔 측은 환경 보호를 명분으로 비위생적인 낡은 슬리퍼를 투숙객에게 제공했는데, 그 슬리퍼는 깨끗하게 소독되지도 않았고 밀봉된 포장 상태도 아니었습니다. 어떻게 투숙객들이 안심하고 사용할 수 있겠습니까?", "of": "房間比較細，基本服務正常。令人失望的是沒有提供即棄拖鞋，去前台要求也是回覆沒有，只能自己去daiso買。酒店以環保為名，逼客人使用不衛生的舊拖鞋，但是拖鞋根本沒有已清潔及已消毒的密封包装，如何令客人安心使用？"}, {"s": "청소 서비스", "g": "주의", "q": "어메니티는 최소한이었고, 적어도 **커피나 차, 생수는 객실에 상비**해 두었으면 좋겠습니다.", "d": "2025-10-20", "n": "光一", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tsZkxWZDVMVTFKY3pOMGMzSlJlazFyWm5ST1VHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOklfLVd5LU1JczN0c3JRek1rZnROUGc%7C%7C?hl=ko", "tf": "입지 조건이 좋아 인바운드 탓인지, 연박한 일도 있어 숙박비는 높게 느꼈습니다. 프런트의 접객은 좋습니다, 설비 관련은 노후화가 부정하지 않네요.\n제가 숙박한 방은 콘센트는 사용할 수 있었습니다만 빗나가고 있었고, 샤워의 걸쇠도 빗나갔습니다. 방의 커튼 열면, 빌딩의 벽에서 아무런 풍정도 없이 죄수 방이라고 생각할 정도로, 여기는 정말로 유감이었습니다.\n어메니티는 필요 최소한으로, 적어도 커피나 차에 미네랄 워터는 방에 상비해 주었으면 했다. 칫솔은 방에 없고, 프런트나 각층의 엘리베이터 앞에 있기 때문에 주의.\n나는 근처의 편의점과 마츠키요에서 갖추었습니다.맥주 등도 마찬가지입니다.\n아침 식사는 인접하고 있습니다. 여러 종류의 선물에 대만족입니다. 뷔페와 달리 어당지 요리를 선택할 수 있는 것은 아침부터 감동했습니다. 덧붙여서 샐러드 바도 있고, 지나가면 아침부터 가득합니다.\n그리고 방에서 담배를 피우는 것이 도움이되었습니다.", "of": "立地条件が良くインバウンドのせいか、連泊した事もあり宿泊費は高めに感じました。フロントの接客は良いです、設備関連は老朽化が否めずですね。\n私が宿泊した部屋はコンセントは使えましたが外れかけていましたし、シャワーの留め具も外れかけてました。部屋のカーテン開けると、ビルの壁で何の風情も無しで囚人部屋かと思うほど、ここは本当に残念でした。\nアメニティは必要最低限で、せめて珈琲やお茶にミネラルウォーターは部屋に常備して欲しかった。歯ブラシは部屋に無く、フロントか各階のエレベーター前に有りますので注意。\n私は近くのコンビニとマツキヨで揃えました、ビール等も同じくです。\n朝食は隣接しているいねや、数種類ある御膳に大満足です。ビュッフェと違い、御当地料理が選べるのは朝から感動しました。因みにサラダバーも有り、取り過ぎると朝から満腹です。\nあと、部屋で煙草が吸えるのが助かりました。"}, {"s": "청소 서비스", "g": "주의", "q": "**파자마는 교체되지 않았습니다**.", "d": "2025-10-18", "n": "小室広昭", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25KVWQwODBjbkZzVGpNdGVVNXBhbkJ5TjBGTk4xRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnJUd080cnFsTjMteU5panByN0FNN1E%7C%7C?hl=ko", "tf": "우선 체크인의 QR코드가 보내져 왔기 때문에 그래서 체크인기를 사용해 체크인했지만, 조식권은 발행되지 않고, 프런트에서 건네는 것. 무엇에 대한 QR 코드를 모르겠어요. 어메니티도 아무것도 듣지 않기 때문에 그대로 방에 갔지만 프런트 옆에서 각자 가지고 간다는 것으로, 목욕 후 프런트까지 갔다. 안내되는 것에 체재중의 청소는 실시하지 않는다고 써 있었으므로, 다음날 아침 소중한 일의 전화를 하고 있었는데, 청소계로부터 전화가 와서 청소는 어떻게 할까라고 들려, 일을 방해되어 매우 폐를 끼쳤다. 청소하지 않는다고 써 있던 것은 무엇인가. 방해하지 말라는 느낌. 물었기 때문에 수건 교환을 부탁했지만 잠옷은 교환되지 않았습니다. 그 정도 신경을 쓰자는 느낌. 해야 할 일이 너무 어리석다.", "of": "まずチェックインのQRコードが送られてきたのでそれでチェックイン機を使用してチェックインしたが、朝食券は発行されず、フロントで手渡しとのこと。何のためのQRコードかわからず。アメニティのことも何も聞かされないのでそのまま部屋に行ったがフロント横で各自持っていくとのことで、入浴後にフロントまで行かされた。ご案内なるものに滞在中の清掃は行わないと書いてあったので、翌朝大事な仕事の電話をしていたところ、清掃係から電話が来て清掃はどうするかと聞かれ、仕事を邪魔されて非常に迷惑した。清掃しないと書いてあったのは何なのか。邪魔するなという感じ。聞かれたのでタオルの交換をお願いしたが、パジャマは交換されていなかった。そのくらい気を利かせろという感じ。やることなすこと中途半端すぎる。"}, {"s": "청소 서비스", "g": "주의", "q": "다만 **서비스 물품이 좀 부족**ㅠㅠ", "d": "2025-10-14", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "거리감은 있지만 그래도 괜찮은곳입니다 여기로 와서 숙박하셔도 하카타에서는 상급일것 같아요 다만 서비스 물품이 좀 부족ㅠㅠ"}, {"s": "침구/바닥 청결", "g": "주의", "q": "**먼지 쌓인 곳들**이 좀 있어요.", "d": "2025-09-05", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "위치 좋고 공간 사이즈도 괜찮습니다. 하지만 먼지 쌓인 곳들이 좀 있어요."}, {"s": "침구/바닥 청결", "g": "주의", "q": "**변기는 청소 상태가 살짝 부족**", "d": "2025-06-28", "n": "maybe maybe", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pjMFltUnFVRE5LWVVKbWVFMHlPVFkzUlc1ak0xRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjc0YmRqUDNKYUJmeE0yOTY3RW5jM1E%7C%7C?hl=ko", "tf": "", "of": "년식은 느껴지지만(변기는 청소 상태가 살짝 부족) 그외 깔끔하고 3일째되는날 침대시트까지 싹 교체해 줘서 좋아요.위치가 너무 좋아요."}, {"s": "청소 서비스", "g": "주의", "q": "**오래된 물때**가 있는 거울을 시트지로 가려놓았지만", "d": "2025-06-27", "n": "Pieri Arexsandro", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2psSlZWVmpUamxsWkZKV05YZGhTeTFhU20xSWFVRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjlJVVVjTjllZFJWNXdhSy1aSm1IaUE%7C%7C?hl=ko", "tf": "", "of": "체크인시.기념일챙겨주시네요 시나몬케익 맛있게.먹었습니다\n오래된물때 거울이 시트지로 가려놓았지만 열선 내장된 거울이라 샤워후 거울보기 좋습니다\n공기청정기 물채워서 사용하시면 좋습니다\n창문열리고 냉난방 사용법 사용안내서 한글로 주십니다 티비 캐스트기능 잘되고 넷플 유툽 다됩니다\n저녁 늦게 외이파이 잘안터지는거 말고는 좋습니다\n레이트.체크아웃 시간당 1000엔 2시까지 가능합니다 프론트에 문의 하세요"}, {"s": "청소 서비스", "g": "주의", "q": "**3일마다 청소(강제)**를 합니다.", "d": "2025-06-23", "n": "nongluk untravate", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xsSWVURjZNelJOTW1oS05GaGZVMU13V2pkdFMwRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOllIeTF6MzRNMmhKNFhfU1MwWjdtS0E%7C%7C?hl=ko", "tf": "8\n\"좋은 객실, 기차역과 가까움.\"\n객실은 편의시설이 잘 갖춰져 있어 좋았습니다. 청소는 3일에 한 번씩 (의무적으로) 진행됩니다. TV에는 넷플릭스와 유튜브가 있지만 구독이 필요하며, 구독하지 않으면 추가 요금이 부과됩니다. 조식은 정해진 메뉴로 맛있지만, 메뉴가 반복적입니다. 객실에는 생수가 없지만, 1층과 8층에 자판기가 있습니다. 8층에는 얼음, 전자레인지, 세탁기가 있습니다. 보안은 철저하며, 엘리베이터를 이용하려면 객실 카드를 스캔한 후 원하는 층을 선택해야 합니다. 위치는 기차역에서 도보로 5~10분 거리에 있어 괜찮습니다. 호텔 옆에는 다양한 상점이 있는 쇼핑몰이 있습니다.", "of": "8\n“ห้องดี ใกล้สถานีรถไฟ”\nห้องดี มีของใช้ครบ ทำความสะอาดทุก 3 วัน(บังคับ) โทรทัศน์มี Netflix YouTube ให้ดูแต่ต้องเป็นสมาชิกอยู่แล้ว ไม่งั้นเสียเงิน อาหารเช้ามีให้เลือกเป็นเซต อร่อยแต่มีเมนูเดิมๆให้เลือก น้ำดื่มไม่มีในห้องแต่มีตู้กดชั้นล่างกับชั้น 8 น้ำแข็ง ไมโครเวฟ เครื่องซักผ้ามีอยู่ชั้น 8 ความปลอดภัยดีระดับรึงตอนเข้าลิฟต์ต้องใช้บัตรห้องสแกนก่อนถึงกดชั้นได้ ส่วนที่ตั้งโอเคใกล้สถานีเดินประมาณ 5-10 นาที ด้านข้างโรงแรมเป็นห้างมีของเยอะ"}, {"s": "청소 서비스", "g": "주의", "q": "커피 머신 등을 위한 **물이 준비되어 있지 않아** 아쉬웠습니다.", "d": "2025-05-04", "n": "奥村亜希", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUNZX3ZlckF3EAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgMCY_verAw%7C%7C?hl=ko", "tf": "스탭 분의 대응도 텍파키하고 있어, 어메니티의 설명도 확실히 해 주었습니다.\n이 날은 예약한 방이 아니고, 방이 비었기 때문에와 넓은 방으로 변경해 주었습니다.\n소파가 있어, 매우 청결감이 있어 느긋하게 보낼 수 있는 방이었습니다.\n\n다음날 아침 체크아웃하기 전에 제 컨디션이 나빠져 구급차를 부르게 되어 버려, 그 때도 신속하게 대응해 주셨습니다.\n나중에 들은 이야기라면, 청소 분도 「뭔가 도와 드릴까요?」라고 데리고 들어 주셨다고 하고, 그 절은 걱정 포함 정말로 감사합니다.\n후쿠시마에서도 리치몬드 호텔 씨에게 기분 좋은 대응을 받은 적이 있었기 때문에, 또 다음 번도 이쪽의 호텔을 이용하고 싶습니다.\n\n하나 말해 주셨다면, 커피 메이커 등 설비가 확실히 하고 있었는데, 그것을 위한 물이 준비되어 있지 않은 것이 유감스럽게 생각했습니다.", "of": "スタッフの方の対応もテキパキしていて、アメニティの説明もしっかりしてくれました。\nこの日は予約した部屋ではなく、お部屋が空いたのでと広いお部屋に変更してくれました。\nソファがあり、とても清潔感があってゆったり過ごせるお部屋でした。\n\n翌朝チェックアウトする前に私の体調が悪くなり救急車を呼んでもらうことになってしまい、その際も迅速に対応してくださいました。\nあとから聞いた話だと、清掃の方も「何かお手伝いしましょうか？」と連れに聞いてくださっていたそうで、その節はお気遣い含め本当にありがとうございました。\n福島でもリッチモンドホテルさんに気持ち良い対応をしてもらったことがあったので、また次回もこちらのホテルを利用したいです。\n\nひとつ言わせていただくとしたら、コーヒーメーカーなど設備がしっかりしていたのに、そのためのお水が用意されていなかったのが残念に思いました。"}, {"s": "침구/바닥 청결", "g": "주의", "q": "카페트에 **명확한 얼룩**이 있었습니다.", "d": "2025-05-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 낡고 관리가 제대로 되어 있지 않았으며, 카펫에는 얼룩이 눈에 띄게 많았습니다. 사진과는 달리 실제 모습은 훨씬 새롭고 깨끗했습니다. 두 번째로 묵었던 호텔보다 더 비싼 가격을 지불하고 26제곱미터 크기의 방을 예약했는데, 도착해 보니 예상했던 방과는 전혀 달랐습니다. 다른 사람들에게 물어보니 24제곱미터 크기의 방이었다고 하더군요. 트립닷컴 문제인지 호텔 문제인지 모르겠지만, 호텔 측에서는 같은 방이라고 주장하며 방을 바꿔주지 않았습니다. 거의 30분 동안 실랑이를 벌인 끝에 겨우 아침 식사와 다음 날 방 변경을 받았지만, 기다린 시간을 포함해 모든 과정이 이미 여행 일정에 차질을 빚었습니다. 게다가 2박을 예약했는데, 업그레이드나 일반 방으로 바꿔주기는커녕 오히려 더 낮은 등급의 방으로 바뀌었습니다. 다시 방을 바꾸면 더 나쁘거나 문제가 있는 방을 받을까 봐 걱정됩니다. 온천 호텔과 토요일 밤에 묵었던 호텔을 제외하면, 이 호텔은 이번 여행에서 묵었던 세 곳의 호텔 중 가장 비싸고 최악이었다.", "of": "殘舊，保養不佳，地毯有明顯污漬，相片明顯比現場新淨。我付出比第二間酒店更多錢，訂了26平米房間，上房後發現明顯不符，下樓問清楚後，說是24平米房間。我不清楚到底是trip.com 還是酒店問題，但酒店一直堅持是同等房型，不願意換房。我嘈了將近30分鐘，才爭取回一餐早餐及第二晚可以換房，但一上一落，其他時間等，已經打亂我的行程。加上我訂兩晚房，不但沒upgrade 或給我正常房間，反而更給我降級，我亦不敢再換房間，恐防給我更差或有問題的房間。此次旅程除了溫泉酒店及星期六晚入住，是我其他三間酒店最貴，亦是最差的酒店。"}, {"s": "침구/바닥 청결", "g": "주의", "q": "**침구가 넘 불편했어요.. (눅눅한느낌)** 객실만들어가면 **비염도 심해지고**", "d": "2025-03-24", "n": "지현", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUR3OU5MVUx3EAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgMDw9NLULw%7C%7C?hl=ko", "tf": "", "of": "침구가 넘 불편했어요.. (눅눅한느낌)\n객실만들어가면 비염도 심해지고ㅠ\n화장실은 깨끗해요"}, {"s": "청소 서비스", "g": "주의", "q": "복도나 엘리베이터 홀에 **청소 도구나 리넨 왜건, 쓰레기 봉투 등이 놓여 있어**", "d": "2025-02-25", "n": "ルパン・ザ・ドッグ", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURnM3ZiNzN3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgMDg3vb73wE%7C%7C?hl=ko", "tf": "【2025년 2월】\n리치몬드 호텔은 전국 곳곳에서 이용하고 있으므로 이번 역에서도 가까운 여기를 선택했습니다.\n여기의 점포명은 하카타역 앞이 되어 있습니다만, 500미터 정도 떨어져 있으므로 역의 개찰구로부터는 걸어 10분 정도 걸렸습니다.\n이 날은 삼연휴의 마지막 날이었습니다만, 예약한 방의 청소가 끝났다고 하는 것으로, 본래의 체크인 타임인 14:00보다 조금 일찍 체크인을 할 수 있었습니다.\n이러한 재량을 받을 수 있는 것은 매우 고맙고, 숙박하는 입장으로서도 안심하는 서비스입니다.\n모비즈니스호텔체인에서는 호텔 멤버가 되어 있어도, 그 호텔의 체크인 타임의 15:00보다 1분 빨라도 넣어 주지 않는 곳도 있습니다.\n여기는 2003년에 개업이라는 것으로, 약 20년이 경과하고 있습니다만, 객실은 넓이나 조명 컨트롤, 콘센트의 수 등 필요 충분합니다.\n그러나 에어컨의 팬이 어딘가에 닿는 것처럼 작은 카라카라라는 소리가 계속되는 것은 조금 신경이 쓰였습니다.\n에어컨 자체는 개별 공조로 이때의 계절의 난방 성능도 문제 없습니다.\n욕실은 문턱의 단차도 없고 안전도 있습니다. 이 문턱의 단차라고 하는 것은 낡은 호텔에서 욕실을 리뉴얼하면 바닥 위에 병을 싣는 것과 같은 구조로 하기 위해, 문턱이 20센치 이상의 높이가 되는 일도 있어, 이전에 묵은 호텔에서, 잠들어 화장실에 가면 전도할 것 같게 된 적도 있습니다.\n그 외에서는 자판기가 8층의 플로어 밖에 없는 것은, 우선 다른 비즈니스계 호텔에서는 있을 수 없는 불편함이므로 적어도 하나의 플로어에는 전자 레인지, 아이스 머신과 함께 설치해 주었으면 하는 것입니다.", "of": "【2025年2月】\nリッチモンドホテルは全国あちこちで利用しているので今回駅からも近いここを選びました。\nここの店舗名は博多駅前となってはいますが、500メートル程度離れているので駅の改札口からは歩いて10分程度かかりました。\nこの日は三連休の最終日だったのですが、予約した部屋の清掃が終わっているとの事で、本来のチェックインタイムである14:00より少し早めにチェックインができました。\nこのような裁量をしてもらえるのはとてもありがたく、宿泊する立場としてもホッとするサービスです。\n某ビジネスホテルチェーンではホテルメンバーになっていても、そのホテルのチェックインタイムの15:00より１分早くても入れてくれないところもあります。\nここは2003年に開業とのことで、約20年が経過していますが、客室は広さや照明コントロール、コンセントの数など必要充分です。\nただし、エアコンのファンがどこかに接触しているかのような小さなカラカラという音がずっとしているのはやや気になりました。\nエアコン自体は個別空調でこの時の季節の暖房性能も問題ありません。\nバスルームは敷居の段差もなく安全性もあります。この敷居の段差というのは古いホテルでバスルームをリニューアルすると床の上に盥（たらい）を載せるような構造にするため、敷居が20センチ以上の高さになることもあって、以前泊まったホテルで、寝ぼけてトイレに行くと転倒しそうになったこともあります。\nその他では自販機が8階のフロアにしかないのは、まず他のビジネス系ホテルではありえない不便さなので少なくともあとひとつのフロアには電子レンジ、アイスマシンと共に設置してもらいたいものです。\n総合的にはなかなか良いホテルだと思われたのですが、朝７時頃に部屋を出るともう廊下やエレベーターホールにずらっとお掃除用具やリネンのワゴン、ゴミ袋などが置いてあって、チェックアウ"}, {"s": "청소 서비스", "g": "주의", "q": "체크인 시 요청해야만 청소를 해주는 **시스템에 대해 안내받지 못했습니다**.", "d": "2024-10-20", "n": "TPjeffrey", "st": null, "o": "Tripadvisor", "u": "https://www.tripadvisor.com/ShowUserReviews-g14127501-d1054780-r974602261?m=68573&staydates=2026_04_12_2026_04_13&uguests=1_2_0&supdv=desktop&supuc=US&supul=ko", "tf": "10월 15일부터 19일까지 후쿠오카에 있는 리치몬드 호텔 하카타 에키마에에 묵었습니다. 가장 좋았던 점은 호텔의 접근성과 편리함이었습니다. 후쿠오카 공항에서 하카타역까지 전철로 5분밖에 걸리지 않고, 역에서 호텔까지는 걸어서 5~6분이면 도착할 수 있습니다. 쇼핑몰이 가까이 있는 것도 큰 장점이었습니다. 호텔 자체도 깨끗했고, 직원들은 친절하고 따뜻했으며 항상 웃는 얼굴로 손님을 맞이해 주었습니다. ||7층에 있는 작지만 아늑한 객실에 묵었습니다. 세면도구 같은 편의용품은 프런트 데스크에서 제공되어 칫솔 같은 필수품은 걱정할 필요가 없었습니다. 편안한 잠옷 상의도 제공되어 세심한 배려가 좋았습니다. 다만, 객실 청소는 체크인 시 프런트 데스크에 미리 요청하고 부분 청소 또는 전체 청소를 요청해야 한다는 점을 몰랐습니다. 저는 처음에 이 사실을 몰라서 외출 시 자동으로 청소가 될 거라고 생각했습니다. ||한 가지 아쉬운 점은 모든 TV 채널이 국내 채널뿐이라는 것입니다. 해외 케이블 채널을 시청하고 싶은 분들은 실망할 수도 있습니다. 또한 호텔에서 무료 생수를 제공하지 않았는데, 개인적으로는 그런 서비스가 있었으면 좋았을 것 같습니다. 그 점을 제외하면 즐겁고 편안한 숙박이었습니다.", "of": "Stayed at Richmond Hotel Hakata Ekimae in Fukuoka from 15 to 19 Oct. What I appreciated most was the hotel’s accessibility and convenience. It’s just a quick 5-minute train ride from Fukuoka Airport to Hakata Station, followed by an easy 5-6 minute walk to the hotel. The proximity to malls was also a plus. The hotel itself was clean, and the staff were warm and friendly, always greeting guests with a smile.||I stayed on level 7 in a small but cozy room. Amenities like toiletries were available at reception, so there was no need to worry about essentials such as toothbrush. They also provided a comfortable pajamas top, which was a nice touch. However, housekeeping only cleans the room if you inform the front desk at check-in and specify whether you want a partial or full clean-up. I wasn’t "}, {"s": "침구/바닥 청결", "g": "주의", "q": "**침구에 피부가 가렵긴했지만**..", "d": "2024-07-03", "n": "랄라랄라", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNyZ092WXR3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICrgOvYtwE%7C%7C?hl=ko", "tf": "", "of": "뷰는 옆건물 벽이구요\n침구에 피부가 가렵긴했지만..(제피부가 예민한거일수도있어요) 스탠다드싱글룸 28인치 캐리어 펼쳐놔도 넓었습니다.\n위치가 좋아서 또 갈듯싶어용\n그리고 놀러와서 기분 좋은건 알겠는데 밤11시 넘어서 고성자제해주세요 한국인분들....."}, {"s": "침구/바닥 청결", "g": "주의", "q": "이불 커버가 제대로 씌워져 있지 않았고, **이불이 노출되어 있었는데 오래된 듯 노란색**이었습니다.", "d": "2024-05-05", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "위치는 지하철역에서 5분도 채 안 걸리는 환상적인 곳입니다. 기본적인 편의시설과 세면도구도 편리하게 이용할 수 있도록 준비되어 있습니다. 다만, 이불 커버가 제대로 씌워져 있지 않아 이불 속이 그대로 드러나 있었고, 오래 사용한 듯 누렇게 변색되어 있었습니다. 그 점을 제외하면 모든 것이 훌륭했습니다.", "of": "位置真的超棒的， 離地鐵站只需5分鐘以內設施基本， 衛生商品可以自由拿取也很方便但是被套沒裝好， 被子外露發現被子感覺用很久了顏色黃黃的， 除了這個其他感受都很好～"}, {"s": "청소 서비스", "g": "주의", "q": "**객실 청소가 소홀하고** 물과 커피 등 **비품이 보충되지 않았습니다**.", "d": "2024-04-26", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔 위치는 좋았지만 객실 청소 상태가 매우 불량했습니다. 따로 청소하는 공간이 없었고, 침구류만 세탁했습니다. 객실에는 물도 나오지 않았고, 커피도 리필해주지 않았습니다.", "of": "酒店地點都好，但係房間清潔馬虎，沒有清潔乾淨地方，只係執下被鋪，房間沒有水供應，咖啡沒有補充。"}], "오감 지옥": [{"s": "악취 역류", "g": "심각", "q": "**담배 연기 냄새가 너무 압도적**이라 세 명 모두 힘들었고, 특히 저는 **심한 두통**을 느끼며 깼습니다.", "d": "2025-11-30", "n": "Kanchana Sinbumrung", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21RMlZuSjNkRGhvTlRGVE5uVkpiRmxxVlRCSWQwRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmQ2VnJ3dDhoNTFTNnVJbFlqVTBId0E%7C%7C?hl=ko", "tf": "2025년 11월 22일에 금연 객실 3개를 예약했는데, 호텔에서는 제공하지 않았습니다. 담배 냄새가 저희 셋 모두에게 너무 심했습니다. 특히 저는 심한 두통으로 잠에서 깼습니다.", "of": "We had booked 3 non smoking on22Nov2025 , but the hotel didn't provide them .The smell of cigarette smoke was overwhelming for all three of us. I especially woke up with a terrible headache"}, {"s": "악취 역류", "g": "심각", "q": "방에서 **담배 냄새**가 났습니다.", "d": "2025-09-14", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://www.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "하카타역에서 매우 가까워서 위치는 정말 편리했습니다. 토요일에 숙박해서 그런지 가격이 너무 비쌌습니다. 방에서 담배 냄새가 났는데, 금연실이 없어서 어쩔 수 없었습니다. 직원들은 모두 친절하고 도움이 되었습니다. 조식은 기대에 못 미쳤습니다. 일본식 세트 메뉴였는데, 리치몬드 나하 호텔처럼 아이스크림도 무료로 제공되는 전형적인 뷔페식 조식을 기대했던 저로서는 실망스러웠습니다. 가격이 더 저렴하다면 다시 숙박할 의향은 있습니다.", "of": "Very near hakata station, so location very convenient. Price very expensive because we stayed saturday. Room smells cigarette,  no choice because they dont have non smoking room available.  Staff were all kind and helpful. Breakfast not so impressive,  it was a set Japanese style. I was thinking it's the same with Richmond naha were bfast was very good, a typical buffet style with free ice cream but here only ste mebh for breakfast.  I will stay again if lucky to get a better price"}, {"s": "악취 역류", "g": "심각", "q": "**담배냄새 꿉꿉한 곰팡내**가 많이 스며있네요. 화장실도 ... **꿉꿉한 냄새**가", "d": "2025-09-08", "n": "울랄라짱가", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s0NVVEWklaazloYldwNFJFWlhZVXgyV0RBdGFFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOk45UDZIZk9hbWp4REZXYUx2WDAtaEE%7C%7C?hl=ko", "tf": "", "of": "흠…사진은 첨부할 필요없이 객실사진 소개 그대로 입니다.\n좁고 크지않아요.\n\n가족과 함께 하카타역 근처로 잡아야해서 가장 가까운곳에 조식 괜찮다는 곳을 잡았는데. 리치몬드는 동급 호텔들 대비 노후화에따라 다르겠지만.. 딱이정도인 저렴한 곳입니다.\n\n너무 많은 기대는 하지 마시고 오시면 좋을듯합니다.\n\n별점 3점은 시설 노후화 및 냄새때문에 하나씩 뺐습니다.\n\n아이랑 왔기에 금연객실을 원했는데 담배냄새 꿉꿉한 곰팡내가 많이 스며있네요.\n\n화장실도 조립식 화장실로 되어서 밑에서부터 꿉꿉한 냄새 가…환기도 잘 안되고 좋지않아요. 8~90년대 시절 지어진 국내 리조트 같아요.\n\n이곳은 하카타역 근처 가깝고 시설 신경안쓰고 흡연자이시면 좋은 곳입니다. 서비스는 나쁠게 없는곳이라 가격만 저렴하면 충분히 묶을만 한곳이예요. 다만 가족단위는 아이랑은 맞지않습니다. 조식은 쏘쏘입니다.\n\n8층 자판기, 얼음, 전자레인지, 세탁시설이 있어 사용하긴 편합니다"}, {"s": "악취 역류", "g": "심각", "q": "방에 **담배 냄새가 너무 심했고**, 공기청정기를 하루 종일 돌려도 **담배 냄새가 났습니다**.", "d": "2025-05-04", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "하카타역 치쿠시 출구에서 도보로 약 5분 거리에 있습니다. 요도바시는 한적한 곳에 위치해 있습니다. 입구에는 우쇼 용품점이 있고, 주변에 편의점도 여러 곳 있습니다. 요도바시 4층에는 다이소 슈퍼마켓이 있어 매우 편리합니다. 호텔은 위생적입니다. 로비에는 마스크팩, 칫솔, 치약, 화장품이 비치되어 있습니다. 화장솜 등 필요한 물품은 직접 가져가시면 됩니다. 8층에는 음료 자판기, 세탁기, 건조기, 전자레인지가 있습니다. 호텔에서 짐 보관 서비스도 제공합니다. 다만, 예약 시 확인하지 않고 흡연실(좌측)을 예약했는데, 방에서 담배 냄새가 심하게 났습니다. 하루 종일 공기청정기를 틀어놓았는데도 방에 들어갈 때마다 담배 냄새가 났습니다.", "of": "博多站築紫口方向大概5分鐘路程，友都八喜隔離，源途有吾少商鋪，就近已經有幾間便利店，友都八喜4F￼有大創有超市，真係非常方便，酒店衛生良好，大堂有面膜有梳牙刷牙膏化妝棉等等用品可以自取，8F有野飲機有洗衣機乾衣機仲有微波爐，酒店有提供行李寄存服務，可惜訂房冇睇清楚，訂左吸煙房，房間好大煙味，開空氣淨化機吹左一日，入房都係聞到煙味。"}, {"s": "벽간/외부 소음", "g": "심각", "q": "**벽이 얇은 데다** 복도에서 큰 소리로 떠드는 소리가 다 들려서 **시끄러웠고 잠을 잘 수 없었습니다**.", "d": "2024-07-30", "n": "mi ta", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNieTZQa1l3EAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICby6PkYw%7C%7C?hl=ko", "tf": "위치, 객실 청결, 편의 시설, 장비는 확실히 없습니다.\n샤워 수압도 ◎입니다.\n\n다만, 벽이 얇은 것과 손님의 질이 나쁘다.\n하카타이므로 외국인 관광객이 최근 많습니다.\n이른 아침 6시 전이라고 하는데 복도에서 태연하고 외인이 큰 소리로 말하고 있는 것이 둥글게 들려서 시끄러웠습니다.\n그 때문에 일로 하카타에 와서 천천히 쉬고 싶었는데 자지 못했습니다.\n옆방의 책상을 움직이는 것 같은 소리나 방을 출입하는 소리가 크고 신경이 쓰였습니다.", "of": "立地、客室の清潔さ、アメニティ、備品は申し分ありません。\nシャワーの水圧も◎です。\n\nただ、壁が薄いのと、客の質が悪いです。\n博多なので外国人観光客が最近多いです。\n早朝6時前だというのに廊下で平気で外人が大声で喋ってるのが丸聞こえでうるさかったです。\nそのせいで仕事で博多に来てゆっくり休みたかったのに寝れなかったです。\n隣の部屋の机を動かすような物音や部屋を出入りする音が大きくて気になりました。"}, {"s": "악취 역류", "g": "심각", "q": "복도와 방 안이 **심한 담배 냄새로 가득 찼고** 악몽 같았습니다.", "d": "2024-06-21", "n": "Mountain “SIK6SIK6”", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNMcFlxQ0hnEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICLpYqCHg%7C%7C?hl=ko", "tf": "흡연자 전용 호텔이었습니다. 금연실을 예약했는데, 직원은 그날 흡연실밖에 없다고 했습니다. 방에 들어가기도 전에 복도에 담배 냄새가 진동했고, 창문을 열어 환기를 시켜봤지만 밤새 다른 투숙객들이 방에서 담배를 피우면 우리 방에도 심한 담배 냄새가 들어왔습니다. 그 이틀 밤은 악몽 같았습니다. 호텔 위치는 하카타역, 쇼핑몰, 식당과 가까워 좋았지만, 비흡연자인 저는 다시는 이곳에 묵고 싶지 않습니다.", "of": "Hotel for smokers. We booked non-smoking room but the staff told us only smoking room available on that day. Before we enter the room , the smoking smells were full of the corridor , we try to open the window to let some fresh air in but during the night our room will have strong smoking smells when other guests smoke in their rooms, that 2 nights were nightmare....hotel location was good close to Hakata station , shopping malls and restaurants but as a non smoker I wont dare to stay here again."}, {"s": "기기 소음", "g": "주의", "q": "드라이기가 **시끄러워서** 불편합니다.", "d": "2025-12-16", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "TV로 청소 여부 선택하는 부분이 간편하고 좋았음.객실은 깨끗하고 편안했음아쉬운점1. 샴푸 퀄리티가 별로임.2. 일회용 칫솔모가 너무 거칠기 때문에 좀 더 부드러운 칫솔로 바꾸면 좋겠고 드라이어기가 시끄럽고 성능이 안좋음.."}, {"s": "벽간/외부 소음", "g": "주의", "q": "**옆 방 기침 소리도 다 들릴 정도**였습니다.", "d": "2025-12-01", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "위치가 하카타역과 가까워서 다니기 편했습니다.로비가 매우 협소하지만 사용에 불편은 없었고체크인 하는 날에는 한국어가 유창한 매우 친절한 남자 직원분이 계셔서 편했습니다.단점이라면 방음이 거의 안됩니다.주변에 머무는 분들이 다 조용하셔서 방음 문제로 불편하지는 않았지만 옆 방 기침 소리도 다 들릴 정도였습니다.그래도 또 후쿠오카를 간다면 재방문 의사 있습니다^^"}, {"s": "벽간/외부 소음", "g": "주의", "q": "방에 **소음이 좀 있었지만** 전반적인 품질은 괜찮았습니다.", "d": "2025-11-05", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "서비스는 친절했고, 방이 약간 시끄러웠지만 전체적으로 만족스러웠습니다.", "of": "服務周到，房間有點聲，整體而言質素不不錯"}, {"s": "벽간/외부 소음", "g": "주의", "q": "큰 도로가라 **차소리가 조금 시끄럽고**", "d": "2025-09-07", "n": "섬사람이보는세상", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xKSk5WSmxNMnRQYzA5a01UQllkSEJRVDNoRVNtYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOlJJNVJlM2tPc09kMTBYdHBQT3hESmc%7C%7C?hl=ko", "tf": "", "of": "하카타 역 근처라 쇼핑센터 식당이 많아 타 도시로 이동하는 여정이라면 안성맞춤인곳입니다  프론트의 직원들이 친절합니다 특히 여직원분이 너무 친절했습니다\n큰 도로가라 차소리가 조금 시끄럽고 사우나가 없는게 단점이긴 합니다"}, {"s": "기기 소음", "g": "주의", "q": "**에어컨 소리가 너무 컸어요**", "d": "2025-07-21", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "위치 청결 너무 좋은데 시설이 좀 낙후되어예약한 방 중 한개는 에어컨 소리가 너무 컸어요어메니티 자유롭게 가져다 쓰는건 편리했어요"}, {"s": "기기 소음", "g": "주의", "q": "제공되는 헤어드라이기의 **소음이 좀 큽니다**.", "d": "2025-07-11", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "위치가 진짜 최고 매력 하카타역에서 가깝고 요도바시 바로 옆 건물이라 마트 쇼핑하기 매우 좋습니다물은 따로 주지 않고 정수기있는 층에서 떠와야합니다 세탁기도 있어서 아이 있는 분들은 사용해도 좋을것 같아요제공되는 헤어드라이기가 에어건 스타일인데 소음이 좀 큽니다"}, {"s": "악취 역류", "g": "주의", "q": "**냄새는 조금 남**", "d": "2025-05-09", "n": "최영길", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VKT2l3ZkdINnJqak1REAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEJOiwfGH6rjjMQ%7C%7C?hl=ko", "tf": "", "of": "하카역바로앞이라 위치는최고\n냄새는 조금 남"}, {"s": "기기 소음", "g": "주의", "q": "에어컨 팬에서 **작은 달그락거리는 소리**가 계속 나는 것", "d": "2025-02-25", "n": "ルパン・ザ・ドッグ", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURnM3ZiNzN3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgMDg3vb73wE%7C%7C?hl=ko", "tf": "【2025년 2월】\n리치몬드 호텔은 전국 곳곳에서 이용하고 있으므로 이번 역에서도 가까운 여기를 선택했습니다.\n여기의 점포명은 하카타역 앞이 되어 있습니다만, 500미터 정도 떨어져 있으므로 역의 개찰구로부터는 걸어 10분 정도 걸렸습니다.\n이 날은 삼연휴의 마지막 날이었습니다만, 예약한 방의 청소가 끝났다고 하는 것으로, 본래의 체크인 타임인 14:00보다 조금 일찍 체크인을 할 수 있었습니다.\n이러한 재량을 받을 수 있는 것은 매우 고맙고, 숙박하는 입장으로서도 안심하는 서비스입니다.\n모비즈니스호텔체인에서는 호텔 멤버가 되어 있어도, 그 호텔의 체크인 타임의 15:00보다 1분 빨라도 넣어 주지 않는 곳도 있습니다.\n여기는 2003년에 개업이라는 것으로, 약 20년이 경과하고 있습니다만, 객실은 넓이나 조명 컨트롤, 콘센트의 수 등 필요 충분합니다.\n그러나 에어컨의 팬이 어딘가에 닿는 것처럼 작은 카라카라라는 소리가 계속되는 것은 조금 신경이 쓰였습니다.\n에어컨 자체는 개별 공조로 이때의 계절의 난방 성능도 문제 없습니다.\n욕실은 문턱의 단차도 없고 안전도 있습니다. 이 문턱의 단차라고 하는 것은 낡은 호텔에서 욕실을 리뉴얼하면 바닥 위에 병을 싣는 것과 같은 구조로 하기 위해, 문턱이 20센치 이상의 높이가 되는 일도 있어, 이전에 묵은 호텔에서, 잠들어 화장실에 가면 전도할 것 같게 된 적도 있습니다.\n그 외에서는 자판기가 8층의 플로어 밖에 없는 것은, 우선 다른 비즈니스계 호텔에서는 있을 수 없는 불편함이므로 적어도 하나의 플로어에는 전자 레인지, 아이스 머신과 함께 설치해 주었으면 하는 것입니다.", "of": "【2025年2月】\nリッチモンドホテルは全国あちこちで利用しているので今回駅からも近いここを選びました。\nここの店舗名は博多駅前となってはいますが、500メートル程度離れているので駅の改札口からは歩いて10分程度かかりました。\nこの日は三連休の最終日だったのですが、予約した部屋の清掃が終わっているとの事で、本来のチェックインタイムである14:00より少し早めにチェックインができました。\nこのような裁量をしてもらえるのはとてもありがたく、宿泊する立場としてもホッとするサービスです。\n某ビジネスホテルチェーンではホテルメンバーになっていても、そのホテルのチェックインタイムの15:00より１分早くても入れてくれないところもあります。\nここは2003年に開業とのことで、約20年が経過していますが、客室は広さや照明コントロール、コンセントの数など必要充分です。\nただし、エアコンのファンがどこかに接触しているかのような小さなカラカラという音がずっとしているのはやや気になりました。\nエアコン自体は個別空調でこの時の季節の暖房性能も問題ありません。\nバスルームは敷居の段差もなく安全性もあります。この敷居の段差というのは古いホテルでバスルームをリニューアルすると床の上に盥（たらい）を載せるような構造にするため、敷居が20センチ以上の高さになることもあって、以前泊まったホテルで、寝ぼけてトイレに行くと転倒しそうになったこともあります。\nその他では自販機が8階のフロアにしかないのは、まず他のビジネス系ホテルではありえない不便さなので少なくともあとひとつのフロアには電子レンジ、アイスマシンと共に設置してもらいたいものです。\n総合的にはなかなか良いホテルだと思われたのですが、朝７時頃に部屋を出るともう廊下やエレベーターホールにずらっとお掃除用具やリネンのワゴン、ゴミ袋などが置いてあって、チェックアウ"}, {"s": "기기 소음", "g": "주의", "q": "한밤중에 **화장실에서 이상한 소리**가 났습니다.", "d": "2025-02-08", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://www.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "위치는 역과 요도바시 상점에서 가까워서 정말 좋았습니다. 하지만 한밤중에 화장실에서 이상한 소리가 났어요. 무슨 소리였는지는 아직도 모르겠지만 다행히 오래가지는 않았습니다.", "of": "The location is great, quite near the station and Yodobashi shop.But in the midnight, there is a strange noise coming from the bathroom.I still don't know what caused the noise but luckily it didn't last long."}, {"s": "악취 역류", "g": "주의", "q": "**세제 향이 맞지 않는 타입**이라 아쉬웠습니다.", "d": "2024-12-14", "n": "sorada kaworu", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUN2MDV1Qk93EAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICv05uBOw%7C%7C?hl=ko", "tf": "하카타 역에서 가깝고 편리했습니다.\n조금 낡은 느낌이 듭니다만 다음날 묵은 다른 호텔보다 청소가 세심해 안심.\n스탭의 애상도 좋았다. 아침 식사도 맛있었습니다.\n동전 세탁기를 이용했습니다만 세제의 향기가 약한 타입이었던 것이 유감이었습니다. (다른 곳에서는 여기까지 제대로 향기가 붙은 적이 없었다.)\n그리고 커튼 열면 맞은 편의 호텔의 방이 둥근 보이고 놀랐습니다만 이것은 어쩔 수 없네요-.", "of": "博多駅から近くて便利でした。\n少し古い感じがしますが翌日泊まった別のホテルよりも清掃が行き届いていて安心。\nスタッフの愛想も良かった。朝食も美味しかったです。\nコインランドリーを利用したのですが洗剤の香りが苦手なタイプだったのが残念でした。(他所ではここまでしっかり香りが付いたことがなかった。)\nあとカーテン開けたら向かいのホテルのお部屋が丸見えでびっくりしましたがコレは仕方ないですねー。"}, {"s": "악취 역류", "g": "주의", "q": "방에서 **퀴퀴한 냄새**가 납니다.", "d": "2024-11-17", "n": "Han Sheng Ler", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUQzellQZVhBEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgID3zYPeXA%7C%7C?hl=ko", "tf": "기차역 근처예요!\n객실에서 퀴퀴한 냄새가 나요. 하지만 CN에서 항상 공기청정기와 에어컨을 켜서 냄새를 없애주셨어요!\n\n직원들이 친절했고, 영어도 잘 통했습니다.", "of": "It's near the train station!\nRoom has a stale smell. But you CN always switch on the purifier and aircon to clear the smell!\n\nFriendly staff. Speaking English is fine."}, {"s": "악취 역류", "g": "주의", "q": "금연 층임에도 불구하고 **희미하게 담배 냄새**가 났습니다.", "d": "2024-07-12", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "이 호텔은 하카타역에서 가까워 교통이 편리하고 객실도 비교적 넓어 주변 지역 여행에 적합합니다. 다만, 금연층이라고 광고되어 있음에도 불구하고 희미하게 담배 냄새가 납니다.", "of": "酒店位置便利，鄰近博多車站，房間亦較為寬敞，以此作為往來附近地區旅行，是很不錯的選擇，惟房間雖稱為禁煙樓層，仍是隱約嗅到煙味。"}, {"s": "벽간/외부 소음", "g": "주의", "q": "밤 11시 넘어서 **고성자제해주세요**", "d": "2024-07-03", "n": "랄라랄라", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNyZ092WXR3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICrgOvYtwE%7C%7C?hl=ko", "tf": "", "of": "뷰는 옆건물 벽이구요\n침구에 피부가 가렵긴했지만..(제피부가 예민한거일수도있어요) 스탠다드싱글룸 28인치 캐리어 펼쳐놔도 넓었습니다.\n위치가 좋아서 또 갈듯싶어용\n그리고 놀러와서 기분 좋은건 알겠는데 밤11시 넘어서 고성자제해주세요 한국인분들....."}, {"s": "벽간/외부 소음", "g": "주의", "q": "**화장실 바닥 방음이 좋지 않아** 윗층 소리가 다 들립니다.", "d": "2024-03-31", "n": "怒海", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNEd19pQXBBRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICDw_iApAE%7C%7C?hl=ko", "tf": "서비스 직원분들이 정말 친절하세요. 8층에는 자판기와 얼음 기계도 있어서 음료 마시기에 아주 편리합니다. 다만 화장실 바닥 방음이 잘 안 돼서 위층 소음이 좀 들립니다.", "of": "服務人員態度很好，8樓也有販賣機跟冰塊，喝酒很方便只是廁所地板隔音不是很好，都會聽到樓上地板的聲音。"}], "시설 사기단": [{"s": "공간/노후화", "g": "심각", "q": "낡고 관리가 안 됨, **사진보다 훨씬 낡았고** 예약한 26평미가 아닌 **24평미 방**이었습니다.", "d": "2025-05-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 낡고 관리가 제대로 되어 있지 않았으며, 카펫에는 얼룩이 눈에 띄게 많았습니다. 사진과는 달리 실제 모습은 훨씬 새롭고 깨끗했습니다. 두 번째로 묵었던 호텔보다 더 비싼 가격을 지불하고 26제곱미터 크기의 방을 예약했는데, 도착해 보니 예상했던 방과는 전혀 달랐습니다. 다른 사람들에게 물어보니 24제곱미터 크기의 방이었다고 하더군요. 트립닷컴 문제인지 호텔 문제인지 모르겠지만, 호텔 측에서는 같은 방이라고 주장하며 방을 바꿔주지 않았습니다. 거의 30분 동안 실랑이를 벌인 끝에 겨우 아침 식사와 다음 날 방 변경을 받았지만, 기다린 시간을 포함해 모든 과정이 이미 여행 일정에 차질을 빚었습니다. 게다가 2박을 예약했는데, 업그레이드나 일반 방으로 바꿔주기는커녕 오히려 더 낮은 등급의 방으로 바뀌었습니다. 다시 방을 바꾸면 더 나쁘거나 문제가 있는 방을 받을까 봐 걱정됩니다. 온천 호텔과 토요일 밤에 묵었던 호텔을 제외하면, 이 호텔은 이번 여행에서 묵었던 세 곳의 호텔 중 가장 비싸고 최악이었다.", "of": "殘舊，保養不佳，地毯有明顯污漬，相片明顯比現場新淨。我付出比第二間酒店更多錢，訂了26平米房間，上房後發現明顯不符，下樓問清楚後，說是24平米房間。我不清楚到底是trip.com 還是酒店問題，但酒店一直堅持是同等房型，不願意換房。我嘈了將近30分鐘，才爭取回一餐早餐及第二晚可以換房，但一上一落，其他時間等，已經打亂我的行程。加上我訂兩晚房，不但沒upgrade 或給我正常房間，反而更給我降級，我亦不敢再換房間，恐防給我更差或有問題的房間。此次旅程除了溫泉酒店及星期六晚入住，是我其他三間酒店最貴，亦是最差的酒店。"}, {"s": "공간/노후화", "g": "심각", "q": "**매우 낡았고 욕실 바닥이 푹 꺼져 있었습니다**.", "d": "2024-12-30", "n": "醤油の魔神", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNmc2FlN3dnRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICfsae7wgE%7C%7C?hl=ko", "tf": "매우 낡았고 욕실 바닥이 뻗어있었습니다.\n샤워는 수압이 좋았다.\n침대는 잠 기분이 좋지 않았다.\n아침밥의 쌀이 엄청 맛있었습니다.\n그것만으로도 이용한 가치가 있었다.\n쌀의 맛은 과거에 숙박한 호텔 중 압도적으로 넘버원입니다.", "of": "とても古くてバスルームの床がへたっていた。\nシャワーは水圧が良かった。\nベッドは寝心地は良くなかった。\n朝ごはんのお米がめちゃくちゃ美味しかった。\nそれだけでも利用した価値があった。\nお米の美味しさは過去に宿泊したホテルの中で圧倒的にナンバーワンです。"}, {"s": "공간/노후화", "g": "심각", "q": "**창문 없는 방**에 사는 것과 같았고, 방이 **낡고 시설이 노후화**되었습니다.", "d": "2024-11-13", "n": "David Fung", "st": 1, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUQzOHRhR0RnEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgID38taGDg%7C%7C?hl=ko", "tf": "이 호텔에서 이틀 밤을 묵었는데, 불과 60cm밖에 떨어져 있지 않은 다른 건물을 마주 보고 있는 저층 객실에 배정받았습니다. 낮에도 방 안으로 햇빛이 전혀 들어오지 않았습니다. 마치 창문이 없는 방에서 사는 것과 같았습니다. 방은 낡았고 시설도 많이 낡았습니다. 일본 여행 중 최악의 숙박 경험 중 하나였습니다. 나가사키의 리치몬드 호텔에서도 묵었는데, 더 새롭고 훨씬 좋았습니다.", "of": "We stayed in this hotel for two nights and were arranged in a room at low floor facing another building which was only two feet away. Even in the day time, there was not any daylight coming in the room. It was same as living in a room without any window. The room was old and a lot of facilities were worn out. One of the worst living experiences in travelling to Japan. We lived in Richmond Hotel too in Nagasaki which was newer and much better."}, {"s": "네트워크/TV", "g": "심각", "q": "**와이파이 상태가 형편없고**, 한 시간에 한 번은 **회선이 끊깁니다**.", "d": "2024-11-12", "n": "Hiro A", "st": 1, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUQzck9uQmFnEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgID3rOnBag%7C%7C?hl=ko", "tf": "리치몬드 호텔 그룹은 자주 이용하고 있지만, 이 호텔의 WiFi 상태는 끔찍하고, 방에 따라서도 있을지도 모르지만, 한 시간에 한번은 회선이 절단되어, 재접속되지 않는 일이 있다, 방을 바꾸어도 상황은 같기 때문에, 일에 사용하려면 리스크가 높은 호텔, 주의가 필요할지도.\n아침 식사의 일본식 계열은 매우 맛있습니다.", "of": "リッチモンドホテルグループはよく利用しているが、このホテルのWiFi状態は酷い、部屋にもよるのかもしれないが、一時間に一度は回線が切断され、再接続されない事がある、部屋を変えてもらっても状況は同じなので、仕事に使うにはリスクの高いホテル、注意が必要かも。\n朝食の和食系は中々美味しいです。"}, {"s": "공간/노후화", "g": "주의", "q": "너무 **깜깜한 벽뷰**라 당황스러웠습니다.", "d": "2026-02-25", "n": "JOY JAY", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xkSVdFNXFZMjFwUms5SmRtNXFNUzFJWmxoeGFFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOldIWE5qY21pRk9Jdm5qMS1IZlhxaEE%7C%7C?hl=ko", "tf": "", "of": "위치가 아주 좋습니다 𖤐𖤐𖤐𖤐𖤐\n요도바시카메라 바로 옆이라 택시를 타도 설명하기 좋았음. 다만, 너무 깜깜한 벽뷰라 당황스러웠습니다.\n조식은 선택식이고 아침으로 꽤 든든했어요.\n체크인 시 한국인 남자 직원분이 무척 친절하게 안내해 주셨습니다! ദ്ദി¨̮"}, {"s": "공간/노후화", "g": "주의", "q": "세탁기 **건조 기능이 비교적 약한** 점이 아쉽습니다.", "d": "2026-02-19", "n": "tze wai pak", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21OWGEzWkllRUYxTkVSM1pXRTJSa3hvTVV4ZmJXYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmNXa3ZIeEF1NER3ZWE2RkxoMUxfbWc%7C%7C?hl=ko", "tf": "호텔 직원들이 매우 친절하고 아이들을 잘 대해주었습니다. 역과 매우 가까워 아이가 있는 가족에게 강력 추천합니다. 다만, 세탁기와 건조기 성능이 다소 약한 점은 아쉬운 부분입니다.", "of": "酒店員工好友善，對小朋友也好熱情，去車站十分近，帶小朋友直得推介，但敗北位，洗衣機乾衣功能比較弱"}, {"s": "공간/노후화", "g": "주의", "q": "조금 **설비가 오래된 느낌**이 있습니다.", "d": "2026-02-19", "n": "かずきち", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURONWNpVm5BRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgIDN5ciVnAE%7C%7C?hl=ko", "tf": "②오랜만에 숙박했지만, 역시 안심하고 보낼 수 있습니다. ①역시 안심 안정의 리치몬드씨. 전혀 문제는 없습니다만, 조금만 설비가 오래되어 온 느낌이, 단지, 정말로 전혀 문제는 없습니다.", "of": "②久々に宿泊しましたが、やはり安心して過ごせます。①やはり安心安定のリッチモンドさん。全く問題はないのですが、少しだけ設備が古くなってきた感じが、ただ、本当に全く問題はありません。"}, {"s": "네트워크/TV", "g": "주의", "q": "객실 TV에 **유튜브가 없는** 점이 아쉽습니다.", "d": "2026-02-17", "n": "Y C", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21oNFFYUjBWMFpsZURrNGVGVnZUM056Y2xwTGNsRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmh4QXR0V0ZleDk4eFVvT3NzclpLclE%7C%7C?hl=ko", "tf": "출장으로 이용. 1박 조반 포함으로 19,505엔. 지금은 이것 정도라고는 하지만 비싸네… 하지만 역 근처에서 편리하고 방도 예쁘다. 리치몬드 호텔은 안정감이 있습니다. 방의 텔레비전에 YouTube 없음, 가운형의 잠옷은 개인적으로 마이너스.", "of": "出張で利用。一泊朝飯付きで19,505円。今どきこれくらいするとはいえ高いね…でも駅近で便利で部屋もきれい。リッチモンドホテルは安定感があります。部屋のテレビにYouTubeなし、ガウン型のパジャマは個人的にマイナス。"}, {"s": "공간/노후화", "g": "주의", "q": "**가운 형태의 잠옷**은 개인적으로 마이너스 요소입니다.", "d": "2026-02-17", "n": "Y C", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21oNFFYUjBWMFpsZURrNGVGVnZUM056Y2xwTGNsRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmh4QXR0V0ZleDk4eFVvT3NzclpLclE%7C%7C?hl=ko", "tf": "출장으로 이용. 1박 조반 포함으로 19,505엔. 지금은 이것 정도라고는 하지만 비싸네… 하지만 역 근처에서 편리하고 방도 예쁘다. 리치몬드 호텔은 안정감이 있습니다. 방의 텔레비전에 YouTube 없음, 가운형의 잠옷은 개인적으로 마이너스.", "of": "出張で利用。一泊朝飯付きで19,505円。今どきこれくらいするとはいえ高いね…でも駅近で便利で部屋もきれい。リッチモンドホテルは安定感があります。部屋のテレビにYouTubeなし、ガウン型のパジャマは個人的にマイナス。"}, {"s": "공간/노후화", "g": "주의", "q": "편리하지만 **조금 낡았습니다**.", "d": "2026-02-14", "n": "s Sp", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT214clRUaHNObTFQU25KZlRuVllRMjUyUkdoSlQyYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmxrTThsNm1PSnJfTnVYQ252RGhJT2c%7C%7C?hl=ko", "tf": "편리하지만 구식은 아니다", "of": "方便但少舊"}, {"s": "공간/노후화", "g": "주의", "q": "두 번 방문했는데 **두 번 다 벽 뷰**라 별 하나 차감했습니다.", "d": "2026-02-04", "n": "전성후", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2toeGVWcE5jRTFIY0hKaVJGWlFjV2gyVW5KUGJFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOkhxeVpNcE1HcHJiRFZQcWh2UnJPbEE%7C%7C?hl=ko", "tf": "", "of": "하카타역 주변에서 숙박하려면 가성비 최고의 호텔. 객실 청소 여부를 티비를 통해 체크하는 것도 편하고 캐리어 펼칠만한 공간이 있어서 괜찮음. 냉난방을 개별 조절하는 것도 좋고 벽뷰이지만 창문이 열리는 것도 맘에 듬(두번째 방문인데 두번다 벽뷰라 별 하나 차감). 조망을 중요시하는 분들은 고민해야 할 수도..그래도 위치 메리트가 너무 커서  재방문 의사 있음!"}, {"s": "공간/노후화", "g": "주의", "q": "유일한 단점은 **침대 크기가 성인 두 명에게 너무 작다**는 점입니다.", "d": "2026-02-04", "n": "Robby Hamdani", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21aVk5GOWtTR05zYkRCWFRXTlVkMFl4YW5jM2RFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmZVNF9kSGNsbDBXTWNUd0Yxanc3dEE%7C%7C?hl=ko", "tf": "위치가 정말 마음에 들었어요. 요도바시가 바로 옆에 있고, 주변에 편의점도 많아요. 하카타역도 호텔 바로 앞에 있고요. 하카타역 주변에는 레스토랑도 많고 쇼핑몰도 몇 군데 있어서, 사실상 호텔 밖으로 나갈 필요가 없었어요. 직원분들 서비스도 훌륭했습니다. 저희 방은 2층에 있는데, 코웨이 정수기와 세탁실이 있었어요. 다만 침대가 성인 두 명이 쓰기에는 좀 작다는 점이 아쉬웠습니다.", "of": "Love the location. Yodobashi is next door. It’s surrounded by convenient stores. Hakata station is also next to the hotel. Plenty of restaurants and couple Malls in hakata station, basically you dont have to leave the area. I had great service from the staff. Our room is on 2nd floor with coway water station and laundry room. The only drawback is the size of the bed which is too small for two adults."}, {"s": "공간/노후화", "g": "주의", "q": "엘리베이터 앞 모니터가 **매우 방해**가 되고 공간이 비좁아졌습니다.", "d": "2026-02-01", "n": "多多", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGR1NpMVJaMmcxVW5OM1JVMUthM1pzU2tWcmFGRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjFGSi1RZ2g1UnN3RU1Ka3ZsSkVraFE%7C%7C?hl=ko", "tf": "1 월 또 머무는 업데이트 감상 :\n1층 엘리베이터 앞에\n이니야의 CM 모니터\n새로 두고\n매우 방해라고 생각합니다.\n비좁은 공간이 될 것입니다.\n\n가끔 먹으러 가면\n레몬 스테이크는\n얇은 쇠고기로\n그것도 스테이크로 읽고 있습니까?\n샐러드 바도 또 하나 부족한 느낌으로\n매우 실망했습니다.\n\n아주 좋아하는 호텔입니다.\n여러 번 묵었습니다.\n그러나\n한 가지 말하고 싶은 일이 있다면\n엘리베이터 바닥 카펫은\n청소하고 싶습니다.\n이른 아침에도\n심야에서도 눈에 띄는 먼지 투성이로\n매일도 No Cleaning?!", "of": "一月また泊まるの更新感想:\n一階のエレベーター前に\nいねやのCMモニターが\n新しく置いてて\nとても邪魔だと思うんです\n窮屈なスペースになっちゃいます\n\n實際に食べに行ったら\nレモンステーキは\n薄い牛肉で\nあれもステーキと読んでるんですか\nサラダバーももうひとつ足りない感じで\nとてもがっかりしたんです\n\nとても大好きなホテルです\n何度も泊まりました\nでも\n一つ言わせたいことがあれば\nエレベーター床のカーペットは\n掃除してほしいです\n早朝でも\n深夜でも目立つのホコリだらけで\n毎日も  No Cleaning ?!"}, {"s": "공간/노후화", "g": "주의", "q": "**방과 화장실이 작고**", "d": "2026-01-19", "n": "WAN SEOK SEO", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT205VFpqZGtORGRIYjJ3dFJGRmtTMGMwVkc1c2NFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOm9TZjdkNDdHb2wtRFFkS0c0VG5scEE%7C%7C?hl=ko", "tf": "", "of": "방과 화장실이 작고, 서비스가 아주 좋은건 아니지만 위치가 매우 훌륭하네요\n그리고 마지막날 캐널시티 관광하는데 짐보관이 되어 아주 좋네요"}, {"s": "공간/노후화", "g": "주의", "q": "다만 **객실 설비가 조금 낡았습니다**.", "d": "2026-01-15", "n": "lisasa chen,", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25sdmNqTkJNVUl5WkdrellqRmlRbGN6YlZwR1RHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnlvcjNBMUIyZGkzYjFiQlczbVpGTGc%7C%7C?hl=ko", "tf": "위치는 요도바시 카메라 바로 옆이고 역에서 멀지 않아 정말 좋았습니다. 헤어스프레이, 가글, 마스크팩 등 기본적인 세면도구 외에도 다양한 편의용품을 제공했습니다. 단점이라면 객실 시설이 조금 오래되었다는 점입니다. 헤어드라이어는 독특한 디자인이지만 성능은 훌륭했습니다. 저는 이전에 도쿄의 리치몬드 호텔에 묵어본 적이 있는데, 후쿠오카 지점은 조금 오래되었지만 그 외에는 아주 좋았습니다. 객실에서는 거리 풍경이 보였고, 유명한 텐자 호텔이 바로 길 건너편에 있었습니다. 라라포트로 바로 가는 버스 정류장도 가까워서 저는 하카타역에서 내렸습니다. 1층에는 정수기도 있습니다.", "of": "地理位置很好，友都八喜就在旁邊，離車站也不遠。備品超多種除了基本的洗漱備品外還有提供髮膠、漱口水、面膜等。唯獨房間設備老舊了點。吹風機造型很特別也好用。在東京住宿過Richmond系列飯店，福岡這間比較舊之外，其他都很好。住的房間是街景，對面也是有名的天座飯店。離公車站不遠可以直達lalaport。下車時在博多車站下車。一樓有飲水機。"}, {"s": "공간/노후화", "g": "주의", "q": "**방이 약간 좁고 오래되었지만** 제 역할을 다합니다.", "d": "2025-12-23", "n": "Sheryl Zeng", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25sWGVuZFBlbk5tVFVWTWFYQkVNbkUyTFVKQ1FrRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnlXendPenNmTUVMaXBEMnE2LUJCQkE%7C%7C?hl=ko", "tf": "조금 작고 오래된 방이지만, 필요한 기능은 모두 갖추고 있습니다.\n\n위치는 요다바시/로피아역과 하카타역 바로 옆에 있어 매우 편리합니다. 공항 셔틀버스 정류장까지는 도보로 3분 거리입니다.\n\n직원분들이 매우 친절하고 세심하게 응대해 주셨습니다. 영어도 잘 하시는 분들이 많았습니다. 특히 12월 18일 체크인 때 도와주신 임산부 직원분께 감사드립니다.\n\n생일 서프라이즈도 감사했습니다 :)", "of": "Slightly small/dated room that serves its purpose.\n\nLocation is excellent, directly next to Yodabashi/Lopia and Hakata Satation. 3 min walk to airport shuttle bus station.\n\nStaff very attentive and nice. Speak great english. Special commendation to the pregnant female employee who helped us during our check in on 18 December.\n\nThank you for the birthday surprise :)"}, {"s": "공간/노후화", "g": "주의", "q": "객실 내 **시설이 부족**하고 **침대 배치가 좋지 않습니다**.", "d": "2025-12-20", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "방은 가구가 부실했고, 침대 위치도 부적절했으며, 위생 상태도 좋지 않았습니다.", "of": "房內設施不足, 睡床安置不好, 衛生情況不太好"}, {"s": "공간/노후화", "g": "주의", "q": "객실 **인테리어가 다소 노후**되었습니다.", "d": "2025-12-19", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "객실 인테리어가 약간 오래된 느낌이 드는 것을 제외하면 모든 것이 완벽했습니다! 매우 깨끗하고 밝았으며, 각 층마다 정수기가 있어서 정말 편리했어요!! 어메니티도 훌륭했습니다. 직원분들도 매우 친절하고 상냥했습니다. 위치도 하카타역 치쿠시 출구에서 매우 가깝고, 무엇보다 로피아 바로 옆이라 정말 편리했어요!", "of": "房間裝潢有點老舊之外，其餘非常完美！很乾淨、燈光亮、每一層樓都有飲水機超級無敵方便！！備品也是都很好用。服務人員態度也很好，不會很有距離感的那種。地點離博多車站築紫口很近重點是旁邊就是Lopia 超級方便"}, {"s": "공간/노후화", "g": "주의", "q": "객실 **인테리어가 다소 노후**되었습니다.", "d": "2025-12-19", "n": "Kai", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s5R2RWUnRTVEJrWTBGT1ZYYzVkRlZUVFVsQlNVRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOk9GdVRtSTBkY0FOVXc5dFVTTUlBSUE%7C%7C?hl=ko", "tf": "약간 오래된 인테리어를 제외하면 객실은 완벽했어요!\n\n정말 깨끗하고 밝았으며, 각 층마다 정수기가 있어서 엄청 편리했어요!!\n\n어메니티도 훌륭했습니다.\n\n직원분들도 매우 친절하고 편하게 대해주셨어요.\n\n위치도 하카타역 치쿠시 출구에서 아주 가깝고, 무엇보다 로피아가 바로 옆에 있어서 정말 편리했어요!", "of": "房間裝潢有點老舊之外，其餘非常完美！\n很乾淨、燈光亮、每一層樓都有飲水機超級無敵方便！！\n備品也是都很好用。\n服務人員態度也很好，不會很有距離感的那種。\n地點離博多車站築紫口很近重點是旁邊就是Lopia 超級方便"}, {"s": "공간/노후화", "g": "주의", "q": "책상 위에 **조명이 부족**하여 화장할 때 불편함이 있습니다.", "d": "2025-12-17", "n": "ruri lai", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pWVVUwSjNaR0pUUms1Q1RsQlRURkUwUzJsR2QzYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjVUU0J3ZGJTRk5CTlBTTFE0S2lGd3c%7C%7C?hl=ko", "tf": "주숙일기 : 2025년 12월 7일~12월 12일\n보간 : 혼자 입주 흡연방, 개인 감수 누설 유연미, 보간 비상상 중대, 舒舒適\n욕실 설시：욕조 사용방편, 비품 전부\n냉기공제：방간냉기가자행조정, 불수 중앙공조한제\n복무 품질: 복무 인원 태도 친절\n격음 효과: 방간격음 양호\n서권 조명 : 서관 상감 소등광, 氌於化妝 유 영향.\n整黔滿意도 : 비상회의, 계정 아래 차례차례 고려 這개 지방.\n숙박일: 2025년 12월 7일부터 12월 12일까지\n방 : 1 인용 흡연실에서 연기 냄새는 신경 쓰이지 않았고 방은 상상 이상으로 넓고 매우 편안했습니다.\n욕실 설비 : 욕조의 편리함은 좋고, 어메니티도 충실했습니다.\n에어컨 제어 : 객실의 에어컨은 직접 조정할 수 있으며 중앙 에어컨의 제약을받지 않습니다.\n서비스 품질: 직원의 태도는 친절했다.\n방음 효과: 방 방음은 좋았습니다.\n책상 불빛: 책상에는 조명이 부족했고 화장에 영향을 미쳤습니다.\n전반적인 만족도 : 매우 만족하고 다음 번에도이 장소를 생각합니다.\nAccommodation Dates: December 7 to December 12, 2025\nRoom: One-person smoking room, no smoke smell, the room was larger than expected, and very comfortable.\nBathroom Facilities: The bathtub was easy to use, and the amenities were complete.\nAir Conditioning Control: The room's airconditionin", "of": "住宿日期：2025年12月7日至12月12日\n房間：一人入住吸煙房，個人感受沒有煙味，房間比想像中大，很舒適\n浴室設施：浴缸使用方便，備品齊全\n冷氣控制：房間冷氣可自行調整，不受中央空調限制\n服務品質：服務人員態度親切\n隔音效果：房間隔音良好\n書桌照明：書桌上缺少燈光，對於化妝有影響。\n整體滿意度：非常滿意，計劃下次再次考慮這個地方。\n宿泊日：2025年12月7日から12月12日まで\n部屋：1人用の喫煙室で、煙の臭いは気にならず、部屋は想像以上に広く、とても快適でした。\nバスルーム設備：浴槽の使い勝手は良く、アメニティも充実していました。\nエアコン制御：部屋のエアコンは自分で調整でき、中央エアコンの制約を受けません\nサービス品質：スタッフの態度は親切でした。\n防音効果：部屋の防音は良好でした。\nデスクの明かり：デスクには照明が不足しており、化粧に影響がありました。\n全体的な満足度：非常に満足しており、次回もこの場所を考えています。\nAccommodation Dates: December 7 to December 12, 2025\nRoom: One-person smoking room, no smoke smell, the room was larger than expected, and very comfortable.\nBathroom Facilities: The bathtub was easy to use, and the amenities were complete.\nAir Conditioning Control: The room's airconditioning could be adjusted independently, without being limited by central air conditioning. S"}, {"s": "공간/노후화", "g": "주의", "q": "**샴푸 품질이 별로**이고 **칫솔모가 거칠며** 드라이기 **성능이 안좋습니다**.", "d": "2025-12-16", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "TV로 청소 여부 선택하는 부분이 간편하고 좋았음.객실은 깨끗하고 편안했음아쉬운점1. 샴푸 퀄리티가 별로임.2. 일회용 칫솔모가 너무 거칠기 때문에 좀 더 부드러운 칫솔로 바꾸면 좋겠고 드라이어기가 시끄럽고 성능이 안좋음.."}, {"s": "공간/노후화", "g": "주의", "q": "호텔 숙박비에 비해 **물도 제공이 되지않으나**", "d": "2025-12-10", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "하카타역에서 5분정도 거리에 있어 위치는 좋으나 호텔 숙박비에 비해 물도 제공이 되지않으나 어메니티는 직접 가져다 쓸수 있는데 가져갈수 있는 종류는 많다 3박 했는데 3일동안 청소는 한번도 하지않고 침구류만 정리한다"}, {"s": "네트워크/TV", "g": "주의", "q": "**티비로 청소를 의뢰**할 수 있다고 그랬는데 **잘 안되서**... **한국 방송이나 영어 방송은 아예 없었다**.", "d": "2025-11-30", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "하카타역에서 걸어서 5분, 공항에서 차 막혀도 2천엔 남짓. 안막히면 1,600엔 정도. 그리고 로피아 마켓과 요도바시 카메라가 바로 옆. 주변에 편의점도 다양하게 많고, 아침 일찍 여는 식당도 가깝다. 그리고 친절한 서비스와 식당의 품격있는 느낌과 맛도 너무 좋았다. 아쉬운건 티비로 청소를 의뢰할 수 있다고 그랬는데 잘 안되서 결국 따로 문의해야 했으며, 한국 방송이나 영어 방송은 아예 없었다."}, {"s": "공간/노후화", "g": "주의", "q": "**오래된 티**는 나지만... 싱글룸이라 그런지 **벽뷰여서 좀 아쉽고**", "d": "2025-11-29", "n": "정지희", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2poTllrWmtPRVI1UXpCTGJFWmZkWEJGWVVsNVRHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjhNYkZkOER5QzBLbEZfdXBFYUl5TGc%7C%7C?hl=ko", "tf": "", "of": "오래된 티는 나지만 대신 싱글룸이어도 방이 넓고\n역에서 멀지않아 이동하기 좋음.\n가격은 조금 있지만 버스투어 모임장소에서 멀지않아 예약했는데 가까워서 돌아올 때 진짜 편했다.\n싱글룸이라 그런지 벽뷰여서 좀 아쉽고 정수기는 방 근처라 그나마 다행이지만 왔다갔다 조금 번거로움."}, {"s": "공간/노후화", "g": "주의", "q": "호텔이 **조금 낡았지만** 위생은 괜찮았습니다.", "d": "2025-11-22", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "하카타역에서 도보 5분 거리이고 요도바시 카메라 바로 옆에 있어서 위치가 정말 좋습니다. 호텔이 조금 오래되긴 했지만 위생 상태는 괜찮았고 프런트 직원들도 매우 친절했습니다.", "of": "博多站步行5分鐘，旁邊就是友都八喜，地理位置真的很好。雖然酒店有點老舊，但衞生還可以，而且前枱職員也很好。"}, {"s": "공간/노후화", "g": "주의", "q": "**객실이 비교적 좁고** 기본 서비스는 정상입니다.", "d": "2025-11-21", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "객실은 다소 작았지만 기본적인 서비스는 괜찮았습니다. 하지만 일회용 슬리퍼가 제공되지 않아 실망스러웠습니다. 프런트 데스크에 문의했더니 없다고 해서 결국 다이소에 가서 직접 사야 했습니다. 호텔 측은 환경 보호를 명분으로 비위생적인 낡은 슬리퍼를 투숙객에게 제공했는데, 그 슬리퍼는 깨끗하게 소독되지도 않았고 밀봉된 포장 상태도 아니었습니다. 어떻게 투숙객들이 안심하고 사용할 수 있겠습니까?", "of": "房間比較細，基本服務正常。令人失望的是沒有提供即棄拖鞋，去前台要求也是回覆沒有，只能自己去daiso買。酒店以環保為名，逼客人使用不衛生的舊拖鞋，但是拖鞋根本沒有已清潔及已消毒的密封包装，如何令客人安心使用？"}, {"s": "공간/노후화", "g": "주의", "q": "설비 관련은 **노후화를 부정할 수 없네요**. 커텐을 열면 빌딩 벽이라 **죄수 방인가 싶을 정도**였습니다.", "d": "2025-10-20", "n": "光一", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tsZkxWZDVMVTFKY3pOMGMzSlJlazFyWm5ST1VHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOklfLVd5LU1JczN0c3JRek1rZnROUGc%7C%7C?hl=ko", "tf": "입지 조건이 좋아 인바운드 탓인지, 연박한 일도 있어 숙박비는 높게 느꼈습니다. 프런트의 접객은 좋습니다, 설비 관련은 노후화가 부정하지 않네요.\n제가 숙박한 방은 콘센트는 사용할 수 있었습니다만 빗나가고 있었고, 샤워의 걸쇠도 빗나갔습니다. 방의 커튼 열면, 빌딩의 벽에서 아무런 풍정도 없이 죄수 방이라고 생각할 정도로, 여기는 정말로 유감이었습니다.\n어메니티는 필요 최소한으로, 적어도 커피나 차에 미네랄 워터는 방에 상비해 주었으면 했다. 칫솔은 방에 없고, 프런트나 각층의 엘리베이터 앞에 있기 때문에 주의.\n나는 근처의 편의점과 마츠키요에서 갖추었습니다.맥주 등도 마찬가지입니다.\n아침 식사는 인접하고 있습니다. 여러 종류의 선물에 대만족입니다. 뷔페와 달리 어당지 요리를 선택할 수 있는 것은 아침부터 감동했습니다. 덧붙여서 샐러드 바도 있고, 지나가면 아침부터 가득합니다.\n그리고 방에서 담배를 피우는 것이 도움이되었습니다.", "of": "立地条件が良くインバウンドのせいか、連泊した事もあり宿泊費は高めに感じました。フロントの接客は良いです、設備関連は老朽化が否めずですね。\n私が宿泊した部屋はコンセントは使えましたが外れかけていましたし、シャワーの留め具も外れかけてました。部屋のカーテン開けると、ビルの壁で何の風情も無しで囚人部屋かと思うほど、ここは本当に残念でした。\nアメニティは必要最低限で、せめて珈琲やお茶にミネラルウォーターは部屋に常備して欲しかった。歯ブラシは部屋に無く、フロントか各階のエレベーター前に有りますので注意。\n私は近くのコンビニとマツキヨで揃えました、ビール等も同じくです。\n朝食は隣接しているいねや、数種類ある御膳に大満足です。ビュッフェと違い、御当地料理が選べるのは朝から感動しました。因みにサラダバーも有り、取り過ぎると朝から満腹です。\nあと、部屋で煙草が吸えるのが助かりました。"}, {"s": "네트워크/TV", "g": "주의", "q": "**콘센트는 빠질 것** 같았습니다.", "d": "2025-10-20", "n": "光一", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tsZkxWZDVMVTFKY3pOMGMzSlJlazFyWm5ST1VHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOklfLVd5LU1JczN0c3JRek1rZnROUGc%7C%7C?hl=ko", "tf": "입지 조건이 좋아 인바운드 탓인지, 연박한 일도 있어 숙박비는 높게 느꼈습니다. 프런트의 접객은 좋습니다, 설비 관련은 노후화가 부정하지 않네요.\n제가 숙박한 방은 콘센트는 사용할 수 있었습니다만 빗나가고 있었고, 샤워의 걸쇠도 빗나갔습니다. 방의 커튼 열면, 빌딩의 벽에서 아무런 풍정도 없이 죄수 방이라고 생각할 정도로, 여기는 정말로 유감이었습니다.\n어메니티는 필요 최소한으로, 적어도 커피나 차에 미네랄 워터는 방에 상비해 주었으면 했다. 칫솔은 방에 없고, 프런트나 각층의 엘리베이터 앞에 있기 때문에 주의.\n나는 근처의 편의점과 마츠키요에서 갖추었습니다.맥주 등도 마찬가지입니다.\n아침 식사는 인접하고 있습니다. 여러 종류의 선물에 대만족입니다. 뷔페와 달리 어당지 요리를 선택할 수 있는 것은 아침부터 감동했습니다. 덧붙여서 샐러드 바도 있고, 지나가면 아침부터 가득합니다.\n그리고 방에서 담배를 피우는 것이 도움이되었습니다.", "of": "立地条件が良くインバウンドのせいか、連泊した事もあり宿泊費は高めに感じました。フロントの接客は良いです、設備関連は老朽化が否めずですね。\n私が宿泊した部屋はコンセントは使えましたが外れかけていましたし、シャワーの留め具も外れかけてました。部屋のカーテン開けると、ビルの壁で何の風情も無しで囚人部屋かと思うほど、ここは本当に残念でした。\nアメニティは必要最低限で、せめて珈琲やお茶にミネラルウォーターは部屋に常備して欲しかった。歯ブラシは部屋に無く、フロントか各階のエレベーター前に有りますので注意。\n私は近くのコンビニとマツキヨで揃えました、ビール等も同じくです。\n朝食は隣接しているいねや、数種類ある御膳に大満足です。ビュッフェと違い、御当地料理が選べるのは朝から感動しました。因みにサラダバーも有り、取り過ぎると朝から満腹です。\nあと、部屋で煙草が吸えるのが助かりました。"}, {"s": "냉난방/수압", "g": "주의", "q": "**샤워기 고정장치도 빠질 것** 같았습니다.", "d": "2025-10-20", "n": "光一", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tsZkxWZDVMVTFKY3pOMGMzSlJlazFyWm5ST1VHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOklfLVd5LU1JczN0c3JRek1rZnROUGc%7C%7C?hl=ko", "tf": "입지 조건이 좋아 인바운드 탓인지, 연박한 일도 있어 숙박비는 높게 느꼈습니다. 프런트의 접객은 좋습니다, 설비 관련은 노후화가 부정하지 않네요.\n제가 숙박한 방은 콘센트는 사용할 수 있었습니다만 빗나가고 있었고, 샤워의 걸쇠도 빗나갔습니다. 방의 커튼 열면, 빌딩의 벽에서 아무런 풍정도 없이 죄수 방이라고 생각할 정도로, 여기는 정말로 유감이었습니다.\n어메니티는 필요 최소한으로, 적어도 커피나 차에 미네랄 워터는 방에 상비해 주었으면 했다. 칫솔은 방에 없고, 프런트나 각층의 엘리베이터 앞에 있기 때문에 주의.\n나는 근처의 편의점과 마츠키요에서 갖추었습니다.맥주 등도 마찬가지입니다.\n아침 식사는 인접하고 있습니다. 여러 종류의 선물에 대만족입니다. 뷔페와 달리 어당지 요리를 선택할 수 있는 것은 아침부터 감동했습니다. 덧붙여서 샐러드 바도 있고, 지나가면 아침부터 가득합니다.\n그리고 방에서 담배를 피우는 것이 도움이되었습니다.", "of": "立地条件が良くインバウンドのせいか、連泊した事もあり宿泊費は高めに感じました。フロントの接客は良いです、設備関連は老朽化が否めずですね。\n私が宿泊した部屋はコンセントは使えましたが外れかけていましたし、シャワーの留め具も外れかけてました。部屋のカーテン開けると、ビルの壁で何の風情も無しで囚人部屋かと思うほど、ここは本当に残念でした。\nアメニティは必要最低限で、せめて珈琲やお茶にミネラルウォーターは部屋に常備して欲しかった。歯ブラシは部屋に無く、フロントか各階のエレベーター前に有りますので注意。\n私は近くのコンビニとマツキヨで揃えました、ビール等も同じくです。\n朝食は隣接しているいねや、数種類ある御膳に大満足です。ビュッフェと違い、御当地料理が選べるのは朝から感動しました。因みにサラダバーも有り、取り過ぎると朝から満腹です。\nあと、部屋で煙草が吸えるのが助かりました。"}, {"s": "공간/노후화", "g": "주의", "q": "**옆 건물 벽 뷰**로 줘서 커텐을 걷어도 하루 종일 **방이 어두웠네요**.", "d": "2025-10-13", "n": "JONG MOON PARK", "st": 1, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT210ZmRXcHdha3N0T0RsWFJVbGlMVlJNTFhsV1RFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmtfdWpwakstODlXRUliLVRMLXlWTEE%7C%7C?hl=ko", "tf": "", "of": "남자 두 명이라고 그랬는지 모르지만 2층에 옆 건물 벽 뷰로 줘서 커텐을 걷어도 하루 종일 방이 어두웠네요.(옆을 봐도 안 보임)\n조식 불포함 20만원이나 했는데 그런 방을 줘서 우울했습니다.\n그 방은 청소 비품방이나 세탁실 등으로 활용하는 것이 맞지 않을까함.\n연인이나 배우자랑 여행은 그런 방이 걸릴 수  있으니 고민하고 예약해야 할 듯."}, {"s": "냉난방/수압", "g": "주의", "q": "**실내 공조가 나빠 에어컨 온도를 최저로 해도** 풍량을 강으로 해도 **더웠습니다**.", "d": "2025-10-10", "n": "hime rika", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25Gd2FqZDBlSFY2ZVhabFdEUkJXbGQ2YzA1U09GRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnFwajd0eHV6eXZlWDRBWld6c05SOFE%7C%7C?hl=ko", "tf": "리셉션에 교육이 잘되어 있습니다.\n역 근처에서 대로를 향하고 있기 때문에\n장소를 알기 쉬운 점은 좋았지만\n실내 공조가 나쁘고 에어컨 온도를 최소화해도 풍량을 강하게 해도 뜨거웠다.\n1층의 하카타 이네야에 가고 싶었지만\n통과 영업이 아니라는 것을 모른다.\n가고 싶은 시간에 닫혀 있었기 때문에\n전면 포스터에 메뉴뿐만 아니라\n영업 시간도 크게 기재 해주세요.", "of": "フロントに教育が行き届いており\n駅近で大通りに面しているので\n場所がわかりやすい点は良かったけど\n室内の空調が悪くエアコンの温度を最低にしても風量を強にしても暑かった\n一階の博多いねやに行きたかったが\n通し営業でないことを知らず\n行きたい時間に閉まっていたので\nフロントのポスターにメニューだけでなく\n営業時間も大きく記載してほしい"}, {"s": "네트워크/TV", "g": "주의", "q": "**머리쪽에 콘센트 있어서 그거 불편한것** 빼고는 괜찮았고", "d": "2025-10-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "오래되어 보이지만  청결하고 위치가 좋아서 여행다니기 좋았어요하카타 역까지  도보로 10분도 안걸리고직원분중에 한국어 가능한분 있었어요단점은 더블베드로 예약했는데 머리쪽에 콘센트 있어서 그거 불편한것 빼고는 괜찮았고어메니티는 로비에 다 있고 방에  바디워시 삼프 컨디셔너 다 있어요 조식은..한번정도는.. 그러나 역주변이라 먹을것도 많아서 조식까지 신청할 필요는 없을것 같아요!"}, {"s": "공간/노후화", "g": "주의", "q": "시설이 **다소 낡은 편**입니다.", "d": "2025-09-22", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://www.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔 위치가 정말 좋아요. 하카타역과 쇼핑몰에서 불과 몇 블록 떨어져 있거든요. 시설은 좀 오래됐지만, 접근성은 아주 좋습니다.", "of": "The hotel is in a great location, just a couple blocks from the hakata station and mall.The facility is on the older side, but it is quite convenient."}, {"s": "공간/노후화", "g": "주의", "q": "**침대가 충분히 부드럽지 않고** 베개도 한 종류뿐이라 잠자리가 불편했습니다.", "d": "2025-09-12", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 역에서 도보로 3~5분 거리에 있고, 바로 옆에 슈퍼마켓이 있어서 정말 편리했어요! 다양한 편의용품이 구비되어 있는데, 체크인 시 마스크팩, 바디로션, 선크림 등을 받아볼 수 있었어요. 메이크업 리무버, 세안제, 토너, 로션도 있어서 스킨케어 제품을 깜빡했을 때 정말 유용했어요. 😂 여러 날 투숙하는 경우 객실 청소 여부를 선택할 수 있어서 매일 다른 서비스를 받을 수 있어요. 객실 냉장고는 제가 가본 호텔 냉장고 중 가장 시원해서 얼음이 거의 녹지 않았어요! 🤣 단점이라면 침대가 그다지 푹신하지 않고 베개 종류가 한 가지밖에 없다는 점이에요. 저는 그런 점이 좀 익숙하지 않았거든요. QQ 객실 공간은 꽤 넓어서 74cm짜리 캐리어 두 개를 편하게 펼칠 수 있었어요.", "of": "飯店離車站走路大約3-5分鐘，旁邊就有超市很方便！備品種類很多，入住時還有面膜、身體乳、防曬等等的備品可以拿，一般的卸妝洗臉化妝水乳液也都有，忘記帶保養品出門的話這點很方便😂連住好幾晚的話可以選擇要不要打掃，每天都能有不同的選擇。房內的冰箱是我遇過飯店最冰的冰箱，冰塊冰進去甚至都不太會融化很猛🤣小缺點是床不夠軟枕頭也只有提供一種，睡不太習慣QQ房內空間算大，夠打開兩個29吋行李箱。"}, {"s": "공간/노후화", "g": "주의", "q": "**객실과 침대가 조금 작아서** 덜 편안했습니다.", "d": "2025-09-12", "n": "PUPA Channel", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pFMmFWcE1WWGh1TjNsT2FpMVpWM05SV21wU01WRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjE2aVpMVXhuN3lOai1ZV3NRWmpSMVE%7C%7C?hl=ko", "tf": "방과 침대가 조금 작고 그다지 편안하지 않았습니다. 다음에 묵는다면 더 큰 객실을 선택할 것 같습니다. 위치도 아주 좋고 1층에 편의시설이 많이 있습니다.", "of": "房間和床有點小，沒那麼舒適，以後要住應該會選大一點的房型，地點很好，一樓提供很多備品。"}, {"s": "공간/노후화", "g": "주의", "q": "**좁고 크지 않아요**. ... 시설 **노후화** 및 냄새 때문에", "d": "2025-09-08", "n": "울랄라짱가", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s0NVVEWklaazloYldwNFJFWlhZVXgyV0RBdGFFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOk45UDZIZk9hbWp4REZXYUx2WDAtaEE%7C%7C?hl=ko", "tf": "", "of": "흠…사진은 첨부할 필요없이 객실사진 소개 그대로 입니다.\n좁고 크지않아요.\n\n가족과 함께 하카타역 근처로 잡아야해서 가장 가까운곳에 조식 괜찮다는 곳을 잡았는데. 리치몬드는 동급 호텔들 대비 노후화에따라 다르겠지만.. 딱이정도인 저렴한 곳입니다.\n\n너무 많은 기대는 하지 마시고 오시면 좋을듯합니다.\n\n별점 3점은 시설 노후화 및 냄새때문에 하나씩 뺐습니다.\n\n아이랑 왔기에 금연객실을 원했는데 담배냄새 꿉꿉한 곰팡내가 많이 스며있네요.\n\n화장실도 조립식 화장실로 되어서 밑에서부터 꿉꿉한 냄새 가…환기도 잘 안되고 좋지않아요. 8~90년대 시절 지어진 국내 리조트 같아요.\n\n이곳은 하카타역 근처 가깝고 시설 신경안쓰고 흡연자이시면 좋은 곳입니다. 서비스는 나쁠게 없는곳이라 가격만 저렴하면 충분히 묶을만 한곳이예요. 다만 가족단위는 아이랑은 맞지않습니다. 조식은 쏘쏘입니다.\n\n8층 자판기, 얼음, 전자레인지, 세탁시설이 있어 사용하긴 편합니다"}, {"s": "공간/노후화", "g": "주의", "q": "공간이 **비교적 작습니다**.", "d": "2025-09-03", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "깨끗하고 편안하며 기본적인 편의시설이 모두 갖춰져 있고 교통도 매우 편리하지만 공간이 다소 좁습니다.", "of": "乾淨、舒適，基本設施齊全，交通非常方便，空間比較小一點。"}, {"s": "공간/노후화", "g": "주의", "q": "**건물 자체가 낡아서** 놀랐지만,", "d": "2025-08-22", "n": "S S", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pCQ2JsazJWRTFSV0dZNGRWVjZkM3BvVVVoTk9YYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjBCblk2VE1RWGY4dVV6d3poUUhNOXc%7C%7C?hl=ko", "tf": "2025년 8월에 혼자 여행으로 이용.\n2박 약 24000엔.\n건물 자체는 옛날 놀랐지만 입지는 좋다.\n프런트는 남성으로 정중한 대응을 받았습니다.\n입지는 좋기 때문에 만족했습니다.", "of": "2025年8月に一人旅で利用。\n2泊で約24000円。\n建物自体は古くびっくりしましたが、立地は良い。\nフロントは男性で丁寧な対応をしてもらいました。\n立地は良いので満足しました。"}, {"s": "공간/노후화", "g": "주의", "q": "**비록 조금 낡았지만**", "d": "2025-08-19", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "역과 가깝고, 방도 넓고, 좀 오래되긴 했지만 괜찮아요.", "of": "離車站近，房間大，雖然舊了點，但是還ok"}, {"s": "공간/노후화", "g": "주의", "q": "관내 전체에서 **오래된 느낌**이 났고, **설비의 노후화**가 신경 쓰였습니다.", "d": "2025-08-03", "n": "F S", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25oQmJqWkdNbUZpTkV0UWJWOXJWWEZJUjBwRlRFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnhBbjZGMmFiNEtQbV9rVXFIR0pFTEE%7C%7C?hl=ko", "tf": "하카타역에서 도보로 가까운 편리한 입지.\n체크인 후 에어컨의 결함이 발견되어 방을 변경. 직원의 대응은 정중했다.\n단, 관내 전체에 낡음이 느껴져 설비의 경년 열화가 신경이 쓰였다. 입지 중시라면 나쁘지 않은 선택.", "of": "博多駅から徒歩すぐの便利な立地。\nチェックイン後、空調の不具合が見つかり、部屋を変更。スタッフの対応は丁寧だった。\nただし、館内全体に古さが感じられ、設備の経年劣化が気になった。立地重視なら悪くない選択。"}], "동선 파괴자": [{"s": "주변 편의성", "g": "주의", "q": "유일한 아쉬움은 가장 가까운 **마트가 저녁 8시까지만 영업하고 현금만 가능**하다는 점입니다.", "d": "2026-03-11", "n": "leo隊長", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pjM2VHaFhXVXRXWDFKUGJUbHVhMHh6TUZjMWIwRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjc3eGhXWUtWX1JPbTlua0xzMFc1b0E%7C%7C?hl=ko", "tf": "조식이 포함된 옵션을 예약하세요. 절대 후회하지 않으실 거예요. 조식은 오전 6시 30분부터 시작하며, 최소 6~7가지 메뉴 중에서 선택할 수 있습니다. 6박 투숙 시 매일 다른 조식을 선택할 수도 있어요. 셀프 서비스 바도 있는데, 직접 만든 두부가 너무 맛있어서 항상 두 그릇씩 먹게 되네요! 셀프 서비스 바 메뉴는 매일 조금씩 바뀝니다. 하카타역에서 아주 가까운 위치에 있고, 도보 5분 거리에 약국이 2~3곳 이상 있으며, 후쿠오카의 유명 빵집들도 걸어서 갈 수 있는 거리에 있습니다. 유일한 단점은 가장 가까운 슈퍼마켓이 저녁 8시에 문을 닫고 현금으로만 결제해야 한다는 점이에요. 8시 이후에는 할인을 받을 수 없거든요. 호텔 직원들은 매우 친절합니다. 휴대폰 충전기는 따로 가져오지 않아도 되고, 케이블만 가져오면 돼요. 티백도 5가지 이상 준비되어 있고, 편의시설도 아주 잘 갖춰져 있습니다. 가습기, 작은 커피 테이블, 의자 두 개가 있고, 76cm짜리 여행 가방 두 개를 놓을 공간도 충분합니다. 베개 크기도 딱 좋고, 매트리스는 단단하면서도 꺼지지 않아서 정말 편안합니다. 후쿠오카에 오셔서 하카타역 근처에 숙소를 찾으신다면 이 호텔을 강력 추천합니다!", "of": "請訂有含早餐的選項，絕對不會失望，早上6:30開始供餐，選擇品項至少6～7種，來玩6天，每天可以選擇不一樣的早餐，還有自助吧台，自家製豆腐太好吃，每次都可以讓我另外吃2碗，自助吧台的菜色也會有小變化..位置離博多站實在是太近了，步行5分鐘距離內藥妝店至少2～3家，離福岡火紅的麵包店也是走路可到，唯一小缺憾的是，最近的超市只有營業到晚上8點，一定要用現金結帳，少了那種晚上8:00以後會打折的氛圍..飯店人員接待都十分有禮貌，來這邊連手機充電器也免帶了，只要帶線就好，櫃台茶包至上5種口味，備品也十分齊全...加濕器，小茶几，椅子2張，30吋行李放2只沒問題，枕頭適中，床墊偏硬不塌陷，很棒，有來福岡想住在博多站附近的，這飯店絕對推薦～"}, {"s": "주변 편의성", "g": "주의", "q": "**정수기**는 방 근처라 다행이지만 **왔다갔다 조금 번거로움**.", "d": "2025-11-29", "n": "정지희", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2poTllrWmtPRVI1UXpCTGJFWmZkWEJGWVVsNVRHYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjhNYkZkOER5QzBLbEZfdXBFYUl5TGc%7C%7C?hl=ko", "tf": "", "of": "오래된 티는 나지만 대신 싱글룸이어도 방이 넓고\n역에서 멀지않아 이동하기 좋음.\n가격은 조금 있지만 버스투어 모임장소에서 멀지않아 예약했는데 가까워서 돌아올 때 진짜 편했다.\n싱글룸이라 그런지 벽뷰여서 좀 아쉽고 정수기는 방 근처라 그나마 다행이지만 왔다갔다 조금 번거로움."}, {"s": "역/거점 접근성", "g": "주의", "q": "지하철역에서 **조금 더 걸어야 하는 것** 외에는 모든 것이 좋았습니다.", "d": "2025-09-18", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "지하철역에서 조금 걸어가야 한다는 점을 제외하면 모든 것이 훌륭했습니다. 방도 매우 넓어서 큰 여행 가방 두 개를 놓기에도 충분했습니다. 바로 아래층에 맛있는 이자카야가 있어서 편리했습니다.", "of": "除了位置距離地鐵站需要行多少少，其他所有東西都非常好，房間也非常大，可以完全開展兩個大行李箱。￼樓下就是一間好味的居酒屋￼￼￼￼，十分方便￼"}, {"s": "역/거점 접근성", "g": "주의", "q": "입구가 인도와 가까워 **눈에 띄지 않아 지나쳐 버렸습니다**.", "d": "2025-01-08", "n": "Tomy Iwa", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURmLWRDQUxnEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgIDf-dCALg%7C%7C?hl=ko", "tf": "하네다편이 결항하여 급히 숙박 준비했습니다.\n공식 홈페이지에서의 예약은 원활하게 할 수 있었습니다.\n입구가 보도와 가깝기 때문에, 눈치채지 않고 지나 버렸습니다만, 프런트 대응은 정중하고, 방도 깨끗이 청소되고 있어 호감이 있었습니다.\n아침 식사는 샐러드 바 포함이지만 메인 요리로 배 가득 먹을 수 없었습니다.\n아주 좋은 인상이었기 때문에 기회가 있으면 다시 이용하고 싶습니다.", "of": "羽田便が欠航して急遽宿泊手配しました。\nオフィシャルホームページでの予約はスムーズにできました。\n入り口が歩道と近いので、気づかずに通り過ぎてしまいましたが、フロント対応は丁寧で、部屋も綺麗に清掃されていて好感がもてました。\n朝食はサラダバー付ですが、メイン料理でお腹いっぱいで食べきれませんでした。\nとても良い印象でしたので、機会があればまた利用したいです。"}, {"s": "주변 편의성", "g": "주의", "q": "중심가에 위치해 있지만 **어떤 곳과도 가깝지 않습니다**.", "d": "2024-10-28", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://www.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "위치는 꽤 중심가에 가깝지만, 주변에 편의시설이 많지는 않습니다. 하지만 주차 시설이 훌륭하다는 점은 장점입니다.", "of": "Whilst the location is pretty central, it’s not close to anything. A good part is great parking facility."}, {"s": "역/거점 접근성", "g": "주의", "q": "요도바시카메라 옆이라 **생각보다는 역에서 멀어요**", "d": "2024-07-03", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://kr.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "", "of": "가격 대비 상당히 괜찮은 비즈니스 호텔요도바시카메라 옆이라 생각보다는 역에서 멀어요"}, {"s": "지형적 난관", "g": "주의", "q": "자차 이용 시 주차가 불편하며, **입구가 하나뿐이라 매우 좁습니다**.", "d": "2024-06-24", "n": "So Ling", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSUNMdVltTDZ3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICLuYmL6wE%7C%7C?hl=ko", "tf": "호텔은 JR 하카타 역 뒤편, 치쿠시 출구에서 도보로 약 4분 거리에 있어 매우 편리합니다. 뒷골목에는 다양한 레스토랑이 즐비합니다. 여러 이자카야가 있고, 하카타 역 출구 바로 옆, 호텔 뒤쪽에는 세븐일레븐 편의점이 있습니다. 호텔 바로 옆에는 전자제품과 스포츠 용품을 판매하는 상점도 있습니다. 5층에는 대형 슈퍼마켓과 대형 디아소 매장도 있어 매우 편리합니다.\n\n유일한 단점은 주차가 불편하다는 점입니다. 입구가 하나뿐이고 매우 좁기 때문입니다.", "of": "酒店位置非常方便，位於JR博多車站後街及離博多站筑紫口步行約4分鐘出口。 後街非常熱鬧，不同種類餐廳也可找到。有好幾間居酒屋，7-11 便利商店便在博多車站出口，酒店後街。 酒店隔離還有一橦商店，有售買電器及體育用品店、大型超級市場在5樓，大型Diaso 也有5 樓。 十分方便。\n\n唯一缺點是，如自駕需要泊車就不方便，入口只有一個，非常之夾窄。"}, {"s": "지형적 난관", "g": "주의", "q": "**지하상가 통로가 호텔로 바로 연결되지 않아** 비 오는 날 불편합니다.", "d": "2024-04-30", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "위치는 정말 최고예요! 다만 아쉬운 점은 호텔로 바로 연결되는 지하 통로가 없다는 거예요. 비 오는 날에는 좀 불편할 수도 있겠네요.", "of": "地點好!可惜一點是沒有地下街通道直往飯店的路.下雨天稍嫌麻煩"}], "불친절 레이더": [{"s": "사후 대처", "g": "심각", "q": "금연실 3개를 예약했지만 **호텔 측에서 제공하지 않았습니다**.", "d": "2025-11-30", "n": "Kanchana Sinbumrung", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21RMlZuSjNkRGhvTlRGVE5uVkpiRmxxVlRCSWQwRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOmQ2VnJ3dDhoNTFTNnVJbFlqVTBId0E%7C%7C?hl=ko", "tf": "2025년 11월 22일에 금연 객실 3개를 예약했는데, 호텔에서는 제공하지 않았습니다. 담배 냄새가 저희 셋 모두에게 너무 심했습니다. 특히 저는 심한 두통으로 잠에서 깼습니다.", "of": "We had booked 3 non smoking on22Nov2025 , but the hotel didn't provide them .The smell of cigarette smoke was overwhelming for all three of us. I especially woke up with a terrible headache"}, {"s": "처리 지연", "g": "심각", "q": "**30분 가까이 다툰 끝에** 겨우 조식을 얻었지만 **일정이 엉망이 되었습니다**.", "d": "2025-05-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 낡고 관리가 제대로 되어 있지 않았으며, 카펫에는 얼룩이 눈에 띄게 많았습니다. 사진과는 달리 실제 모습은 훨씬 새롭고 깨끗했습니다. 두 번째로 묵었던 호텔보다 더 비싼 가격을 지불하고 26제곱미터 크기의 방을 예약했는데, 도착해 보니 예상했던 방과는 전혀 달랐습니다. 다른 사람들에게 물어보니 24제곱미터 크기의 방이었다고 하더군요. 트립닷컴 문제인지 호텔 문제인지 모르겠지만, 호텔 측에서는 같은 방이라고 주장하며 방을 바꿔주지 않았습니다. 거의 30분 동안 실랑이를 벌인 끝에 겨우 아침 식사와 다음 날 방 변경을 받았지만, 기다린 시간을 포함해 모든 과정이 이미 여행 일정에 차질을 빚었습니다. 게다가 2박을 예약했는데, 업그레이드나 일반 방으로 바꿔주기는커녕 오히려 더 낮은 등급의 방으로 바뀌었습니다. 다시 방을 바꾸면 더 나쁘거나 문제가 있는 방을 받을까 봐 걱정됩니다. 온천 호텔과 토요일 밤에 묵었던 호텔을 제외하면, 이 호텔은 이번 여행에서 묵었던 세 곳의 호텔 중 가장 비싸고 최악이었다.", "of": "殘舊，保養不佳，地毯有明顯污漬，相片明顯比現場新淨。我付出比第二間酒店更多錢，訂了26平米房間，上房後發現明顯不符，下樓問清楚後，說是24平米房間。我不清楚到底是trip.com 還是酒店問題，但酒店一直堅持是同等房型，不願意換房。我嘈了將近30分鐘，才爭取回一餐早餐及第二晚可以換房，但一上一落，其他時間等，已經打亂我的行程。加上我訂兩晚房，不但沒upgrade 或給我正常房間，反而更給我降級，我亦不敢再換房間，恐防給我更差或有問題的房間。此次旅程除了溫泉酒店及星期六晚入住，是我其他三間酒店最貴，亦是最差的酒店。"}, {"s": "응대 태도", "g": "심각", "q": "호텔 측은 계속 **동일한 방 타입이라고 고집**했습니다.", "d": "2025-05-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 낡고 관리가 제대로 되어 있지 않았으며, 카펫에는 얼룩이 눈에 띄게 많았습니다. 사진과는 달리 실제 모습은 훨씬 새롭고 깨끗했습니다. 두 번째로 묵었던 호텔보다 더 비싼 가격을 지불하고 26제곱미터 크기의 방을 예약했는데, 도착해 보니 예상했던 방과는 전혀 달랐습니다. 다른 사람들에게 물어보니 24제곱미터 크기의 방이었다고 하더군요. 트립닷컴 문제인지 호텔 문제인지 모르겠지만, 호텔 측에서는 같은 방이라고 주장하며 방을 바꿔주지 않았습니다. 거의 30분 동안 실랑이를 벌인 끝에 겨우 아침 식사와 다음 날 방 변경을 받았지만, 기다린 시간을 포함해 모든 과정이 이미 여행 일정에 차질을 빚었습니다. 게다가 2박을 예약했는데, 업그레이드나 일반 방으로 바꿔주기는커녕 오히려 더 낮은 등급의 방으로 바뀌었습니다. 다시 방을 바꾸면 더 나쁘거나 문제가 있는 방을 받을까 봐 걱정됩니다. 온천 호텔과 토요일 밤에 묵었던 호텔을 제외하면, 이 호텔은 이번 여행에서 묵었던 세 곳의 호텔 중 가장 비싸고 최악이었다.", "of": "殘舊，保養不佳，地毯有明顯污漬，相片明顯比現場新淨。我付出比第二間酒店更多錢，訂了26平米房間，上房後發現明顯不符，下樓問清楚後，說是24平米房間。我不清楚到底是trip.com 還是酒店問題，但酒店一直堅持是同等房型，不願意換房。我嘈了將近30分鐘，才爭取回一餐早餐及第二晚可以換房，但一上一落，其他時間等，已經打亂我的行程。加上我訂兩晚房，不但沒upgrade 或給我正常房間，反而更給我降級，我亦不敢再換房間，恐防給我更差或有問題的房間。此次旅程除了溫泉酒店及星期六晚入住，是我其他三間酒店最貴，亦是最差的酒店。"}, {"s": "사후 대처", "g": "심각", "q": "호텔 측은 **방을 바꿔주려 하지 않았습니다**.", "d": "2025-05-02", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "호텔은 낡고 관리가 제대로 되어 있지 않았으며, 카펫에는 얼룩이 눈에 띄게 많았습니다. 사진과는 달리 실제 모습은 훨씬 새롭고 깨끗했습니다. 두 번째로 묵었던 호텔보다 더 비싼 가격을 지불하고 26제곱미터 크기의 방을 예약했는데, 도착해 보니 예상했던 방과는 전혀 달랐습니다. 다른 사람들에게 물어보니 24제곱미터 크기의 방이었다고 하더군요. 트립닷컴 문제인지 호텔 문제인지 모르겠지만, 호텔 측에서는 같은 방이라고 주장하며 방을 바꿔주지 않았습니다. 거의 30분 동안 실랑이를 벌인 끝에 겨우 아침 식사와 다음 날 방 변경을 받았지만, 기다린 시간을 포함해 모든 과정이 이미 여행 일정에 차질을 빚었습니다. 게다가 2박을 예약했는데, 업그레이드나 일반 방으로 바꿔주기는커녕 오히려 더 낮은 등급의 방으로 바뀌었습니다. 다시 방을 바꾸면 더 나쁘거나 문제가 있는 방을 받을까 봐 걱정됩니다. 온천 호텔과 토요일 밤에 묵었던 호텔을 제외하면, 이 호텔은 이번 여행에서 묵었던 세 곳의 호텔 중 가장 비싸고 최악이었다.", "of": "殘舊，保養不佳，地毯有明顯污漬，相片明顯比現場新淨。我付出比第二間酒店更多錢，訂了26平米房間，上房後發現明顯不符，下樓問清楚後，說是24平米房間。我不清楚到底是trip.com 還是酒店問題，但酒店一直堅持是同等房型，不願意換房。我嘈了將近30分鐘，才爭取回一餐早餐及第二晚可以換房，但一上一落，其他時間等，已經打亂我的行程。加上我訂兩晚房，不但沒upgrade 或給我正常房間，反而更給我降級，我亦不敢再換房間，恐防給我更差或有問題的房間。此次旅程除了溫泉酒店及星期六晚入住，是我其他三間酒店最貴，亦是最差的酒店。"}, {"s": "사후 대처", "g": "심각", "q": "금연실을 예약했지만 직원은 **흡연실만 가능하다고 했습니다**.", "d": "2024-06-21", "n": "Mountain “SIK6SIK6”", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNMcFlxQ0hnEAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICLpYqCHg%7C%7C?hl=ko", "tf": "흡연자 전용 호텔이었습니다. 금연실을 예약했는데, 직원은 그날 흡연실밖에 없다고 했습니다. 방에 들어가기도 전에 복도에 담배 냄새가 진동했고, 창문을 열어 환기를 시켜봤지만 밤새 다른 투숙객들이 방에서 담배를 피우면 우리 방에도 심한 담배 냄새가 들어왔습니다. 그 이틀 밤은 악몽 같았습니다. 호텔 위치는 하카타역, 쇼핑몰, 식당과 가까워 좋았지만, 비흡연자인 저는 다시는 이곳에 묵고 싶지 않습니다.", "of": "Hotel for smokers. We booked non-smoking room but the staff told us only smoking room available on that day. Before we enter the room , the smoking smells were full of the corridor , we try to open the window to let some fresh air in but during the night our room will have strong smoking smells when other guests smoke in their rooms, that 2 nights were nightmare....hotel location was good close to Hakata station , shopping malls and restaurants but as a non smoker I wont dare to stay here again."}, {"s": "처리 지연", "g": "주의", "q": "포인트를 사용하려 할 때 **카드 사전 결제가 되지 않는 점**은 조금 불편합니다.", "d": "2026-03-10", "n": "mkt", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25scGNYZGthMWR5T0RCdmEzcHlhak42T1Y5M2NVRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnlpcXdka1dyODBva3pyajN6OV93cUE%7C%7C?hl=ko", "tf": "하카타 역 치쿠시구치에서 바로 호텔. 지하철에서라면 동5출구에서 편리합니다.\n프런트의 젊은 남성 스탭의 대응이 훌륭했습니다. 객실도 넓고 조용하고 침착합니다. 매우 아늑한 호텔이었습니다.\n(2026/3/5) 전회와 같은 싱글 룸에 숙박. 프런트의 접객은 변함없이 매우 좋습니다만, HP로부터의 예약으로 모인 포인트를 사용하려고 할 때에 카드 사전 결제를 할 수 없다(당일 프런트에서 결제해야 한다) 것은, 조금 불편.", "of": "博多駅筑紫口からすぐのところにあるホテル。地下鉄からだと東5出口からが便利。\nフロントの若い男性スタッフの対応が素晴らしかった。お部屋も広く静かで落ち着きます。大変居心地の良いホテルでした。\n（2026/3/5）前回と同じシングルルームに宿泊。フロントの接客は変わらずとても良いのですが、HPからの予約で溜まったポイントを使おうとする時にカード事前決済ができない（当日フロントで決済しなければならない）のは、ちょっと不便。"}, {"s": "응대 태도", "g": "주의", "q": "**서비스가 아주 좋은건 아니지만**", "d": "2026-01-19", "n": "WAN SEOK SEO", "st": 5, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT205VFpqZGtORGRIYjJ3dFJGRmtTMGMwVkc1c2NFRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOm9TZjdkNDdHb2wtRFFkS0c0VG5scEE%7C%7C?hl=ko", "tf": "", "of": "방과 화장실이 작고, 서비스가 아주 좋은건 아니지만 위치가 매우 훌륭하네요\n그리고 마지막날 캐널시티 관광하는데 짐보관이 되어 아주 좋네요"}, {"s": "사후 대처", "g": "주의", "q": "일회용 슬리퍼가 없어 **프런트에 요청했지만 없다는 답변**뿐이었습니다.", "d": "2025-11-21", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://hk.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "객실은 다소 작았지만 기본적인 서비스는 괜찮았습니다. 하지만 일회용 슬리퍼가 제공되지 않아 실망스러웠습니다. 프런트 데스크에 문의했더니 없다고 해서 결국 다이소에 가서 직접 사야 했습니다. 호텔 측은 환경 보호를 명분으로 비위생적인 낡은 슬리퍼를 투숙객에게 제공했는데, 그 슬리퍼는 깨끗하게 소독되지도 않았고 밀봉된 포장 상태도 아니었습니다. 어떻게 투숙객들이 안심하고 사용할 수 있겠습니까?", "of": "房間比較細，基本服務正常。令人失望的是沒有提供即棄拖鞋，去前台要求也是回覆沒有，只能自己去daiso買。酒店以環保為名，逼客人使用不衛生的舊拖鞋，但是拖鞋根本沒有已清潔及已消毒的密封包装，如何令客人安心使用？"}, {"s": "처리 지연", "g": "주의", "q": "어메니티에 대해서도 **아무런 설명을 듣지 못해** 입욕 후에 프런트까지 가야 했습니다.", "d": "2025-10-18", "n": "小室広昭", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25KVWQwODBjbkZzVGpNdGVVNXBhbkJ5TjBGTk4xRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnJUd080cnFsTjMteU5panByN0FNN1E%7C%7C?hl=ko", "tf": "우선 체크인의 QR코드가 보내져 왔기 때문에 그래서 체크인기를 사용해 체크인했지만, 조식권은 발행되지 않고, 프런트에서 건네는 것. 무엇에 대한 QR 코드를 모르겠어요. 어메니티도 아무것도 듣지 않기 때문에 그대로 방에 갔지만 프런트 옆에서 각자 가지고 간다는 것으로, 목욕 후 프런트까지 갔다. 안내되는 것에 체재중의 청소는 실시하지 않는다고 써 있었으므로, 다음날 아침 소중한 일의 전화를 하고 있었는데, 청소계로부터 전화가 와서 청소는 어떻게 할까라고 들려, 일을 방해되어 매우 폐를 끼쳤다. 청소하지 않는다고 써 있던 것은 무엇인가. 방해하지 말라는 느낌. 물었기 때문에 수건 교환을 부탁했지만 잠옷은 교환되지 않았습니다. 그 정도 신경을 쓰자는 느낌. 해야 할 일이 너무 어리석다.", "of": "まずチェックインのQRコードが送られてきたのでそれでチェックイン機を使用してチェックインしたが、朝食券は発行されず、フロントで手渡しとのこと。何のためのQRコードかわからず。アメニティのことも何も聞かされないのでそのまま部屋に行ったがフロント横で各自持っていくとのことで、入浴後にフロントまで行かされた。ご案内なるものに滞在中の清掃は行わないと書いてあったので、翌朝大事な仕事の電話をしていたところ、清掃係から電話が来て清掃はどうするかと聞かれ、仕事を邪魔されて非常に迷惑した。清掃しないと書いてあったのは何なのか。邪魔するなという感じ。聞かれたのでタオルの交換をお願いしたが、パジャマは交換されていなかった。そのくらい気を利かせろという感じ。やることなすこと中途半端すぎる。"}, {"s": "응대 태도", "g": "주의", "q": "청소 담당자에게 전화가 와서 **업무를 방해받아 매우 불쾌**했습니다.", "d": "2025-10-18", "n": "小室広昭", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25KVWQwODBjbkZzVGpNdGVVNXBhbkJ5TjBGTk4xRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOnJUd080cnFsTjMteU5panByN0FNN1E%7C%7C?hl=ko", "tf": "우선 체크인의 QR코드가 보내져 왔기 때문에 그래서 체크인기를 사용해 체크인했지만, 조식권은 발행되지 않고, 프런트에서 건네는 것. 무엇에 대한 QR 코드를 모르겠어요. 어메니티도 아무것도 듣지 않기 때문에 그대로 방에 갔지만 프런트 옆에서 각자 가지고 간다는 것으로, 목욕 후 프런트까지 갔다. 안내되는 것에 체재중의 청소는 실시하지 않는다고 써 있었으므로, 다음날 아침 소중한 일의 전화를 하고 있었는데, 청소계로부터 전화가 와서 청소는 어떻게 할까라고 들려, 일을 방해되어 매우 폐를 끼쳤다. 청소하지 않는다고 써 있던 것은 무엇인가. 방해하지 말라는 느낌. 물었기 때문에 수건 교환을 부탁했지만 잠옷은 교환되지 않았습니다. 그 정도 신경을 쓰자는 느낌. 해야 할 일이 너무 어리석다.", "of": "まずチェックインのQRコードが送られてきたのでそれでチェックイン機を使用してチェックインしたが、朝食券は発行されず、フロントで手渡しとのこと。何のためのQRコードかわからず。アメニティのことも何も聞かされないのでそのまま部屋に行ったがフロント横で各自持っていくとのことで、入浴後にフロントまで行かされた。ご案内なるものに滞在中の清掃は行わないと書いてあったので、翌朝大事な仕事の電話をしていたところ、清掃係から電話が来て清掃はどうするかと聞かれ、仕事を邪魔されて非常に迷惑した。清掃しないと書いてあったのは何なのか。邪魔するなという感じ。聞かれたのでタオルの交換をお願いしたが、パジャマは交換されていなかった。そのくらい気を利かせろという感じ。やることなすこと中途半端すぎる。"}, {"s": "응대 태도", "g": "주의", "q": "프런트의 젊은 남성 2명과 여성은 담소 중이었고, **완전히 무시당했습니다**.", "d": "2025-10-16", "n": "ああ", "st": 2, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2toelJFdzBhMjVGVmpRd1dEQnRkbTVIYmxCT05uYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOkhzREw0a25FVjQwWDBtdm5HblBONnc%7C%7C?hl=ko", "tf": "10/15부터 1박에 이용했습니다. 체크인시에, 우리의 실수로 급히 예약하고 있던 내용으로부터 변경이 있었습니다만, 실버의 슈트를 입은 남성이 테키파키와 대응해 주시고 무사 숙박할 수 있었습니다. 낡은 호텔이었지만, 객실도 깨끗하고 매우 좋았습니다. 하지만 외출 후 밤에 돌아왔을 때 프런트 분들에게는 매우 실망했습니다. 실버 슈트 쪽이 인사해 주셨습니다만, 프런트 데스크의 젊은 남성 2명과 여성은 담소하고 있어 완전한 무시였습니다. 어쩌면 아르바이트 무엇일까요, 환대 업계로서 교육이 굉장히 없는 것은 실망스러웠습니다.", "of": "10/15から1泊で利用しました。チェックインの時に、私たちのミスで急遽予約していた内容から変更があったのですが、シルバーのスーツを着た男性がテキパキと対応してくださり無事宿泊することが出来ました。古いホテルでしたが、客室も綺麗でとても良かったです。ですが、外出後の夜に帰ってきた際にフロントの方たちにはとてもがっかりしました。シルバースーツの方が挨拶してくださりましたが、フロントデスクの若い男性2人と女性は談笑しており、完全の無視でした。多分アルバイト何でしょうが、ホスピタリティ業界として教育が行き届いてないのはガッカリでした。"}, {"s": "응대 태도", "g": "주의", "q": "에코 청소 협력에 대한 **약소한 배려도 전혀 없습니다**.", "d": "2025-04-28", "n": "Kgyok", "st": 1, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnTURvMDgzQzBBRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgMDo083C0AE%7C%7C?hl=ko", "tf": "세탁기를 이용했지만 최악이다.\n세제를 세탁기 옆에 있는 플라스틱에 포장\n세제를 넣는데, 작은 가방에서 열어 사용하는지 생각하고 그대로 넣는 것 같아, 테프라로 세제라고 밖에 쓰고 간단한 설명도 없기 때문에 실수로 열어 버려 눈이나 입에 튀어 들어 버렸다.\n그 밖에도 다른 호텔이라면 에코 청소 협력으로(원드링크 서비스, 동전 받고 자판기로 사용한다) 약간의 걱정도 있지만 여기는 전혀 없고. 재방은 없을까.\n7월도 1주일 묵자고 생각했지만 다른 호텔로 했다. 지네가 있어 빨리 돌아가고 싶다.", "of": "洗濯機を利用したが最悪だ\n洗剤を洗濯機横にあるプラに包装された\n洗剤を入れるのだが、小袋から開けて使うのかと思いきやそのまま入れるみたいで、テプラで洗剤としか書いてく簡単な説明もないので間違えて開けてしまい目や口に飛び出して入ってしまった。\n他にも他ホテルだとエコ清掃協力で(ワンドリンクサービス、コインもらって自販機で使う)ちょっとした気遣いもあるがここは全くないし。再訪はないかな。\n7月も１週間泊ろうかと思ったが別のホテルにした。ムカついてて早く帰りたい。"}, {"s": "처리 지연", "g": "주의", "q": "체크인이 된 건지 어떤 건지 **잘 모르는 상태**였습니다.", "d": "2024-11-28", "n": "MIKA Happypowers", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURQOEp1UDJBRRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgIDP8JuP2AE%7C%7C?hl=ko", "tf": "하카타역 치쿠시구치 측에 있는 역 근호 입지인 호텔.\n품질이 부족하지만 인상은 나쁘지 않습니다.\n\n체크인은 자동 체크인기라고 생각했는데, 접수의 미남 형에게 말을 걸어 이름을 전하면 체크인 할 수 있었을까? 뭔가 잘 모르는 상태였습니다.\n\n레이트 체크인 플랜으로 예약하고 있던 것 같고, 추가 요금 1,000엔을 지불해 무사히 체크인.\n\n실내: 넓다. 넓게는 혼자서는 충분히.\n욕실에 약간의 낡음을 느낍니다만, 신경이 쓰일 정도는 아닙니다. 냉장고 있음. 넓은 책상이 있습니다.\n\nWi-Fi：평일 이용이었기 때문에인가, 접속 스트레스 없음.\n어메니티: 로비에 있습니다.\n아침 식사 : 1F 레스토랑에서. 2,000엔으로 높지만 맛있습니다.\n\n외국인 여행객이 많아 엘리베이터 내의 매너가 나쁘기 때문에 어색합니다. 대형의 엘리베이터 2기 있습니다만, 상층으로부터 가득한 상태로 엘리베이터가 내려 오므로, 중층층에 숙박의 경우는 시간에 여유를 가지고 행동되는 것을 추천합니다.\n\n※사진을 UP할 수 없기 때문에 나중에 추가합니다(｀･ω･´)ゞ\n\n*** Google 번역\n\nThis hotel is conveniently located near the Hakata Station Chikushi Exit side.\nAlthough it lacks quality, it doesn't leave a bad impression.\n\nI thought it was an automatic check-in machine, but I was approached by a handsome man at the reception desk, and wh", "of": "博多駅筑紫口側にある駅近好立地なホテル。\n上質さに欠けるものの、印象は悪くありません。\n\nチェックインは自動チェックイン機かと思いきや、受付のイケメンなお兄様に声をかけられ、名前を伝えると、チェックインできたのかな？なんかよく分からない状態でした。\n\nレイトチェックインプランで予約していたらしく、追加料金1,000円を支払って無事にチェックイン。\n\n室内：広め。広さ的には1人にしては充分。\nバスルームに若干古さを感じはしますが、気になるほどではありません。冷蔵庫あり。広めのデスクあり。\n\nWi-Fi：平日利用だったためか、接続ストレス無し。\nアメニティ：ロビーにあります。\n朝食：1Fレストランにて。2,000円とお高めですが美味しいです。\n\n外国人旅行客が多く、エレベーター内のマナーが悪いためイラッとします。大型のエレベーター2基ありますが、上層階から満杯の状態でエレベーターが下りてくるため、中層階にお泊りの場合は時間に余裕をもって行動されることをお勧めします。\n\n※写真がUPできないため後日追加します(｀･ω･´)ゞ\n\n*** Google translation\n\nThis hotel is conveniently located near the Hakata Station Chikushi Exit side.\nAlthough it lacks quality, it doesn't leave a bad impression.\n\nI thought it was an automatic check-in machine, but I was approached by a handsome man at the reception desk, and when I told him my name, I was able to check in. I w"}, {"s": "처리 지연", "g": "주의", "q": "도착하기 전에 **미리 안내를 받았더라면** 더 좋았을 것 같습니다.", "d": "2024-06-10", "n": "Trip.com Member", "st": null, "o": "Trip.com", "u": "https://www.trip.com/hotels/detail?hotelid=705311&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "tf": "2박 동안 방 2개를 예약했습니다. 방은 가격 대비 만족스러웠습니다. 다만 주차 문제로 약간 불편을 겪었습니다. 여행을 위해 렌터카를 이용했기 때문에 주차가 필요했고, 예약 시 비고란에도 미리 적어 두었습니다. 그런데 도착해서 보니 주차장 높이 제한이 1.55미터밖에 되지 않아 저희 차가 초과된다는 안내를 받았습니다. 직원의 추천으로 근처 다른 주차장에 주차했습니다. 진입로는 어렵지 않았지만, 도착 전에 미리 알려주었더라면 더 좋았을 것 같습니다.", "of": "Booked 2 rooms for 2 night. The rooms were perfect for the price. However, we did encounter a slight inconvenience with parking. We rented a car for our trip so we needed parking. I already stated as in the remarks of my booking. Unfortunately upon arrival we were informed that the car park height limit is only 1.55 metre, which our car exceeded. We parked at a nearby car park with the staff’s recommendation. It was not difficult to access but it would be better if we were informed as before our arrival for more transparency."}], "안전 그림자": [{"s": "보안 시설", "g": "심각", "q": "캐리어 안의 **대만 달러가 기묘하게 사라진 것**을 발견했습니다.", "d": "2025-09-21", "n": "Sora Yahisa", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2poRVIwRXpjbWRsYldkT1dqSXlVREJPUVRKQlNXYxAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CAIQACodChtycF9oOjhER0EzcmdlbWdOWjIyUDBOQTJBSWc%7C%7C?hl=ko", "tf": "위치가 매우 편리하고 서비스도 훌륭했습니다.\n그런데 체크인 후 캐리어에 대만 달러가 몇 개 없어진 것을 발견했습니다... 금액이 크지는 않았지만, 그래도 좀 놀랐습니다.\n그래서 이 리뷰를 쓰는 이유는 모든 분들께 항상 짐을 잘 닫고 잠그도록 상기시켜 드리기 위해서입니다.", "of": "位置很方便且服務很好\n但我們在入住完後有發現行李箱內袋的台幣離奇不見了⋯⋯雖然遺失的金額不多，但還是覺得有點意外\n所以在這裡寫評量提醒大家行李箱還是要關起來鎖好"}, {"s": "사생활 보호", "g": "주의", "q": "커튼을 여니 **맞은편 호텔 방이 훤히 보여서** 놀랐습니다.", "d": "2024-12-14", "n": "sorada kaworu", "st": 4, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUN2MDV1Qk93EAE!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgICv05uBOw%7C%7C?hl=ko", "tf": "하카타 역에서 가깝고 편리했습니다.\n조금 낡은 느낌이 듭니다만 다음날 묵은 다른 호텔보다 청소가 세심해 안심.\n스탭의 애상도 좋았다. 아침 식사도 맛있었습니다.\n동전 세탁기를 이용했습니다만 세제의 향기가 약한 타입이었던 것이 유감이었습니다. (다른 곳에서는 여기까지 제대로 향기가 붙은 적이 없었다.)\n그리고 커튼 열면 맞은 편의 호텔의 방이 둥근 보이고 놀랐습니다만 이것은 어쩔 수 없네요-.", "of": "博多駅から近くて便利でした。\n少し古い感じがしますが翌日泊まった別のホテルよりも清掃が行き届いていて安心。\nスタッフの愛想も良かった。朝食も美味しかったです。\nコインランドリーを利用したのですが洗剤の香りが苦手なタイプだったのが残念でした。(他所ではここまでしっかり香りが付いたことがなかった。)\nあとカーテン開けたら向かいのホテルのお部屋が丸見えでびっくりしましたがコレは仕方ないですねー。"}, {"s": "보안 시설", "g": "주의", "q": "귀중품 보관을 위한 **금고가 없습니다**.", "d": "2024-10-04", "n": "Eug Tg", "st": 3, "o": "Google", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURub29iVjR3RRAB!2m1!1s0x0:0x4985fc1e78aecb1e!3m1!1s2@1:CIHM0ogKEICAgIDnoobV4wE%7C%7C?hl=ko", "tf": "객실 - 낡고 오래됨. 귀중품 보관용 금고 없음.\n세탁 - 매우 부족함. 세탁기가 두 대뿐이고 항상 사용 중. 한밤중에 깨게 될 각오가 되어 있지 않으면 빨래는 하지 않는 게 좋음.\n위치 - 이 호텔의 유일한 장점인데, 가격 대비 나쁘지 않음.\n\n하지만 다른 선택지가 없다면 피하는 게 좋을 것 같음.", "of": "Rooms -  old and dated. No safe for storing valuables.\nLaundry - grossly inadequate,  only 2 washing machines, always in use. Don't think of washing your cloths unless you are prepared to wake up in middle of the night.\nLocation - the only good thing about this hotel, which is not bad for the price.\n\nBut I would avoid unless there's no other options."}]};
+        window.QSUBS = {"위생 경보": ["침구/바닥 청결", "청소 서비스", "해충/곰팡이"], "오감 지옥": ["벽간/외부 소음", "악취 역류", "기기 소음"], "시설 사기단": ["공간/노후화", "냉난방/수압", "네트워크/TV"], "동선 파괴자": ["역/거점 접근성", "지형적 난관", "주변 편의성", "허위 위치 정보"], "불친절 레이더": ["응대 태도", "처리 지연", "사후 대처", "소통 불가"], "안전 그림자": ["보안 시설", "주변 치안", "사생활 보호"]};
+        </script>
+                <div class="sect hotel">
+            <div class="head"><div class="title">이런 호텔은 어떠세요?</div>
+            <div class="desc">비슷한 가격대·가까운 위치에서 실망 확률이 낮은 순이에요</div></div>
+            <div class="list hotel-slider"><ul class="swiper-wrapper"><li class="swiper-slide">
+        <a href="../hotels/ChIJMV4GYbmRQTUREdxclAmv9fI.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="../img/placeholder.svg" alt="야오지 하카타 호텔" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">야오지 하카타 호텔</h3>
+                <div class="eng">八百治博多ホテル</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 2,057개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJCc7zssuRQTURzuoRJwI3gic.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJCc7zssuRQTURzuoRJwI3gic.jpg" alt="몬탄 하카타 호스텔" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">몬탄 하카타 호스텔</h3>
+                <div class="eng">モンタン博多 montan HAKATA</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 1,285개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJl5HpFryRQTURBmmKGU8Vb6Y.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="../img/placeholder.svg" alt="호텔 홋케클럽 하카타" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 홋케클럽 하카타</h3>
+                <div class="eng">ホテル法華クラブ福岡</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 2,157개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g.jpg" alt="베스트 웨스턴 플러스 후쿠오카 텐진-미나미" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">베스트 웨스턴 플러스 후쿠오카 텐진-미나미</h3>
+                <div class="eng">ベストウェスタンプラス福岡天神南</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 698개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJbxVMD-CRQTURius479Mmxcc.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJbxVMD-CRQTURius479Mmxcc.jpg" alt="시즈테츠 호텔 프레지오 하카타에키마에" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">시즈테츠 호텔 프레지오 하카타에키마에</h3>
+                <div class="eng">静鉄ホテルプレジオ博多駅前</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,045개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg.jpg" alt="Wellcabin Tenjin" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Wellcabin Tenjin</h3>
+                <div class="eng">ウェルキャビン天神</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 459개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJd2hyGJGRQTURNTjti9FlcHs.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJd2hyGJGRQTURNTjti9FlcHs.jpg" alt="코트 호텔 후쿠오카 텐진" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">코트 호텔 후쿠오카 텐진</h3>
+                <div class="eng">コートホテル福岡天神</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 726개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJJdzvjciRQTURZlr-nALZ8Vk.html" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="../img/hotels/ChIJJdzvjciRQTURZlr-nALZ8Vk.jpg" alt="호텔 포르자 하카타역 치쿠시구치Ⅰ" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 포르자 하카타역 치쿠시구치Ⅰ</h3>
+                <div class="eng">ホテルフォルツァ博多駅筑紫口Ⅰ</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,870개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li></ul></div>
+        </div>
+            </div>
+            <div class="button"><a class="btn-reservate" href="https://www.google.com/maps/place/?q=place_id:ChIJAQDw5beRQTURHsuueB78hUk" target="_blank" rel="noopener">구글 지도에서 이 호텔 보기</a></div>
+        </section>
+        <section id="float">
+            <div class="float">
+                <a href="javascript:;" class="btn-share" aria-label="공유하기"><img src="../img/b_share.svg" alt="공유하기"></a>
+                <a href="javascript:;" class="btn-top" aria-label="맨 위로"><img src="../img/b_top.svg" alt="맨 위로"></a>
+            </div>
+        </section>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script>
+        $(function(){
+            $('.review-slider, #detail .hotel-slider').each(function(i, el){
+                new Swiper(el, {slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true});
+            });
+
+            // ───── 플로팅: 공유 / 맨 위로 ─────
+            $(window).on('scroll', function(){
+                $('#float').toggleClass('is-active', $(window).scrollTop() > 50);
+            });
+            $('.btn-top').on('click', function(e){
+                e.preventDefault();
+                $('html, body').stop().animate({scrollTop: 0}, 400);
+            });
+            $('.btn-share').on('click', function(e){
+                e.preventDefault();
+                var data = {title: document.title, url: location.href};
+                if (navigator.share) { navigator.share(data).catch(function(){}); }
+                else if (navigator.clipboard) {
+                    navigator.clipboard.writeText(location.href).then(function(){ alert('링크가 복사되었어요!'); });
+                }
+            });
+
+            // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
+            if (!window.QDATA) return;
+            var $sheet = $('#review-sheet'), curCat = null, curSub = null;
+
+            function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+            function emph(s){ return esc(s).replace(/\*\*(.+?)\*\*/g, '<span>$1</span>').replace(/\*\*/g, ''); }
+
+            function card(q){
+                var star = q.st ? '<div class="star"><i style="width:' + (q.st*20) + '%"></i></div>' : '';
+                var band = q.g === '심각' ? 'danger' : 'warning';
+                var hasFull = !!(q.tf || q.of);
+                var full = '';
+                if (hasFull) {
+                    full = '<div class="full" hidden>'
+                        + (q.tf ? '<div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(q.tf) + '</div>' : '')
+                        + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
+                        + '</div>';
+                }
+                var foot = '<div class="item-foot">'
+                    + (q.u ? '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">원본 바로가기 ↗</a>' : '<span></span>')
+                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
+                    + '</div>';
+                return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(q.n) + '</div>'
+                    + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
+                    + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div></div>'
+                    + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
+                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + '</div></div>'
+                    + foot + full
+                    + '</div></li>';
+            }
+
+            function render(){
+                var list = (window.QDATA[curCat] || []);
+                var filtered = curSub ? list.filter(function(q){ return q.s === curSub; }) : list;
+                $('#sheet-cat').text(curCat);
+                $('#sheet-cnt').text(filtered.length + '건');
+                $('#sheet-list').html(filtered.map(card).join('') ||
+                    '<li class="sheet-empty">이 소분류의 인용 리뷰가 없어요</li>');
+                var subs = window.QSUBS[curCat] || [];
+                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + list.length + '</button>'];
+                subs.forEach(function(s){
+                    var n = list.filter(function(q){ return q.s === s; }).length;
+                    if (!n) return;
+                    chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + ' ' + n + '</button>');
+                });
+                $('#sheet-chips').html(chips.join(''));
+                $('#sheet-list').scrollTop(0);
+            }
+
+            function open(cat, sub){
+                curCat = cat; curSub = sub || null;
+                render();
+                $sheet.prop('hidden', false);
+                requestAnimationFrame(function(){ $sheet.addClass('is-open'); });
+                $('body').css('overflow', 'hidden');
+            }
+            function close(){
+                $sheet.removeClass('is-open');
+                $('body').css('overflow', '');
+                setTimeout(function(){ $sheet.prop('hidden', true); }, 300);
+            }
+
+            $(document).on('click', '.stat-count.has-reviews', function(){
+                open($(this).data('cat'), $(this).data('sub'));
+            });
+            $(document).on('click', '.more-btn', function(){ open($(this).data('cat')); });
+            $(document).on('click', '.sheet-chip', function(){
+                curSub = $(this).data('sub') || null; render();
+            });
+            var CATLIST = Object.keys(window.QSUBS);
+            function shift(dir){
+                var i = (CATLIST.indexOf(curCat) + dir + CATLIST.length) % CATLIST.length;
+                curCat = CATLIST[i]; curSub = null; render();
+            }
+            $('#sheet-prev').on('click', function(){ shift(-1); });
+            $('#sheet-next').on('click', function(){ shift(1); });
+            $sheet.on('click', '.expand-btn', function(){
+                var $b = $(this), $full = $b.closest('.item').find('.full');
+                var opened = !$full.prop('hidden');
+                $full.prop('hidden', opened);
+                $b.toggleClass('is-open', !opened);
+                $b.closest('.item').find('.text').toggleClass('clamp', opened);
+            });
+            $sheet.on('click', '.sheet-close, .sheet-dim', close);
+            $(document).on('keydown', function(e){ if (e.key === 'Escape') close(); });
+        });
+    </script></div>
+</body>
+</html>

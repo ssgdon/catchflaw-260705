@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>캐치플로 — 검색</title>
+    <link rel="stylesheet" href="css/tokens.css?v=1783224476">
+    <link rel="stylesheet" href="css/common.css?v=1783224476">
+    <link rel="stylesheet" href="css/layout.css?v=1783224476">
+    <link rel="stylesheet" href="css/swiper.css?v=1783224476">
+    <link rel="stylesheet" href="css/uplift.css?v=1783224476">
+    <link rel="stylesheet" href="css/mvp.css?v=1783224476">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/swiper.js"></script>
+</head>
+<body>
+<div id="wrapper">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <main id="container">
+        <section id="title">
+            <div class="back"><a href="./index.html" class="btn-back"><img src="./img/back_b.svg" alt="뒤로가기"></a></div>
+            <div class="search">
+                <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
+                <input type="text" id="q" placeholder="후쿠오카 호텔명 검색 또는 구글맵 링크">
+            </div>
+        </section>
+        <section id="search">
+            <div class="filters">
+                <div class="f-row" id="f-price">
+                    <span class="f-label">가격</span>
+                    <button type="button" class="f-chip on" data-v="">전체</button>
+                    <button type="button" class="f-chip" data-v="b1">10만원 미만</button>
+                    <button type="button" class="f-chip" data-v="b2">10~20만원</button>
+                    <button type="button" class="f-chip" data-v="b3">20만원 이상</button>
+                </div>
+                <div class="f-row" id="f-band">
+                    <span class="f-label">등급</span>
+                    <button type="button" class="f-chip on" data-v="">전체</button>
+                    <button type="button" class="f-chip" data-v="safe">양호</button>
+                    <button type="button" class="f-chip" data-v="warning">주의</button>
+                    <button type="button" class="f-chip" data-v="danger">위험</button>
+                </div>
+            </div>
+            <div class="map-wrap"><div id="map"></div>
+                <div class="map-legend">
+                    <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
+                </div>
+            </div>
+            <div class="total" id="total"></div>
+            <div class="notice" id="notice" style="display:none"></div>
+            <div class="list"><ul id="results"></ul></div>
+        </section>
+    </main>
+    <script src="./data/index.js?v=1783224476"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    (function(){
+        var CITY_KO = '후쿠오카', CITY_AVG = 12;
+        var OTHER = ["도쿄", "tokyo", "오사카", "osaka", "교토", "kyoto", "삿포로", "sapporo", "나고야", "nagoya", "오키나와", "okinawa", "서울", "seoul", "부산", "busan", "제주", "jeju", "방콕", "bangkok", "다낭", "danang", "나트랑", "타이베이", "taipei", "싱가포르", "singapore", "홍콩", "hongkong", "hong kong", "괌", "guam", "세부", "cebu", "파리", "paris", "런던", "london"];
+        var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
+        var fPrice = '', fBand = '';
+
+        function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
+
+        // ───── 지도 (Leaflet + OSM, 키 불필요) ─────
+        var BAND_COLOR = {safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'};
+        var map = L.map('map', {scrollWheelZoom: false}).setView([33.5902, 130.4017], 13);
+        L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ko',
+            {maxZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '&copy; Google'}).addTo(map);
+        map.on('click', function(){ map.scrollWheelZoom.enable(); });
+        var markers = L.layerGroup().addTo(map);
+
+        function drawMap(list){
+            markers.clearLayers();
+            var pts = [];
+            list.forEach(function(h){
+                if (h.lat == null) return;
+                var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
+                var mk = L.circleMarker([h.lat, h.lng], {
+                    radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95
+                });
+                var chip = h.p != null
+                    ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
+                    : '<span class="pop-p" style="background:#9CA3AF">리뷰 수집중</span>';
+                mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
+                    + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
+                    + (h.pt ? ' · 1박 ' + h.pt : '') + '</div>'
+                    + chip
+                    + '<a class="pop-link" href="./hotels/' + h.id + '.html">캐치플로 분석 보기 →</a></div>');
+                markers.addLayer(mk);
+                pts.push([h.lat, h.lng]);
+            });
+            if (pts.length) map.fitBounds(pts, {padding: [24, 24], maxZoom: 15});
+        }
+
+        function bandChip(h){
+            if(!h.scored) return '<div class="badge-item badge-collect">리뷰 수집중</div>';
+            return '<div class="badge-item badge-'+h.band+'">'+h.label+'</div>'
+                 + '<div class="badge-item badge-down">실망 확률 '+h.p+'%</div>';
+        }
+        function row(h){
+            var img = h.img ? './' + h.img : './img/placeholder.svg';
+            return '<li><div class="item">'
+                + '<div class="thumb"><a href="./hotels/'+h.id+'.html"><img src="'+img+'" loading="lazy"></a></div>'
+                + '<div class="cont"><div class="info">'
+                + '<div class="name"><a href="./hotels/'+h.id+'.html">'+h.name+'</a></div>'
+                + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+'</div></div>'
+                + '<div class="bottom"><div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
+                + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div></div>'
+                + '<div class="badge">'+bandChip(h)+'</div></div>'
+                + '</div></div></li>';
+        }
+        function unsupported(q){
+            $total.html('');
+            $res.html('');
+            $notice.show().html(
+                '<div class="notice-card">'
+                + '<div class="notice-emoji">🙏</div>'
+                + '<div class="notice-tit">아직 <b>'+CITY_KO+'</b>만 지원해요</div>'
+                + '<div class="notice-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요.<br>'+CITY_KO+' 호텔은 전부 분석되어 있으니 먼저 둘러보세요!</div>'
+                + '<a class="notice-btn" href="./search.html">'+CITY_KO+' 호텔 전체 보기</a>'
+                + '</div>');
+            renderList(HOTELS.slice().sort(function(a,b){return (a.p==null)-(b.p==null) || a.p-b.p;}).slice(0,5), true);
+        }
+        function renderList(list, append){
+            var htmlStr = list.map(row).join('');
+            if(append){
+                $res.html('<li class="sub-head">'+CITY_KO+' 인기 호텔 미리보기</li>'+htmlStr);
+            } else { $res.html(htmlStr); }
+        }
+        function applyFilters(list){
+            return list.filter(function(h){
+                if (fPrice && h.pb !== fPrice) return false;
+                if (fBand && h.band !== fBand) return false;
+                return true;
+            });
+        }
+        function filterLabel(){
+            var t = [];
+            if (fPrice) t.push($('#f-price .f-chip[data-v="'+fPrice+'"]').text());
+            if (fBand) t.push($('#f-band .f-chip[data-v="'+fBand+'"]').text());
+            return t.length ? ' · ' + t.join(' · ') : '';
+        }
+        function run(){
+            var q = $q.val().trim();
+            $notice.hide();
+            if(!q){
+                var all = applyFilters(HOTELS.slice()).sort(function(a,b){return (a.p==null)-(b.p==null) || a.p-b.p;});
+                $total.html(CITY_KO+' 호텔 <span class="highlight">'+all.length+'곳</span> · 실망 확률 낮은 순'+filterLabel()+' (도시 평균 '+CITY_AVG+'%)');
+                renderList(all);
+                drawMap(all);
+                return;
+            }
+            var nq = norm(q);
+            var isOther = OTHER.some(function(k){ return nq.indexOf(norm(k)) >= 0; });
+            if(isOther){ unsupported(q); drawMap(applyFilters(HOTELS)); return; }
+            var hits = applyFilters(HOTELS.filter(function(h){
+                return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0;
+            }));
+            if(!hits.length){ unsupported(q); drawMap(applyFilters(HOTELS)); return; }
+            $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+hits.length+'건</span>'+filterLabel());
+            renderList(hits);
+            drawMap(hits);
+        }
+        $('.f-row').on('click', '.f-chip', function(){
+            var $c = $(this), $row = $c.closest('.f-row');
+            $row.find('.f-chip').removeClass('on'); $c.addClass('on');
+            if ($row.attr('id') === 'f-price') fPrice = $c.data('v') || '';
+            else fBand = $c.data('v') || '';
+            run();
+        });
+        $('#btn-search').on('click', run);
+        $q.on('keyup', function(e){ if(e.key==='Enter') run(); });
+        $q.on('input', function(){ if(!$q.val().trim()) run(); });
+        var init = new URLSearchParams(location.search).get('q');
+        if(init){ $q.val(init); }
+        run();
+    })();
+    </script></div>
+</body>
+</html>

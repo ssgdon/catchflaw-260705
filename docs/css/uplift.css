@@ -1,0 +1,218 @@
+@charset "utf-8";
+/* ============================================================
+   CATCHFLAW UX UPLIFT LAYER
+   - 원본(layout.css)을 수정하지 않고 뒤에서 덮어쓰는 개선 레이어
+   - 목표: 모바일 가독성 향상(타이포 스케일 업), 시원한 여백,
+           큰 라운드 카드, 명확한 위계 — 기존 보라 아이덴티티 유지
+   ============================================================ */
+
+:root {
+    --primary-color: #8D5BFD;
+    --primary-soft: #F3EEFF;
+    --ink: #191B1F;
+    --ink-2: #4B5057;
+    --ink-3: #8B9097;
+    --line: #F1F2F4;
+    --surface: #F7F7FA;
+    --radius-card: 20px;
+    --radius-img: 16px;
+}
+
+/* ---------- 글로벌 타이포 ---------- */
+body{letter-spacing:-0.02em;color:var(--ink);}
+
+/* ---------- 헤더 ---------- */
+#header .header .inner{height:64px;}
+#header .header .logo a{height:17px;}
+
+/* ---------- 서브페이지 타이틀바 ---------- */
+#title{height:60px;gap:12px;padding:0 12px;}
+#title .search{height:48px;border-radius:14px;background:var(--surface);}
+#title .search input{font-size:15px;}
+
+/* ---------- 섹션 공통 헤드 ---------- */
+#main .head .title{line-height:30px;font-size:22px;font-weight:800;color:var(--ink);}
+#main .head .desc{margin:8px 0 0;line-height:21px;font-size:15px;font-weight:500;color:var(--ink-3);}
+#main{padding:0 0 64px;}
+
+/* ---------- 메인 히어로(검색) ---------- */
+#main .search-box{padding:48px 20px 44px;}
+#main .search-box .title .tit{line-height:40px;font-size:30px;font-weight:800;}
+#main .search-box .title .txt{margin:12px 0 0;line-height:26px;font-size:16px;}
+#main .search-box .text .subject{line-height:19px;font-size:14px;font-weight:700;}
+#main .search-box .input{margin:28px 0 0;padding:0 10px 0 18px;height:56px;border-radius:16px;box-shadow:0 8px 24px rgb(0 0 0 / 18%);}
+#main .search-box .input input{font-size:16px;}
+#main .search-box .input button{width:40px;height:40px;border-radius:12px;}
+
+/* ---------- 호텔 카드 리스트(슬라이더) ---------- */
+#main .hotel-list{padding:48px 20px 8px;}
+#main .hotel-list .list li,
+#detail .hotel .list li{width:205px;}
+#main .hotel-list .list .item .thumb .image,
+#detail .hotel .list .item .thumb .image{border-radius:var(--radius-img);}
+#main .hotel-list .list .item .thumb .badge,
+#detail .hotel .list .item .thumb .badge{top:8px;left:8px;gap:4px;}
+#main .hotel-list .list .item .info,
+#detail .hotel .list .item .info{padding:12px 2px 0;}
+#main .hotel-list .list .item .info .name,
+#detail .hotel .list .item .info .name{margin:0 0 4px;line-height:23px;font-size:17px;font-weight:700;}
+#main .hotel-list .list .item .info .eng,
+#detail .hotel .list .item .info .eng{margin:0 0 8px;line-height:16px;font-size:13px;}
+#main .hotel-list .list .item .info .text,
+#detail .hotel .list .item .info .text{line-height:21px;font-size:15px;}
+
+/* ---------- 뱃지 (전 화면 공통) ---------- */
+#main .hotel-list .list .item .thumb .badge .badge-item,
+#detail .hotel .list .item .thumb .badge .badge-item,
+#detail .information .info-top .badge .badge-item,
+#search .list .cont .badge .badge-item{padding:5px 9px;border-radius:8px;line-height:16px;font-size:13px;font-weight:700;}
+
+/* ---------- 별점 (전 화면 공통 확대) ---------- */
+#main .search-box .text .star,
+#main .hotel-list .list .item .info .star,
+#detail .hotel .list .item .info .star,
+#detail .analysis .review .list .item .item-info .star,
+#review .list .item .item-top .star{width:82px;}
+
+/* ---------- 검증 완료 숙소(safety) ---------- */
+#main .safety{padding:48px 20px 8px;}
+#main .safety .content ul{gap:12px;}
+#main .safety .content .item{border-radius:18px;overflow:hidden;}
+#main .safety .content .text{padding:18px;gap:8px;}
+#main .safety .content .text .tit{line-height:26px;font-size:20px;font-weight:800;}
+#main .safety .content .text .txt{line-height:18px;font-size:13px;}
+
+/* ---------- 상세: 섹션 리듬 ---------- */
+#detail .sect{padding:28px 20px 44px;}
+#detail .sect + .sect{border-top:8px solid var(--surface);}
+#detail .sect .head .title{line-height:30px;font-size:22px;font-weight:800;}
+#detail .sect .head .desc{margin:8px 0 0;line-height:22px;font-size:15px;}
+#detail .sect .head .count{font-size:15px;}
+
+/* ---------- 상세: 호텔 정보 ---------- */
+#detail .information .info-cont .name .name-ko{line-height:32px;font-size:24px;font-weight:800;}
+#detail .information .info-cont .name .name-en{line-height:16px;font-size:13px;}
+#detail .information .info-cont .meta span{line-height:20px;font-size:15px;}
+#detail .information .info-bottom .btn-link{height:62px;border-radius:14px;}
+#detail .information .info-bottom .btn-link .txt .label{font-size:14px;}
+#detail .information .info-bottom .btn-link .txt .count{font-size:12.5px;}
+
+/* ---------- 상세: 실망 확률 ---------- */
+#detail .disappear .head{margin:0 0 32px;}
+#detail .disappear .head .tit{line-height:26px;font-size:19px;font-weight:700;color:var(--ink-2);}
+#detail .disappear .head .num{line-height:48px;font-size:40px;font-weight:800;}
+#detail .disappear .head .txt{margin:10px 0 0;line-height:22px;font-size:15px;}
+#detail .disappear .gauge .label span{font-size:13.5px;}
+#detail .disappear .result{margin:36px 0 0;padding:22px;border-radius:var(--radius-card);background:var(--surface);}
+#detail .disappear .result .text{line-height:27px;font-size:17px;}
+#detail .disappear .result .tags .tags-item{padding:0 12px;height:32px;border-radius:10px;font-size:13px;background:#fff;color:var(--ink-2);}
+
+/* ---------- 상세: 리스크 차트/탭 ---------- */
+#detail .risk .chart .custom-legend .legend-item .hotel-text{font-size:13px;line-height:16px;}
+#detail .sect .head .tabs .tabs-item{height:42px;padding:0 14px;border-radius:42px;}
+#detail .sect .head .tabs .tabs-item span{font-size:15px;}
+
+/* ---------- 상세: 분석 요약/테이블 ---------- */
+#detail .analysis .sub-title{margin:0 0 16px;line-height:24px;font-size:18px;font-weight:800;color:var(--ink);}
+#detail .analysis .result{padding:22px;border-radius:var(--radius-card);background:var(--surface);}
+#detail .analysis .result .result-top .tit{font-size:16px;}
+#detail .analysis .result .result-top .tit span{font-size:24px;font-weight:800;}
+#detail .analysis .result .result-top .txt{line-height:22px;font-size:14.5px;}
+#detail .analysis .result .result-top .btn a{height:52px;border-radius:14px;font-size:15px;background:#fff;}
+#detail .analysis .result .result-bottom{border-radius:14px;}
+#detail .analysis .result .result-bottom .info{line-height:23px;font-size:15px;}
+#detail .analysis .summary .table{border-radius:14px;border:1px solid var(--line);}
+#detail .analysis .summary .table table tr{height:48px;font-size:13.5px;}
+#detail .analysis .summary .table table tr th{background:var(--surface);font-weight:700;color:var(--ink-2);}
+#detail .analysis .summary .table table tr td a{font-size:13.5px;}
+#detail .analysis .summary .table table tr:last-of-type td{border-bottom:0;}
+#detail .analysis .summary .table table .status-item{height:26px;padding:0 9px;border-radius:8px;font-size:13px;}
+
+/* ---------- 상세: 핵심 요약 — Savant 스타일 스탯 바 ---------- */
+#detail .analysis .summary .stat-board{padding:18px 16px 14px;border-radius:16px;border:1px solid var(--line);background:#fff;}
+#detail .analysis .summary .stat-axis{display:flex;align-items:center;justify-content:space-between;margin:0 46px 14px 112px;}
+#detail .analysis .summary .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:13px;font-size:11px;font-weight:800;letter-spacing:0;}
+#detail .analysis .summary .stat-axis .ax:before{content:'▲';font-size:8px;line-height:8px;}
+#detail .analysis .summary .stat-axis .ax.safe{color:#5EA5E7;}
+#detail .analysis .summary .stat-axis .ax.avg{color:#B0B4BB;}
+#detail .analysis .summary .stat-axis .ax.danger{color:#FA5252;}
+#detail .analysis .summary .stat-list{display:flex;flex-direction:column;}
+#detail .analysis .summary .stat-row + .stat-row{border-top:1px dashed var(--line);}
+#detail .analysis .summary .stat-row > a{display:flex;align-items:center;gap:10px;padding:13px 0;}
+#detail .analysis .summary .stat-info{flex:0 0 102px;}
+#detail .analysis .summary .stat-info .factor{line-height:18px;font-size:14px;font-weight:700;color:var(--ink);}
+#detail .analysis .summary .stat-info .keywords{margin:3px 0 0;line-height:15px;font-size:11.5px;font-weight:500;color:var(--ink-3);}
+#detail .analysis .summary .stat-track{flex:1;position:relative;height:12px;border-radius:12px;background:#EEEFF3;}
+#detail .analysis .summary .stat-fill{position:absolute;top:0;left:0;bottom:0;border-radius:12px;}
+#detail .analysis .summary .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(40%,-50%);display:flex;align-items:center;justify-content:center;width:27px;height:27px;border-radius:27px;background:#fff;border:2px solid;box-shadow:0 1px 4px rgb(0 0 0 / 12%);font-size:12px;font-weight:800;font-style:normal;}
+#detail .analysis .summary .stat-count{flex:0 0 36px;text-align:right;font-size:13.5px;font-weight:700;color:var(--primary-color);text-decoration:underline;text-underline-offset:2px;}
+#detail .analysis .summary .stat-row.is-danger .stat-fill{background:linear-gradient(90deg,#FF9D9D 0%,#FA5252 100%);}
+#detail .analysis .summary .stat-row.is-danger .bubble{border-color:#FA5252;color:#E92424;}
+#detail .analysis .summary .stat-row.is-warning .stat-fill{background:linear-gradient(90deg,#FFD9A0 0%,#F0A028 100%);}
+#detail .analysis .summary .stat-row.is-warning .bubble{border-color:#F0A028;color:#C9820A;}
+#detail .analysis .summary .stat-row.is-safe .stat-fill{background:linear-gradient(90deg,#A9CFF2 0%,#5EA5E7 100%);}
+#detail .analysis .summary .stat-row.is-safe .bubble{border-color:#5EA5E7;color:#3D87CC;}
+#detail .analysis .summary .stat-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin:6px 0 0;padding:12px 2px 0;border-top:1px solid var(--line);}
+#detail .analysis .summary .stat-legend .lg{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-2);}
+#detail .analysis .summary .stat-legend .lg:before{content:'';width:8px;height:8px;border-radius:8px;}
+#detail .analysis .summary .stat-legend .lg.is-danger:before{background:#FA5252;}
+#detail .analysis .summary .stat-legend .lg.is-warning:before{background:#F0A028;}
+#detail .analysis .summary .stat-legend .lg.is-safe:before{background:#5EA5E7;}
+#detail .analysis .summary .stat-legend .note{width:100%;line-height:15px;font-size:11.5px;font-weight:500;color:var(--ink-3);}
+
+/* ---------- 상세: 리뷰 카드 ---------- */
+#detail .analysis .review .tab .tab-btn{height:36px;padding:0 14px;font-size:14.5px;}
+#detail .analysis .review .list li{width:300px;}
+#detail .analysis .review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
+#detail .analysis .review .list .item .item-bottom .text{line-height:24px;font-size:15px;}
+#detail .analysis .review .list .item .item-bottom .date{font-size:13px;}
+#detail .analysis .review .more a{height:54px;border-radius:14px;font-size:15px;background:var(--surface);}
+
+/* ---------- 상세: 최근 본/공유 ---------- */
+#detail .recent .list{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
+#detail .recent .list li .num{font-size:14.5px;}
+#detail .recent .list li .per{font-size:14.5px;}
+#detail .share .tit{line-height:36px;font-size:26px;font-weight:800;}
+#detail .share .txt{line-height:23px;font-size:16px;}
+
+/* ---------- 상세: 하단 CTA ---------- */
+#detail .button{padding:12px 16px 16px;}
+#detail .button .btn-reservate{height:56px;border-radius:16px;font-size:17px;}
+#detail ~ #float{bottom:84px;}
+
+/* ---------- 검색/위시/최근 리스트 ---------- */
+#search .total{padding:20px 20px 0;line-height:20px;font-size:15px;}
+#search .list li{padding:22px 0;}
+#search .list li .item{gap:14px;}
+#search .list li .thumb{width:92px;height:92px;border-radius:14px;}
+#search .list .cont .info{margin:0 0 12px;}
+#search .list .cont .info .name{line-height:23px;font-size:17px;}
+#search .list .cont .info .name a{color:var(--ink);}
+#search .list .cont .info .meta{margin:6px 0 0;}
+#search .list .cont .info .meta span{line-height:17px;font-size:13px;}
+#search .list .cont .grade .num{font-size:15px;}
+#search .list .cont .grade .txt{font-size:13px;}
+#search .list .cont .request a{padding:8px 10px;border-radius:8px;font-size:13px;line-height:16px;}
+
+/* ---------- 리뷰 페이지 ---------- */
+#review .tabs li .tabs-item{height:48px;padding:0 12px;font-size:16px;}
+#review .option{padding:12px 20px;}
+#review .option .category .category-btn{height:34px;padding:0 12px;border-radius:34px;font-size:14px;}
+#review .option .sort .sort-btn{height:34px;font-size:14px;}
+#review .list{padding:20px 20px 40px;}
+#review .list > ul{gap:16px;}
+#review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
+#review .list .item .item-top{margin:0 0 14px;}
+#review .list .item .item-top .status .status-item{height:26px;padding:0 9px;border-radius:8px;font-size:13px;}
+#review .list .item .item-info .cont .name{line-height:22px;font-size:16px;}
+#review .list .item .item-info .cont .date{font-size:13px;}
+#review .list .item .item-info .cont .link a{font-size:13px;}
+#review .list .item .item-ai{padding:18px;border-radius:14px;background:var(--primary-soft);}
+#review .list .item .item-ai .txt{line-height:23px;font-size:15px;}
+#review .list .item .item-proof .image li{width:96px;height:96px;border-radius:12px;}
+#review .list .item .item-proof .text .tit{font-size:13px;line-height:19px;}
+#review .list .item .item-proof .text .txt{line-height:26px;font-size:16px;}
+#review .list .item .item-bottom .help .help-btn{font-size:14.5px;}
+#review .list .item .item-bottom .more .expend-btn{font-size:14.5px;}
+#review .list .item .item-bottom .source{padding:18px;border-radius:12px;}
+#review .list .item .item-bottom .source .txt{font-size:14.5px;line-height:1.6;}

@@ -1,0 +1,66 @@
+@charset "utf-8";
+/* ============================================================
+   CATCHFLAW DESIGN TOKENS  (v1 · 2026-07)
+   - 모든 색/타이포/간격/라운드의 단일 기준.
+   - 신규 스타일은 반드시 이 변수만 사용한다. 하드코딩 금지.
+   - 로드 순서: tokens.css → common.css → layout.css → swiper.css → uplift.css
+   - 상세 규정: /UI-STANDARDS.md
+   ============================================================ */
+:root {
+    /* ---------- 브랜드 ---------- */
+    --primary: #8D5BFD;
+    --primary-deep: #4D2F91;      /* 그라데이션 종점 */
+    --primary-soft: #F3EEFF;      /* 연보라 배경 */
+
+    /* ---------- 잉크(텍스트) ---------- */
+    --ink: #191B1F;               /* 제목·본문 강조 */
+    --ink-2: #4B5057;             /* 본문 보조 */
+    --ink-3: #8B9097;             /* 캡션·메타 */
+    --ink-inverse: #FFFFFF;
+
+    /* ---------- 서피스 ---------- */
+    --surface: #F7F7FA;           /* 섹션 구분·카드 배경 */
+    --surface-card: #FFFFFF;
+    --line: #F1F2F4;              /* 헤어라인 */
+    --line-strong: #E4E6EA;
+
+    /* ---------- 시맨틱 (등급/태그 — 전 화면 공통, 이 3색 외 사용 금지) ----------
+       위험/심각 = danger · 주의 = warning · 양호/정상 = safe                    */
+    --danger: #FA5252;
+    --danger-text: #E92424;       /* soft 배경 위 텍스트용 */
+    --danger-soft: #FDE9E9;
+    --warning: #F0A028;
+    --warning-text: #C9820A;
+    --warning-soft: #FDF6E9;
+    --safe: #5EA5E7;
+    --safe-text: #3D87CC;
+    --safe-soft: #E9F2FB;
+
+    /* ---------- 타이포 스케일 (px, line-height 배수) ----------
+       display 30/1.35 · h1 24/1.35 · h2 22/1.35 · h3 18/1.35
+       body-lg 17/1.5 · body 15/1.5 · caption 13/1.4 · micro 12/1.3   */
+    --fs-display: 30px;  --fs-h1: 24px;  --fs-h2: 22px;  --fs-h3: 18px;
+    --fs-body-lg: 17px;  --fs-body: 15px;  --fs-caption: 13px;  --fs-micro: 12px;
+    --lh-head: 1.35;     --lh-body: 1.5;
+    --fw-display: 800;   --fw-bold: 700;   --fw-medium: 500;
+    --ls-global: -0.02em;
+
+    /* ---------- 간격 (4px 그리드) ---------- */
+    --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;  --sp-4: 16px;
+    --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;  --sp-10: 40px; --sp-12: 48px;
+    --page-x: 20px;               /* 페이지 좌우 여백 */
+    --section-gap: 48px;          /* 섹션 상단 리듬 */
+
+    /* ---------- 라운드 ---------- */
+    --radius-card: 20px;          /* 큰 카드 */
+    --radius-img: 16px;           /* 썸네일 */
+    --radius-btn: 14px;           /* 버튼·입력 */
+    --radius-chip: 8px;           /* 뱃지·태그 */
+
+    /* ---------- 그림자 ---------- */
+    --shadow-float: 0 4px 10px rgb(0 0 0 / 20%);
+    --shadow-search: 0 8px 24px rgb(0 0 0 / 18%);
+
+    /* ---------- 하위호환 별칭 (기존 layout.css/uplift.css 참조 유지) ---------- */
+    --primary-color: var(--primary);
+}
