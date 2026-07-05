@@ -367,11 +367,12 @@ def build_search_index(hotels_meta, H):
     for pid, meta in hotels_meta.items():
         h = H.get(pid)
         if not h: continue
-        # 카테고리별 등급 (C-2 필터용): {대분류축약: band}
-        cb = {}
+        # 카테고리별 등급/점수 (필터·정렬용): {대분류: band}, {대분류: 위험도점수}
+        cb, cs = {}, {}
         if h['scored']:
             for c in CATS:
                 cb[c] = h['cats'][c]['band']
+                cs[c] = round(h['cats'][c]['score'])
         items.append({
             'id': pid, 'name': meta['title'], 'en': meta.get('sub_title') or '',
             'stars': meta.get('hotel_stars') or '', 'g': float(meta.get('total_score') or 0),
@@ -386,7 +387,7 @@ def build_search_index(hotels_meta, H):
             'pb': meta['band'][0] if meta.get('band') else None,
             'pt': meta.get('price_txt') or '',
             'krw': meta.get('krw'),
-            'cb': cb,
+            'cb': cb, 'cs': cs,
         })
     return items
 
@@ -445,6 +446,13 @@ def build_search(city_avg_pct):
                         <button type="button" data-sort="price">1박 가격 낮은 순</button>
                         <button type="button" data-sort="rc">구글 리뷰 많은 순</button>
                         <button type="button" data-sort="g">구글 평점 높은 순</button>
+                        <div class="lh-sort-sep">카테고리 안심순</div>
+                        <button type="button" data-sort="cat:위생 경보">🧼 위생 안심순</button>
+                        <button type="button" data-sort="cat:오감 지옥">👂 오감 안심순</button>
+                        <button type="button" data-sort="cat:시설 사기단">🏚️ 시설 안심순</button>
+                        <button type="button" data-sort="cat:동선 파괴자">🗺️ 동선 안심순</button>
+                        <button type="button" data-sort="cat:불친절 레이더">💬 불친절 안심순</button>
+                        <button type="button" data-sort="cat:안전 그림자">🔒 안전 안심순</button>
                     </div>
                 </div>
             </div>
@@ -475,7 +483,8 @@ def build_search(city_avg_pct):
         var AREAS = window.CF_AREAS || [];
         var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
         var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
-        var fPrice = '', fBand = '', fArea = '', fCats = [], sortBy = 'p';
+        var fPrice = '', fBand = '', fArea = '', fCats = [], sortBy = 'p', sortCat = '';
+        var CAT_ICON = {{'위생 경보':'🧼','오감 지옥':'👂','시설 사기단':'🏚️','동선 파괴자':'🗺️','불친절 레이더':'💬','안전 그림자':'🔒'}};
         var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
         var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
 
@@ -518,9 +527,16 @@ def build_search(city_avg_pct):
         }}
 
         // ───── 정렬 ─────
+        var BAND_KO = {{safe:'양호', warning:'주의', danger:'위험'}};
         function sortList(arr){{
             var a = arr.slice();
-            if (sortBy === 'price') a.sort(function(x,y){{ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); }});
+            if (sortCat){{  // 카테고리 안심순 (해당 카테고리 위험도 낮은 순)
+                a.sort(function(x,y){{
+                    var sx = (x.cs && x.cs[sortCat] != null) ? x.cs[sortCat] : 999;
+                    var sy = (y.cs && y.cs[sortCat] != null) ? y.cs[sortCat] : 999;
+                    return sx - sy;
+                }});
+            }} else if (sortBy === 'price') a.sort(function(x,y){{ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); }});
             else if (sortBy === 'rc') a.sort(function(x,y){{ return (y.rc||0)-(x.rc||0); }});
             else if (sortBy === 'g') a.sort(function(x,y){{ return (y.g||0)-(x.g||0); }});
             else a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); }});  // 실망확률 낮은순(기본)
@@ -529,22 +545,31 @@ def build_search(city_avg_pct):
 
         // ───── 리스트 렌더 ─────
         function bandChip(h){{
-            if(!h.scored) return '<div class="badge-item badge-collect">리뷰 수집중</div>';
-            return '<div class="badge-item badge-'+h.band+'">'+h.label+'</div>'
-                 + '<div class="badge-item badge-down">실망 확률 '+h.p+'%</div>';
+            if(!h.scored) return '<span class="badge-item badge-collect">리뷰 수집중</span>';
+            return '<span class="badge-item badge-'+h.band+'">'+h.label+'</span>'
+                 + '<span class="badge-item badge-down">실망 확률 '+h.p+'%</span>';
+        }}
+        function catChip(h){{  // 카테고리 정렬 시 해당 카테고리 등급을 카드에 표시
+            if (!sortCat || !h.scored || !h.cb || h.cb[sortCat]==null) return '';
+            var band = h.cb[sortCat];
+            return '<div class="cat-row is-'+band+'"><span class="ci">'+(CAT_ICON[sortCat]||'')+'</span>'
+                + '<span class="cn">'+sortCat+'</span>'
+                + '<span class="cbadge">'+BAND_KO[band]+' · 위험도 '+h.cs[sortCat]+'</span></div>';
         }}
         function row(h){{
             var img = h.img ? './'+h.img : './img/placeholder.svg';
-            var priceTxt = h.pt ? '<div class="price-txt">1박 '+h.pt+'</div>' : '';
+            var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
             return '<li><div class="item">'
                 + '<div class="thumb"><a href="./hotels/'+h.id+'.html"><img src="'+img+'" loading="lazy"></a></div>'
-                + '<div class="cont"><div class="info">'
+                + '<div class="cont">'
+                + '<div class="info">'
                 + '<div class="name"><a href="./hotels/'+h.id+'.html">'+h.name+'</a></div>'
-                + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+'</div></div>'
-                + '<div class="bottom"><div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
-                + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div>'
-                + priceTxt + '</div>'
+                + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+price+'</div></div>'
+                + '<div class="bottom">'
+                + '<div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
+                + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div></div>'
                 + '<div class="badge">'+bandChip(h)+'</div></div>'
+                + catChip(h)
                 + '</div></div></li>';
         }}
         function renderRows(list){{
@@ -626,10 +651,12 @@ def build_search(city_avg_pct):
             alert('아직 '+CITY_KO+'만 지원해요. 다른 도시는 준비 중이에요!');
         }});
 
-        // 정렬 드롭다운
+        // 정렬 드롭다운 (일반 + 카테고리 안심순)
         $('#lh-sort-btn').on('click', function(e){{ e.stopPropagation(); $('#lh-sort').toggleClass('open'); }});
         $('#lh-sort .lh-sort-box button').on('click', function(){{
-            sortBy = $(this).data('sort');
+            var v = String($(this).data('sort'));
+            if (v.indexOf('cat:') === 0) {{ sortCat = v.slice(4); sortBy = 'p'; }}
+            else {{ sortCat = ''; sortBy = v; }}
             $('#lh-sort .lh-sort-box button').removeClass('on'); $(this).addClass('on');
             $('#lh-sort-btn').text($(this).text());
             $('#lh-sort').removeClass('open');
@@ -1013,14 +1040,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H):
                         + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
                         + '</div>';
                 }}
-                // 링크: 구글은 원본, Booking.com 등은 구글 리뷰로 우회, Trip.com은 원본
+                // 링크: 구글 origin만 개별 리뷰 원본으로, 그 외(Trip.com·Booking 등)는 전부 호텔 구글 리뷰 페이지로
+                // (Trip.com/Booking 원본 URL은 예약페이지로 빠져 리뷰가 안 보임)
                 var linkHtml = '<span></span>';
-                var isBooking = (q.o && q.o.toLowerCase().indexOf('booking') >= 0) || (q.u && q.u.toLowerCase().indexOf('booking.com') >= 0);
-                if (isBooking || (!q.u && window.CF_GREVIEWS)) {{
+                var isGoogle = (q.o === 'Google') && q.u && q.u.toLowerCase().indexOf('google.') >= 0;
+                if (isGoogle) {{
+                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
+                }} else if (window.CF_GREVIEWS) {{
                     linkHtml = '<a class="orig-link" href="' + esc(window.CF_GREVIEWS) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                }} else if (q.u) {{
-                    var lbl = (q.o === 'Google') ? '구글 리뷰 보기' : '원본 바로가기';
-                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">' + lbl + ' ↗</a>';
                 }}
                 var foot = '<div class="item-foot">'
                     + linkHtml

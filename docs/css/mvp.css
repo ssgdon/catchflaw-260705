@@ -23,8 +23,11 @@
 #main .search-box .scope-note b{color:#fff;font-weight:var(--fw-bold);}
 
 /* ---------- 메인: 검색 자동완성 ---------- */
+/* 히어로 섹션을 지도 섹션 위로 쌓고, search-box 클리핑 해제 → 드롭다운이 지도에 안 가림 */
+#main .sec-1{position:relative;z-index:30;}
+#main .search-box{overflow:visible;}
 #main .search-box .input{position:relative;}
-#main .search-box .ac-box{position:absolute;z-index:20;top:calc(100% + 6px);left:0;right:0;border-radius:14px;background:#fff;box-shadow:0 12px 32px rgb(0 0 0 / 22%);overflow:hidden;}
+#main .search-box .ac-box{position:absolute;z-index:50;top:calc(100% + 6px);left:0;right:0;max-height:56vh;overflow-y:auto;border-radius:14px;background:#fff;box-shadow:0 12px 32px rgb(0 0 0 / 22%);}
 #main .search-box .ac-box .ac-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;font-size:14.5px;color:var(--ink);}
 #main .search-box .ac-box .ac-item + .ac-item{border-top:1px solid var(--line);}
 #main .search-box .ac-box .ac-item:active{background:var(--primary-soft);}
@@ -73,12 +76,31 @@
 #search .notice-btn{display:inline-flex;align-items:center;justify-content:center;margin-top:var(--sp-4);padding:0 var(--sp-5);height:44px;border-radius:var(--radius-btn);background:var(--primary);font-size:var(--fs-body);font-weight:var(--fw-bold);color:#fff;}
 #search .list li.sub-head{padding:24px 0 0;border:0;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);}
 
-/* ---------- 검색 리스트 정돈 (원본 퍼블리싱 기준) ---------- */
-#search .list .cont .info .name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:1;overflow:hidden;word-break:break-all;}
+/* ---------- 검색 리스트 정돈 (가로 넘침 방지 · 부족하면 줄바꿈으로 높이 확보) ---------- */
+#search .list li .item{align-items:flex-start;}
 #search .list li .thumb{background:var(--surface);}
-#search .list .cont .bottom{gap:8px;}
+#search .list .cont{min-width:0;}                    /* flex 자식 넘침 방지 핵심 */
+#search .list .cont .info .name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;word-break:break-word;line-height:1.35;}
+#search .list .cont .info .meta{flex-wrap:wrap;row-gap:2px;}
+#search .list .cont .info .meta span.price{color:var(--ink-2);}
+#search .list .cont .info .meta span.price b{color:var(--ink);font-weight:var(--fw-bold);}
+#search .list .cont .bottom{flex-wrap:wrap;gap:6px 8px;}   /* 한 줄에 안 들어가면 배지가 다음 줄로 */
 #search .list .cont .grade{flex-shrink:0;}
-#search .list .cont .badge{flex-wrap:nowrap;}
+#search .list .cont .badge{display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-end;}
+#search .list .cont .badge .badge-item{white-space:nowrap;}
+/* 카테고리 정렬 시 카드에 표시되는 해당 카테고리 등급 줄 */
+#search .list .cont .cat-row{display:flex;align-items:center;gap:6px;margin:10px 0 0;padding:8px 10px;border-radius:10px;background:var(--surface);}
+#search .list .cont .cat-row .ci{font-size:14px;}
+#search .list .cont .cat-row .cn{font-size:13px;font-weight:var(--fw-bold);color:var(--ink);}
+#search .list .cont .cat-row .cbadge{margin-left:auto;font-size:12.5px;font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;}
+#search .list .cont .cat-row.is-safe{background:var(--safe-soft);}
+#search .list .cont .cat-row.is-safe .cbadge{color:var(--safe-text);}
+#search .list .cont .cat-row.is-warning{background:var(--warning-soft);}
+#search .list .cont .cat-row.is-warning .cbadge{color:var(--warning-text);}
+#search .list .cont .cat-row.is-danger{background:var(--danger-soft);}
+#search .list .cont .cat-row.is-danger .cbadge{color:var(--danger-text);}
+/* 정렬 드롭다운 구분 라벨 */
+#search .list-head .lh-sort-box .lh-sort-sep{padding:8px 12px 4px;margin-top:4px;border-top:1px solid var(--line);font-size:11.5px;font-weight:var(--fw-bold);color:var(--ink-3);}
 
 /* ---------- 상세: 실망확률 근거·게이지 ---------- */
 #detail .disappear .basis{margin:18px 0 0;text-align:center;line-height:1.5;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
@@ -232,23 +254,26 @@
 .cf-modal .cf-btn-primary{background:var(--primary);color:#fff;}
 .cf-modal .cf-btn-ghost{background:var(--surface);color:var(--ink-2);}
 
-/* ---------- 이탈 전 피드백 모달 ---------- */
-#cf-feedback-modal .cf-modal-card{text-align:left;padding-top:22px;}
-#cf-feedback-modal .fb-head{display:flex;align-items:flex-start;gap:8px;}
-#cf-feedback-modal .fb-emoji{font-size:26px;line-height:1.1;}
-#cf-feedback-modal .fb-tit{flex:1;line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-#cf-feedback-modal .fb-close{width:28px;height:28px;font-size:16px;color:var(--ink-3);}
-#cf-feedback-modal .fb-txt{margin:6px 0 14px;line-height:1.5;font-size:var(--fs-caption);color:var(--ink-2);}
-#cf-feedback-modal textarea{width:100%;height:80px;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;font-size:15px;font-family:inherit;color:var(--ink);resize:none;background:#fff;}
-#cf-feedback-modal textarea:focus{border-color:var(--primary);}
-#cf-feedback-modal input[type=tel]{width:100%;margin:8px 0 0;padding:12px 14px;border:1px solid var(--line-strong);border-radius:12px;font-size:15px;font-family:inherit;color:var(--ink);background:#fff;}
+/* ---------- 이탈 전 피드백 모달 (디자인 표준 정렬) ---------- */
+#cf-feedback-modal .cf-modal-card{text-align:left;padding:22px 20px calc(20px + env(safe-area-inset-bottom));}
+#cf-feedback-modal .fb-head{display:flex;align-items:center;gap:8px;}
+#cf-feedback-modal .fb-emoji{font-size:26px;line-height:1;}
+#cf-feedback-modal .fb-tit{flex:1;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
+#cf-feedback-modal .fb-close{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:32px;height:32px;font-size:17px;color:var(--ink-3);}
+#cf-feedback-modal .fb-txt{margin:8px 0 16px;line-height:1.55;font-size:var(--fs-body);color:var(--ink-2);}
+#cf-feedback-modal textarea,
+#cf-feedback-modal input[type=tel]{width:100%;padding:14px;border:1.5px solid var(--line-strong);border-radius:var(--radius-btn);font-size:var(--fs-body);line-height:1.5;font-family:inherit;color:var(--ink);background:#fff;}
+#cf-feedback-modal textarea{height:88px;resize:none;}
+#cf-feedback-modal input[type=tel]{margin:8px 0 0;}
+#cf-feedback-modal textarea:focus,
 #cf-feedback-modal input[type=tel]:focus{border-color:var(--primary);}
-#cf-feedback-modal .fb-phone-note{margin:6px 2px 0;font-size:11.5px;color:var(--ink-3);}
-#cf-feedback-modal .cf-modal-btns{flex-direction:column;gap:8px;margin-top:16px;}
-#cf-feedback-modal .fb-skip{background:transparent;color:var(--ink-3);height:40px;font-size:var(--fs-caption);font-weight:var(--fw-medium);}
-#cf-feedback-modal .fb-done{padding:20px 0;text-align:center;}
-#cf-feedback-modal .fb-done .big{font-size:32px;}
-#cf-feedback-modal .fb-done .msg{margin:10px 0 0;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
+#cf-feedback-modal .fb-phone-note{margin:8px 2px 0;font-size:var(--fs-micro);color:var(--ink-3);}
+#cf-feedback-modal .cf-modal-btns{flex-direction:column;gap:8px;margin-top:18px;}
+#cf-feedback-modal .cf-modal-btns .cf-btn{flex:0 0 auto;width:100%;height:52px;}   /* column 배치에서 flex:1 높이붕괴 방지 */
+#cf-feedback-modal .fb-skip{flex:0 0 auto;background:transparent;color:var(--ink-3);height:46px;font-size:var(--fs-body);font-weight:var(--fw-medium);}
+#cf-feedback-modal .fb-done{padding:28px 0;text-align:center;}
+#cf-feedback-modal .fb-done .big{font-size:40px;line-height:1;}
+#cf-feedback-modal .fb-done .msg{margin:12px 0 0;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
 
 /* ---------- 공유 시트 (navigator.share 폴백) ---------- */
 #cf-share-sheet .cf-modal-card{padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
@@ -281,14 +306,11 @@
 #search .list-head .lh-sort-btn{display:flex;align-items:center;gap:6px;height:32px;font-size:13.5px;font-weight:var(--fw-medium);color:var(--ink-2);}
 #search .list-head .lh-sort-btn:after{content:'';width:9px;height:5px;background:url("../img/dropdown.svg") no-repeat center / contain;}
 #search .list-head .lh-sort.open .lh-sort-btn:after{transform:rotate(180deg);}
-#search .list-head .lh-sort-box{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:150px;padding:6px;border-radius:12px;background:#fff;box-shadow:0 8px 24px rgb(0 0 0 / 16%);display:none;}
+#search .list-head .lh-sort-box{position:absolute;z-index:30;top:calc(100% + 4px);right:0;min-width:168px;max-height:60vh;overflow-y:auto;padding:6px;border-radius:12px;background:#fff;box-shadow:0 8px 24px rgb(0 0 0 / 16%);display:none;}
 #search .list-head .lh-sort.open .lh-sort-box{display:block;}
 #search .list-head .lh-sort-box button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:8px;font-size:13.5px;color:var(--ink-2);white-space:nowrap;}
 #search .list-head .lh-sort-box button.on{background:var(--primary-soft);color:var(--primary);font-weight:var(--fw-bold);}
 
-/* ---------- 검색: 리스트 가격 표기 ---------- */
-#search .list .cont .info .meta span.price b{color:var(--ink);font-weight:var(--fw-bold);}
-#search .list .cont .bottom .price-txt{font-size:13px;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
 
 /* ---------- 검색: 지도 영역 안내 ---------- */
 #search .map-hint{padding:8px var(--page-x) 0;font-size:12px;color:var(--ink-3);}
