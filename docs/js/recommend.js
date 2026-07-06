@@ -5,12 +5,12 @@
    의존: jQuery, backnav.js(CFNav) */
 (function () {
   var CATS = [
-    { code: 'hyg', ko: '위생 경보',   label: '🧼 더러운 건 못 참아',     kw: '침구·벌레·곰팡이',      chip: '🧼 청결' },
-    { code: 'sen', ko: '오감 지옥',   label: '👂 시끄럽고 냄새나면 싫어', kw: '소음·악취',            chip: '👂 조용' },
-    { code: 'fac', ko: '시설 사기단', label: '🏚️ 낡은 시설은 실망이야',   kw: '노후·냉난방·와이파이', chip: '🏚️ 시설' },
-    { code: 'loc', ko: '동선 파괴자', label: '🗺️ 위치가 제일 중요해',     kw: '역까지 거리·접근성',   chip: '🗺️ 위치' },
-    { code: 'svc', ko: '불친절 레이더', label: '💬 불친절은 못 넘어가',    kw: '직원 응대',            chip: '💬 응대' },
-    { code: 'saf', ko: '안전 그림자', label: '🔒 안전이 최우선이야',      kw: '보안·치안',            chip: '🔒 안전' }
+    { code: 'hyg', ko: '위생 경보',   label: '더러운 건 못 참아',     kw: '침구·벌레·곰팡이',      chip: '청결' },
+    { code: 'sen', ko: '오감 지옥',   label: '시끄럽고 냄새나면 싫어', kw: '소음·악취',            chip: '조용' },
+    { code: 'fac', ko: '시설 사기단', label: '낡은 시설은 실망이야',   kw: '노후·냉난방·와이파이', chip: '시설' },
+    { code: 'loc', ko: '동선 파괴자', label: '위치가 제일 중요해',     kw: '역까지 거리·접근성',   chip: '위치' },
+    { code: 'svc', ko: '불친절 레이더', label: '불친절은 못 넘어가',    kw: '직원 응대',            chip: '응대' },
+    { code: 'saf', ko: '안전 그림자', label: '안전이 최우선이야',      kw: '보안·치안',            chip: '안전' }
   ];
   var BUDGETS = [
     { code: '',   label: '상관없어요' },
@@ -86,7 +86,7 @@
         '<span class="rec-chip-kw">' + c.kw + '</span>' +
       '</button>';
     }).join('');
-    return '<div class="rec-tit">여행할 때 이것만은 못 참아요 😤</div>' +
+    return '<div class="rec-tit">여행할 때 이것만은 못 참아요</div>' +
       '<div class="rec-sub">중요한 순서대로 최대 3개 골라주세요</div>' +
       '<div class="rec-grid">' + chips + '</div>' +
       '<div class="rec-btns"><button type="button" class="cf-btn cf-btn-primary rec-next"' + (sel.length ? '' : ' disabled') + '>다음 →</button></div>';
@@ -96,7 +96,7 @@
       return '<button type="button" class="rec-opt' + (bud === b.code && bud !== '' ? ' on' : '') + '" data-bud="' + b.code + '">' +
         '<span class="rec-opt-label">' + b.label + '</span></button>';
     }).join('');
-    return '<div class="rec-tit">1박 예산은 어느 정도예요? 💸</div>' +
+    return '<div class="rec-tit">1박 예산은 어느 정도예요?</div>' +
       '<div class="rec-list">' + chips + '</div>';
   }
   function stepArea() {
@@ -108,7 +108,7 @@
         '<span class="rec-opt-label">' + a.ko + '</span>' +
         (a.desc ? '<span class="rec-opt-desc">' + a.desc + '</span>' : '') + '</button>';
     }).join('');
-    return '<div class="rec-tit">어느 동네에 머물까요? 📍</div>' +
+    return '<div class="rec-tit">어느 동네에 머물까요?</div>' +
       '<div class="rec-list">' + chips + '</div>';
   }
 
@@ -143,7 +143,15 @@
     if (area) qs += '&area=' + area;
     // index/search는 루트(./), 상세(hotels/)는 ../ 필요
     var prefix = location.pathname.indexOf('/hotels/') >= 0 ? '../' : './';
-    location.href = prefix + 'search.html?' + qs;
+    // 결과 전환 전 브랜드 톤 처리 화면 (즉시 전환의 답답함 완화)
+    var head = sheet.querySelector('.rec-head'); if (head) head.style.visibility = 'hidden';
+    sheet.querySelector('.rec-body').innerHTML =
+      '<div class="rec-loading">' +
+        '<div class="rec-loading-spin" aria-hidden="true"></div>' +
+        '<div class="rec-loading-tit">조건에 맞는 호텔을 찾고 있어요</div>' +
+        '<div class="rec-loading-sub">리뷰 분석 결과로 딱 맞는 순서를 매기는 중이에요</div>' +
+      '</div>';
+    setTimeout(function () { location.href = prefix + 'search.html?' + qs; }, 950);
   }
 
   function openWizard(preset) {

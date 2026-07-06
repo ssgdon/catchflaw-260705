@@ -196,7 +196,7 @@ create table city_baselines (
 |---|---|---|---|
 | hotels_new | → | hotels | 컬럼 정리, price_krw는 배치 계산, status='active' |
 | reviews_new | → | reviews | published_at_date→published_at, review_image_urls→image_urls |
-| reviews_analysis_new (주의/심각, quote 있음) | → | review_findings | **정상 68,242행 버림**. category 빈 값 6,583행은 소분류→대분류 매핑으로 복원(scripts/export.py의 NORM_MCAT CASE 그대로 사용), 오타 '공간/노hu화'→'공간/노후화', '외부 소음'/'벽간 소음'→'벽간/외부 소음' 등 표준화 |
+| reviews_analysis_new (주의/심각, quote 있음) | → | review_findings | **정상 68,242행 버림**. category 빈 값 6,583행은 소분류→대분류 매핑으로 복원(scripts/export.py의 NORM_MCAT CASE 그대로 사용), 오타 '공간/노hu화'→'공간/노후화', '외부 소음'/'벽간 소음'→'벽간/외부 소음' 등 표준화. **추가(2026-07-06): 소분류 v3(19개) 리매핑 — LLM-ANALYSIS-DESIGN.md §4.0.1** (허위 위치 정보·소통 불가 흡수, 공간/노후화 8,533행 LLM 분할 ~$0.5, scoring.py SUBS 동기화 동시 반영) |
 | analysis_cost_log | → | analysis_runs | model, 비용 이관, prompt_version='legacy' |
 | mvp_feedbacks | — | (Supabase에 유지) | §1.4 |
 | 도쿄 구테이블 4종 | — | 이관 안 함 | 필요 시 나중에 재분석 (약 $21) |
@@ -206,6 +206,8 @@ create table city_baselines (
 ---
 
 ## 3. 호텔 마스터 갱신 (월 1회) — Google Places API 공식
+
+> **2026-07-06 보강: 호텔 선정 로직·고객 검색·온디맨드 편입은 [DISCOVERY-SEARCH-DESIGN.md](DISCOVERY-SEARCH-DESIGN.md)가 정본.** 현재 150개는 1회성 구글호텔검색 덤프(불완전 — 블러썸·베이직스 등 유명 호텔 누락 실측)라, 이 §3 그리드 스윕을 **이관 직후 백필로 1회 필수 실행**해 누락분을 편입한다.
 
 목적: **폐업 감지 + 신규 호텔 편입**. 리뷰 내용은 여기서 안 가져온다(공식 API는 리뷰 5개 제한이라 스크래핑 대체 불가 — 리뷰는 계속 Apify).
 
@@ -272,9 +274,27 @@ API 결과 place_id 집합 = G, DB hotels(city='fukuoka') 집합 = D
 - 그룹 A 변형: `reviewsStartDate = "2026-03-27"` (마지막 수집 3/30 − 3일), `maxReviews = 300` (3개월치 밀림 → 호텔당 ~40건 예상, 인기 호텔 여유)
 - 예상 신규 ~6,000건 → LLM 분석 1회분 ~$4
 
-### 4.5 비용 추정 (Apify)
+### 4.5 비용 (Apify — 2026-07-06 API 실사 단가, FREE 티어 기준)
 
-- compass 액터는 결과량 과금(place + 리뷰 단가). 주간: 150 place + ~450 리뷰 → **월 $5~15 수준** 예상. 첫 캐치업/이미지 백필은 1회성 $10~20. (정확 단가는 콘솔 요금표 확인 — 크레딧 $5/월 무료 포함)
+> **⚠️ 계정 실사(2026-07-06): 플랜=FREE, 월 $5 크레딧.** 첫 캐치업 1회가 실측 $4.64(112/136곳에서 한도 소진·중단)로 FREE $5를 거의 다 씀. **캐치업은 예상보다 비쌈** — 3개월치를 호텔당 300개까지 긁으며 기존 리뷰도 review-scraped 이벤트로 과금됨. 대응: (a)캐치업을 월별로 분할, (b)Starter($39/월, 리뷰 단가도 하락) 전환, (c)Places 무료 사전체크로 리뷰 무변화 호텔 스킵(주간엔 유효). **주간 정기(~$0.85/주)는 FREE 한도 내.** 캐치업만 FREE에 안 맞음.
+
+이벤트 과금(PAY_PER_EVENT) 실측: **place $0.004 · 리뷰 $0.0005 · 이미지 $0.0005 · place상세(add-on) $0.002** (Starter 구독 시 place $0.003으로 하락 — 현 물량에선 구독 불필요).
+
+| 작업 | 계산 | 비용 |
+|---|---|---|
+| 주간 그룹 A | 150 place + ~450 리뷰 (상세페이지 OFF) | **~$0.85/주 (~$3.7/월)** |
+| 첫 캐치업 | 150 place + ~6,000 리뷰 | ~$3.6 (1회) |
+| 그룹 C 이미지 백필 | 150 place + ~1,200장 | ~$1.2 (1회) |
+| 그룹 B 신규 호텔 | 호텔당 1 place + 300리뷰 + 10장 | ~$0.16/호텔 |
+
+절감 규칙 (스키마 실사로 확정):
+- `scrapePlaceDetailPage=false` 주간 적용 — add-on $0.002/place 회피 (그룹 B 초도만 true)
+- `maxImages=0` 주간 — 이미지도 장당 과금이므로 그룹 B/C에서만
+- **startUrls(place_id) 방식 고정** — 2월 실행은 searchStringsArray(호텔명 검색, maxCrawledPlacesPerSearch=1)였는데 오매칭 위험 + filter 이벤트 낭비. place_id URL이 결정적·저렴
+- `reviewsStartDate + reviewsSort=newest + maxReviews 캡` = 리뷰 이벤트 최소화 (기존 설계 유지)
+- (도시 확장 후 선택) Places API 무료 사전체크로 리뷰수 무변화 호텔 스킵 — 주 $0.2~0.3 추가 절감 가능하나 현 규모에선 복잡도 대비 이득 작음
+
+**호텔 이미지 무료 수확 (재스크랩 불필요분)**: 2월 스크랩이 maxImages=3으로 돌아서 **150개 호텔 전부 raw_json.imageUrls에 3장씩 보유, 대부분 영구형(/p/) URL로 생존 확인(HTTP 200)**. P2에서 즉시 다운로드→R2 저장(비용 $0). 7~10장 채우기만 그룹 C(~$1.2).
 
 ---
 
@@ -334,6 +354,8 @@ select review_id from reviews r where jsonb_array_length(image_urls) > 0
 ---
 
 ## 6. LLM 분석 루프
+
+> **2026-07-06 갱신: 이 섹션은 [LLM-ANALYSIS-DESIGN.md](LLM-ANALYSIS-DESIGN.md)로 대체·구체화됐다** (기존 gemini 소스 유실 → 프롬프트 v3 재설계, 70% 레이트 제어, 이분할 재시도, 3층 로깅, 한국인 리뷰 통계 포함). 구현은 그 문서를 따를 것. 아래는 원안 기록용.
 
 ### 6.1 흐름
 
@@ -421,7 +443,7 @@ select review_id from reviews r where jsonb_array_length(image_urls) > 0
 6. score     : 점수 재계산 → hotel_scores 갱신                    (§7)
 7. build     : generate.py → docs/ (이미지 경로는 R2 도메인)
 8. deploy    : Cloudflare Pages 배포 (wrangler pages deploy docs/ 또는 git push)
-9. report    : sync_jobs 마감 + 텔레그램/메일 요약 알림(선택): "신규 리뷰 431 · 신규 호텔 1 · 이미지 268 · 비용 $0.4"
+9. report    : sync_jobs 마감 + **Discord 웹훅 알림 (확정 — .env DISCORD_WEBHOOK_URL, 연결 테스트 완료)**: "신규 리뷰 431 · 신규 호텔 1 · 이미지 268 · 비용 $0.4". 온디맨드 분석 요청 접수 시에도 즉시 알림. 주의: requests + User-Agent 헤더 필수(기본 urllib UA는 Discord가 403 차단)
 ```
 
 실패 정책: 각 단계는 sync_jobs에 상태 기록. 5단계(LLM)가 부분 실패해도 is_analyzed=false로 남아 다음 주에 자동 재시도된다. 배포(8)는 6·7 성공 시에만.

@@ -25,7 +25,7 @@
     m.innerHTML =
       '<div class="cf-modal-dim"></div>' +
       '<div class="cf-modal-card">' +
-        '<div class="cf-modal-emoji">😢</div>' +
+        
         '<div class="cf-modal-tit">정말 나가시겠어요?</div>' +
         '<div class="cf-modal-txt">보던 호텔 분석은 저장되지 않아요.<br>후쿠오카 호텔이 아직 많이 남아 있어요!</div>' +
         '<div class="cf-modal-btns">' +

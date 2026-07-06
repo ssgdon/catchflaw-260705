@@ -17,7 +17,7 @@
       var m = document.createElement('div');
       m.className = 'cf-modal'; m.id = 'cf-share-sheet';
       var kakaoBrowserBtn = isKakaoInApp
-        ? '<button type="button" class="sh-item kakao" data-act="external"><span class="sh-ico">🔗</span>기본 브라우저로 열어 공유하기</button>'
+        ? '<button type="button" class="sh-item kakao" data-act="external">기본 브라우저로 열어 공유하기</button>'
         : '';
       m.innerHTML =
         '<div class="cf-modal-dim"></div>' +
@@ -25,7 +25,7 @@
           '<div class="sh-tit">공유하기</div>' +
           '<div class="sh-list">' +
             kakaoBrowserBtn +
-            '<button type="button" class="sh-item" data-act="copy"><span class="sh-ico">📋</span>링크 복사하기</button>' +
+            '<button type="button" class="sh-item" data-act="copy">링크 복사하기</button>' +
           '</div>' +
         '</div>';
       document.body.appendChild(m);
@@ -84,7 +84,7 @@
         '<div class="cf-modal-dim"></div>' +
         '<div class="cf-modal-card">' +
           '<div class="fb-body">' +
-            '<div class="fb-head"><span class="fb-emoji">🙏</span>' +
+            '<div class="fb-head">' +
               '<span class="fb-tit">이동 전에 딱 1초만!</span>' +
               '<button type="button" class="fb-close" data-act="close">✕</button></div>' +
             '<div class="fb-txt">캐치플로에 어떤 기능이 있으면 좋을까요? 불편한 점도 좋아요. 여러분 의견으로 서비스를 만들어가요!</div>' +
@@ -96,7 +96,7 @@
               '<button type="button" class="cf-btn fb-skip" data-act="skip">그냥 이동할게요</button>' +
             '</div>' +
           '</div>' +
-          '<div class="fb-done" hidden><div class="big">💜</div><div class="msg">소중한 의견 고마워요!</div></div>' +
+          '<div class="fb-done" hidden><div class="msg">소중한 의견 고마워요!</div></div>' +
         '</div>';
       document.body.appendChild(m);
       m.querySelector('[data-act="close"]').addEventListener('click', function () { CFNav.pop(); });

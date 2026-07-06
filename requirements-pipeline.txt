@@ -1,0 +1,11 @@
+# CatchFlaw 파이프라인 의존성 (SYNC-PIPELINE-DESIGN.md §10 Phase 4 기준)
+# 로컬 개발용. VM(python3.12)에도 동일하게 설치 예정.
+python-dotenv        # .env 로드
+httpx                # Supabase REST / Apify API 호출
+requests             # 이미지 다운로드
+supabase             # (마이그레이션 기간) Supabase 추출용
+psycopg[binary]      # Oracle VM PostgreSQL 직결
+pillow               # 이미지 WebP 변환/리사이즈
+google-genai         # gemini-2.5-flash 분석 (기존 모델 유지, §6.3)
+apify-client         # Apify 액터 실행/폴링
+boto3                # Cloudflare R2 (S3 호환) 업로드

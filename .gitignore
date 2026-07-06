@@ -1,3 +1,19 @@
 Thumbs.db
 .DS_Store
 .claude/
+.env
+.venv/
+__pycache__/
+
+logs/
+infra/__pycache__/
+
+# 백엔드/데이터플레인 (VM 전용, 공개 프론트 리포 제외)
+pipeline/
+infra/
+data-src/
+# 내부 설계·현황 문서 (시크릿·인프라 상세 포함 — 로컬 전용)
+SETUP-STATUS-260706.md
+DETAIL-UI-REVAMP-DESIGN.md
+DISCOVERY-SEARCH-DESIGN.md
+LLM-ANALYSIS-DESIGN.md
