@@ -113,6 +113,15 @@ def load():
     return hotels_meta, quotes, stars, kr
 
 # ───────────────────────── 공통 조각 ─────────────────────────
+# Microsoft Clarity (히트맵·세션 리플레이). f-string 아님 — JS 중괄호 리터럴 보존.
+CLARITY = '''<script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xi5o022ef1");
+</script>'''
+
 def head(title, depth=0):
     p = '../' * depth
     return f'''<!doctype html>
@@ -121,6 +130,7 @@ def head(title, depth=0):
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
     <title>{E(title)}</title>
+    {CLARITY}
     <link rel="stylesheet" href="{p}css/tokens.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/common.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/layout.css?v={BUILD}">
@@ -698,10 +708,12 @@ def build_search(city_avg_pct):
                     matched = pool.filter(function(h){{ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; }});
                 }}
                 // 2) 매칭 0건일 때만 타도시 안내 발동 (§7-d)
-                if (!matched.length) {{ unsupported(q); drawMap(HOTELS.filter(passFilters), true); return; }}
+                if (!matched.length) {{ unsupported(q); drawMap(HOTELS.filter(passFilters).filter(function(h){{ return !h.rx; }}), true); return; }}
                 pool = matched;
                 $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
             }} else {{
+                // 추천제외(러브호텔·넷카페 등)는 기본 목록·지도에서 숨김 — 호텔명 직접 검색 시에만 노출(§rec)
+                pool = pool.filter(function(h){{ return !h.rx; }});
                 $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망확률 '+CITY_AVG+'%');
             }}
             baseList = pool;
@@ -1201,13 +1213,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         if total_q > 0 else '')
             quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div><div class="review-empty" hidden>한국어 리뷰가 없는 카테고리예요</div></div>{more_btn}'''
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
-            pctl_txt = f"{CITY['ko']} {'하위 ' + str(cat['pctl_worse']) if cat['pctl_worse'] <= 50 else '상위 ' + str(100 - cat['pctl_worse'])}%"
+            pctl_txt = f"{'하위 ' + str(cat['pctl_worse']) if cat['pctl_worse'] <= 50 else '상위 ' + str(100 - cat['pctl_worse'])}%"
             is_open = ' is-open' if order == 0 else ''      # 1위만 초기 펼침(§4-c)
             groups.append(f'''<div class="risk-acc-item{is_open}" id="risk-{ci}" data-order="{order}">
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-{band}"></span>
                     <span class="cat-name">{E(c)}</span>
-                    <span class="cat-score is-{band}">{BAND_KO[band]} · 위험도 {cscore}<span class="pctl"> · {pctl_txt}</span></span>
+                    <span class="cat-score is-{band}">위험도 {cscore}<span class="pctl"> · {pctl_txt}</span></span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">

@@ -128,7 +128,9 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 #detail .analysis .summary .table table tr:last-of-type td{border-bottom:0;}
 #detail .analysis .summary .table table .status-item{height:26px;padding:0 9px;border-radius:8px;font-size:13px;}
 
-/* ---------- 상세: 핵심 요약 — Savant 스타일 스탯 바 ---------- */
+/* ---------- 상세: 핵심 요약 — Savant 스타일 스탯 바
+   [deprecated] 루트 목업 detail*.html 전용. 생성 페이지(docs/hotels)는 mvp.css의
+   .risk-acc-body .stat-* 를 사용한다. 목업 폐기 시 이 블록(~161행)째 삭제. ---------- */
 #detail .analysis .summary .stat-board{padding:18px 16px 14px;border-radius:16px;border:1px solid var(--line);background:#fff;}
 #detail .analysis .summary .stat-axis{display:flex;align-items:center;justify-content:space-between;margin:0 46px 14px 112px;}
 #detail .analysis .summary .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:13px;font-size:11px;font-weight:800;letter-spacing:0;}

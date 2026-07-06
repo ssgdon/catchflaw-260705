@@ -106,52 +106,45 @@
 #detail .disappear .basis{margin:18px 0 0;text-align:center;line-height:1.5;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
 #detail .information .info-bottom .btn-audit .txt .count{color:var(--primary);opacity:.75;}
 
-/* ---------- 상세: 카테고리 전체 나열 (탭 없음) ---------- */
-#detail .analysis .stat-axis{display:flex;align-items:center;justify-content:space-between;margin:10px 46px 0 112px;}
-#detail .analysis .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:13px;font-size:11px;font-weight:800;}
-#detail .analysis .stat-axis .ax:after{content:'▼';font-size:8px;line-height:8px;}
-#detail .analysis .stat-axis .ax.safe{color:var(--safe);}
-#detail .analysis .stat-axis .ax.avg{color:#B0B4BB;}
-#detail .analysis .stat-axis .ax.danger{color:var(--danger);}
+/* ---------- 상세: 리스크 상세 분석 — 축 라벨 (아코디언 본문) ----------
+   좌 116px = stat-info 106px + gap 10px · 우 50px = stat-count 40px + gap 10px */
+#detail .analysis .risk-acc-body .stat-axis{display:flex;align-items:center;justify-content:space-between;margin:10px 50px 0 116px;}
+#detail .analysis .risk-acc-body .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:13px;font-size:11px;font-weight:var(--fw-display);}
+#detail .analysis .risk-acc-body .stat-axis .ax:after{content:'▼';font-size:8px;line-height:8px;}
+#detail .analysis .risk-acc-body .stat-axis .ax.safe{color:var(--safe);transform:translateX(-50%);}
+#detail .analysis .risk-acc-body .stat-axis .ax.avg{color:#B0B4BB;}
+#detail .analysis .risk-acc-body .stat-axis .ax.danger{color:var(--danger);transform:translateX(50%);}
 
-#detail .analysis .cat-group{margin:0 0 var(--sp-6);padding:var(--sp-4) var(--sp-4) var(--sp-2);border:1px solid var(--line);border-radius:var(--radius-card);background:var(--surface-card);}
-#detail .analysis .cat-group .cat-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:4px 8px;padding:2px 2px 10px;border-bottom:1px solid var(--line);}
-#detail .analysis .cat-group .cat-name{display:flex;align-items:center;gap:6px;line-height:1.3;font-size:var(--fs-body-lg);font-weight:var(--fw-display);color:var(--ink);white-space:nowrap;}
-#detail .analysis .cat-group .cat-name .ico{font-size:15px;}
-#detail .analysis .cat-group .cat-score{flex:0 0 auto;line-height:1.3;font-size:var(--fs-caption);font-weight:var(--fw-bold);}
-#detail .analysis .cat-group .cat-score.is-danger{color:var(--danger-text);}
-#detail .analysis .cat-group .cat-score.is-warning{color:var(--warning-text);}
-#detail .analysis .cat-group .cat-score.is-safe{color:var(--safe-text);}
-#detail .analysis .cat-group .cat-score .pctl{font-weight:var(--fw-medium);color:var(--ink-3);}
+/* ---------- 상세: 리스크 상세 분석 — 소분류 게이지 행 (아코디언 본문) ----------
+   구조: .risk-acc-body > .stat-list > li.stat-row.is-{band}
+         행 = .stat-info(106px) + gap 10 + .stat-track(flex:1) + gap 10 + .stat-count(40px) */
+#detail .analysis .risk-acc-body .stat-list{display:flex;flex-direction:column;}
+#detail .analysis .risk-acc-body .stat-row{display:flex;align-items:center;gap:10px;padding:13px 0;}
+#detail .analysis .risk-acc-body .stat-row + .stat-row{border-top:1px dashed var(--line);}
+#detail .analysis .risk-acc-body .stat-info{flex:0 0 106px;min-width:0;}
+#detail .analysis .risk-acc-body .stat-info .factor{line-height:18px;font-size:14px;font-weight:var(--fw-bold);color:var(--ink);}
+#detail .analysis .risk-acc-body .stat-info .keywords{margin:3px 0 0;line-height:15px;font-size:11.5px;font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .analysis .risk-acc-body .stat-track{flex:1;position:relative;height:12px;border-radius:12px;background:#EEEFF3;}
+#detail .analysis .risk-acc-body .stat-fill{position:absolute;top:0;left:0;bottom:0;min-width:20px;border-radius:12px;}
+#detail .analysis .risk-acc-body .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(40%,-50%);display:flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 4px;border-radius:32px;background:#fff;border:2px solid;box-shadow:0 1px 4px rgb(0 0 0 / 12%);font-size:11.5px;font-weight:var(--fw-display);font-style:normal;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
+#detail .analysis .risk-acc-body .stat-count{flex:0 0 40px;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
+#detail .analysis .risk-acc-body .stat-count.has-reviews{color:var(--primary);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+#detail .analysis .risk-acc-body .stat-count.zero{color:var(--ink-3);opacity:.6;}
+#detail .analysis .risk-acc-body .stat-row.is-danger .stat-fill{background:linear-gradient(90deg,#FF9D9D 0%,var(--danger) 100%);}
+#detail .analysis .risk-acc-body .stat-row.is-danger .bubble{border-color:var(--danger);color:var(--danger-text);}
+#detail .analysis .risk-acc-body .stat-row.is-warning .stat-fill{background:linear-gradient(90deg,#FFD9A0 0%,var(--warning) 100%);}
+#detail .analysis .risk-acc-body .stat-row.is-warning .bubble{border-color:var(--warning);color:var(--warning-text);}
+#detail .analysis .risk-acc-body .stat-row.is-safe .stat-fill{background:linear-gradient(90deg,#A9CFF2 0%,var(--safe) 100%);}
+#detail .analysis .risk-acc-body .stat-row.is-safe .bubble{border-color:var(--safe);color:var(--safe-text);}
 
-#detail .analysis .cat-group .stat-list{display:flex;flex-direction:column;}
-#detail .analysis .cat-group .stat-row{display:flex;align-items:center;gap:10px;padding:13px 0;}
-#detail .analysis .cat-group .stat-row + .stat-row{border-top:1px dashed var(--line);}
-#detail .analysis .cat-group .stat-info{flex:0 0 102px;}
-#detail .analysis .cat-group .stat-info .factor{line-height:18px;font-size:14px;font-weight:var(--fw-bold);color:var(--ink);}
-#detail .analysis .cat-group .stat-info .keywords{margin:3px 0 0;line-height:15px;font-size:11.5px;font-weight:var(--fw-medium);color:var(--ink-3);}
-#detail .analysis .cat-group .stat-track{flex:1;position:relative;height:12px;border-radius:12px;background:#EEEFF3;}
-#detail .analysis .cat-group .stat-fill{position:absolute;top:0;left:0;bottom:0;border-radius:12px;}
-#detail .analysis .cat-group .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(40%,-50%);display:flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 4px;border-radius:32px;background:#fff;border:2px solid;box-shadow:0 1px 4px rgb(0 0 0 / 12%);font-size:11.5px;font-weight:800;font-style:normal;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
-#detail .analysis .cat-group .stat-count{flex:0 0 40px;text-align:right;font-size:13px;font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
-#detail .analysis .cat-group .stat-count.has-reviews{color:var(--primary);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
-#detail .analysis .cat-group .stat-count.zero{color:var(--ink-3);opacity:.6;}
-#detail .analysis .cat-group .stat-row.is-danger .stat-fill{background:linear-gradient(90deg,#FF9D9D 0%,var(--danger) 100%);}
-#detail .analysis .cat-group .stat-row.is-danger .bubble{border-color:var(--danger);color:var(--danger-text);}
-#detail .analysis .cat-group .stat-row.is-warning .stat-fill{background:linear-gradient(90deg,#FFD9A0 0%,var(--warning) 100%);}
-#detail .analysis .cat-group .stat-row.is-warning .bubble{border-color:var(--warning);color:var(--warning-text);}
-#detail .analysis .cat-group .stat-row.is-safe .stat-fill{background:linear-gradient(90deg,#A9CFF2 0%,var(--safe) 100%);}
-#detail .analysis .cat-group .stat-row.is-safe .bubble{border-color:var(--safe);color:var(--safe-text);}
-
-#detail .analysis .cat-group .review{margin:var(--sp-3) -4px 0;overflow:hidden;}
-#detail .analysis .cat-group .review .list li{width:270px;}
-#detail .analysis .cat-group .no-quote{margin:var(--sp-3) 0 var(--sp-2);padding:var(--sp-3);border-radius:12px;background:var(--safe-soft);text-align:center;line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--safe-text);}
-
-/* ---------- 상세: 리뷰 전체보기 버튼 (원본 .more 스타일 재현) ---------- */
-#detail .analysis .cat-group .more{margin:var(--sp-3) 0 var(--sp-2);}
-#detail .analysis .cat-group .more-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border-radius:var(--radius-btn);background:var(--surface);font-size:14px;font-weight:var(--fw-medium);color:var(--ink-2);}
-#detail .analysis .cat-group .more-btn strong{font-weight:var(--fw-bold);}
-#detail .analysis .cat-group .more-btn:after{content:'';width:4px;height:8px;background:url("../img/link_arrow_g.svg") no-repeat center / contain;}
+/* ---------- 상세: 아코디언 본문 — 인용 리뷰 / 전체보기 (구 .cat-group 재스코프) ---------- */
+#detail .analysis .risk-acc-body .review{margin:var(--sp-3) -4px 0;overflow:hidden;}
+#detail .analysis .risk-acc-body .review .list li{width:270px;}
+#detail .analysis .risk-acc-body .no-quote{margin:var(--sp-3) 0 var(--sp-2);padding:var(--sp-3);border-radius:12px;background:var(--safe-soft);text-align:center;line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--safe-text);}
+#detail .analysis .risk-acc-body .more{margin:var(--sp-3) 0 var(--sp-2);}
+#detail .analysis .risk-acc-body .more-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:48px;border-radius:var(--radius-btn);background:var(--surface);font-size:14px;font-weight:var(--fw-medium);color:var(--ink-2);}
+#detail .analysis .risk-acc-body .more-btn strong{font-weight:var(--fw-bold);}
+#detail .analysis .risk-acc-body .more-btn:after{content:'';width:4px;height:8px;background:url("../img/link_arrow_g.svg") no-repeat center / contain;}
 
 /* ---------- 리뷰 바텀시트 ---------- */
 .review-sheet{position:fixed;z-index:300;inset:0;}
@@ -496,8 +489,8 @@
 #detail .analysis .risk-acc-head{position:sticky;display:flex;align-items:center;gap:8px;width:100%;height:44px;padding:0 14px;background:#fff;border-radius:var(--radius-card) var(--radius-card) 0 0;border-bottom:1px solid transparent;text-align:left;}
 #detail .analysis .risk-acc-item:not(.is-open) > .risk-acc-head{border-radius:var(--radius-card);}
 #detail .analysis .risk-acc-item.is-open > .risk-acc-head{border-bottom-color:var(--line);}
-#detail .analysis .risk-acc-head .cat-name{flex:0 1 auto;font-size:var(--fs-body-lg);font-weight:var(--fw-display);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-#detail .analysis .risk-acc-head .cat-score{flex:1 1 auto;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);white-space:nowrap;}
+#detail .analysis .risk-acc-head .cat-name{flex:1 1 auto;min-width:0;font-size:var(--fs-body-lg);font-weight:var(--fw-display);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+#detail .analysis .risk-acc-head .cat-score{flex:0 0 auto;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);white-space:nowrap;font-variant-numeric:tabular-nums;}
 #detail .analysis .risk-acc-head .cat-score.is-danger{color:var(--danger-text);}
 #detail .analysis .risk-acc-head .cat-score.is-warning{color:var(--warning-text);}
 #detail .analysis .risk-acc-head .cat-score.is-safe{color:var(--safe-text);}
@@ -507,6 +500,10 @@
 #detail .analysis .risk-acc-body{display:none;padding:4px 14px 14px;border-radius:0 0 var(--radius-card) var(--radius-card);}
 #detail .analysis .risk-acc-item.is-open > .risk-acc-body{display:block;}
 #detail .analysis .risk-acc-body .review-empty{margin:var(--sp-3) 0 var(--sp-2);padding:var(--sp-3);border-radius:12px;background:var(--surface);text-align:center;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+/* 360px 미만 초소형: 헤더에서 백분위 생략 (이름 잘림 방지 최후 안전장치) */
+@media (max-width:359px){
+    #detail .analysis .risk-acc-head .cat-score .pctl{display:none;}
+}
 
 /* ── 상세 히어로 사진 갤러리 (Swiper) ── */
 .visual .hotel-gallery{position:relative;width:100%;height:100%;}
