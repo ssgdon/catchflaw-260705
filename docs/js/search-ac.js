@@ -104,19 +104,18 @@
       sel = -1;
     }
 
-    // 미매칭 → 분석 요청 (§7-c: Supabase analysis_requests 테이블 준비 전이므로 폴백 토스트)
+    // 미매칭 → 분석 요청 (Supabase analysis_requests · anon INSERT RLS — engage.js 피드백과 동일 패턴)
     function requestAnalysis(q) {
-      // TODO(SETUP-STATUS): Supabase에 analysis_requests 테이블 + anon INSERT RLS 생성 후 아래 주석 해제.
-      // if (window.CF_SB) {
-      //   fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
-      //     method: 'POST',
-      //     headers: { 'apikey': window.CF_SB.key, 'Authorization': 'Bearer ' + window.CF_SB.key,
-      //       'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-      //     body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
-      //   }).catch(function () {});
-      //   toast('요청했어요! 분석되면 사이트에 올라와요');
-      //   return;
-      // }
+      if (window.CF_SB && window.CF_SB.url && window.CF_SB.key) {
+        fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
+          method: 'POST',
+          headers: { 'apikey': window.CF_SB.key, 'Authorization': 'Bearer ' + window.CF_SB.key,
+            'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+          body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
+        }).catch(function () {});
+        toast('요청했어요! 분석되면 사이트에 올라와요');
+        return;
+      }
       toast('분석 요청 기능은 준비 중이에요 · 곧 열릴게요');
     }
 

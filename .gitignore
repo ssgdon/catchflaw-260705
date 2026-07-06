@@ -12,9 +12,9 @@ infra/__pycache__/
 pipeline/
 infra/
 data-src/
-# 내부 설계·현황 문서 (시크릿·인프라 상세 포함 — 로컬 전용)
-SETUP-STATUS-260706.md
-DETAIL-UI-REVAMP-DESIGN.md
-DISCOVERY-SEARCH-DESIGN.md
-LLM-ANALYSIS-DESIGN.md
-RISK-DETAIL-FIX-DESIGN.md
+
+# 히스토리·운영 문서 (로컬 전용) — 완료된 설계문서는 archive/design-docs/ 로 이동됨
+archive/
+RUNBOOK.md
+OPERATIONS-READINESS-DESIGN.md
+scripts/deploy.ps1

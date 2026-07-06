@@ -1,28 +1,32 @@
 # CATCHFLAW (캐치플로)
 
-호텔 리뷰를 LLM으로 분석해 "실망 확률"을 보여주는 서비스. 현재 후쿠오카 전용 MVP 검증 단계.
+호텔 리뷰를 LLM으로 분석해 "실망 확률"을 보여주는 서비스. 후쿠오카 전용 MVP, **운영(라이브) 단계**.
 
-> **⭐ 주간 동기화·오라클 이관 작업을 하러 왔다면 [SYNC-PIPELINE-DESIGN.md](SYNC-PIPELINE-DESIGN.md)부터 읽을 것.** 실행 순서는 그 문서 §10, 사용자 결정 대기 항목은 §11.
-> **⭐ LLM 분석 루프(프롬프트·배치·로깅)와 한국인 리뷰 통계 기능은 [LLM-ANALYSIS-DESIGN.md](LLM-ANALYSIS-DESIGN.md)가 정본** (SYNC §6을 대체). 실행 순서는 그 문서 §9. 사전 환경검증 결과는 [SETUP-STATUS-260706.md](SETUP-STATUS-260706.md).
-> **⭐ AI 맞춤 추천 기능(3스텝 마법사 + 순위 결과) 구현은 [AI-RECOMMEND-DESIGN.md](AI-RECOMMEND-DESIGN.md)를 그대로 따를 것.** 특히 §6 디자인 가드레일과 §8 카피는 수정 금지. 지역 지도 줌 버그 수정(§1)도 이 문서에 포함.
-> **⭐ 호텔 검색이 안 되는 문제(고객이 찾는 호텔 미노출)와 호텔 선정 로직은 [DISCOVERY-SEARCH-DESIGN.md](DISCOVERY-SEARCH-DESIGN.md).** 핵심: 현재 search.html은 목업(검색 미구현)이고, 150개는 1회성 덤프라 불완전 → 체계적 스윕(공급) + place_id 조인 검색·온디맨드 요청(수요)으로 해결.
+> **⭐ 운영 절차(배포·주간배치·cron·백업·롤백)의 정본은 [RUNBOOK.md](RUNBOOK.md)** (로컬 전용).
+> 완료된 설계 히스토리(SYNC·LLM·DISCOVERY·AI-RECOMMEND·DETAIL·RISK 등)는 `archive/design-docs/`에 보존.
 
-## 이 리포
+## 리포 구조 (3분할)
 
-디자인 퍼블리싱 원본 (정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준).
+- **프론트(배포, git 추적)**: `docs/`(Cloudflare가 서빙하는 산출물) · `css/ js/ img/ assets/hotels/`(원본) · `scripts/generate.py`(빌드 정본, `scripts/scoring.py`를 import) · 루트 `*.html`(퍼블리싱 목업 원본) · `wrangler.toml`.
+- **백엔드(파이프라인, gitignored·VM 미러)**: `pipeline/`(scrape→ingest→images→analyze→score→stats→export_pg→build_index + weekly_sync·monthly_master·backup·master_refresh) · `data-src/`(빌드 입력 JSON) · `.env` · `infra/`.
+- **히스토리(gitignored)**: `archive/`(설계문서·구 스크립트·1회성).
+- 배포: GitHub `ssgdon/catchflaw-260705` → **Cloudflare**가 `docs/`를 정적 서빙(`wrangler.toml [assets] directory=./docs`, `html_handling=none`). push → 자동 배포. 도메인 catchflaw.com.
 
-- 페이지: index(메인) / search(검색결과) / detail·detail-2·detail-3(상세 상태 변형) / review(리뷰 전체) / recent / wishlist
-- CSS 로드 순서: `tokens.css → common.css(리셋) → layout.css(원본) → swiper.css → uplift.css(개선 오버라이드)`
-- **모든 화면 수정은 `UI-STANDARDS.md`를 따른다.** 색/폰트/간격은 `css/tokens.css` 변수만 사용.
+## 프론트 규칙
+
+- 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / hotels/{id}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
+- CSS 로드 순서: `tokens.css → common.css(리셋) → layout.css(원본) → swiper.css → uplift.css → mvp.css(최후순위 오버라이드)`.
+- **모든 화면 수정은 `UI-STANDARDS.md`를 따른다.** 색/폰트/간격은 `css/tokens.css` 변수만 사용. 이모지 미사용(제품 폴리시).
 
 ## 데이터
 
-- Supabase 프로젝트 "Nitpicker". 현행 데이터 = 후쿠오카 150개 호텔 (`hotels_new`, `reviews_new`, `reviews_analysis_new`).
-- 점수체계 v2 (검증 완료): 도시평균=50, 3배=100 구간선형, k=20 보정, 카테고리 불만 5건 미만 상한 65, 분석 30건 미만 미노출. 실망확률 = 심각 태그 리뷰의 최신성 가중 비율(실측).
-- 카테고리: 대분류 6 (위생 경보/오감 지옥/시설 사기단/동선 파괴자/불친절 레이더/안전 그림자) × **소분류 19** (2026-07-06 v3 개편 — 정본은 `pipeline/prompt.py` SUBS, 개편 근거·리매핑은 LLM-ANALYSIS-DESIGN.md §4.0). 현행 Supabase 데이터·scripts/scoring.py는 아직 구 20개 체계 — P2 마이그레이션에서 동기화 예정.
+- **현행 DB = Oracle VM PostgreSQL `catchflaw`** (158.179.173.211, localhost 전용). 후쿠오카 173곳(active 159 / watch 14 / closed 1, 사이트엔 active+watch만) · 리뷰 6만+ · 분석 3.8만+. Supabase는 `mvp_feedbacks`(피드백)·`analysis_requests`(온디맨드 요청)만 사용.
+- 점수체계 v2 (검증 완료): 도시평균=50, 3배=100 구간선형, k=20 보정, 카테고리 불만 5건 미만 상한 65, 분석 30건 미만 미노출. 실망확률 = 심각 태그 리뷰의 최신성 가중 비율(실측, 도시평균 ~9%). 기준일(asof)은 최신 리뷰일로 매주 이동(`data-src/meta.json` → generate.py 동적 표기).
+- 카테고리: 대분류 6 (위생 경보/오감 지옥/시설 사기단/동선 파괴자/불친절 레이더/안전 그림자) × **소분류 19** (v3). **정본 = `pipeline/prompt.py` SUBS = `scripts/scoring.py` SUBS (동기화 완료).**
+- 추천 제외(`hotels.rec_excluded`): 러브호텔·넷카페 등은 검색·상세엔 노출되나 홈 추천·검색 기본목록·지도에선 숨김(호텔명 직접 검색 시에만 노출).
 
 ## MVP 규칙
 
 - 후쿠오카 외 도시: 검색 단계에서 "미지원" 안내. 상세 진입 금지.
-- 로그인 없음 (카카오 로그인/리뷰 블라인드 제거). 찜·최근 본 호텔은 localStorage.
-- 목업의 "실망 확률 80%" 류 데모 값은 실데이터 스케일(2.7~35.2%)로 교체할 것.
+- 로그인 없음. 찜·최근 본 호텔은 localStorage.
+- 미등록 호텔은 검색 미매칭 시 "분석 요청"(Supabase `analysis_requests`) → 운영자 심사 후 편입.
