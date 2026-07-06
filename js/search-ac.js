@@ -49,7 +49,7 @@
     opts = opts || {};
     var $input = $(input);
     var hrefPrefix = opts.hrefPrefix || './hotels/';   // 상세 링크 접두사
-    var areaHref = opts.areaHref || './search.html?area=';
+    var areaHref = opts.areaHref || './search?area=';
     var $box = $input.closest('form, .search, .input').find('.ac-box').first();
     if (!$box.length) return null;
 
@@ -64,7 +64,7 @@
         ? '<span class="ac-p" style="color:' + (BAND_COLOR[band] || '#8B9097') + '">실망 ' + h.p + '%</span>'
         : '<span class="ac-p dim">수집중</span>';
       var krn = (h.krn > 0) ? '<span class="ac-krn">한국인 리뷰 ' + h.krn.toLocaleString() + '건</span>' : '';
-      return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '.html">'
+      return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'
         + '<span class="ac-main"><span class="ac-name">' + esc(h.t) + '</span>' + krn + '</span>'
         + chip + '</a>';
     }

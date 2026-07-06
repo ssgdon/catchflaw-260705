@@ -146,7 +146,7 @@ def header_nav(depth=0):
     return f'''
     <header id="header">
         <div class="header"><div class="inner">
-            <h1 class="logo"><a href="{p}index.html"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></h1>
+            <h1 class="logo"><a href="{p or "./"}"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></h1>
         </div></div>
     </header>'''
 
@@ -173,7 +173,7 @@ def hotel_card(pid, meta, h, depth=0):
     p = '../' * depth
     star_w = round(float(meta.get('total_score') or 0) / 5 * 100)
     return f'''<li class="swiper-slide">
-        <a href="{p}hotels/{pid}.html" class="item">
+        <a href="{p}hotels/{pid}" class="item">
             <div class="thumb">
                 <div class="badge">{badge_html(h)}</div>
                 <div class="image"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" loading="lazy"></div>
@@ -237,7 +237,7 @@ def build_index(hotels_meta, H, quotes):
                         <div class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</div>
                         <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {total_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
-                    <form class="input" action="./search.html" method="get" autocomplete="off">
+                    <form class="input" action="./search" method="get" autocomplete="off">
                         <input type="text" name="q" id="hero-q" placeholder="{CITY['ko']} 호텔명 또는 구글맵 링크 붙여넣기">
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
@@ -254,7 +254,7 @@ def build_index(hotels_meta, H, quotes):
                             <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
                         </div>
                     </div>
-                    <div class="map-more"><a href="./search.html">가격·지역·등급으로 딱 맞는 호텔 찾기 →</a></div>
+                    <div class="map-more"><a href="./search">가격·지역·등급으로 딱 맞는 호텔 찾기 →</a></div>
                 </div>
             </article>
             <article class="section sec-2">
@@ -301,7 +301,7 @@ def build_index(hotels_meta, H, quotes):
             mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
                 + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
                 + (h.pt ? ' · 1박 ' + h.pt : '') + '</div>' + chip
-                + '<a class="pop-link" href="./hotels/' + h.id + '.html">캐치플로 분석 보기 →</a></div>');
+                + '<a class="pop-link" href="./hotels/' + h.id + '">캐치플로 분석 보기 →</a></div>');
             pts.push([h.lat, h.lng]);
         }});
         if (pts.length) map.fitBounds(pts, {{padding: [24, 24], maxZoom: 14}});
@@ -344,7 +344,7 @@ def build_index(hotels_meta, H, quotes):
 
         // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행)
         if (window.CFAutocomplete) {{
-            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search.html?area=', isUrl: isUrl }});
+            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=', isUrl: isUrl }});
         }}
 
         // URL 입력 시엔 자동완성 대신 링크 해석 안내
@@ -353,7 +353,7 @@ def build_index(hotels_meta, H, quotes):
             if (isUrl(v)) {{
                 var hit = resolveUrl(v);
                 if (hit) {{
-                    $box.prop('hidden', false).html('<div class="ac-section">호텔</div><a class="ac-item" href="./hotels/' + hit.id + '.html"><span class="ac-main"><span class="ac-name">' + hit.name + '</span></span></a>');
+                    $box.prop('hidden', false).html('<div class="ac-section">호텔</div><a class="ac-item" href="./hotels/' + hit.id + '"><span class="ac-main"><span class="ac-name">' + hit.name + '</span></span></a>');
                 }} else {{
                     $box.prop('hidden', false).html('<div class="ac-none">링크에서 호텔을 찾지 못했어요. 호텔 이름으로 검색해 보세요!</div>');
                 }}
@@ -365,8 +365,8 @@ def build_index(hotels_meta, H, quotes):
             if (isUrl(v)) {{
                 e.preventDefault();
                 var hit = resolveUrl(v);
-                if (hit) location.href = './hotels/' + hit.id + '.html';
-                else location.href = './search.html?q=' + encodeURIComponent(v);
+                if (hit) location.href = './hotels/' + hit.id;
+                else location.href = './search?q=' + encodeURIComponent(v);
             }}
         }});
     }});
@@ -447,7 +447,7 @@ def build_search(city_avg_pct):
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
         <section id="title">
-            <div class="back"><a href="./index.html" class="btn-back"><img src="./img/back_b.svg" alt="뒤로가기"></a></div>
+            <div class="back"><a href="./" class="btn-back"><img src="./img/back_b.svg" alt="뒤로가기"></a></div>
             <div class="search">
                 <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
                 <input type="text" id="q" placeholder="{CITY['ko']} 호텔명 검색 또는 구글맵 링크" autocomplete="off">
@@ -570,7 +570,7 @@ def build_search(city_avg_pct):
             return '<div class="map-pop"><b>'+h.name+'</b>'
                 + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'
                 + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
-                + '<a class="pop-link" href="./hotels/'+h.id+'.html">캐치플로 분석 보기 →</a></div>';
+                + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>';
         }}
         function drawMap(list, fit){{
             markers.clearLayers();
@@ -620,10 +620,10 @@ def build_search(city_avg_pct):
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
             return '<li><div class="item">'
-                + '<div class="thumb"><a href="./hotels/'+h.id+'.html"><img src="'+img+'" loading="lazy"></a></div>'
+                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
-                + '<div class="name"><a href="./hotels/'+h.id+'.html">'+h.name+'</a></div>'
+                + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
                 + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+price+'</div></div>'
                 + '<div class="bottom">'
                 + '<div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
@@ -674,7 +674,7 @@ def build_search(city_avg_pct):
                 '<div class="notice-card">'
                 + '<div class="notice-tit">아직 <b>'+CITY_KO+'</b>만 지원해요</div>'
                 + '<div class="notice-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요.<br>'+CITY_KO+' 호텔은 전부 분석되어 있으니 먼저 둘러보세요!</div>'
-                + '<a class="notice-btn" href="./search.html">'+CITY_KO+' 호텔 전체 보기</a></div>');
+                + '<a class="notice-btn" href="./search">'+CITY_KO+' 호텔 전체 보기</a></div>');
             $res.html('');
         }}
 
@@ -770,7 +770,7 @@ def build_search(city_avg_pct):
 
         // 공용 자동완성 (별칭 인덱스 드롭다운). 선택 시 상세로 이동, 미매칭 시 분석 요청행.
         if (window.CFAutocomplete) {{
-            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search.html?area=' }});
+            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=' }});
         }}
 
         // ═════════ AI 맞춤 추천 (rec) 모드 ═════════
@@ -808,9 +808,9 @@ def build_search(city_avg_pct):
             var medal = rank<=3 ? '<span class="rec-medal">'+rank+'</span>' : '<span class="rec-num">'+rank+'</span>';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
             return '<li><div class="item">'
-                + '<div class="thumb"><a href="./hotels/'+h.id+'.html"><img src="'+img+'" loading="lazy"></a></div>'
+                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" loading="lazy"></a></div>'
                 + '<div class="cont">'
-                + '<div class="rec-rankline">'+medal+'<div class="name" style="margin:0"><a href="./hotels/'+h.id+'.html">'+h.name+'</a></div></div>'
+                + '<div class="rec-rankline">'+medal+'<div class="name" style="margin:0"><a href="./hotels/'+h.id+'">'+h.name+'</a></div></div>'
                 + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+price+'</div>'
                 + '<div class="bottom"><div class="grade"><div class="ico"><img src="./img/star.svg"></div>'
                 + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div></div>'
@@ -829,7 +829,7 @@ def build_search(city_avg_pct):
                 var mk = L.marker([h.lat,h.lng], {{icon:icon, zIndexOffset: (11-rank)*10}});
                 mk.bindPopup('<div class="map-pop"><b>'+rank+'위'+' '+h.name+'</b>'
                     + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'+(h.pt?' · 1박 '+h.pt:'')+'</div>'
-                    + '<a class="pop-link" href="./hotels/'+h.id+'.html">캐치플로 분석 보기 →</a></div>');
+                    + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>');
                 markers.addLayer(mk); pts.push([h.lat,h.lng]);
             }});
             var a = recArea ? AREAS.filter(function(x){{return x.code===recArea;}})[0] : null;
@@ -886,7 +886,7 @@ def build_search(city_avg_pct):
             var bud = over.bud!==undefined ? over.bud : recBud;
             var area = over.area!==undefined ? over.area : recArea;
             var qs = 'rec=1&pr='+pr; if(bud) qs+='&bud='+bud; if(area) qs+='&area='+area;
-            return './search.html?'+qs;
+            return './search?'+qs;
         }}
 
         // URL 파라미터: ?rec= / ?area= / ?q=
@@ -1329,7 +1329,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     <main id="container">
         <section id="detail">
             <div class="header">
-                <div class="back"><a href="../search.html"><img src="../img/back.svg" alt="뒤로가기"></a></div>
+                <div class="back"><a href="../search"><img src="../img/back.svg" alt="뒤로가기"></a></div>
             </div>
             <div class="content">
                 {gallery_html(meta, name, img)}
