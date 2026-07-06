@@ -1,0 +1,8 @@
+# Cloudflare Workers 정적 자산 배포 (docs/ 서빙, 빌드 없음)
+name = "catchflaw-260705"
+compatibility_date = "2026-07-06"
+
+[assets]
+directory = "./docs"
+# 다중 HTML 정적 사이트: 없는 경로는 404 페이지(있으면) 또는 기본 처리
+not_found_handling = "none"
