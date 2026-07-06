@@ -6,3 +6,5 @@ compatibility_date = "2026-07-06"
 directory = "./docs"
 # 다중 HTML 정적 사이트: 없는 경로는 404 페이지(있으면) 또는 기본 처리
 not_found_handling = "none"
+# .html 링크를 리다이렉트 없이 그대로 서빙(내부 링크가 전부 .html이라 308 홉 제거)
+html_handling = "none"
