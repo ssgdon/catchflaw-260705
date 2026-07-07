@@ -1066,31 +1066,33 @@ def _complete_months(asof, k=12):
     return out
 
 
-def overall_trend_html(pid, monthly, monthly_cat, asof):
-    """전체 통합 월별 위험 리뷰 흐름 (라인 트렌드). 카테고리 차트와 동일 형태·데이터 가공.
+def overall_trend_html(pid, monthly, monthly_cat, asof, city_avg=None):
+    """전체 통합 월별 위험 리뷰 흐름 (누적 스택 트렌드). 카테고리 차트와 동일 형태·데이터 가공.
     .sect.disappear 안 게이지 아래·인사이트 카드 위에 배치. 데이터 부족 시(합<10) 미노출.
     반환: (html, trendc_all_or_None). trendc_all은 window.TRENDC['all'] 주입용."""
     cmonths = _complete_months(asof, 12) if (monthly and asof) else []
     if not cmonths:
         return '', None
     mdata = (monthly or {}).get(pid) or {}
-    pw, pc = [], []      # 주의%, 심각% (완전월 12개)
+    pw, pc, pa = [], [], []      # 주의%, 심각%, 도시평균% (완전월 12개)
     sum_flag = 0
     for ym, _lbl in cmonths:
         n, nc, nw = mdata.get(ym, (0, 0, 0))
         pw.append(round(nw / n * 100, 1) if n else 0.0)
         pc.append(round(nc / n * 100, 1) if n else 0.0)
+        pa.append((city_avg or {}).get(ym, 0.0))
         sum_flag += nc + nw
     if sum_flag < 10:                        # 가드(R-6): 저표본 차트 생략
         return '', None
     labels = [lbl for _ym, lbl in cmonths]
-    trendc_all = {'m': labels, 'w': pw, 'c': pc}
-    now_txt = f'{labels[-1]} 주의 {pw[-1]}% · 심각 {pc[-1]}%'
-    dw, dc = round(pw[-1] - pw[-2], 1), round(pc[-1] - pc[-2], 1)
-    if abs(dw) < 0.05 and abs(dc) < 0.05:
+    trendc_all = {'m': labels, 'w': pw, 'c': pc, 'a': pa}
+    tot = round(pw[-1] + pc[-1], 1)          # 합계 = 주의+심각 (배타이므로 합집합 비율)
+    now_txt = f'{labels[-1]} {tot}% · 평균 {pa[-1]}%'
+    dt = round((pw[-1] + pc[-1]) - (pw[-2] + pc[-2]), 1)
+    if abs(dt) < 0.05:
         delta_txt = '지난 달과 비슷한 수준이에요'
     else:
-        delta_txt = f'지난 달 대비 주의 {dw:+.1f}p · 심각 {dc:+.1f}p'
+        delta_txt = f'지난 달 대비 {dt:+.1f}p {"증가했어요" if dt > 0 else "줄었어요"}'
     html = (f'<div class="cat-trend cat-trend-all">'
         f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
         f'<span class="ct-now">{E(now_txt)}</span></div>'
@@ -1200,7 +1202,7 @@ def gallery_html(meta, name, fallback):
             f'</div></div>')
 
 
-def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None):
+def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
@@ -1288,24 +1290,26 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             # ── 카테고리별 월별 위험 리뷰 흐름 (CAT-TREND). 최상단(axis 앞) 삽입 ──
             cat_trend = ''
             if cmonths:
-                pw, pc = [], []      # 주의%, 심각% (완전월 12개)
+                pw, pc, pa = [], [], []      # 주의%, 심각%, 도시 카테고리 평균% (완전월 12개)
                 sum_flag = 0
                 for ym, _lbl in cmonths:
                     nc, nw = mcat_data.get((ym, c), (0, 0))
                     n = m_n.get(ym, 0)
                     pw.append(round(nw / n * 100, 1) if n else 0.0)
                     pc.append(round(nc / n * 100, 1) if n else 0.0)
+                    pa.append((city_cat_avg or {}).get((ym, c), 0.0))
                     sum_flag += nc + nw
                 if sum_flag >= 8:                            # 가드(C-5): 저표본 차트 생략
                     labels = [lbl for _ym, lbl in cmonths]
-                    trendc[ci] = {'m': labels, 'w': pw, 'c': pc}
-                    now_txt = f'{labels[-1]} 주의 {pw[-1]}% · 심각 {pc[-1]}%'
-                    dw, dc = round(pw[-1] - pw[-2], 1), round(pc[-1] - pc[-2], 1)
-                    # 델타 문구(C-8): ±0.05p 미만은 "비슷", 그 외 마지막 두 완전월 증감 나열
-                    if abs(dw) < 0.05 and abs(dc) < 0.05:
+                    trendc[ci] = {'m': labels, 'w': pw, 'c': pc, 'a': pa}
+                    tot = round(pw[-1] + pc[-1], 1)          # 합계 = 주의+심각 (배타)
+                    now_txt = f'{labels[-1]} {tot}% · 평균 {pa[-1]}%'
+                    dt = round((pw[-1] + pc[-1]) - (pw[-2] + pc[-2]), 1)
+                    # 델타 문구(C-8): ±0.05p 미만은 "비슷", 그 외 합계 기준 증감
+                    if abs(dt) < 0.05:
                         delta_txt = '지난 달과 비슷한 수준이에요'
                     else:
-                        delta_txt = f'지난 달 대비 주의 {dw:+.1f}p · 심각 {dc:+.1f}p'
+                        delta_txt = f'지난 달 대비 {dt:+.1f}p {"증가했어요" if dt > 0 else "줄었어요"}'
                     cat_trend = (f'<div class="cat-trend" data-ci="{ci}">'
                         f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
                         f'<span class="ct-now">{E(now_txt)}</span></div>'
@@ -1334,7 +1338,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
         # ── 전체 통합 월별 흐름 라인차트 (게이지 아래·인사이트 앞) ──
-        overall_trend, trendc_all = overall_trend_html(pid, monthly, monthly_cat, CITY['asof'])
+        overall_trend, trendc_all = overall_trend_html(pid, monthly, monthly_cat, CITY['asof'], city_avg)
         if trendc_all is not None:
             trendc['all'] = trendc_all
 
@@ -1630,14 +1634,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var gC = ctx.createLinearGradient(0,0,0,130); gC.addColorStop(0,'rgba(250,82,82,.22)'); gC.addColorStop(1,'rgba(250,82,82,.02)');
                 var n = d.m.length, pr = Array(n).fill(0); pr[n-1] = 3;
                 new Chart(ctx, {{type:'line', data:{{labels:d.m, datasets:[
-                    {{label:'주의', data:d.w, borderColor:'#F0A028', backgroundColor:gW, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028'}},
-                    {{label:'심각', data:d.c, borderColor:'#FA5252', backgroundColor:gC, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252'}}]}},
+                    {{label:'심각', data:d.c, borderColor:'#FA5252', backgroundColor:gC, fill:'origin', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252', stack:'risk'}},
+                    {{label:'주의', data:d.w, borderColor:'#F0A028', backgroundColor:gW, fill:'-1', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028', stack:'risk'}},
+                    {{label:'후쿠오카 평균', data:d.a, borderColor:'#B0B4BB', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false, tension:.35, stack:'avg'}}]}},
                   options:{{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
                     plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#232323', bodyColor:'#555B63',
-                        borderColor:'#E8E9ED', borderWidth:1, cornerRadius:10, padding:10,
-                        callbacks:{{label:function(t){{return t.dataset.label+' '+t.parsed.y.toFixed(1)+'%';}}}}}}}},
+                        borderColor:'#E8E9ED', borderWidth:1, cornerRadius:10, padding:10, footerColor:'#232323', footerFont:{{weight:'bold'}},
+                        callbacks:{{label:function(t){{return t.dataset.label+' '+t.parsed.y.toFixed(1)+'%';}},
+                            footer:function(items){{var s=0; items.forEach(function(it){{if(it.dataset.stack==='risk') s+=it.parsed.y;}}); return '합계 '+s.toFixed(1)+'%';}}}}}}}},
                     scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:10}}, color:'#8B9097', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
-                            y:{{beginAtZero:true, grid:{{color:'#efefef'}}, border:{{display:false}},
+                            y:{{beginAtZero:true, stacked:true, grid:{{color:'#efefef'}}, border:{{display:false}},
                                ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
@@ -1693,9 +1699,30 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     </script>''' + FOOT
 
 # ───────────────────────── main ─────────────────────────
+def city_averages(monthly, monthly_cat):
+    """빌드타임 도시(후쿠오카) 평균 시리즈 (TREND-V2 §2-a). 전 호텔 monthly 합산 기준
+    — rec_excluded 호텔이 hotels_meta에서 빠져도 monthly.json엔 있으므로 도시 평균은 전 호텔 유지.
+    반환: (city_n{ym:n}, city_avg{ym:pct}, city_cat_avg{(ym,cat):pct}). 분모는 city_n[ym]."""
+    city_n = defaultdict(int)      # {ym: Σ n}
+    city_risk = defaultdict(int)   # {ym: Σ (n_crit+n_warn)}  전체 차트용
+    for pid, mdata in monthly.items():
+        for ym, (n, nc, nw) in mdata.items():
+            city_n[ym] += n
+            city_risk[ym] += nc + nw
+    city_cat_risk = defaultdict(int)  # {(ym,cat): Σ (n_crit+n_warn)}
+    for pid, mcdata in monthly_cat.items():
+        for (ym, cat), (nc, nw) in mcdata.items():
+            city_cat_risk[(ym, cat)] += nc + nw
+    city_avg = {ym: round(city_risk[ym] / city_n[ym] * 100, 1) if city_n[ym] else 0.0 for ym in city_n}
+    city_cat_avg = {k: round(city_cat_risk[k] / city_n[k[0]] * 100, 1) if city_n.get(k[0]) else 0.0
+                    for k in city_cat_risk}
+    return city_n, city_avg, city_cat_avg
+
+
 def main():
     city, H = compute(SRC)
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat = load()
+    city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
 
     if os.path.exists(OUT): shutil.rmtree(OUT)
     os.makedirs(os.path.join(OUT, 'hotels'))
@@ -1720,7 +1747,8 @@ def main():
     for pid, meta in hotels_meta.items():
         if pid not in H: continue
         W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
-            kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat))
+            kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat,
+            city_avg, city_cat_avg))
         n += 1
     scored = sum(1 for p in H if H[p]['scored'])
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · 도시평균 실망확률 {pct(city["crit"])}%')

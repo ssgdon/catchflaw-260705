@@ -148,7 +148,7 @@
 
 /* ── 상세: 월별 위험 리뷰 흐름 (라인 트렌드) — 아코디언 카테고리 + 실망확률 전체 통합 공용 ── */
 #detail .cat-trend{margin:12px 0 4px;padding:12px 12px 10px;border-radius:12px;background:var(--surface);}
-#detail .cat-trend .ct-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 2px 8px;}
+#detail .cat-trend .ct-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:8px;margin:0 2px 8px;}
 #detail .cat-trend .ct-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
 #detail .cat-trend .ct-now{font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;}
 #detail .cat-trend .ct-canvas{position:relative;height:130px;}
