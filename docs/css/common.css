@@ -1,8 +1,7 @@
 @charset "utf-8";
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
 
 *:focus{}
-*{margin:0;padding:0;list-style-type:none;box-sizing:border-box;font-style: normal;border:0;outline:0;font-family:'Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic','dotum','돋움','gulim','굴림','Tahoma';}
+*{margin:0;padding:0;list-style-type:none;box-sizing:border-box;font-style: normal;border:0;outline:0;font-family:'Pretendard Variable','Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic','dotum','돋움','gulim','굴림','Tahoma';}
 
 html{font-size:62.5%;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;scroll-behavior: smooth;overflow-y: scroll;background:#ffffff;}
 body{line-height: 150%;font-size:16px;color:#232323;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;background: #eee;}

@@ -173,6 +173,10 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     {VERIFY_META}
     {CLARITY}
     {extra_head}
+    <link rel="icon" type="image/svg+xml" href="{p}img/favicon.svg">
+    <link rel="apple-touch-icon" href="{p}img/favicon.svg">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
     <link rel="stylesheet" href="{p}css/tokens.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/common.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/layout.css?v={BUILD}">
@@ -198,7 +202,7 @@ def header_nav(depth=0):
     return f'''
     <header id="header">
         <div class="header"><div class="inner">
-            <h1 class="logo"><a href="{p or "./"}"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></h1>
+            <div class="logo"><a href="{p or "./"}"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></div>
         </div></div>
     </header>'''
 
@@ -228,7 +232,7 @@ def hotel_card(pid, meta, h, depth=0):
         <a href="{p}hotels/{pid}" class="item">
             <div class="thumb">
                 <div class="badge">{badge_html(h)}</div>
-                <div class="image"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" loading="lazy"></div>
+                <div class="image"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" width="600" height="400" loading="lazy"></div>
             </div>
             <div class="info">
                 <h3 class="name">{E(meta['title'])}</h3>
@@ -272,10 +276,14 @@ def build_index(hotels_meta, H, quotes):
     price_sliders = ''.join(price_parts)
 
     n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
-    html_out = head('캐치플로 — 그 호텔, 최악의 리뷰는요?',
+    home_ld = _jsonld({'@context':'https://schema.org','@type':'WebSite','name':'캐치플로','alternateName':'CATCHFLAW',
+        'url':f'{BASE}/', 'potentialAction':{'@type':'SearchAction',
+        'target':{'@type':'EntryPoint','urlTemplate':f'{BASE}/search?q={{search_term_string}}'},
+        'query-input':'required name=search_term_string'}})
+    html_out = head('캐치플로 — 후쿠오카 호텔 리뷰 위험도·실망 확률 분석',
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드립니다. '
                     '위생·소음·시설·동선·서비스·안전 6개 항목의 위험도를 예약 전에 확인하세요.',
-        canonical=f'{BASE}/') + f'''
+        canonical=f'{BASE}/', extra_head=home_ld) + f'''
     <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + header_nav() + f'''
     <main id="container">
@@ -288,7 +296,7 @@ def build_index(hotels_meta, H, quotes):
                         <li><div class="subject">침대에서 벌레가 나왔어요</div><div class="star"><i style="width:40%"></i></div></li>
                     </ul></div>
                     <div class="title">
-                        <div class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</div>
+                        <h1 class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
                         <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {total_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
@@ -426,6 +434,21 @@ def build_index(hotels_meta, H, quotes):
     }});
     </script>''' + FOOT
     return html_out
+
+# ───────────────────────── 404 ─────────────────────────
+def build_404():
+    """soft-404 해소용 독립 404 페이지. canonical/description 없이 noindex.
+       링크는 절대경로(어느 깊이에서도 서빙되므로 상대경로 금지)."""
+    return head('페이지를 찾을 수 없어요 — 캐치플로', depth=0,
+        extra_head='<meta name="robots" content="noindex">') + header_nav() + f'''
+    <main id="container"><section id="search" style="padding:60px 20px">
+        <div class="notice-card">
+            <div class="notice-tit">페이지를 찾을 수 없어요</div>
+            <div class="notice-txt">주소가 바뀌었거나 없는 페이지예요.<br>{CITY['ko']} 호텔 분석은 아래에서 계속 볼 수 있어요.</div>
+            <a class="notice-btn" href="/">캐치플로 홈으로</a>
+            <a class="notice-btn" href="/search" style="margin-left:8px;background:var(--ink)">호텔 전체 보기</a>
+        </div>
+    </section></main>''' + FOOT
 
 # ───────────────────────── search ─────────────────────────
 def build_search_index(hotels_meta, H):
@@ -676,7 +699,7 @@ def build_search(city_avg_pct):
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
             return '<li><div class="item">'
-                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" loading="lazy"></a></div>'
+                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
                 + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
@@ -864,7 +887,7 @@ def build_search(city_avg_pct):
             var medal = rank<=3 ? '<span class="rec-medal">'+rank+'</span>' : '<span class="rec-num">'+rank+'</span>';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
             return '<li><div class="item">'
-                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" loading="lazy"></a></div>'
+                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="rec-rankline">'+medal+'<div class="name" style="margin:0"><a href="./hotels/'+h.id+'">'+h.name+'</a></div></div>'
                 + '<div class="meta"><span>'+CITY_KO+', JP</span>'+(h.stars?'<span>'+h.stars+'</span>':'')+price+'</div>'
@@ -1221,10 +1244,10 @@ def gallery_html(meta, name, fallback):
     """상세 히어로: 사진 2장+면 Swiper 갤러리(점 표시·스와이프), 아니면 단일 이미지."""
     imgs = meta.get('r2_imgs') or []
     if len(imgs) < 2:
-        return f'<div class="visual"><img src="{E(imgs[0] if imgs else fallback)}" alt="{E(name)}"></div>'
+        return f'<div class="visual"><img src="{E(imgs[0] if imgs else fallback)}" alt="{E(name)}" width="800" height="600"></div>'
     # 히어로 갤러리: 첫 장 즉시(LCP), 나머지는 lazy 대신 그냥 로드(Swiper 오프스크린+native lazy 충돌 회피)
     slides = ''.join(
-        f'<div class="swiper-slide"><img src="{E(u)}" alt="{E(name)}"'
+        f'<div class="swiper-slide"><img src="{E(u)}" alt="{E(name)}" width="800" height="600"'
         + (' fetchpriority="high"' if i == 0 else ' decoding="async"') + '></div>'
         for i, u in enumerate(imgs))
     return (f'<div class="visual"><div class="swiper hotel-gallery">'
@@ -1553,7 +1576,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <div class="info-top"><div class="badge">{badge_html(h)}</div></div>
                     <div class="info-cont">
                         <div class="name">
-                            <h2 class="name-ko">{E(name)}</h2>
+                            <h1 class="name-ko">{E(name)}</h1>
                             <p class="name-en">{E(meta.get('sub_title') or '')}</p>
                         </div>
                         <div class="meta"><span>{CITY['ko']}, JP</span>{f'<span>{hstars}</span>' if hstars else ''}{f"<span class='price'>1박 <b>{meta['price_txt']}</b></span>" if meta.get('price_txt') else ''}</div>
@@ -1852,6 +1875,7 @@ def main():
 
     W('index.html', build_index(hotels_meta, H, quotes))
     W('search.html', build_search(pct(city['crit'])))
+    W('404.html', build_404())
     idx = build_search_index(hotels_meta, H)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
