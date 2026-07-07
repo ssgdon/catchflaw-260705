@@ -1066,95 +1066,37 @@ def _complete_months(asof, k=12):
     return out
 
 
-def trend_html(pid, monthly, asof):
-    """월별 위험도 변화 (와플 트렌드 차트). RISK-TREND-CHART-DESIGN 정본.
-    monthly[pid] = {ym: (n, n_crit, n_warn)}. 데이터 없으면(파일 부재 포함) 미노출."""
-    if not asof or not monthly:
-        return ''
-    data = monthly.get(pid) or {}
-    if not data:
-        return ''
-    # 1. 월 축: asof 기준 최근 12개 달력월 (YYYY-MM), 라벨 "N월"
-    try:
-        parts = str(asof).split('-')
-        ay, am = int(parts[0]), int(parts[1])
-    except (ValueError, IndexError):
-        return ''
-    months = []   # [(ym, month_int)]
-    for k in range(11, -1, -1):
-        yy, mm = ay, am - k
-        while mm <= 0:
-            mm += 12; yy -= 1
-        months.append((f'{yy:04d}-{mm:02d}', mm))
-    # 2. 각 월 (n, crit, warn) — 데이터 없는 월은 (0,0,0)
-    cols = []
-    for ym, mi in months:
-        n, crit, warn = data.get(ym, (0, 0, 0))
-        cols.append({'ym': ym, 'm': mi, 'n': n, 'crit': crit, 'warn': warn})
-    # 3. 가드(D-6): 12개월 내 (심각+주의) 합 ≥ 10 AND 데이터 있는 월 ≥ 4
-    tot_flag = sum(c['crit'] + c['warn'] for c in cols)
-    months_with_data = sum(1 for c in cols if c['n'] > 0)
-    if tot_flag < 10 or months_with_data < 4:
-        return ''
-    # 4. unit 스케일: 열 최대 dot 14개. unit = ceil(max(crit+warn)/14)
-    peak = max(c['crit'] + c['warn'] for c in cols)
-    unit = max(1, math.ceil(peak / 14))
-    for c in cols:
-        c['c'] = math.ceil(c['crit'] / unit)
-        c['w'] = math.ceil(c['warn'] / unit)
-        if c['c'] + c['w'] > 14:            # 합 14 초과 시 주의(w)에서 절삭
-            c['w'] = max(0, 14 - c['c'])
-    # 5. 콜아웃 기본 월: crit/n 최대(동률 시 최신). n≥10 월만 대상(부분월 100% 오독 방지).
-    #    12개월 전부 n<10이면 n 최대 월로 폴백.
-    callout = None
-    for c in cols:                          # 최신이 뒤 → >= 로 최신 우선
-        if c['n'] >= 10:
-            r = c['crit'] / c['n']
-            if callout is None or r >= callout['r']:
-                callout = {'m': c['m'], 'r': r, 'pct': c['crit'] / c['n'] * 100}
-    if callout is None:                     # 폴백: n 최대 월(동률 시 최신)
-        for c in cols:
-            if c['n'] > 0 and (callout is None or c['n'] >= callout['n']):
-                callout = {'m': c['m'], 'n': c['n'], 'pct': (c['crit'] / c['n'] * 100)}
-    if callout is None:
-        return ''
-    co_m = callout['m']
-    co_pct = f"{callout['pct']:.1f}"
-    # 6. 캡션(D-5): 최근 3개월 vs 이전 3개월 심각율(합계 기반)
-    def crit_ratio(seg):
-        sn = sum(c['n'] for c in seg)
-        sc = sum(c['crit'] for c in seg)
-        return (sc / sn) if sn else 0.0
-    r1 = crit_ratio(cols[-3:])
-    r0 = crit_ratio(cols[-6:-3])
-    diff = (r1 - r0) * 100
-    if diff >= 1.5:
-        caption = '심각 리뷰 언급이 최근 들어 늘고 있어요'
-    elif diff <= -1.5:
-        caption = '심각 리뷰 언급이 최근 들어 줄고 있어요'
+def overall_trend_html(pid, monthly, monthly_cat, asof):
+    """전체 통합 월별 위험 리뷰 흐름 (라인 트렌드). 카테고리 차트와 동일 형태·데이터 가공.
+    .sect.disappear 안 게이지 아래·인사이트 카드 위에 배치. 데이터 부족 시(합<10) 미노출.
+    반환: (html, trendc_all_or_None). trendc_all은 window.TRENDC['all'] 주입용."""
+    cmonths = _complete_months(asof, 12) if (monthly and asof) else []
+    if not cmonths:
+        return '', None
+    mdata = (monthly or {}).get(pid) or {}
+    pw, pc = [], []      # 주의%, 심각% (완전월 12개)
+    sum_flag = 0
+    for ym, _lbl in cmonths:
+        n, nc, nw = mdata.get(ym, (0, 0, 0))
+        pw.append(round(nw / n * 100, 1) if n else 0.0)
+        pc.append(round(nc / n * 100, 1) if n else 0.0)
+        sum_flag += nc + nw
+    if sum_flag < 10:                        # 가드(R-6): 저표본 차트 생략
+        return '', None
+    labels = [lbl for _ym, lbl in cmonths]
+    trendc_all = {'m': labels, 'w': pw, 'c': pc}
+    now_txt = f'{labels[-1]} 주의 {pw[-1]}% · 심각 {pc[-1]}%'
+    dw, dc = round(pw[-1] - pw[-2], 1), round(pc[-1] - pc[-2], 1)
+    if abs(dw) < 0.05 and abs(dc) < 0.05:
+        delta_txt = '지난 달과 비슷한 수준이에요'
     else:
-        caption = '심각 리뷰 언급이 큰 변화 없이 유지되고 있어요'
-    # 7. 마크업 (기존 sect 패턴)
-    col_html = []
-    for c in cols:
-        sel = ' is-sel' if c['m'] == co_m else ''
-        cpct = f"{(c['crit'] / c['n'] * 100):.1f}" if c['n'] else '0.0'
-        empties = 14 - c['c'] - c['w']
-        dots = ('<span class="td empty"></span>' * max(0, empties)
-                + '<span class="td crit"></span>' * c['c']
-                + '<span class="td warn"></span>' * c['w'])
-        col_html.append(
-            f'<button type="button" class="trend-col{sel}" data-m="{c["m"]}" data-pct="{cpct}">'
-            f'{dots}<span class="tm">{c["m"]}월</span></button>')
-    return f'''
-        <div class="sect trend">
-            <div class="head"><div class="title">월별 위험도 변화</div>
-            <div class="desc">{caption}</div></div>
-            <div class="trend-callout" id="trend-callout"><b class="tc-m">{co_m}월</b> <span class="tc-v">심각 {co_pct}%</span></div>
-            <div class="trend-grid">{''.join(col_html)}</div>
-            <div class="trend-legend"><span class="tl warn">주의</span><span class="tl crit">심각</span></div>
-            <div class="trend-note">dot 1개 = 심각·주의 언급 리뷰 {unit}건 · 최근 12개월</div>
-        </div>'''
+        delta_txt = f'지난 달 대비 주의 {dw:+.1f}p · 심각 {dc:+.1f}p'
+    html = (f'<div class="cat-trend cat-trend-all">'
+        f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
+        f'<span class="ct-now">{E(now_txt)}</span></div>'
+        f'<div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div>'
+        f'<div class="ct-delta">{E(delta_txt)}</div></div>')
+    return html, trendc_all
 
 
 def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
@@ -1391,6 +1333,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 f'<span class="rc-score">{cscore}</span></button>')
         radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
+        # ── 전체 통합 월별 흐름 라인차트 (게이지 아래·인사이트 앞) ──
+        overall_trend, trendc_all = overall_trend_html(pid, monthly, monthly_cat, CITY['asof'])
+        if trendc_all is not None:
+            trendc['all'] = trendc_all
+
         st = stars.get(pid)
         stars_block = ''
         if st and st['total'] > 0:
@@ -1414,10 +1361,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="txt">{CITY['ko']} 평균(<span>{avg}%</span>)보다 {level_txt} <br>최근 투숙객 100명 중 <span>{v}명</span>이 심각한 문제를 언급했어요</div>
             </div>
             {gauge_html(h['p_crit'], city['crit'])}
+            {overall_trend}
             {insight_card(h)}
             <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</div>
         </div>
-        {trend_html(pid, monthly, CITY['asof'])}
         {korean_card(kr, city, kr_rank_pct, kr_1y)}
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -1675,20 +1622,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             var $sect = $('#risk-detail');
             if (!$sect.length) return;
 
-            // ── 카테고리별 월별 위험 흐름 라인차트: 지연 초기화(숨김 canvas 0폭 함정 회피) ──
-            var trendInited = {{}};
-            function initCatTrend($item){{
-                var $ct = $item.find('.cat-trend'); if (!$ct.length) return;
-                var ci = $ct.data('ci'); if (trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
-                trendInited[ci] = 1;
-                var el = document.getElementById('cat-trend-'+ci); if (!el) return;
+            // ── 월별 위험 흐름 라인차트 공통 생성 헬퍼 (카테고리·전체 공용) ──
+            function makeTrendChart(canvasId, d){{
+                var el = document.getElementById(canvasId); if (!el || !window.Chart || !d) return;
                 var ctx = el.getContext('2d');
                 var gW = ctx.createLinearGradient(0,0,0,130); gW.addColorStop(0,'rgba(240,160,40,.22)'); gW.addColorStop(1,'rgba(240,160,40,.02)');
                 var gC = ctx.createLinearGradient(0,0,0,130); gC.addColorStop(0,'rgba(250,82,82,.22)'); gC.addColorStop(1,'rgba(250,82,82,.02)');
-                var n = TRENDC[ci].m.length, pr = Array(n).fill(0); pr[n-1] = 3;
-                new Chart(ctx, {{type:'line', data:{{labels:TRENDC[ci].m, datasets:[
-                    {{label:'주의', data:TRENDC[ci].w, borderColor:'#F0A028', backgroundColor:gW, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028'}},
-                    {{label:'심각', data:TRENDC[ci].c, borderColor:'#FA5252', backgroundColor:gC, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252'}}]}},
+                var n = d.m.length, pr = Array(n).fill(0); pr[n-1] = 3;
+                new Chart(ctx, {{type:'line', data:{{labels:d.m, datasets:[
+                    {{label:'주의', data:d.w, borderColor:'#F0A028', backgroundColor:gW, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028'}},
+                    {{label:'심각', data:d.c, borderColor:'#FA5252', backgroundColor:gC, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252'}}]}},
                   options:{{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
                     plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#232323', bodyColor:'#555B63',
                         borderColor:'#E8E9ED', borderWidth:1, cornerRadius:10, padding:10,
@@ -1696,6 +1639,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:10}}, color:'#8B9097', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
                             y:{{beginAtZero:true, grid:{{color:'#efefef'}}, border:{{display:false}},
                                ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
+            }}
+
+            // 전체 통합 라인차트: 항상 보이는 섹션 → 로드 즉시 렌더
+            if (window.TRENDC && TRENDC['all'] && document.getElementById('cat-trend-all')) makeTrendChart('cat-trend-all', TRENDC['all']);
+
+            // ── 카테고리별 월별 위험 흐름 라인차트: 지연 초기화(숨김 canvas 0폭 함정 회피) ──
+            var trendInited = {{}};
+            function initCatTrend($item){{
+                var $ct = $item.find('.cat-trend'); if (!$ct.length) return;
+                var ci = $ct.data('ci'); if (trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
+                trendInited[ci] = 1;
+                makeTrendChart('cat-trend-'+ci, TRENDC[ci]);
             }}
 
             // 아코디언 토글 (헤더 클릭). sticky 스택은 CSS가 담당.
@@ -1734,17 +1689,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
             // 초기 열림(1위) 카테고리 차트 즉시 init
             initCatTrend($sect.find('.risk-acc-item.is-open'));
-        }});
-
-        // ───── 월별 위험도 변화: 열 탭 → 콜아웃 갱신 (RISK-TREND-CHART D-4) ─────
-        $(function(){{
-            $('.trend .trend-grid').on('click', '.trend-col', function(){{
-                var $c = $(this);
-                $c.closest('.trend-grid').find('.trend-col').removeClass('is-sel');
-                $c.addClass('is-sel');
-                $('#trend-callout .tc-m').text($c.data('m') + '월');
-                $('#trend-callout .tc-v').text('심각 ' + $c.data('pct') + '%');
-            }});
         }});
     </script>''' + FOOT
 
