@@ -2,7 +2,7 @@
 """캐치플로 정적 사이트 생성기 — data-src/*.json → docs/
 사용: python scripts/generate.py
 """
-import json, os, shutil, sys, html, re, time
+import json, os, shutil, sys, html, re, time, math
 from collections import defaultdict
 from urllib.parse import quote as urlquote
 
@@ -16,7 +16,7 @@ SRC = os.path.join(ROOT, 'data-src')
 OUT = os.path.join(ROOT, 'docs')
 
 # ───────────────────────── 도시 설정 (변수화 — 신규 도시는 여기만 추가) ─────────────────────────
-CITY = {'code': 'fukuoka', 'ko': '후쿠오카', 'en': 'Fukuoka', 'data_asof': '2026년 3월'}
+CITY = {'code': 'fukuoka', 'ko': '후쿠오카', 'en': 'Fukuoka', 'data_asof': '2026년 3월', 'asof': None}
 
 def _load_asof():
     """data-src/meta.json(export_pg 생성)의 기준일로 data_asof 갱신 — 하드코딩 제거. 없으면 기존값."""
@@ -24,6 +24,7 @@ def _load_asof():
         d = json.load(open(os.path.join(SRC, 'meta.json'), encoding='utf-8'))
         y, m, _ = str(d['asof']).split('-')
         CITY['data_asof'] = f'{int(y)}년 {int(m)}월'
+        CITY['asof'] = str(d['asof'])   # 트렌드 차트 월 축 생성용 (YYYY-MM-DD)
     except Exception:
         pass
 _load_asof()
@@ -113,7 +114,20 @@ def load():
     kr = {}
     for r in (J('kr_stats.json') if os.path.exists(os.path.join(SRC, 'kr_stats.json')) else []):
         kr[(r['place_id'], r['period'])] = r
-    return hotels_meta, quotes, stars, kr
+    # 월별 심각/주의 흐름 (트렌드 차트). 파일 없으면 빈 dict — 빌드 깨지지 않게.
+    def _i(x):
+        try: return int(float(x))
+        except (TypeError, ValueError): return 0
+    monthly = defaultdict(dict)   # {pid: {ym: (n, n_crit, n_warn)}}
+    if os.path.exists(os.path.join(SRC, 'monthly.json')):
+        for r in J('monthly.json'):
+            monthly[r['place_id']][r['ym']] = (_i(r.get('n')), _i(r.get('n_crit')), _i(r.get('n_warn')))
+    # 카테고리×월별 심각/주의 흐름 (아코디언 트렌드 차트). 파일 없으면 빈 dict — 빌드 안전.
+    monthly_cat = defaultdict(dict)   # {pid: {(ym, cat): (n_crit, n_warn)}}
+    if os.path.exists(os.path.join(SRC, 'monthly_cat.json')):
+        for r in J('monthly_cat.json'):
+            monthly_cat[r['place_id']][(r['ym'], r['cat'])] = (_i(r.get('n_crit')), _i(r.get('n_warn')))
+    return hotels_meta, quotes, stars, kr, monthly, monthly_cat
 
 # ───────────────────────── 공통 조각 ─────────────────────────
 # Microsoft Clarity (히트맵·세션 리플레이). f-string 아님 — JS 중괄호 리터럴 보존.
@@ -1031,6 +1045,118 @@ def kr_rank_map(kr_stats):
     return rank
 
 
+def _complete_months(asof, k=12):
+    """asof 기준 완전월 k개 → [(ym 'YYYY-MM', '<N>월'), ...] 오름차순 (오래된→최신).
+    asof 일자 < 28이면 asof월은 부분월로 보고 제외하고 그 앞 k개월을 사용 (CAT-TREND C-4)."""
+    try:
+        y, m, d = (int(x) for x in str(asof).split('-')[:3])
+    except (ValueError, IndexError):
+        return []
+    end_y, end_m = y, m
+    if d < 28:                      # asof월은 부분월 → 제외, 직전월을 마지막 완전월로
+        end_m -= 1
+        if end_m <= 0:
+            end_m += 12; end_y -= 1
+    out = []
+    for off in range(k - 1, -1, -1):
+        yy, mm = end_y, end_m - off
+        while mm <= 0:
+            mm += 12; yy -= 1
+        out.append((f'{yy:04d}-{mm:02d}', f'{mm}월'))
+    return out
+
+
+def trend_html(pid, monthly, asof):
+    """월별 위험도 변화 (와플 트렌드 차트). RISK-TREND-CHART-DESIGN 정본.
+    monthly[pid] = {ym: (n, n_crit, n_warn)}. 데이터 없으면(파일 부재 포함) 미노출."""
+    if not asof or not monthly:
+        return ''
+    data = monthly.get(pid) or {}
+    if not data:
+        return ''
+    # 1. 월 축: asof 기준 최근 12개 달력월 (YYYY-MM), 라벨 "N월"
+    try:
+        parts = str(asof).split('-')
+        ay, am = int(parts[0]), int(parts[1])
+    except (ValueError, IndexError):
+        return ''
+    months = []   # [(ym, month_int)]
+    for k in range(11, -1, -1):
+        yy, mm = ay, am - k
+        while mm <= 0:
+            mm += 12; yy -= 1
+        months.append((f'{yy:04d}-{mm:02d}', mm))
+    # 2. 각 월 (n, crit, warn) — 데이터 없는 월은 (0,0,0)
+    cols = []
+    for ym, mi in months:
+        n, crit, warn = data.get(ym, (0, 0, 0))
+        cols.append({'ym': ym, 'm': mi, 'n': n, 'crit': crit, 'warn': warn})
+    # 3. 가드(D-6): 12개월 내 (심각+주의) 합 ≥ 10 AND 데이터 있는 월 ≥ 4
+    tot_flag = sum(c['crit'] + c['warn'] for c in cols)
+    months_with_data = sum(1 for c in cols if c['n'] > 0)
+    if tot_flag < 10 or months_with_data < 4:
+        return ''
+    # 4. unit 스케일: 열 최대 dot 14개. unit = ceil(max(crit+warn)/14)
+    peak = max(c['crit'] + c['warn'] for c in cols)
+    unit = max(1, math.ceil(peak / 14))
+    for c in cols:
+        c['c'] = math.ceil(c['crit'] / unit)
+        c['w'] = math.ceil(c['warn'] / unit)
+        if c['c'] + c['w'] > 14:            # 합 14 초과 시 주의(w)에서 절삭
+            c['w'] = max(0, 14 - c['c'])
+    # 5. 콜아웃 기본 월: crit/n 최대(동률 시 최신). n≥10 월만 대상(부분월 100% 오독 방지).
+    #    12개월 전부 n<10이면 n 최대 월로 폴백.
+    callout = None
+    for c in cols:                          # 최신이 뒤 → >= 로 최신 우선
+        if c['n'] >= 10:
+            r = c['crit'] / c['n']
+            if callout is None or r >= callout['r']:
+                callout = {'m': c['m'], 'r': r, 'pct': c['crit'] / c['n'] * 100}
+    if callout is None:                     # 폴백: n 최대 월(동률 시 최신)
+        for c in cols:
+            if c['n'] > 0 and (callout is None or c['n'] >= callout['n']):
+                callout = {'m': c['m'], 'n': c['n'], 'pct': (c['crit'] / c['n'] * 100)}
+    if callout is None:
+        return ''
+    co_m = callout['m']
+    co_pct = f"{callout['pct']:.1f}"
+    # 6. 캡션(D-5): 최근 3개월 vs 이전 3개월 심각율(합계 기반)
+    def crit_ratio(seg):
+        sn = sum(c['n'] for c in seg)
+        sc = sum(c['crit'] for c in seg)
+        return (sc / sn) if sn else 0.0
+    r1 = crit_ratio(cols[-3:])
+    r0 = crit_ratio(cols[-6:-3])
+    diff = (r1 - r0) * 100
+    if diff >= 1.5:
+        caption = '심각 리뷰 언급이 최근 들어 늘고 있어요'
+    elif diff <= -1.5:
+        caption = '심각 리뷰 언급이 최근 들어 줄고 있어요'
+    else:
+        caption = '심각 리뷰 언급이 큰 변화 없이 유지되고 있어요'
+    # 7. 마크업 (기존 sect 패턴)
+    col_html = []
+    for c in cols:
+        sel = ' is-sel' if c['m'] == co_m else ''
+        cpct = f"{(c['crit'] / c['n'] * 100):.1f}" if c['n'] else '0.0'
+        empties = 14 - c['c'] - c['w']
+        dots = ('<span class="td empty"></span>' * max(0, empties)
+                + '<span class="td crit"></span>' * c['c']
+                + '<span class="td warn"></span>' * c['w'])
+        col_html.append(
+            f'<button type="button" class="trend-col{sel}" data-m="{c["m"]}" data-pct="{cpct}">'
+            f'{dots}<span class="tm">{c["m"]}월</span></button>')
+    return f'''
+        <div class="sect trend">
+            <div class="head"><div class="title">월별 위험도 변화</div>
+            <div class="desc">{caption}</div></div>
+            <div class="trend-callout" id="trend-callout"><b class="tc-m">{co_m}월</b> <span class="tc-v">심각 {co_pct}%</span></div>
+            <div class="trend-grid">{''.join(col_html)}</div>
+            <div class="trend-legend"><span class="tl warn">주의</span><span class="tl crit">심각</span></div>
+            <div class="trend-note">dot 1개 = 심각·주의 언급 리뷰 {unit}건 · 최근 12개월</div>
+        </div>'''
+
+
 def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
     """한국인 리뷰 현황 카드 (LLM-ANALYSIS §7.3 + DETAIL-UI-REVAMP §2). 표본 10건 미만이면 미노출."""
     def num(x):
@@ -1132,7 +1258,7 @@ def gallery_html(meta, name, fallback):
             f'</div></div>')
 
 
-def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None):
+def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
@@ -1178,8 +1304,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         # 카테고리 × 소분류 — 아코디언(§4) + 리뷰 시트 데이터. 위험도 내림차순 정렬(§4-d).
         groups = []
         sheet_data = {}
+        trendc = {}          # {ci: {'m':[..'N월'], 'w':[..pw], 'c':[..pc]}} — 차트 있는 카테고리만 (CAT-TREND)
         axis = '''<div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>'''
         cats_sorted = sorted(CATS, key=lambda c: -h['cats'][c]['score'])  # 나쁜 것부터
+        # 카테고리 트렌드용 완전월 12개 + 월별 분석 리뷰 수 n(monthly 재사용 — 분모 정합)
+        cmonths = _complete_months(CITY['asof'], 12) if (monthly_cat and CITY['asof']) else []
+        mcat_data = (monthly_cat or {}).get(pid) or {}
+        m_n = {ym: nvals[0] for ym, nvals in ((monthly or {}).get(pid) or {}).items()}  # {ym: n}
         radar_chips = []
         for order, c in enumerate(cats_sorted):
             ci = CATS.index(c)                 # 카테고리 고정 인덱스 (칩 data-target ↔ id="risk-{ci}")
@@ -1211,6 +1342,34 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
             pctl_txt = f"{'하위 ' + str(cat['pctl_worse']) if cat['pctl_worse'] <= 50 else '상위 ' + str(100 - cat['pctl_worse'])}%"
             is_open = ' is-open' if order == 0 else ''      # 1위만 초기 펼침(§4-c)
+
+            # ── 카테고리별 월별 위험 리뷰 흐름 (CAT-TREND). 최상단(axis 앞) 삽입 ──
+            cat_trend = ''
+            if cmonths:
+                pw, pc = [], []      # 주의%, 심각% (완전월 12개)
+                sum_flag = 0
+                for ym, _lbl in cmonths:
+                    nc, nw = mcat_data.get((ym, c), (0, 0))
+                    n = m_n.get(ym, 0)
+                    pw.append(round(nw / n * 100, 1) if n else 0.0)
+                    pc.append(round(nc / n * 100, 1) if n else 0.0)
+                    sum_flag += nc + nw
+                if sum_flag >= 8:                            # 가드(C-5): 저표본 차트 생략
+                    labels = [lbl for _ym, lbl in cmonths]
+                    trendc[ci] = {'m': labels, 'w': pw, 'c': pc}
+                    now_txt = f'{labels[-1]} 주의 {pw[-1]}% · 심각 {pc[-1]}%'
+                    dw, dc = round(pw[-1] - pw[-2], 1), round(pc[-1] - pc[-2], 1)
+                    # 델타 문구(C-8): ±0.05p 미만은 "비슷", 그 외 마지막 두 완전월 증감 나열
+                    if abs(dw) < 0.05 and abs(dc) < 0.05:
+                        delta_txt = '지난 달과 비슷한 수준이에요'
+                    else:
+                        delta_txt = f'지난 달 대비 주의 {dw:+.1f}p · 심각 {dc:+.1f}p'
+                    cat_trend = (f'<div class="cat-trend" data-ci="{ci}">'
+                        f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
+                        f'<span class="ct-now">{E(now_txt)}</span></div>'
+                        f'<div class="ct-canvas"><canvas id="cat-trend-{ci}"></canvas></div>'
+                        f'<div class="ct-delta">{E(delta_txt)}</div></div>')
+
             groups.append(f'''<div class="risk-acc-item{is_open}" id="risk-{ci}" data-order="{order}">
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-{band}"></span>
@@ -1219,6 +1378,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
+                    {cat_trend}
                     {axis}
                     <ul class="stat-list">{''.join(rows)}</ul>
                     {quotes_block}
@@ -1257,6 +1417,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {insight_card(h)}
             <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</div>
         </div>
+        {trend_html(pid, monthly, CITY['asof'])}
         {korean_card(kr, city, kr_rank_pct, kr_1y)}
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -1299,6 +1460,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <div class="head"><div class="title">리스크 상세 분석</div>
             <div class="desc">숫자는 위험도 0~100 (평균 50)<br>높을수록 주의하세요</div></div>
             <div class="risk-acc">{''.join(groups)}</div>
+            {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">
                 <span class="lg is-danger">위험 70+</span><span class="lg is-warning">주의 45~70</span><span class="lg is-safe">양호 ~45</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요 · 인용문은 리뷰 원문 발췌입니다</span>
@@ -1513,9 +1675,34 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             var $sect = $('#risk-detail');
             if (!$sect.length) return;
 
+            // ── 카테고리별 월별 위험 흐름 라인차트: 지연 초기화(숨김 canvas 0폭 함정 회피) ──
+            var trendInited = {{}};
+            function initCatTrend($item){{
+                var $ct = $item.find('.cat-trend'); if (!$ct.length) return;
+                var ci = $ct.data('ci'); if (trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
+                trendInited[ci] = 1;
+                var el = document.getElementById('cat-trend-'+ci); if (!el) return;
+                var ctx = el.getContext('2d');
+                var gW = ctx.createLinearGradient(0,0,0,130); gW.addColorStop(0,'rgba(240,160,40,.22)'); gW.addColorStop(1,'rgba(240,160,40,.02)');
+                var gC = ctx.createLinearGradient(0,0,0,130); gC.addColorStop(0,'rgba(250,82,82,.22)'); gC.addColorStop(1,'rgba(250,82,82,.02)');
+                var n = TRENDC[ci].m.length, pr = Array(n).fill(0); pr[n-1] = 3;
+                new Chart(ctx, {{type:'line', data:{{labels:TRENDC[ci].m, datasets:[
+                    {{label:'주의', data:TRENDC[ci].w, borderColor:'#F0A028', backgroundColor:gW, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028'}},
+                    {{label:'심각', data:TRENDC[ci].c, borderColor:'#FA5252', backgroundColor:gC, fill:true, tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252'}}]}},
+                  options:{{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
+                    plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#232323', bodyColor:'#555B63',
+                        borderColor:'#E8E9ED', borderWidth:1, cornerRadius:10, padding:10,
+                        callbacks:{{label:function(t){{return t.dataset.label+' '+t.parsed.y.toFixed(1)+'%';}}}}}}}},
+                    scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:10}}, color:'#8B9097', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
+                            y:{{beginAtZero:true, grid:{{color:'#efefef'}}, border:{{display:false}},
+                               ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
+            }}
+
             // 아코디언 토글 (헤더 클릭). sticky 스택은 CSS가 담당.
             $sect.on('click', '.risk-acc-head', function(){{
-                $(this).closest('.risk-acc-item').toggleClass('is-open');
+                var $item = $(this).closest('.risk-acc-item');
+                $item.toggleClass('is-open');
+                if ($item.hasClass('is-open')) initCatTrend($item);   // 펼칠 때만 init
             }});
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
@@ -1523,6 +1710,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var $item = $('#' + id);
                 if (!$item.length) return;
                 $item.addClass('is-open');
+                initCatTrend($item);
                 // 스택 헤더 높이만큼 보정해서 헤더가 바로 보이도록
                 var top = $item.offset().top - 8;
                 $('html, body').stop().animate({{scrollTop: top}}, 350);
@@ -1544,13 +1732,26 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 }});
             }}
 
+            // 초기 열림(1위) 카테고리 차트 즉시 init
+            initCatTrend($sect.find('.risk-acc-item.is-open'));
+        }});
+
+        // ───── 월별 위험도 변화: 열 탭 → 콜아웃 갱신 (RISK-TREND-CHART D-4) ─────
+        $(function(){{
+            $('.trend .trend-grid').on('click', '.trend-col', function(){{
+                var $c = $(this);
+                $c.closest('.trend-grid').find('.trend-col').removeClass('is-sel');
+                $c.addClass('is-sel');
+                $('#trend-callout .tc-m').text($c.data('m') + '월');
+                $('#trend-callout .tc-v').text('심각 ' + $c.data('pct') + '%');
+            }});
         }});
     </script>''' + FOOT
 
 # ───────────────────────── main ─────────────────────────
 def main():
     city, H = compute(SRC)
-    hotels_meta, quotes, stars, kr_stats = load()
+    hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat = load()
 
     if os.path.exists(OUT): shutil.rmtree(OUT)
     os.makedirs(os.path.join(OUT, 'hotels'))
@@ -1575,7 +1776,7 @@ def main():
     for pid, meta in hotels_meta.items():
         if pid not in H: continue
         W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
-            kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y'))))
+            kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat))
         n += 1
     scored = sum(1 for p in H if H[p]['scored'])
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · 도시평균 실망확률 {pct(city["crit"])}%')

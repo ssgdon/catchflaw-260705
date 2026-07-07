@@ -146,6 +146,14 @@
 #detail .analysis .risk-acc-body .more-btn strong{font-weight:var(--fw-bold);}
 #detail .analysis .risk-acc-body .more-btn:after{content:'';width:4px;height:8px;background:url("../img/link_arrow_g.svg") no-repeat center / contain;}
 
+/* ── 상세: 아코디언 카테고리별 월별 흐름 (라인 트렌드) ── */
+#detail .analysis .risk-acc-body .cat-trend{margin:12px 0 4px;padding:12px 12px 10px;border-radius:12px;background:var(--surface);}
+#detail .analysis .risk-acc-body .cat-trend .ct-head{display:flex;align-items:baseline;justify-content:space-between;gap:8px;margin:0 2px 8px;}
+#detail .analysis .risk-acc-body .cat-trend .ct-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#detail .analysis .risk-acc-body .cat-trend .ct-now{font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;}
+#detail .analysis .risk-acc-body .cat-trend .ct-canvas{position:relative;height:130px;}
+#detail .analysis .risk-acc-body .cat-trend .ct-delta{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#fff;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-2);}
+
 /* ---------- 리뷰 바텀시트 ---------- */
 .review-sheet{position:fixed;z-index:300;inset:0;}
 .review-sheet .sheet-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);opacity:0;transition:opacity .3s;}
@@ -448,6 +456,23 @@
 .kr-card .kr-rank{margin:-4px 0 12px;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary-deep);}
 .kr-card .kr-serious{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--surface);font-size:var(--fs-caption);color:var(--ink-2);line-height:1.5;}
 .kr-card .kr-serious b{color:var(--danger-text);font-weight:var(--fw-bold);}
+
+/* ── 상세: 월별 위험도 변화 (와플 트렌드) ── */
+#detail .trend .trend-callout{display:inline-flex;align-items:center;gap:6px;margin:4px 0 14px;padding:8px 14px;border-radius:12px;background:var(--surface);box-shadow:0 1px 4px rgb(0 0 0 / 6%);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#detail .trend .trend-callout .tc-v{color:var(--danger-text);}
+#detail .trend .trend-grid{display:flex;justify-content:space-between;gap:4px;}
+#detail .trend .trend-col{flex:1;display:flex;flex-direction:column;gap:3px;padding:0;background:none;border:none;cursor:pointer;}
+#detail .trend .trend-col .td{display:block;width:100%;aspect-ratio:1;border-radius:26%;background:#F1F2F5;}
+#detail .trend .trend-col .td.crit{background:var(--danger);}
+#detail .trend .trend-col .td.warn{background:var(--warning);opacity:.75;}
+#detail .trend .trend-col.is-sel .td.crit{outline:2px solid var(--danger-text);outline-offset:-1px;}
+#detail .trend .trend-col .tm{margin-top:6px;text-align:center;font-size:11px;font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .trend .trend-legend{display:flex;gap:14px;margin:16px 0 0;}
+#detail .trend .trend-legend .tl{display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);}
+#detail .trend .trend-legend .tl:before{content:'';width:12px;height:12px;border-radius:4px;}
+#detail .trend .trend-legend .tl.warn:before{background:var(--warning);opacity:.75;}
+#detail .trend .trend-legend .tl.crit:before{background:var(--danger);}
+#detail .trend .trend-note{margin:10px 0 0;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
 
 /* ── 리뷰 언어 칩 (§5-a) ── */
 .q-lang{display:inline-flex;align-items:center;height:18px;padding:0 6px;border-radius:var(--radius-chip);border:1px solid var(--line-strong);font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
