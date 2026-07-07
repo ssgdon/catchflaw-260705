@@ -18,6 +18,12 @@ OUT = os.path.join(ROOT, 'docs')
 # ───────────────────────── 도시 설정 (변수화 — 신규 도시는 여기만 추가) ─────────────────────────
 CITY = {'code': 'fukuoka', 'ko': '후쿠오카', 'en': 'Fukuoka', 'data_asof': '2026년 3월', 'asof': None}
 
+# ── SEO 기반 상수 ──
+BASE = 'https://catchflaw.com'   # canonical 기준 도메인 (apex). www/pages.dev 금지.
+DEFAULT_OG = f'{BASE}/img/search_bg.jpg'   # 대표 이미지 없는 페이지용 기본 OG
+# 검색엔진 소유확인 메타 (전 페이지 head 공통 삽입). 구글은 Cloudflare DNS로 자동확인됨 → 태그 불요.
+VERIFY_META = '<meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />'
+
 def _load_asof():
     """data-src/meta.json(export_pg 생성)의 기준일로 data_asof 갱신 — 하드코딩 제거. 없으면 기존값."""
     try:
@@ -139,15 +145,34 @@ CLARITY = '''<script type="text/javascript">
     })(window, document, "clarity", "script", "xi5o022ef1");
 </script>'''
 
-def head(title, depth=0):
+def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head=''):
     p = '../' * depth
+    seo = []
+    d = None
+    if description:
+        d = description if len(description) <= 150 else description[:149].rstrip() + '…'
+        seo.append(f'<meta name="description" content="{E(d)}">')
+    if canonical:
+        seo.append(f'<link rel="canonical" href="{canonical}">')
+        seo.append(f'<meta property="og:title" content="{E(title)}">')
+        if d:
+            seo.append(f'<meta property="og:description" content="{E(d)}">')
+        seo.append(f'<meta property="og:url" content="{canonical}">')
+        seo.append('<meta property="og:type" content="website">')
+        seo.append('<meta property="og:site_name" content="캐치플로">')
+        seo.append(f'<meta property="og:image" content="{og_image or DEFAULT_OG}">')
+        seo.append('<meta name="twitter:card" content="summary_large_image">')
+    seo_block = '\n    '.join(seo)
     return f'''<!doctype html>
 <html lang="ko">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
     <title>{E(title)}</title>
+    {seo_block}
+    {VERIFY_META}
     {CLARITY}
+    {extra_head}
     <link rel="stylesheet" href="{p}css/tokens.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/common.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/layout.css?v={BUILD}">
@@ -246,7 +271,11 @@ def build_index(hotels_meta, H, quotes):
                 f'1박 {label} 가격대에서 실망 확률이 가장 낮은 숙소예요 (가격 {CITY["data_asof"]} 기준)', pids))
     price_sliders = ''.join(price_parts)
 
-    html_out = head('캐치플로 — 그 호텔, 최악의 리뷰는요?') + f'''
+    n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
+    html_out = head('캐치플로 — 그 호텔, 최악의 리뷰는요?',
+        description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드립니다. '
+                    '위생·소음·시설·동선·서비스·안전 6개 항목의 위험도를 예약 전에 확인하세요.',
+        canonical=f'{BASE}/') + f'''
     <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + header_nav() + f'''
     <main id="container">
@@ -467,7 +496,10 @@ def build_search(city_avg_pct):
     cats_js = json.dumps([{'ko': c, 'ico': CAT_ICON[c]} for c in CATS], ensure_ascii=False)
     area_chips = ''.join(
         f'<button type="button" class="f-chip" data-area="{a["code"]}">{a["ko"]}</button>' for a in AREAS)
-    return head('캐치플로 — 검색') + f'''
+    return head('캐치플로 — 검색',
+        description=f'{CITY["ko"]} 호텔 전체를 실망 확률 순으로 비교하세요. '
+                   f'도시 평균 실망 확률 {city_avg_pct}% 기준, 지역·가격대·위험 항목별 필터 제공.',
+        canonical=f'{BASE}/search') + f'''
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
         <section id="title">
@@ -1202,7 +1234,56 @@ def gallery_html(meta, name, fallback):
             f'</div></div>')
 
 
-def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None):
+def crit_rank_map(H):
+    """scored 호텔의 p_crit 오름차순 백분위. {pid: pct_top} — 작을수록 실망확률이 낮은(안전한) 상위."""
+    scored = [(h['p_crit'], pid) for pid, h in H.items() if h['scored']]
+    n = len(scored)
+    if not n: return {}
+    return {pid: round(100 * (sum(1 for v, _ in scored if v < p) + 1) / n) for p, pid in scored}
+
+def _jsonld(obj):
+    """JSON-LD script 태그. </script> 조기 종료 방지를 위해 </ 이스케이프."""
+    return ('<script type="application/ld+json">'
+            + json.dumps(obj, ensure_ascii=False).replace('</', '<\\/')
+            + '</script>')
+
+def jsonld_detail(pid, meta):
+    url = f'{BASE}/hotels/{pid}'
+    def num(x):
+        try: return float(x)
+        except (TypeError, ValueError): return None
+    hotel = {
+        '@context': 'https://schema.org', '@type': 'Hotel',
+        'name': meta['title'], 'url': url,
+        'address': {'@type': 'PostalAddress',
+                    'streetAddress': meta.get('address') or '',
+                    'addressLocality': 'Fukuoka', 'addressCountry': 'JP'},
+    }
+    img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
+    if img: hotel['image'] = img
+    lat, lng = num(meta.get('latitude')), num(meta.get('longitude'))
+    if lat and lng:
+        hotel['geo'] = {'@type': 'GeoCoordinates', 'latitude': lat, 'longitude': lng}
+    if meta.get('price_txt'):
+        hotel['priceRange'] = meta['price_txt']
+    m = re.match(r'(\d)성급', meta.get('hotel_stars') or '')
+    if m:
+        hotel['starRating'] = {'@type': 'Rating', 'ratingValue': int(m.group(1))}
+    g, rc = num(meta.get('total_score')), meta.get('reviews_count') or 0
+    if g and rc > 0:   # 구글 정책: 페이지에 실제 노출되는 평점만. 없으면 통째로 생략(허위 별점 금지)
+        hotel['aggregateRating'] = {'@type': 'AggregateRating', 'ratingValue': g,
+                                    'reviewCount': int(rc), 'bestRating': 5, 'worstRating': 1}
+    crumbs = {
+        '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+        'itemListElement': [
+            {'@type': 'ListItem', 'position': 1, 'name': '캐치플로', 'item': f'{BASE}/'},
+            {'@type': 'ListItem', 'position': 2, 'name': f'{CITY["ko"]} 호텔', 'item': f'{BASE}/search'},
+            {'@type': 'ListItem', 'position': 3, 'name': meta['title'], 'item': url},
+        ],
+    }
+    return _jsonld(hotel) + '\n' + _jsonld(crumbs)
+
+def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
@@ -1445,7 +1526,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
         </script>'''
 
-    return head(f'{name} — 캐치플로', depth=1) + f'''
+    canonical = f'{BASE}/hotels/{pid}'
+    og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
+    if h['scored']:
+        _v = pct(h['p_crit']); _avg = pct(city['crit'])
+        rank_txt = (f' 실망 확률이 낮은 순으로 {CITY["ko"]} 상위 {crit_rank_pct}%.'
+                    if crit_rank_pct and crit_rank_pct <= 50 else '')
+        seo_title = f'{name} 리뷰 위험도 · 실망확률 {_v}% | 캐치플로'
+        seo_desc = (f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%).{rank_txt} '
+                    '위생·소음·시설·동선·서비스·안전 6개 항목의 리뷰 위험도를 예약 전에 확인하세요.')
+    else:
+        seo_title = f'{name} 리뷰 위험도 분석 | 캐치플로'
+        seo_desc = (f'{name}의 리뷰를 수집·분석하고 있습니다. 위치·가격·구글 평점과 '
+                    '주변의 실망 확률 낮은 추천 호텔을 캐치플로에서 확인하세요.')
+    return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
+                og_image=og_img, extra_head=jsonld_detail(pid, meta)) + f'''
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
     <main id="container">
         <section id="detail">
@@ -1719,6 +1814,26 @@ def city_averages(monthly, monthly_cat):
     return city_n, city_avg, city_cat_avg
 
 
+ROBOTS_TXT = f'''User-agent: *
+Allow: /
+
+Sitemap: {BASE}/sitemap.xml
+'''
+
+def build_sitemap(detail_pids):
+    lastmod = CITY['asof'] or time.strftime('%Y-%m-%d')   # meta.json asof(YYYY-MM-DD), 없으면 빌드일
+    rows = [(f'{BASE}/', 'daily', '1.0'),
+            (f'{BASE}/search', 'daily', '0.9'),
+            *[(f'{BASE}/hotels/{pid}', 'weekly', '0.8') for pid in detail_pids]]
+    urls = '\n'.join(
+        f'  <url><loc>{E(loc)}</loc><lastmod>{lastmod}</lastmod>'
+        f'<changefreq>{cf}</changefreq><priority>{pr}</priority></url>'
+        for loc, cf, pr in rows)
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+            f'{urls}\n</urlset>\n')
+
+
 def main():
     city, H = compute(SRC)
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat = load()
@@ -1743,15 +1858,19 @@ def main():
     open(os.path.join(OUT, '.nojekyll'), 'w').close()
 
     krrank = kr_rank_map(kr_stats)
-    n = 0
+    critrank = crit_rank_map(H)
+    written = []
     for pid, meta in hotels_meta.items():
         if pid not in H: continue
         W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
             kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat,
-            city_avg, city_cat_avg))
-        n += 1
+            city_avg, city_cat_avg, crit_rank_pct=critrank.get(pid)))
+        written.append(pid)
+    n = len(written)
+    W('robots.txt', ROBOTS_TXT)
+    W('sitemap.xml', build_sitemap(written))
     scored = sum(1 for p in H if H[p]['scored'])
-    print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · 도시평균 실망확률 {pct(city["crit"])}%')
+    print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · sitemap {n+2} URL · 도시평균 실망확률 {pct(city["crit"])}%')
 
 if __name__ == '__main__':
     main()

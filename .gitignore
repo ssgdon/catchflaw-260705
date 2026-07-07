@@ -17,4 +17,5 @@ data-src/
 archive/
 RUNBOOK.md
 OPERATIONS-READINESS-DESIGN.md
+SEO-IMPL-DESIGN.md
 scripts/deploy.ps1
