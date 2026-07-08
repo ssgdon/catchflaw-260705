@@ -65,7 +65,7 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 #main .hotel-list .list .item .thumb .badge .badge-item,
 #detail .hotel .list .item .thumb .badge .badge-item,
 #detail .information .info-top .badge .badge-item,
-#search .list .cont .badge .badge-item{padding:5px 9px;border-radius:8px;line-height:16px;font-size:13px;font-weight:700;}
+#search .list .cont .badge .badge-item, #hub .hub-list .cont .badge .badge-item{padding:5px 9px;border-radius:8px;line-height:16px;font-size:13px;font-weight:700;}
 
 /* ---------- 별점 (전 화면 공통 확대) ---------- */
 #main .search-box .text .star,
@@ -184,16 +184,16 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 
 /* ---------- 검색/위시/최근 리스트 ---------- */
 #search .total{padding:20px 20px 0;line-height:20px;font-size:15px;}
-#search .list li{padding:22px 0;}
-#search .list li .item{gap:14px;}
-#search .list li .thumb{width:92px;height:92px;border-radius:14px;}
-#search .list .cont .info{margin:0 0 12px;}
-#search .list .cont .info .name{line-height:23px;font-size:17px;}
-#search .list .cont .info .name a{color:var(--ink);}
-#search .list .cont .info .meta{margin:6px 0 0;}
-#search .list .cont .info .meta span{line-height:17px;font-size:13px;}
-#search .list .cont .grade .num{font-size:15px;}
-#search .list .cont .grade .txt{font-size:13px;}
+#search .list li, #hub .hub-list li{padding:22px 0;}
+#search .list li .item, #hub .hub-list li .item{gap:14px;}
+#search .list li .thumb, #hub .hub-list li .thumb{width:92px;height:92px;border-radius:14px;}
+#search .list .cont .info, #hub .hub-list .cont .info{margin:0 0 12px;}
+#search .list .cont .info .name, #hub .hub-list .cont .info .name{line-height:23px;font-size:17px;}
+#search .list .cont .info .name a, #hub .hub-list .cont .info .name a{color:var(--ink);}
+#search .list .cont .info .meta, #hub .hub-list .cont .info .meta{margin:6px 0 0;}
+#search .list .cont .info .meta span, #hub .hub-list .cont .info .meta span{line-height:17px;font-size:13px;}
+#search .list .cont .grade .num, #hub .hub-list .cont .grade .num{font-size:15px;}
+#search .list .cont .grade .txt, #hub .hub-list .cont .grade .txt{font-size:13px;}
 #search .list .cont .request a{padding:8px 10px;border-radius:8px;font-size:13px;line-height:16px;}
 
 /* ---------- 리뷰 페이지 ---------- */

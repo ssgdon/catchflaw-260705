@@ -1260,33 +1260,39 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
     kr_n, all_n = int(num(kr['kr_n'])), int(num(kr['all_n']))
     ratio = round((num(kr.get('kr_ratio')) or 0) * 100)
     kr_st, all_st = num(kr.get('kr_stars')), num(kr.get('all_stars'))
-    kr_dp_raw = (num(kr.get('kr_disappoint')) or 0) * 100
-    all_dp_raw = (num(kr.get('all_disappoint')) or 0) * 100
-    kr_dp = round(kr_dp_raw)
-    all_dp = round(all_dp_raw)
+    # §2-a 신규 지표: 심각·주의 리뷰 비율(kr_risk/all_risk). 구 kr_stats.json엔 부재 → None 가드.
+    kr_rk_raw = num(kr.get('kr_risk'))
+    all_rk_raw = num(kr.get('all_risk'))
+    has_risk = kr_rk_raw is not None and all_rk_raw is not None
+    kr_rk_pct = (kr_rk_raw * 100) if kr_rk_raw is not None else None
+    all_rk_pct = (all_rk_raw * 100) if all_rk_raw is not None else None
     small = kr_n < 30
 
-    # 임계 (§2-c): 별점차 ±0.15, 실망차 ±1.5%p
+    # 임계 (§2-c): 별점차 ±0.15, 위험비율차 ±1.5%p
     d_st = (kr_st - all_st) if (kr_st and all_st) else None
-    d_dp = kr_dp_raw - all_dp_raw
+    # 인사이트 d_dp = 심각·주의 비율차(%p). risk 부재 시 실망확률(심각-only)로 폴백해 카드가 깨지지 않게.
+    if has_risk:
+        d_dp = kr_rk_pct - all_rk_pct
+    else:
+        d_dp = ((num(kr.get('kr_disappoint')) or 0) - (num(kr.get('all_disappoint')) or 0)) * 100
     ST_TH, DP_TH = 0.15, 1.5
-    # §2-c 인사이트 4케이스 (별점+실망 조합), 별점 없으면 실망축만 2케이스
+    # §2-c 인사이트 4케이스 (별점+위험비율 조합), 별점 없으면 위험비율축만 2케이스
     if d_st is not None:
         if d_st >= ST_TH and d_dp <= -DP_TH:
             insight = '한국 리뷰어가 다른 나라 리뷰어보다 <b>만족</b>스러워 했어요'
         elif d_st >= ST_TH and d_dp >= DP_TH:
-            insight = '별점은 후하지만, <b>심각한 문제 언급은 더 많았어요</b>'
+            insight = '별점은 후하지만, <b>심각·주의 언급은 더 많았어요</b>'
         elif d_st <= -ST_TH and d_dp <= -DP_TH:
-            insight = '별점은 박한 편이지만, <b>심각한 문제 언급은 적었어요</b>'
+            insight = '별점은 박한 편이지만, <b>심각·주의 언급은 적었어요</b>'
         elif d_st <= -ST_TH and d_dp >= DP_TH:
             insight = '한국 리뷰어의 만족도가 다른 나라 리뷰어보다 <b>낮았어요</b>'
         else:
             insight = '한국인과 전체 리뷰어의 평가가 비슷한 호텔이에요'
     else:
         if d_dp <= -DP_TH:
-            insight = '한국 리뷰어의 심각한 문제 언급이 다른 나라보다 <b>적었어요</b>'
+            insight = '한국 리뷰어의 심각·주의 언급이 다른 나라보다 <b>적었어요</b>'
         elif d_dp >= DP_TH:
-            insight = '한국 리뷰어의 심각한 문제 언급이 다른 나라보다 <b>많았어요</b>'
+            insight = '한국 리뷰어의 심각·주의 언급이 다른 나라보다 <b>많았어요</b>'
         else:
             insight = '한국인과 전체 리뷰어의 평가가 비슷한 호텔이에요'
 
@@ -1304,21 +1310,35 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
             serious_txt = f'최근 1년 기준, 한국인 100명 중 <b>{n_serious}</b>명이 심각한 문제를 언급했어요'
         serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
-    # §2-b 한국인 수치 상시 강조 (color+bold 상시). 차이 클 때 emph 클래스 추가.
-    def cmp_row(label, ko, tot, unit, emph_big):
-        cls = ' emph' if emph_big else ''
-        return (f'<div class="kr-row"><span class="kr-row-label">{label}</span>'
-                f'<span class="kr-row-vals"><b class="kr-ko{cls}">한국인 {ko}{unit}</b>'
-                f'<span class="kr-tot">전체 {tot}{unit}</span></span></div>')
-    rows = ''
+    # §2-b 비교 막대그래프 — 지표당 2줄 가로 바(한국인 primary vs 전체 회색).
+    def bar_row(role, fill_w, val_txt, is_ko):
+        fill = 'var(--primary)' if is_ko else '#B0B4BB'
+        vcls = ' kb-val-ko' if is_ko else ''
+        return (f'<div class="kr-bar-row"><span class="kb-label">{role}</span>'
+                f'<span class="kb-track"><span class="kb-fill" style="width:{fill_w:.0f}%;background:{fill}"></span></span>'
+                f'<span class="kb-val{vcls}">{val_txt}</span></div>')
+    def cmp_block(tit, ko_w, all_w, ko_txt, all_txt):
+        return (f'<div class="kr-cmp"><div class="kr-cmp-tit">{tit}</div>'
+                + bar_row('한국인', ko_w, ko_txt, True)
+                + bar_row('전체', all_w, all_txt, False) + '</div>')
+    cmps = ''
     if kr_st and all_st:
-        rows += cmp_row('평균 별점', f'{kr_st:.1f}', f'{all_st:.1f}', '', abs(d_st) >= ST_TH)
-    rows += cmp_row('실망 확률', kr_dp, all_dp, '%', abs(d_dp) >= DP_TH)
+        cmps += cmp_block('구글 평균 별점', min(kr_st / 5 * 100, 100), min(all_st / 5 * 100, 100),
+                          f'{kr_st:.1f}', f'{all_st:.1f}')
+    footnote = ''
+    if has_risk:
+        # 스케일: 둘 다 작아도 바가 보이게 max(kr,all,10%)로 정규화(상한 100%).
+        norm = max(kr_rk_pct, all_rk_pct, 10.0)
+        cmps += cmp_block('심각·주의 리뷰 비율',
+                          min(kr_rk_pct / norm * 100, 100), min(all_rk_pct / norm * 100, 100),
+                          f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
+        footnote = ('<div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰'
+                    '(별점만 남긴 리뷰 포함)</div>')
 
-    # §2-a 후쿠오카 상위 N% 캡션
+    # §2-a 후쿠오카 상위 N% 배지 강조
     rank_cap = ''
     if kr_rank_pct:
-        rank_cap = f'<div class="kr-rank">한국인 비중 {CITY["ko"]} 상위 {kr_rank_pct}%</div>'
+        rank_cap = f'<div class="kr-rank"><b>한국인 비중 {CITY["ko"]} 상위 {kr_rank_pct}%</b></div>'
 
     return f'''
         <div class="sect kr-card">
@@ -1328,7 +1348,8 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
             </div>
             {rank_cap}
             <div class="kr-gauge"><span style="width:{min(ratio,100)}%"></span></div>
-            <div class="kr-rows">{rows}</div>
+            <div class="kr-cmps">{cmps}</div>
+            {footnote}
             <div class="kr-insight">{insight}</div>
             {serious_block}
         </div>'''
@@ -2056,28 +2077,45 @@ def _col_href(slug, depth=0):
     return f'{"../" * depth}{slug}'
 
 def hub_card(pid, meta, h, rank, depth=1):
-    """허브 랭킹 카드 — 검색 카드 톤 재사용 + 순위 + 실망확률 뱃지 + 역거리 + 시설칩."""
+    """허브 랭킹 카드 — 검색 리스트 카드와 픽셀 동일한 구조/클래스 재사용(#hub .hub-list 셀렉터 병기).
+       고유 요소: 순위 배지(썸네일 좌상단)·역거리 1줄·시설 칩만 추가."""
     p_root = '../' * depth
+    href = f'{p_root}hotels/{pid}'
     img = img_path(pid, meta, depth)
+    name = E(meta['title'])
     st = station_line(meta)
     st_html = f'<div class="hub-station">{E(st)}</div>' if st else ''
+    meta_html = f'<span>{E(meta.get("hotel_stars"))}</span>' if meta.get('hotel_stars') else ''
     chips = amenity_chips(meta, 3)
     chip_html = ''.join(f'<span class="hub-chip">{E(c)}</span>' for c in chips)
     chip_block = f'<div class="hub-chips">{chip_html}</div>' if chip_html else ''
-    price = f'<span class="hub-price">1박 <b>{E(meta["price_txt"])}</b></span>' if meta.get('price_txt') else ''
     band, label = h['badge']
     return f'''<li class="hub-row">
-        <a class="hub-item" href="{p_root}hotels/{pid}">
-            <span class="hub-rank">{rank}</span>
-            <span class="hub-thumb"><img src="{img}" alt="{E(meta['title'])}" width="120" height="120" loading="lazy"></span>
-            <span class="hub-cont">
-                <span class="hub-name">{E(meta['title'])}</span>
-                <span class="hub-meta">구글 {fmt_score(meta.get('total_score'))} · 리뷰 {meta.get('reviews_count') or 0:,}개{(' · ' + E(meta.get('hotel_stars'))) if meta.get('hotel_stars') else ''}</span>
-                {st_html}
-                <span class="hub-badges"><span class="badge-item badge-{band}">{label}</span><span class="badge-item badge-down">실망 확률 {pct(h['p_crit'])}%</span>{price}</span>
+        <div class="item">
+            <div class="thumb">
+                <span class="hub-rank">{rank}</span>
+                <a href="{href}"><img src="{img}" alt="{name}" width="120" height="120" loading="lazy"></a>
+            </div>
+            <div class="cont">
+                <div class="info">
+                    <div class="name"><a href="{href}">{name}</a></div>
+                    <div class="meta">{meta_html}</div>
+                    {st_html}
+                </div>
+                <div class="bottom">
+                    <div class="grade">
+                        <div class="ico"><img src="{p_root}img/star.svg" alt=""></div>
+                        <div class="num">{fmt_score(meta.get('total_score'))}</div>
+                        <div class="txt">(리뷰 {meta.get('reviews_count') or 0:,}개)</div>
+                    </div>
+                    <div class="badge">
+                        <div class="badge-item badge-{band}">{label}</div>
+                        <div class="badge-item badge-down">실망 확률 {pct(h['p_crit'])}%</div>
+                    </div>
+                </div>
                 {chip_block}
-            </span>
-        </a>
+            </div>
+        </div>
     </li>'''
 
 def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city_avg, other_cols):

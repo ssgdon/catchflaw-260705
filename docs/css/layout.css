@@ -312,35 +312,35 @@
 #search .total span.highlight{color:var(--primary-color);}
 #search .list{padding:0 20px;}
 #search .list ul{}
-#search .list li{padding:20px 0;}
-#search .list li + li{border-top:1px solid #f6f6f6;}
-#search .list li .item{display:flex;gap:16px;}
-#search .list li .thumb{flex:0 0 auto;width:66px;height:66px;border-radius:10px;overflow:hidden;}
-#search .list li .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
-#search .list .cont{flex:1;position:relative;}
+#search .list li, #hub .hub-list li{padding:20px 0;}
+#search .list li + li, #hub .hub-list li + li{border-top:1px solid #f6f6f6;}
+#search .list li .item, #hub .hub-list li .item{display:flex;gap:16px;}
+#search .list li .thumb, #hub .hub-list li .thumb{flex:0 0 auto;width:66px;height:66px;border-radius:10px;overflow:hidden;}
+#search .list li .thumb img, #hub .hub-list li .thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+#search .list .cont, #hub .hub-list .cont{flex:1;position:relative;}
 #search .list .cont .bttn{position:absolute;top:0;right:0;display:flex;gap:4px;}
 #search .list .cont .bttn button{flex: 0 0 auto;display: flex;align-items: center;justify-content: center;}
 #search .list .cont .bttn button i{display: block;width: 24px;height: 24px;}
 #search .list .cont .bttn button.btn-wish i{background: url("../img/wish_off.svg") no-repeat center / contain;}
 #search .list .cont .bttn button.btn-wish.on i{background: url("../img/wish_on.svg") no-repeat center / contain;}
-#search .list .cont .info{margin:0 0 10px;}
-#search .list .cont .info .name{line-height: 19px;font-size: 16px;font-weight: 700;color: #232323;}
-#search .list .cont .info .meta{margin:8px 0 0 0;display: flex;align-items: center;}
-#search .list .cont .info .meta span{display:flex;align-items:center;line-height: 14px;font-size: 12px;font-weight:500;color:#919191;}
-#search .list .cont .info .meta span:after{content:'';margin:0 8px;width:1px;height:13px;background:#f2f2f2;}
-#search .list .cont .info .meta span:last-of-type:after{display:none;}
-#search .list .cont .bottom{display:flex;align-items:center;justify-content:space-between;}
-#search .list .cont .grade{display:flex;align-items:center;gap:4px;}
-#search .list .cont .grade .ico{width:15px;height:15px;display: flex;align-items: center;justify-content: center;}
-#search .list .cont .grade .ico img{width:100%;height:100%;object-fit:contain;}
-#search .list .cont .grade .num{font-size:14px;font-weight:700;color:#232323;}
-#search .list .cont .grade .txt{font-size:12px;font-weight:500;color:#636363;}
-#search .list .cont .badge{display:flex;gap:4px;}
-#search .list .cont .badge .badge-item{display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;border-radius:6px;background:#fff;line-height:14px;font-size:12px;font-weight:700;color:#232323;}
-#search .list .cont .badge .badge-item.badge-normal{background:#ae7b9b;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
-#search .list .cont .badge .badge-item.badge-warning{background:#d06779;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
-#search .list .cont .badge .badge-item.badge-danger{background:#fa5252;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
-#search .list .cont .badge .badge-item.badge-down{background:linear-gradient(90deg, #8d5bfd 0%, #4d2f91 100%);color:#fff;}
+#search .list .cont .info, #hub .hub-list .cont .info{margin:0 0 10px;}
+#search .list .cont .info .name, #hub .hub-list .cont .info .name{line-height: 19px;font-size: 16px;font-weight: 700;color: #232323;}
+#search .list .cont .info .meta, #hub .hub-list .cont .info .meta{margin:8px 0 0 0;display: flex;align-items: center;}
+#search .list .cont .info .meta span, #hub .hub-list .cont .info .meta span{display:flex;align-items:center;line-height: 14px;font-size: 12px;font-weight:500;color:#919191;}
+#search .list .cont .info .meta span:after, #hub .hub-list .cont .info .meta span:after{content:'';margin:0 8px;width:1px;height:13px;background:#f2f2f2;}
+#search .list .cont .info .meta span:last-of-type:after, #hub .hub-list .cont .info .meta span:last-of-type:after{display:none;}
+#search .list .cont .bottom, #hub .hub-list .cont .bottom{display:flex;align-items:center;justify-content:space-between;}
+#search .list .cont .grade, #hub .hub-list .cont .grade{display:flex;align-items:center;gap:4px;}
+#search .list .cont .grade .ico, #hub .hub-list .cont .grade .ico{width:15px;height:15px;display: flex;align-items: center;justify-content: center;}
+#search .list .cont .grade .ico img, #hub .hub-list .cont .grade .ico img{width:100%;height:100%;object-fit:contain;}
+#search .list .cont .grade .num, #hub .hub-list .cont .grade .num{font-size:14px;font-weight:700;color:#232323;}
+#search .list .cont .grade .txt, #hub .hub-list .cont .grade .txt{font-size:12px;font-weight:500;color:#636363;}
+#search .list .cont .badge, #hub .hub-list .cont .badge{display:flex;gap:4px;}
+#search .list .cont .badge .badge-item, #hub .hub-list .cont .badge .badge-item{display:flex;align-items:center;justify-content:center;text-align:center;padding:6px;border-radius:6px;background:#fff;line-height:14px;font-size:12px;font-weight:700;color:#232323;}
+#search .list .cont .badge .badge-item.badge-normal, #hub .hub-list .cont .badge .badge-item.badge-normal{background:#ae7b9b;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
+#search .list .cont .badge .badge-item.badge-warning, #hub .hub-list .cont .badge .badge-item.badge-warning{background:#d06779;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
+#search .list .cont .badge .badge-item.badge-danger, #hub .hub-list .cont .badge .badge-item.badge-danger{background:#fa5252;color:#fff;border:1px solid rgb(255 255 255 / 20%);}
+#search .list .cont .badge .badge-item.badge-down, #hub .hub-list .cont .badge .badge-item.badge-down{background:linear-gradient(90deg, #8d5bfd 0%, #4d2f91 100%);color:#fff;}
 #search .list .cont .request{}
 #search .list .cont .request a{display: flex;align-items: center;justify-content: center;text-align: center;padding: 6px 8px;border-radius: 6px;background: #fff;line-height: 14px;font-size: 12px;font-weight: 700;color: #fff;background:#232323;gap:6px;}
 #search .list .cont .request a:after{content:'';width: 4px;height: 8px;background:url("../img/link_arrow.svg") no-repeat center / contain;}
