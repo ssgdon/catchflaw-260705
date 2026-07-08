@@ -1205,6 +1205,17 @@ def kr_rank_map(kr_stats):
     return rank
 
 
+def kr_ratio_dist(kr_stats):
+    """kr_n≥10 호텔들의 kr_ratio('all') 오름차순 리스트 — 분포 막대 차트(§2-a)용."""
+    def num(x):
+        try: return float(x)
+        except (TypeError, ValueError): return None
+    vals = [num(r.get('kr_ratio')) or 0.0
+            for (pid, period), r in kr_stats.items()
+            if period == 'all' and int(num(r.get('kr_n')) or 0) >= 10]
+    return sorted(vals)
+
+
 def _complete_months(asof, k=12):
     """asof 기준 완전월 k개 → [(ym 'YYYY-MM', '<N>월'), ...] 오름차순 (오래된→최신).
     asof 일자 < 28이면 asof월은 부분월로 보고 제외하고 그 앞 k개월을 사용 (CAT-TREND C-4)."""
@@ -1280,7 +1291,32 @@ def kr_pyramid(top_pct):
         f'<circle cx="{cx}" cy="{cy:.1f}" r="3.5" style="fill:var(--primary)"/>'
         '</svg>')
 
-def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
+def kr_dist_bars(this_ratio, dist):
+    """한국인 비중 분포 막대 차트 — 전체 호텔의 kr_ratio를 오름차순 정렬해 N개 막대로 샘플하고
+       이 호텔 위치 막대만 강조색(--primary)으로. 캡처(지니계수 분포)와 같은 톤, 사이트 토큰 사용."""
+    import bisect
+    if not dist:
+        return ''
+    N = 20
+    n = len(dist)
+    mx = max(dist) or 1.0
+    pos = bisect.bisect_left(dist, this_ratio) / max(n - 1, 1)   # 분포 내 위치 0~1
+    hl = min(N - 1, max(0, round(pos * (N - 1))))
+    bars = []
+    for i in range(N):
+        src = round(i / (N - 1) * (n - 1))
+        v = this_ratio if i == hl else dist[src]
+        h = max(v / mx, 0.08) * 100                              # 막대 높이(%), 0값도 최소 8%
+        if i == hl:
+            lab = f'<span class="kd-val">{round(this_ratio * 100)}%</span>'
+            bars.append(f'<div class="kd-bar is-hl" style="height:{h:.0f}%">{lab}</div>')
+        else:
+            bars.append(f'<div class="kd-bar" style="height:{h:.0f}%"></div>')
+    return (f'<div class="kd-chart" role="img" '
+            f'aria-label="후쿠오카 호텔 한국인 비중 분포에서 이 호텔 위치">{"".join(bars)}</div>')
+
+
+def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
     """한국인 리뷰 현황 카드 (LLM-ANALYSIS §7.3 + DETAIL-UI-REVAMP §2). 표본 10건 미만이면 미노출."""
     def num(x):
         try: return float(x)
@@ -1364,20 +1400,32 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
         footnote = ('<div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰'
                     '(별점만 남긴 리뷰 포함)</div>')
 
-    # §2-a 한국인 비중 순위 — 피라미드(외곽선+위치선). 50% 초과는 '하위 M%'로 뒤집어 직관화.
-    pyramid = ''
+    # §2-a 한국인 비중 순위 — 분포 막대 차트(전체 호텔 중 이 호텔 위치 강조) + 평이한 부연설명.
+    # 50% 초과는 '하위 M%'로 뒤집어 직관화. 부연: 상위 33% 이내=많은 편 / 하위 33%=적은 편 / 그 외=보통.
+    dist_block = ''
     if kr_rank_pct:
         rank_txt = f'상위 {kr_rank_pct}%' if kr_rank_pct <= 50 else f'하위 {100 - kr_rank_pct}%'
-        pyramid = (f'<div class="kr-pyramid">{kr_pyramid(kr_rank_pct)}'
-                   f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} {rank_txt}</b></div></div>')
+        if kr_rank_pct <= 33:
+            level = '<b>많은 편</b>이에요'
+        elif kr_rank_pct >= 67:
+            level = '<b>적은 편</b>이에요'
+        else:
+            level = '<b>보통</b> 수준이에요'
+        sub = f'{CITY["ko"]} 호텔 중 한국인 투숙객이 {level}'
+        this_ratio = num(kr.get('kr_ratio')) or 0.0
+        chart = kr_dist_bars(this_ratio, kr_dist) if kr_dist else kr_pyramid(kr_rank_pct)
+        dist_block = (f'<div class="kr-dist">{chart}'
+                      f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} {rank_txt}</b></div>'
+                      f'<div class="kp-sub">{sub}</div></div>')
 
+    count_txt = f'<b>{kr_n:,}</b>건 · 전체 {ratio}%{" · 참고용" if small else ""}'
     return f'''
         <div class="sect kr-card">
-            <div class="head">
+            <div class="head kr-head">
                 <div class="title">한국인 리뷰 현황</div>
-                <div class="desc"><b>{kr_n:,}</b>건 · 전체의 {ratio}%{' · 참고용' if small else ''}</div>
+                <div class="kr-count">{count_txt}</div>
             </div>
-            {pyramid}
+            {dist_block}
             <div class="kr-vbars">{vbars}</div>
             {footnote}
             <div class="kr-insight">{insight}</div>
@@ -1451,7 +1499,7 @@ def jsonld_detail(pid, meta):
     }
     return _jsonld(hotel) + '\n' + _jsonld(crumbs)
 
-def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None, hotel_cols=()):
+def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None, hotel_cols=(), kr_dist=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
@@ -1633,7 +1681,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}
                 <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
         </div>
-        {korean_card(kr, city, kr_rank_pct, kr_1y)}
+        {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">{CITY['ko']} 평균 = 50</div></div>
@@ -2499,6 +2547,7 @@ def main():
             detail_col_map[p].append((col['slug'], col['name']))
 
     krrank = kr_rank_map(kr_stats)
+    kr_dist = kr_ratio_dist(kr_stats)
     critrank = crit_rank_map(H)
     written = []
     for pid, meta in hotels_meta.items():
@@ -2506,7 +2555,7 @@ def main():
         W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
             kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat,
             city_avg, city_cat_avg, crit_rank_pct=critrank.get(pid),
-            hotel_cols=detail_col_map.get(pid, [])[:3]))
+            hotel_cols=detail_col_map.get(pid, [])[:3], kr_dist=kr_dist))
         written.append(pid)
     n = len(written)
 
