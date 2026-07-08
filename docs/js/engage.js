@@ -147,6 +147,18 @@
     // 구글맵으로 나가는 3개 링크 가로채기 (세션당 1회만 피드백)
     $(document).on('click', 'a.btn-google, a.btn-reservate, a.map-link', function (e) {
       var url = this.getAttribute('href');
+      // GA4 전환 측정 — 피드백 모달 노출 여부와 무관하게 매 클릭 카운트
+      if (typeof gtag === 'function') {
+        var h = window.CF_HOTEL || {};
+        var isCta = this.classList.contains('btn-reservate');
+        gtag('event', isCta ? 'check_price_click' : 'outbound_google', {
+          hotel_name: h.name || '',
+          hotel_id: h.pid || '',
+          link_url: url || '',
+          placement: this.classList.contains('btn-reservate') ? 'floating_cta'
+            : this.classList.contains('btn-google') ? 'google_rating' : 'map_link'
+        });
+      }
       if (alreadyShown()) return;  // 이미 봤으면 정상 이동
       e.preventDefault();
       openFb(url);

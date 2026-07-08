@@ -215,6 +215,16 @@ CLARITY = '''<script type="text/javascript">
     })(window, document, "clarity", "script", "xi5o022ef1");
 </script>'''
 
+# Google Analytics 4 (전 페이지 head). gtag 로드 + 자동 페이지뷰.
+GA4_ID = 'G-4M1BGXJZYQ'
+GA4 = f'''<script async src="https://www.googletagmanager.com/gtag/js?id={GA4_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{GA4_ID}');
+</script>'''
+
 def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head=''):
     p = '../' * depth
     seo = []
@@ -241,6 +251,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <title>{E(title)}</title>
     {seo_block}
     {VERIFY_META}
+    {GA4}
     {CLARITY}
     {extra_head}
     <link rel="icon" type="image/svg+xml" href="{p}img/favicon.svg">
