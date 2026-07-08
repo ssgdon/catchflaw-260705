@@ -1261,22 +1261,23 @@ def overall_trend_html(pid, monthly, monthly_cat, asof, city_avg=None):
     return html, trendc_all
 
 
-def kr_pyramid(n):
-    """한국인 비중 백분위 피라미드 SVG. 상위 N%를 '면적 기준' 슬라이스로 강조
-       (삼각형=모집단 분포, 상위 N% 인구 = 상위 N% 면적 → 꼭지 높이비율 = sqrt(N/100))."""
-    import math
-    n = max(0.5, min(float(n), 99.0))
-    f = math.sqrt(n / 100.0)
-    ay, by, cx, bh = 10.0, 110.0, 80.0, 66.0      # apex y, base y, center x, base half-width
-    cy = ay + (by - ay) * f                        # 상위 슬라이스 절단선 y
-    hw = bh * f
+def kr_pyramid(top_pct):
+    """한국인 비중 순위 피라미드 — 전체 삼각형은 회색 외곽선(라운드 조인), 이 호텔 위치는 보라 선으로.
+       위치 높이 = apex(상위)로부터 순위 백분위(상위=위쪽, 하위=아래쪽). 채우지 않음."""
+    n = max(1.0, min(float(top_pct), 99.0))
+    t = n / 100.0                                  # apex로부터 높이비율 = 순위 백분위
+    ay, by, cx, bh = 12.0, 108.0, 80.0, 62.0       # apex y, base y, center x, base half-width
+    cy = ay + (by - ay) * t                        # 위치선 y
+    hw = bh * t
     lx, rx = cx - hw, cx + hw
     return (
         '<svg class="kp-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg" '
-        'role="img" aria-label="한국인 비중 백분위 피라미드">'
-        f'<polygon points="{cx},{ay} 146,{by} 14,{by}" style="fill:var(--primary-soft)"/>'
-        f'<polygon points="{cx},{ay} {rx:.1f},{cy:.1f} {lx:.1f},{cy:.1f}" style="fill:var(--primary)"/>'
-        f'<line x1="{lx:.1f}" y1="{cy:.1f}" x2="{rx:.1f}" y2="{cy:.1f}" style="stroke:#fff;stroke-width:1.5"/>'
+        'role="img" aria-label="한국인 비중 순위 피라미드">'
+        f'<polygon points="{cx},{ay} 146,{by} 14,{by}" '
+        'style="fill:none;stroke:#D3D7DE;stroke-width:2.5;stroke-linejoin:round"/>'
+        f'<line x1="{lx - 2:.1f}" y1="{cy:.1f}" x2="{rx + 2:.1f}" y2="{cy:.1f}" '
+        'style="stroke:var(--primary);stroke-width:2.5;stroke-linecap:round"/>'
+        f'<circle cx="{cx}" cy="{cy:.1f}" r="3.5" style="fill:var(--primary)"/>'
         '</svg>')
 
 def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
@@ -1363,17 +1364,18 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
         footnote = ('<div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰'
                     '(별점만 남긴 리뷰 포함)</div>')
 
-    # §2-a 한국인 비중 후쿠오카 상위 N% — 피라미드(상위 슬라이스 강조, 목업③ 스타일)
+    # §2-a 한국인 비중 순위 — 피라미드(외곽선+위치선). 50% 초과는 '하위 M%'로 뒤집어 직관화.
     pyramid = ''
     if kr_rank_pct:
+        rank_txt = f'상위 {kr_rank_pct}%' if kr_rank_pct <= 50 else f'하위 {100 - kr_rank_pct}%'
         pyramid = (f'<div class="kr-pyramid">{kr_pyramid(kr_rank_pct)}'
-                   f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} 상위 {kr_rank_pct}%</b></div></div>')
+                   f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} {rank_txt}</b></div></div>')
 
     return f'''
         <div class="sect kr-card">
-            <div class="kr-head">
-                <div class="kr-tit">한국인 리뷰 현황</div>
-                <div class="kr-count"><b>{kr_n:,}</b>건 · 전체의 {ratio}%{' · 참고용' if small else ''}</div>
+            <div class="head">
+                <div class="title">한국인 리뷰 현황</div>
+                <div class="desc"><b>{kr_n:,}</b>건 · 전체의 {ratio}%{' · 참고용' if small else ''}</div>
             </div>
             {pyramid}
             <div class="kr-vbars">{vbars}</div>

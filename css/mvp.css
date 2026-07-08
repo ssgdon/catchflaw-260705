@@ -413,11 +413,9 @@
 .cf-toast{padding:14px 22px;font-size:15px;line-height:1.45;white-space:normal;max-width:min(84vw,340px);text-align:center;box-shadow:0 6px 24px rgb(25 27 31 / 28%);}
 
 /* ── 한국인 리뷰 현황 카드 (상세, 레이더 위) ── */
-.kr-card{padding:18px 18px 16px;}
-.kr-card .kr-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:12px;}
-.kr-card .kr-tit{font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
-.kr-card .kr-count{font-size:var(--fs-caption);color:var(--ink-2);}
-.kr-card .kr-count b{color:var(--primary);font-weight:var(--fw-bold);}
+/* 헤더는 표준 섹션 헤더(.head .title/.desc) 사용 — '카테고리별 위험도'와 동일 크기·배치 */
+.kr-card .head{margin-bottom:16px;}
+.kr-card .head .desc b{color:var(--primary);font-weight:var(--fw-bold);}
 /* §2-a 한국인 비중 백분위 — 피라미드(상위 슬라이스 강조) */
 .kr-card .kr-pyramid{margin:0 0 16px;padding:16px 12px 14px;border-radius:14px;background:var(--surface);text-align:center;}
 .kr-card .kp-svg{display:block;width:116px;height:87px;margin:0 auto 8px;}
@@ -481,12 +479,16 @@
 #detail .risk .chart .custom-legend .legend-average .legend-symbol,
 #detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:#B0B4BB;}
 #detail .risk .radar-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:18px;}
-#detail .risk .radar-cat{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line-strong);background:#fff;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);text-align:left;}
+/* 카테고리 버튼: 밴드 소프트 배경(테두리 색 제거) + 점수 강조 — 사이트 톤 통일(검색 cat-row 계열) */
+#detail .risk .radar-cat{display:flex;align-items:center;gap:8px;padding:13px 14px;border-radius:14px;border:1px solid var(--line);background:var(--surface);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);text-align:left;}
 #detail .risk .radar-cat .rc-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#detail .risk .radar-cat .rc-score{font-variant-numeric:tabular-nums;}
-#detail .risk .radar-cat.is-danger{border-color:var(--danger);color:var(--danger-text);}
-#detail .risk .radar-cat.is-warning{border-color:var(--warning);color:var(--warning-text);}
-#detail .risk .radar-cat.is-safe{border-color:var(--safe);color:var(--safe-text);}
+#detail .risk .radar-cat .rc-score{font-size:var(--fs-body-lg);font-weight:var(--fw-display);color:var(--ink-2);font-variant-numeric:tabular-nums;}
+#detail .risk .radar-cat.is-danger{background:var(--danger-soft);border-color:transparent;}
+#detail .risk .radar-cat.is-danger .rc-score{color:var(--danger-text);}
+#detail .risk .radar-cat.is-warning{background:var(--warning-soft);border-color:transparent;}
+#detail .risk .radar-cat.is-warning .rc-score{color:var(--warning-text);}
+#detail .risk .radar-cat.is-safe{background:var(--safe-soft);border-color:transparent;}
+#detail .risk .radar-cat.is-safe .rc-score{color:var(--safe-text);}
 
 /* ── 신호등 점 (§4-b) ── */
 .risk-dot{flex:0 0 auto;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ink-3);}
