@@ -627,3 +627,26 @@
 .visual .hotel-gallery .swiper-pagination-bullet{background:#fff;opacity:.55;width:7px;height:7px;}
 .visual .hotel-gallery .swiper-pagination-bullet-active{opacity:1;width:18px;border-radius:4px;}
 .visual .hotel-gallery .gallery-count{position:absolute;right:12px;top:12px;z-index:2;padding:4px 10px;border-radius:99px;background:rgb(25 27 31 / 55%);color:#fff;font-size:var(--fs-micro);font-weight:var(--fw-medium);}
+
+/* ── 법적 완충 (LEGAL-SOFTEN): 공통 미니 푸터 · about · basis 보강 ── */
+#site-foot{margin-top:var(--sp-2);padding:var(--sp-6) var(--page-x) var(--sp-10);background:var(--surface);border-top:1px solid var(--line);}
+#site-foot .foot-note{line-height:var(--lh-body);font-size:var(--fs-micro);color:var(--ink-3);}
+#site-foot .foot-note b{color:var(--ink-2);font-weight:var(--fw-bold);}
+#site-foot .foot-links{margin-top:10px;font-size:var(--fs-micro);}
+#site-foot .foot-links a{color:var(--ink-2);font-weight:var(--fw-medium);}
+#site-foot .foot-copy{margin-top:8px;font-size:var(--fs-micro);color:var(--ink-3);}
+
+.basis .basis-note{display:inline-block;margin-top:4px;color:var(--ink-3);}
+.basis .basis-note a{color:var(--primary-deep);font-weight:var(--fw-medium);text-decoration:underline;}
+
+/* about 페이지 */
+#about{padding:var(--sp-6) var(--page-x) var(--sp-8);}
+#about .about-h1{font-size:var(--fs-h1);font-weight:var(--fw-display);color:var(--ink);letter-spacing:var(--ls-global);}
+#about .about-lead{margin-top:8px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink-2);}
+#about .about-sect{margin-top:var(--sp-8);}
+#about .about-sect .head .title{font-size:var(--fs-h3);font-weight:var(--fw-bold);color:var(--ink);}
+#about .about-body{margin-top:10px;line-height:var(--lh-body);font-size:var(--fs-caption);color:var(--ink-2);}
+#about .about-body b{color:var(--ink);font-weight:var(--fw-bold);}
+#about .about-body a{color:var(--primary-deep);font-weight:var(--fw-medium);text-decoration:underline;}
+#about .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;}
+#about .about-list li{list-style:disc;}

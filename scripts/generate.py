@@ -11,6 +11,19 @@ BUILD = str(int(time.time()))  # 에셋 캐시버스터
 sys.path.insert(0, os.path.dirname(__file__))
 from scoring import compute, CATS, SUBS, SUB_KEYWORDS, MIN_REVIEWS
 
+# ── 법적 완충: 카테고리 표시명 순화 (LEGAL-SOFTEN §1). 내부 데이터 키(DB·QDATA·cb/cs·scoring·prompt)는 절대 불변, 렌더 시점에만 치환. ──
+CAT_DISPLAY = {'시설 사기단': '시설 경고등', '오감 지옥': '오감 주의보'}
+def cat_ko(c): return CAT_DISPLAY.get(c, c)
+CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
+
+def mask_name(s):
+    """리뷰어 실명 마스킹 (LEGAL-SOFTEN §3): 첫 글자 + '**'. 빈값은 '투숙객'."""
+    s = str(s or '').strip()
+    return (s[0] + '**') if s else '투숙객'
+
+# 클라이언트 JS 표시용 매핑 주입값 (내부키 → 표시명). head()에서 window.CAT_KO 로 주입.
+CAT_KO_JSON = json.dumps({c: cat_ko(c) for c in CATS}, ensure_ascii=False)
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'data-src')
 OUT = os.path.join(ROOT, 'docs')
@@ -243,7 +256,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <script src="{p}js/backnav.js?v={BUILD}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{p}js/swiper.js"></script>
-    <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};</script>
+    <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
     <script src="{p}js/engage.js?v={BUILD}" defer></script>
     <script src="{p}js/recommend.js?v={BUILD}"></script>
 </head>
@@ -262,6 +275,16 @@ def header_nav(depth=0):
             <div class="logo"><a href="{p or "./"}"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></div>
         </div></div>
     </header>'''
+
+def build_footer(depth=0):
+    """공통 미니 푸터 (LEGAL-SOFTEN §2-b). 전 생성 페이지에 삽입. about·정정창구 링크."""
+    p = '../' * depth
+    return f'''
+    <footer id="site-foot">
+        <div class="foot-note">캐치플로의 실망 확률·위험도는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이며, 특정 업소의 객관적 품질을 단정하지 않습니다.</div>
+        <div class="foot-links"><a href="{p or './'}about">캐치플로 소개·산출 방법</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
+        <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
+    </footer>'''
 
 def badge_html(h):
     if not h['scored']:
@@ -502,7 +525,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             }}
         }});
     }});
-    </script>''' + FOOT
+    </script>''' + build_footer(0) + FOOT
     return html_out
 
 # ───────────────────────── 404 ─────────────────────────
@@ -518,7 +541,7 @@ def build_404():
             <a class="notice-btn" href="/">캐치플로 홈으로</a>
             <a class="notice-btn" href="/search" style="margin-left:8px;background:var(--ink)">호텔 전체 보기</a>
         </div>
-    </section></main>''' + FOOT
+    </section></main>''' + build_footer(0) + FOOT
 
 # ───────────────────────── search ─────────────────────────
 def build_search_index(hotels_meta, H):
@@ -896,7 +919,8 @@ def build_search(city_avg_pct):
         // 카테고리 위험 필터 시트
         var $cft = $('#cf-catfilter');
         $('#cft-grid').html(CATS.map(function(c){{
-            return '<button type="button" class="cft-chip" data-cat="'+c.ko+'"><span class="cft-ico">'+c.ico+'</span>'+c.ko+'</button>';
+            var koDisp = (window.CAT_KO && window.CAT_KO[c.ko]) || c.ko;   // data-cat은 내부키(c.ko), 표시만 순화
+            return '<button type="button" class="cft-chip" data-cat="'+c.ko+'"><span class="cft-ico">'+c.ico+'</span>'+koDisp+'</button>';
         }}).join(''));
         function openCatFilter(){{
             $('#cft-grid .cft-chip').each(function(){{ $(this).toggleClass('on', fCats.indexOf($(this).data('cat'))>=0); }});
@@ -1047,7 +1071,7 @@ def build_search(city_avg_pct):
             run();
         }}
     }})();
-    </script>''' + FOOT
+    </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── detail ─────────────────────────
 def gauge_html(p_crit, city_crit):
@@ -1115,7 +1139,7 @@ def quote_cards(qlist, limit=6):
         lang_chip = f'<span class="q-lang">{E(llabel)}</span>' if llabel else ''
         out.append(f'''<li class="swiper-slide"><div class="item">
             <div class="item-top">
-                <div class="name">{E(q.get('reviewer_name') or '투숙객')}</div>
+                <div class="name">{E(mask_name(q.get('reviewer_name')))}</div>
                 <div class="status"><div class="status-item {gband}">{E(q['grade'])}</div></div>
             </div>
             <div class="item-info">{star}<div class="web">{origin}</div>{lang_chip}</div>
@@ -1430,7 +1454,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         elif ratio <= 0.85: level_txt = '안심할 수 있는 수준이에요'
         else: level_txt = '평균적인 수준이에요'
         radar_vals = [round(h['cats'][c]['score']) for c in CATS]
-        radar_labels = json.dumps([c for c in CATS], ensure_ascii=False)
+        radar_labels = json.dumps([cat_ko(c) for c in CATS], ensure_ascii=False)  # 표시 라벨만 순화(순서=CATS 고정)
 
         # 카테고리 × 소분류 — 아코디언(§4) + 리뷰 시트 데이터. 위험도 내림차순 정렬(§4-d).
         groups = []
@@ -1450,7 +1474,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             cscore = round(cat['score'])
             qlist = quotes.get((pid, c), [])
             sheet_data[c] = [{'s': q.get('scat') or '', 'g': q['grade'], 'q': q.get('quote') or q.get('summary') or '',
-                              'd': (q.get('pub') or '')[:10], 'n': q.get('reviewer_name') or '투숙객',
+                              'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
                               'l': (q.get('lang') or '').lower()} for q in qlist]
@@ -1467,7 +1491,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 </li>''')
             qc = quote_cards(qlist)
             total_q = len(qlist)
-            more_btn = (f'''<div class="more"><button type="button" class="more-btn" data-cat="{E(c)}"><strong>{E(c)}</strong> 리뷰 전체보기 ({cat['count']}건)</button></div>'''
+            more_btn = (f'''<div class="more"><button type="button" class="more-btn" data-cat="{E(c)}"><strong>{E(cat_ko(c))}</strong> 리뷰 전체보기 ({cat['count']}건)</button></div>'''
                         if total_q > 0 else '')
             quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div></div>{more_btn}'''
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
@@ -1506,7 +1530,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             groups.append(f'''<div class="risk-acc-item{is_open}" id="risk-{ci}" data-order="{order}">
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-{band}"></span>
-                    <span class="cat-name">{E(c)}</span>
+                    <span class="cat-name">{E(cat_ko(c))}</span>
                     <span class="cat-score is-{band}">위험도 {cscore}<span class="pctl"> · {pctl_txt}</span></span>
                     <span class="risk-arrow"></span>
                 </button>
@@ -1520,7 +1544,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             # §3-b 레이더 카테고리 칩 (동일 순서)
             radar_chips.append(
                 f'<button type="button" class="radar-cat is-{band}" data-target="risk-{ci}">'
-                f'<span class="risk-dot is-{band}"></span><span class="rc-name">{E(c)}</span>'
+                f'<span class="risk-dot is-{band}"></span><span class="rc-name">{E(cat_ko(c))}</span>'
                 f'<span class="rc-score">{cscore}</span></button>')
         radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
@@ -1554,7 +1578,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {gauge_html(h['p_crit'], city['crit'])}
             {overall_trend}
             {insight_card(h)}
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</div>
+            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}
+                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
         </div>
         {korean_card(kr, city, kr_rank_pct, kr_1y)}
         <div class="sect risk">
@@ -1766,7 +1791,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var list = (window.QDATA[curCat] || []);
                 if (krOnly) list = list.filter(function(q){{ return q.l === 'ko'; }});
                 var filtered = curSub ? list.filter(function(q){{ return q.s === curSub; }}) : list;
-                $('#sheet-cat').text(curCat);
+                $('#sheet-cat').text((window.CAT_KO && window.CAT_KO[curCat]) || curCat);   // 표시만 순화, curCat은 내부키 유지
                 $('#sheet-cnt').text(filtered.length + '건');
                 $('#sheet-list').html(filtered.map(card).join('') ||
                     '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>');
@@ -1898,7 +1923,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             // 초기 열림(1위) 카테고리 차트 즉시 init
             initCatTrend($sect.find('.risk-acc-item.is-open'));
         }});
-    </script>''' + FOOT
+    </script>''' + build_footer(1) + FOOT
 
 # ───────────────────────── 컬렉션 허브 (HUB-NORMALIZE §3) ─────────────────────────
 # 지역 3 + 테마 5. slug=URL(무확장), kind, H1, min N 가드. 선정 로직은 collection_members().
@@ -2194,7 +2219,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
             {faq_block}
             {xlink_block}
         </section>
-    </main>''' + FOOT
+    </main>''' + build_footer(1) + FOOT
 
 def build_collection_faq(col, stats, pids, hotels_meta, H, city):
     """컬렉션 FAQ 3문 (§3-e). 반환 [(질문, 답변HTML, 답변plain), ...]."""
@@ -2254,6 +2279,59 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
     faqs.append((q3, E(a3p), a3p))
     return faqs
 
+# ───────────────────────── about (LEGAL-SOFTEN §2-c) ─────────────────────────
+def build_about(hotels_meta, H, city):
+    """서비스 소개·방법론·한계·정정창구·제휴고지. E-E-A-T 겸용. sitemap priority 0.5."""
+    n_live = sum(1 for p in hotels_meta if p in H)
+    try:
+        _total = sum(r['n'] for r in json.load(open(os.path.join(SRC, 'agg_denom.json'), encoding='utf-8')))
+        reviews_txt = f'{_total:,}건'
+    except Exception:
+        reviews_txt = '수만 건'
+    asof = CITY['data_asof']
+    avg_pct = pct(city['crit'])
+    desc = (f'{CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰를 AI로 분석해 실망 확률을 계산하는 방법과 '
+            '데이터 출처·한계, 정정 창구를 안내합니다.')
+
+    def sect(title, body):
+        return (f'<div class="sect about-sect"><div class="head"><div class="title">{E(title)}</div></div>'
+                f'<div class="about-body">{body}</div></div>')
+
+    s1 = sect('무엇을 하는 서비스인가요',
+        f'캐치플로는 {CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt}을 AI로 분석해, '
+        '심각한 불만이 언급된 비율을 <b>실망 확률</b>로 보여드립니다. '
+        '별점에 묻힌 치명적인 단점을 예약 전에 미리 확인하실 수 있어요.')
+    s2 = sect('실망 확률은 이렇게 계산해요',
+        '<ul class="about-list">'
+        '<li>최근 12개월 이내 리뷰에 더 높은 가중치를 둬요</li>'
+        f'<li>{CITY["ko"]} 평균을 50으로 두고 상대적인 위험도로 환산해요</li>'
+        '<li>분석된 리뷰가 30건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
+        '<li>불만 표본이 5건 미만인 소분류에는 위험 등급을 붙이지 않아요</li>'
+        '</ul>')
+    s3 = sect('데이터 출처와 한계',
+        '<ul class="about-list">'
+        '<li>구글 지도 등 공개 플랫폼의 실제 투숙객 리뷰를 사용해요</li>'
+        f'<li>매주 갱신하며, 현재 페이지는 {asof} 기준({CITY["ko"]} 평균 실망 확률 {avg_pct}%)이에요</li>'
+        '<li><b>AI 분석은 통계적 의견이며 오류가 있을 수 있고, 실제 이용 경험과 다를 수 있어요</b></li>'
+        '<li>예약 판단의 유일한 근거로 삼지 마시고, 개별 리뷰 원문도 함께 확인하세요</li>'
+        '</ul>')
+    s4 = sect('정정·이의제기',
+        f'본인 업소 정보의 사실 오류나 이의가 있으시면 '
+        f'<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>로 알려주세요. 확인 후 신속히 반영합니다.')
+    s5 = sect('제휴 고지',
+        '일부 예약 링크는 제휴 링크일 수 있으며, 예약 시 캐치플로가 수수료를 받을 수 있어요. '
+        '수수료는 분석 결과에 영향을 주지 않습니다.')
+
+    return head('캐치플로 소개 — 실망 확률은 이렇게 계산해요', depth=0,
+                description=desc, canonical=f'{BASE}/about') + header_nav() + f'''
+    <main id="container">
+        <section id="about">
+            <h1 class="about-h1">캐치플로 소개</h1>
+            <p class="about-lead">공개된 투숙객 리뷰를 AI로 분석해, 예약 전에 알아야 할 위험을 알려드려요.</p>
+            {s1}{s2}{s3}{s4}{s5}
+        </section>
+    </main>''' + build_footer(0) + FOOT
+
 # ───────────────────────── main ─────────────────────────
 def city_averages(monthly, monthly_cat):
     """빌드타임 도시(후쿠오카) 평균 시리즈 (TREND-V2 §2-a). 전 호텔 monthly 합산 기준
@@ -2285,6 +2363,7 @@ def build_sitemap(detail_pids, collection_slugs=()):
     lastmod = CITY['asof'] or time.strftime('%Y-%m-%d')   # meta.json asof(YYYY-MM-DD), 없으면 빌드일
     rows = [(f'{BASE}/', 'daily', '1.0'),
             (f'{BASE}/search', 'daily', '0.9'),
+            (f'{BASE}/about', 'monthly', '0.5'),   # 소개·방법론 (LEGAL-SOFTEN §2-c)
             *[(f'{BASE}/{slug}', 'weekly', '0.9') for slug in collection_slugs],   # 허브 priority 0.9
             *[(f'{BASE}/hotels/{pid}', 'weekly', '0.8') for pid in detail_pids]]
     urls = '\n'.join(
@@ -2332,6 +2411,7 @@ def main():
     W('index.html', build_index(hotels_meta, H, quotes, col_index))
     W('search.html', build_search(pct(city['crit'])))
     W('404.html', build_404())
+    W('about.html', build_about(hotels_meta, H, city))
     idx = build_search_index(hotels_meta, H)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
@@ -2364,7 +2444,7 @@ def main():
     col_slugs = [c['slug'] for c, _ in built_cols]
     W('sitemap.xml', build_sitemap(written, col_slugs))
     scored = sum(1 for p in H if H[p]['scored'])
-    sitemap_n = n + 2 + len(col_slugs)
+    sitemap_n = n + 3 + len(col_slugs)   # 홈·검색·about + 허브 + 상세
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
     print(f'컬렉션 생성 {len(built_cols)}개: ' + ', '.join(f'{c["slug"]}({len(p)})' for c, p in built_cols))
     if skipped_cols:
