@@ -1492,6 +1492,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         elif ratio <= 0.85: level_txt = '안심할 수 있는 수준이에요'
         else: level_txt = '평균적인 수준이에요'
         radar_vals = [round(h['cats'][c]['score']) for c in CATS]
+        radar_max = max(65, min(100, (max(radar_vals) // 10 + 2) * 10))  # 동적 상한(폴리곤이 안 눌리게, 50은 항상 노출)
         radar_labels = json.dumps([cat_ko(c) for c in CATS], ensure_ascii=False)  # 표시 라벨만 순화(순서=CATS 고정)
 
         # 카테고리 × 소분류 — 아코디언(§4) + 리뷰 시트 데이터. 위험도 내림차순 정렬(§4-d).
@@ -1623,7 +1624,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">{CITY['ko']} 평균 = 50</div></div>
-            <div class="chart"><canvas id="radar"></canvas>
+            <div class="chart">
+                <div class="radar-box"><canvas id="radar"></canvas></div>
                 <div class="custom-legend">
                     <div class="legend-item legend-hotel"><span class="legend-symbol"></span><span class="hotel-text">{E(name)}</span></div>
                     <div class="legend-item legend-average"><span class="legend-symbol"></span><span class="hotel-text">{CITY['ko']} 평균</span></div>
@@ -1638,19 +1640,24 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         labels: {radar_labels},
                         datasets: [
                             {{label: '{E(name)}', data: {radar_vals}, fill: true,
-                              backgroundColor: 'rgba(141,91,253,0.15)', borderColor: '#8D5BFD',
-                              pointBackgroundColor: '#8D5BFD', pointRadius: 3, borderWidth: 2}},
+                              backgroundColor: 'rgba(141,91,253,0.13)', borderColor: '#8D5BFD', borderWidth: 2,
+                              pointBackgroundColor: '#fff', pointBorderColor: '#8D5BFD', pointBorderWidth: 2,
+                              pointRadius: 3.5, pointHoverRadius: 4, tension: 0}},
                             {{label: '{CITY['ko']} 평균', data: [50,50,50,50,50,50], fill: false,
-                              borderColor: '#CCCCCC', borderDash: [4,4], pointRadius: 0, borderWidth: 1}}
+                              borderColor: '#B0B4BB', borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
                         ]
                     }},
                     options: {{
-                        responsive: true,
+                        responsive: true, maintainAspectRatio: false,
+                        layout: {{padding: 2}},
                         plugins: {{legend: {{display: false}}, tooltip: {{enabled: false}}}},
-                        scales: {{r: {{angleLines: {{color: '#efefef'}}, grid: {{color: '#efefef'}},
-                            suggestedMin: 0, suggestedMax: 100,
-                            ticks: {{stepSize: 25, backdropColor: 'transparent', font: {{size: 10}}}},
-                            pointLabels: {{font: {{size: 12, weight: '600'}}, color: '#232323'}}}}}}
+                        scales: {{r: {{
+                            min: 0, max: {radar_max},
+                            angleLines: {{color: '#F1F2F4'}},
+                            grid: {{color: '#EEEFF3', circular: false}},
+                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: '#B0B4BB', font: {{size: 10}}}},
+                            pointLabels: {{font: {{size: 12.5, weight: '700'}}, color: '#4B5057', padding: 12}}
+                        }}}}
                     }}
                 }});
             }});
@@ -1743,7 +1750,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {col_chip_block}
                 {similar_block}
             </div>
-            <div class="button"><a class="btn-reservate" href="{E(gmap)}" target="_blank" rel="noopener">구글 지도에서 이 호텔 보기</a></div>
+            <div class="button"><a class="btn-reservate" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
         </section>
         <section id="float">
             <div class="float">

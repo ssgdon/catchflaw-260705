@@ -27,18 +27,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783485164">
-    <link rel="stylesheet" href="../css/common.css?v=1783485164">
-    <link rel="stylesheet" href="../css/layout.css?v=1783485164">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783485164">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783485164">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783485164">
-    <script src="../js/backnav.js?v=1783485164"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783485622">
+    <link rel="stylesheet" href="../css/common.css?v=1783485622">
+    <link rel="stylesheet" href="../css/layout.css?v=1783485622">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783485622">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783485622">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783485622">
+    <script src="../js/backnav.js?v=1783485622"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생 경보": "위생 경보", "오감 지옥": "오감 주의보", "시설 사기단": "시설 경고등", "동선 파괴자": "동선 파괴자", "불친절 레이더": "불친절 레이더", "안전 그림자": "안전 그림자"};</script>
-    <script src="../js/engage.js?v=1783485164" defer></script>
-    <script src="../js/recommend.js?v=1783485164"></script>
+    <script src="../js/engage.js?v=1783485622" defer></script>
+    <script src="../js/recommend.js?v=1783485622"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -118,7 +118,8 @@
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">후쿠오카 평균 = 50</div></div>
-            <div class="chart"><canvas id="radar"></canvas>
+            <div class="chart">
+                <div class="radar-box"><canvas id="radar"></canvas></div>
                 <div class="custom-legend">
                     <div class="legend-item legend-hotel"><span class="legend-symbol"></span><span class="hotel-text">호텔 리솔 트리니티 하카타</span></div>
                     <div class="legend-item legend-average"><span class="legend-symbol"></span><span class="hotel-text">후쿠오카 평균</span></div>
@@ -133,19 +134,24 @@
                         labels: ["위생 경보", "오감 주의보", "시설 경고등", "동선 파괴자", "불친절 레이더", "안전 그림자"],
                         datasets: [
                             {label: '호텔 리솔 트리니티 하카타', data: [41, 55, 26, 12, 50, 100], fill: true,
-                              backgroundColor: 'rgba(141,91,253,0.15)', borderColor: '#8D5BFD',
-                              pointBackgroundColor: '#8D5BFD', pointRadius: 3, borderWidth: 2},
+                              backgroundColor: 'rgba(141,91,253,0.13)', borderColor: '#8D5BFD', borderWidth: 2,
+                              pointBackgroundColor: '#fff', pointBorderColor: '#8D5BFD', pointBorderWidth: 2,
+                              pointRadius: 3.5, pointHoverRadius: 4, tension: 0},
                             {label: '후쿠오카 평균', data: [50,50,50,50,50,50], fill: false,
-                              borderColor: '#CCCCCC', borderDash: [4,4], pointRadius: 0, borderWidth: 1}
+                              borderColor: '#B0B4BB', borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}
                         ]
                     },
                     options: {
-                        responsive: true,
+                        responsive: true, maintainAspectRatio: false,
+                        layout: {padding: 2},
                         plugins: {legend: {display: false}, tooltip: {enabled: false}},
-                        scales: {r: {angleLines: {color: '#efefef'}, grid: {color: '#efefef'},
-                            suggestedMin: 0, suggestedMax: 100,
-                            ticks: {stepSize: 25, backdropColor: 'transparent', font: {size: 10}},
-                            pointLabels: {font: {size: 12, weight: '600'}, color: '#232323'}}}
+                        scales: {r: {
+                            min: 0, max: 100,
+                            angleLines: {color: '#F1F2F4'},
+                            grid: {color: '#EEEFF3', circular: false},
+                            ticks: {stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: '#B0B4BB', font: {size: 10}},
+                            pointLabels: {font: {size: 12.5, weight: '700'}, color: '#4B5057', padding: 12}
+                        }}
                     }
                 });
             });
@@ -868,7 +874,7 @@
     </li></ul></div>
         </div>
             </div>
-            <div class="button"><a class="btn-reservate" href="https://www.google.com/maps/search/?api=1&amp;query=%ED%98%B8%ED%85%94%20%EB%A6%AC%EC%86%94%20%ED%8A%B8%EB%A6%AC%EB%8B%88%ED%8B%B0%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJHzNwgZSRQTURrA4sA7FemCw" target="_blank" rel="noopener">구글 지도에서 이 호텔 보기</a></div>
+            <div class="button"><a class="btn-reservate" href="https://www.google.com/maps/search/?api=1&amp;query=%ED%98%B8%ED%85%94%20%EB%A6%AC%EC%86%94%20%ED%8A%B8%EB%A6%AC%EB%8B%88%ED%8B%B0%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJHzNwgZSRQTURrA4sA7FemCw" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
         </section>
         <section id="float">
             <div class="float">

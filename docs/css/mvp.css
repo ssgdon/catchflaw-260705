@@ -471,6 +471,15 @@
 #detail .analysis .review .list .item .item-info{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 
 /* ── 레이더 카테고리 칩 (§3-b) ── */
+/* 레이더 차트: 컨테이너 높이·브랜드 팔레트(층 눌림·톤 이질감 해소) */
+#detail .risk .chart{margin:4px 0 0;}
+#detail .risk .radar-box{position:relative;height:300px;}
+#detail .risk .chart .custom-legend{margin-top:8px;}
+#detail .risk .chart .custom-legend .legend-hotel .legend-symbol,
+#detail .risk .chart .custom-legend .legend-hotel .legend-symbol:before{background:var(--primary);}
+#detail .risk .chart .custom-legend .legend-hotel .hotel-text{color:var(--primary-deep);font-weight:var(--fw-bold);}
+#detail .risk .chart .custom-legend .legend-average .legend-symbol,
+#detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:#B0B4BB;}
 #detail .risk .radar-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:18px;}
 #detail .risk .radar-cat{display:flex;align-items:center;gap:6px;padding:10px 12px;border-radius:12px;border:1.5px solid var(--line-strong);background:#fff;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);text-align:left;}
 #detail .risk .radar-cat .rc-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
