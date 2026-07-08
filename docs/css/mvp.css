@@ -418,18 +418,23 @@
 .kr-card .kr-tit{font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
 .kr-card .kr-count{font-size:var(--fs-caption);color:var(--ink-2);}
 .kr-card .kr-count b{color:var(--primary);font-weight:var(--fw-bold);}
-.kr-card .kr-gauge{height:8px;border-radius:99px;background:var(--primary-soft);overflow:hidden;margin-bottom:14px;}
-.kr-card .kr-gauge span{display:block;height:100%;border-radius:99px;background:var(--primary);}
-/* §2-b 비교 막대그래프 — 지표당 2줄 가로 바 */
-.kr-card .kr-cmps{display:flex;flex-direction:column;gap:16px;}
-.kr-card .kr-cmp{display:flex;flex-direction:column;gap:6px;}
-.kr-card .kr-cmp-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
-.kr-card .kr-bar-row{display:flex;align-items:center;gap:8px;}
-.kr-card .kb-label{flex:0 0 auto;width:40px;font-size:var(--fs-micro);color:var(--ink-3);}
-.kr-card .kb-track{flex:1;height:10px;border-radius:99px;background:#EEEFF3;overflow:hidden;}
-.kr-card .kb-fill{display:block;height:100%;border-radius:99px;}
-.kr-card .kb-val{flex:0 0 auto;min-width:34px;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);font-variant-numeric:tabular-nums;}
-.kr-card .kb-val-ko{color:var(--primary-deep);}
+/* §2-a 한국인 비중 백분위 — 피라미드(상위 슬라이스 강조) */
+.kr-card .kr-pyramid{margin:0 0 16px;padding:16px 12px 14px;border-radius:14px;background:var(--surface);text-align:center;}
+.kr-card .kp-svg{display:block;width:116px;height:87px;margin:0 auto 8px;}
+.kr-card .kp-cap{line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-medium);color:var(--ink-2);}
+.kr-card .kp-cap b{font-weight:var(--fw-display);color:var(--primary-deep);}
+/* §2-b 비교 — 지표당 세로 막대 2개(한국인 vs 전체), 값은 막대 위 */
+.kr-card .kr-vbars{display:flex;gap:10px;}
+.kr-card .kv-group{flex:1 1 0;min-width:0;padding:14px 8px 12px;border-radius:14px;background:var(--surface);}
+.kr-card .kv-tit{min-height:2.6em;margin-bottom:10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3;font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);}
+.kr-card .kv-bars{display:flex;justify-content:center;gap:14px;}
+.kr-card .kv-col{display:flex;flex-direction:column;align-items:center;}
+.kr-card .kv-val{margin-bottom:5px;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);font-variant-numeric:tabular-nums;}
+.kr-card .kv-val-ko{color:var(--primary-deep);}
+.kr-card .kv-track{width:34px;height:72px;display:flex;align-items:flex-end;}
+.kr-card .kv-fill{width:100%;min-height:4px;border-radius:8px 8px 0 0;background:#D3D7DE;}
+.kr-card .kv-fill-ko{background:var(--primary);}
+.kr-card .kv-lab{margin-top:8px;font-size:var(--fs-micro);color:var(--ink-3);}
 .kr-card .kr-foot{margin-top:10px;font-size:var(--fs-micro);color:var(--ink-3);line-height:1.5;}
 .kr-card .kr-insight{margin-top:14px;padding:10px 12px;border-radius:12px;background:var(--primary-soft);font-size:var(--fs-caption);color:var(--primary-deep);line-height:1.5;}
 .kr-card .kr-insight b{font-weight:var(--fw-bold);}
@@ -458,8 +463,6 @@
 #title .search .ac-box .ac-none{padding:14px 16px;font-size:13.5px;color:var(--ink-2);}
 
 /* ── 한국인 카드 추가 (§2) ── */
-.kr-card .kr-rank{display:inline-flex;margin:0 0 12px;padding:8px 14px;border-radius:12px;background:var(--primary-soft);font-size:var(--fs-body-lg);font-weight:var(--fw-display);color:var(--primary-deep);}
-.kr-card .kr-rank b{font-weight:inherit;}
 .kr-card .kr-serious{margin-top:8px;padding:10px 12px;border-radius:12px;background:var(--surface);font-size:var(--fs-caption);color:var(--ink-2);line-height:1.5;}
 .kr-card .kr-serious b{color:var(--danger-text);font-weight:var(--fw-bold);}
 

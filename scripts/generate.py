@@ -1250,6 +1250,24 @@ def overall_trend_html(pid, monthly, monthly_cat, asof, city_avg=None):
     return html, trendc_all
 
 
+def kr_pyramid(n):
+    """한국인 비중 백분위 피라미드 SVG. 상위 N%를 '면적 기준' 슬라이스로 강조
+       (삼각형=모집단 분포, 상위 N% 인구 = 상위 N% 면적 → 꼭지 높이비율 = sqrt(N/100))."""
+    import math
+    n = max(0.5, min(float(n), 99.0))
+    f = math.sqrt(n / 100.0)
+    ay, by, cx, bh = 10.0, 110.0, 80.0, 66.0      # apex y, base y, center x, base half-width
+    cy = ay + (by - ay) * f                        # 상위 슬라이스 절단선 y
+    hw = bh * f
+    lx, rx = cx - hw, cx + hw
+    return (
+        '<svg class="kp-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg" '
+        'role="img" aria-label="한국인 비중 백분위 피라미드">'
+        f'<polygon points="{cx},{ay} 146,{by} 14,{by}" style="fill:var(--primary-soft)"/>'
+        f'<polygon points="{cx},{ay} {rx:.1f},{cy:.1f} {lx:.1f},{cy:.1f}" style="fill:var(--primary)"/>'
+        f'<line x1="{lx:.1f}" y1="{cy:.1f}" x2="{rx:.1f}" y2="{cy:.1f}" style="stroke:#fff;stroke-width:1.5"/>'
+        '</svg>')
+
 def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
     """한국인 리뷰 현황 카드 (LLM-ANALYSIS §7.3 + DETAIL-UI-REVAMP §2). 표본 10건 미만이면 미노출."""
     def num(x):
@@ -1310,35 +1328,35 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
             serious_txt = f'최근 1년 기준, 한국인 100명 중 <b>{n_serious}</b>명이 심각한 문제를 언급했어요'
         serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
-    # §2-b 비교 막대그래프 — 지표당 2줄 가로 바(한국인 primary vs 전체 회색).
-    def bar_row(role, fill_w, val_txt, is_ko):
-        fill = 'var(--primary)' if is_ko else '#B0B4BB'
-        vcls = ' kb-val-ko' if is_ko else ''
-        return (f'<div class="kr-bar-row"><span class="kb-label">{role}</span>'
-                f'<span class="kb-track"><span class="kb-fill" style="width:{fill_w:.0f}%;background:{fill}"></span></span>'
-                f'<span class="kb-val{vcls}">{val_txt}</span></div>')
-    def cmp_block(tit, ko_w, all_w, ko_txt, all_txt):
-        return (f'<div class="kr-cmp"><div class="kr-cmp-tit">{tit}</div>'
-                + bar_row('한국인', ko_w, ko_txt, True)
-                + bar_row('전체', all_w, all_txt, False) + '</div>')
-    cmps = ''
+    # §2-b 비교 — 지표당 세로 막대 2개(한국인 primary vs 전체 회색), 값은 막대 위(목업①② 스타일).
+    def vcol(role, frac, val_txt, is_ko):
+        vcls = ' kv-val-ko' if is_ko else ''
+        fcls = ' kv-fill-ko' if is_ko else ''
+        h = max(min(frac, 1.0), 0.04) * 100        # 막대 높이(%), 0값도 최소 4% 보이게
+        return (f'<div class="kv-col"><div class="kv-val{vcls}">{val_txt}</div>'
+                f'<div class="kv-track"><span class="kv-fill{fcls}" style="height:{h:.0f}%"></span></div>'
+                f'<div class="kv-lab">{role}</div></div>')
+    def vgroup(tit, ko_frac, all_frac, ko_txt, all_txt):
+        return (f'<div class="kv-group"><div class="kv-tit">{tit}</div>'
+                f'<div class="kv-bars">{vcol("한국인", ko_frac, ko_txt, True)}'
+                f'{vcol("전체", all_frac, all_txt, False)}</div></div>')
+    vbars = ''
     if kr_st and all_st:
-        cmps += cmp_block('구글 평균 별점', min(kr_st / 5 * 100, 100), min(all_st / 5 * 100, 100),
-                          f'{kr_st:.1f}', f'{all_st:.1f}')
+        vbars += vgroup('구글 평균 별점', kr_st / 5, all_st / 5, f'{kr_st:.1f}', f'{all_st:.1f}')
     footnote = ''
     if has_risk:
-        # 스케일: 둘 다 작아도 바가 보이게 max(kr,all,10%)로 정규화(상한 100%).
+        # 스케일: 둘 다 작아도 막대가 보이게 max(kr,all,10%)로 정규화(상한 100%).
         norm = max(kr_rk_pct, all_rk_pct, 10.0)
-        cmps += cmp_block('심각·주의 리뷰 비율',
-                          min(kr_rk_pct / norm * 100, 100), min(all_rk_pct / norm * 100, 100),
-                          f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
+        vbars += vgroup('심각·주의 리뷰 비율', kr_rk_pct / norm, all_rk_pct / norm,
+                        f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
         footnote = ('<div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰'
                     '(별점만 남긴 리뷰 포함)</div>')
 
-    # §2-a 후쿠오카 상위 N% 배지 강조
-    rank_cap = ''
+    # §2-a 한국인 비중 후쿠오카 상위 N% — 피라미드(상위 슬라이스 강조, 목업③ 스타일)
+    pyramid = ''
     if kr_rank_pct:
-        rank_cap = f'<div class="kr-rank"><b>한국인 비중 {CITY["ko"]} 상위 {kr_rank_pct}%</b></div>'
+        pyramid = (f'<div class="kr-pyramid">{kr_pyramid(kr_rank_pct)}'
+                   f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} 상위 {kr_rank_pct}%</b></div></div>')
 
     return f'''
         <div class="sect kr-card">
@@ -1346,9 +1364,8 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None):
                 <div class="kr-tit">한국인 리뷰 현황</div>
                 <div class="kr-count"><b>{kr_n:,}</b>건 · 전체의 {ratio}%{' · 참고용' if small else ''}</div>
             </div>
-            {rank_cap}
-            <div class="kr-gauge"><span style="width:{min(ratio,100)}%"></span></div>
-            <div class="kr-cmps">{cmps}</div>
+            {pyramid}
+            <div class="kr-vbars">{vbars}</div>
             {footnote}
             <div class="kr-insight">{insight}</div>
             {serious_block}
