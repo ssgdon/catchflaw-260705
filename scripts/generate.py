@@ -37,13 +37,18 @@ DEFAULT_OG = f'{BASE}/img/search_bg.jpg'   # 대표 이미지 없는 페이지�
 # 검색엔진 소유확인 메타 (전 페이지 head 공통 삽입). 구글은 Cloudflare DNS로 자동확인됨 → 태그 불요.
 VERIFY_META = '<meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />'
 
+R2_PUB = 'https://pub-33003031288947c5a134ef8d12819213.r2.dev'  # 폴백: 현행 R2 공개 버킷(리뷰 전체 JSON fetch 베이스)
 def _load_asof():
-    """data-src/meta.json(export_pg 생성)의 기준일로 data_asof 갱신 — 하드코딩 제거. 없으면 기존값."""
+    """data-src/meta.json(export_pg 생성)의 기준일로 data_asof 갱신 — 하드코딩 제거. 없으면 기존값.
+    r2 공개베이스도 함께 읽어 리뷰 전체 더보기 fetch URL 조립에 사용(REVIEW-LAZYLOAD §C)."""
+    global R2_PUB
     try:
         d = json.load(open(os.path.join(SRC, 'meta.json'), encoding='utf-8'))
         y, m, _ = str(d['asof']).split('-')
         CITY['data_asof'] = f'{int(y)}년 {int(m)}월'
         CITY['asof'] = str(d['asof'])   # 트렌드 차트 월 축 생성용 (YYYY-MM-DD)
+        if d.get('r2'):
+            R2_PUB = str(d['r2']).rstrip('/')
     except Exception:
         pass
 _load_asof()
@@ -1559,6 +1564,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         # 카테고리 × 소분류 — 아코디언(§4) + 리뷰 시트 데이터. 위험도 내림차순 정렬(§4-d).
         groups = []
         sheet_data = {}
+        sheet_total = {}     # {cat: {'t': 전체 카드수, 's': {scat: 건수}}} — 팝업 실제 총건수(임베드 40 아님). REVIEW-LAZYLOAD §C
         trendc = {}          # {ci: {'m':[..'N월'], 'w':[..pw], 'c':[..pc]}} — 차트 있는 카테고리만 (CAT-TREND)
         axis = '''<div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>'''
         cats_sorted = sorted(CATS, key=lambda c: -h['cats'][c]['score'])  # 나쁜 것부터
@@ -1578,6 +1584,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
                               'l': (q.get('lang') or '').lower()} for q in qlist]
+            # 실제 총건수(소분류 건수 = 아코디언 표기와 동일 출처). R2 전체 파일의 카드 수와 일치.
+            sub_cnt = {s: cat['subs'][s]['count'] for s in SUBS[c] if cat['subs'][s]['count'] > 0}
+            sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
             rows = []
             for s in SUBS[c]:
                 sub = cat['subs'][s]
@@ -1591,7 +1600,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 </li>''')
             qc = quote_cards(qlist)
             total_q = len(qlist)
-            more_btn = (f'''<div class="more"><button type="button" class="more-btn" data-cat="{E(c)}"><strong>{E(cat_ko(c))}</strong> 리뷰 전체보기 ({cat['count']}건)</button></div>'''
+            more_btn = (f'''<div class="more"><button type="button" class="more-btn" data-cat="{E(c)}"><strong>{E(cat_ko(c))}</strong> 리뷰 전체보기 ({sheet_total[c]['t']}건)</button></div>'''
                         if total_q > 0 else '')
             quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div></div>{more_btn}'''
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
@@ -1758,7 +1767,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <script>
         window.QDATA = {json.dumps(sheet_data, ensure_ascii=False)};
+        window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
         window.QSUBS = {json.dumps({c: SUBS[c] for c in CATS}, ensure_ascii=False)};
+        window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
         </script>'''
@@ -1848,6 +1859,24 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
             var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false;
+            var qfull = false, qloading = false;   // R2 전체 인용문 로드 상태 (REVIEW-LAZYLOAD §C)
+
+            function toast(msg){{
+                var t = document.createElement('div'); t.className = 'cf-toast'; t.textContent = msg;
+                document.body.appendChild(t);
+                requestAnimationFrame(function(){{ t.classList.add('show'); }});
+                setTimeout(function(){{ t.classList.remove('show'); setTimeout(function(){{ t.remove(); }}, 300); }}, 1800);
+            }}
+            // 첫 '더보기'/한국인필터 시 호텔 전체 인용문 JSON을 R2에서 1회 fetch → QDATA 교체(이후 탭 전환 즉시)
+            function loadFull(cb){{
+                if (qfull || !window.QFULL) {{ cb && cb(); return; }}
+                if (qloading) return;
+                qloading = true; render();
+                fetch(window.QFULL, {{cache: 'force-cache'}})
+                    .then(function(r){{ return r.ok ? r.json() : Promise.reject(r.status); }})
+                    .then(function(j){{ window.QDATA = j; qfull = true; qloading = false; cb && cb(); }})
+                    .catch(function(){{ qloading = false; render(); toast('전체 리뷰를 불러오지 못했어요'); }});
+            }}
 
             function esc(s){{ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }}
             function emph(s){{ return esc(s).replace(/\\*\\*(.+?)\\*\\*/g, '<span>$1</span>').replace(/\\*\\*/g, ''); }}
@@ -1894,17 +1923,32 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }}
 
             function render(){{
-                var list = (window.QDATA[curCat] || []);
-                if (krOnly) list = list.filter(function(q){{ return q.l === 'ko'; }});
+                var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
+                var base = (window.QDATA[curCat] || []);
+                var list = krOnly ? base.filter(function(q){{ return q.l === 'ko'; }}) : base;
                 var filtered = curSub ? list.filter(function(q){{ return q.s === curSub; }}) : list;
+                // 건수: 전체언어 & 미로드 상태면 실제 총건수(QTOTAL), 그 외(로드완료·한국인필터)는 현재 리스트 기준
+                var useReal = (!qfull && !krOnly && T);
+                function cnt(sub){{
+                    if (useReal) return sub ? (T.s[sub] || 0) : T.t;
+                    return (sub ? list.filter(function(q){{ return q.s === sub; }}) : list).length;
+                }}
                 $('#sheet-cat').text((window.CAT_KO && window.CAT_KO[curCat]) || curCat);   // 표시만 순화, curCat은 내부키 유지
-                $('#sheet-cnt').text(filtered.length + '건');
-                $('#sheet-list').html(filtered.map(card).join('') ||
-                    '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>');
+                $('#sheet-cnt').text(cnt(curSub) + '건');
+                var cards = filtered.map(card).join('');
+                // 더보기: 아직 전체 로드 전이고 임베드가 실제 총건보다 적으면 리스트 하단에 노출
+                var more = '';
+                if (!qfull && T && base.length < T.t) {{
+                    var remain = cnt(curSub) - filtered.length;
+                    more = '<li class="sheet-more"><button type="button" class="sheet-more-btn"' + (qloading ? ' disabled' : '') + '>'
+                         + (qloading ? '불러오는 중…' : '리뷰 전체 보기' + (remain > 0 ? ' (+' + remain + '건)' : '')) + '</button></li>';
+                }}
+                $('#sheet-list').html((cards ||
+                    '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>') + more);
                 var subs = window.QSUBS[curCat] || [];
-                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + list.length + '</button>'];
+                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + cnt(null) + '</button>'];
                 subs.forEach(function(s){{
-                    var n = list.filter(function(q){{ return q.s === s; }}).length;
+                    var n = cnt(s);
                     if (!n) return;
                     chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + ' ' + n + '</button>');
                 }});
@@ -1932,10 +1976,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 open($(this).data('cat'), $(this).data('sub'));
             }});
             $(document).on('click', '.more-btn', function(){{ open($(this).data('cat')); }});
+            $sheet.on('click', '.sheet-more-btn', function(){{ loadFull(render); }});
             $(document).on('click', '.sheet-chip', function(){{
                 curSub = $(this).data('sub') || null; render();
             }});
-            $sheet.on('click', '#sheet-kr', function(){{ krOnly = !krOnly; render(); }});
+            // 한국인 리뷰만: 정확한 한국어 총건 위해 미로드 상태면 전체 먼저 로드
+            $sheet.on('click', '#sheet-kr', function(){{
+                krOnly = !krOnly;
+                if (krOnly && !qfull) loadFull(render); else render();
+            }});
             var CATLIST = Object.keys(window.QSUBS);
             function shift(dir){{
                 var i = (CATLIST.indexOf(curCat) + dir + CATLIST.length) % CATLIST.length;

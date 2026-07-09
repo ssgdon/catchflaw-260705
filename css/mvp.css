@@ -197,6 +197,11 @@
 .review-sheet .sheet-list .item .item-foot{margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
 .review-sheet .sheet-list .item .item-foot .orig-link{display:flex;align-items:center;gap:4px;font-size:13px;font-weight:var(--fw-medium);color:var(--ink-3);text-decoration:underline;text-underline-offset:2px;}
 .review-sheet .sheet-list .item .item-foot .expand-btn{display:flex;align-items:center;gap:6px;font-size:13.5px;font-weight:var(--fw-medium);color:var(--ink-2);}
+/* 리뷰 전체 더보기 (R2 지연 로딩) — 리스트 하단 풀폭 버튼 */
+.review-sheet .sheet-more{margin-top:var(--sp-2);}
+.review-sheet .sheet-more-btn{width:100%;height:48px;border-radius:var(--radius-btn);border:1px solid var(--line-strong);background:#fff;font-size:15px;font-weight:var(--fw-bold);color:var(--primary-deep);}
+.review-sheet .sheet-more-btn:active{background:var(--primary-soft);}
+.review-sheet .sheet-more-btn[disabled]{color:var(--ink-3);}
 .review-sheet .sheet-list .item .item-foot .expand-btn i{font-style:normal;font-size:11px;transition:transform .3s;display:inline-block;}
 .review-sheet .sheet-list .item .item-foot .expand-btn.is-open i{transform:rotate(180deg);}
 .review-sheet .sheet-list .item .full{margin:12px 0 0;padding:14px;border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:12px;}

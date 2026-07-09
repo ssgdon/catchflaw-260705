@@ -34,18 +34,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783487355">
-    <link rel="stylesheet" href="../css/common.css?v=1783487355">
-    <link rel="stylesheet" href="../css/layout.css?v=1783487355">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783487355">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783487355">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783487355">
-    <script src="../js/backnav.js?v=1783487355"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783585558">
+    <link rel="stylesheet" href="../css/common.css?v=1783585558">
+    <link rel="stylesheet" href="../css/layout.css?v=1783585558">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783585558">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783585558">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783585558">
+    <script src="../js/backnav.js?v=1783585558"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생 경보": "위생 경보", "오감 지옥": "오감 주의보", "시설 사기단": "시설 경고등", "동선 파괴자": "동선 파괴자", "불친절 레이더": "불친절 레이더", "안전 그림자": "안전 그림자"};</script>
-    <script src="../js/engage.js?v=1783487355" defer></script>
-    <script src="../js/recommend.js?v=1783487355"></script>
+    <script src="../js/engage.js?v=1783585558" defer></script>
+    <script src="../js/recommend.js?v=1783585558"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -252,6 +252,24 @@
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
             var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false;
+            var qfull = false, qloading = false;   // R2 전체 인용문 로드 상태 (REVIEW-LAZYLOAD §C)
+
+            function toast(msg){
+                var t = document.createElement('div'); t.className = 'cf-toast'; t.textContent = msg;
+                document.body.appendChild(t);
+                requestAnimationFrame(function(){ t.classList.add('show'); });
+                setTimeout(function(){ t.classList.remove('show'); setTimeout(function(){ t.remove(); }, 300); }, 1800);
+            }
+            // 첫 '더보기'/한국인필터 시 호텔 전체 인용문 JSON을 R2에서 1회 fetch → QDATA 교체(이후 탭 전환 즉시)
+            function loadFull(cb){
+                if (qfull || !window.QFULL) { cb && cb(); return; }
+                if (qloading) return;
+                qloading = true; render();
+                fetch(window.QFULL, {cache: 'force-cache'})
+                    .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+                    .then(function(j){ window.QDATA = j; qfull = true; qloading = false; cb && cb(); })
+                    .catch(function(){ qloading = false; render(); toast('전체 리뷰를 불러오지 못했어요'); });
+            }
 
             function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
             function emph(s){ return esc(s).replace(/\*\*(.+?)\*\*/g, '<span>$1</span>').replace(/\*\*/g, ''); }
@@ -298,17 +316,32 @@
             }
 
             function render(){
-                var list = (window.QDATA[curCat] || []);
-                if (krOnly) list = list.filter(function(q){ return q.l === 'ko'; });
+                var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
+                var base = (window.QDATA[curCat] || []);
+                var list = krOnly ? base.filter(function(q){ return q.l === 'ko'; }) : base;
                 var filtered = curSub ? list.filter(function(q){ return q.s === curSub; }) : list;
+                // 건수: 전체언어 & 미로드 상태면 실제 총건수(QTOTAL), 그 외(로드완료·한국인필터)는 현재 리스트 기준
+                var useReal = (!qfull && !krOnly && T);
+                function cnt(sub){
+                    if (useReal) return sub ? (T.s[sub] || 0) : T.t;
+                    return (sub ? list.filter(function(q){ return q.s === sub; }) : list).length;
+                }
                 $('#sheet-cat').text((window.CAT_KO && window.CAT_KO[curCat]) || curCat);   // 표시만 순화, curCat은 내부키 유지
-                $('#sheet-cnt').text(filtered.length + '건');
-                $('#sheet-list').html(filtered.map(card).join('') ||
-                    '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>');
+                $('#sheet-cnt').text(cnt(curSub) + '건');
+                var cards = filtered.map(card).join('');
+                // 더보기: 아직 전체 로드 전이고 임베드가 실제 총건보다 적으면 리스트 하단에 노출
+                var more = '';
+                if (!qfull && T && base.length < T.t) {
+                    var remain = cnt(curSub) - filtered.length;
+                    more = '<li class="sheet-more"><button type="button" class="sheet-more-btn"' + (qloading ? ' disabled' : '') + '>'
+                         + (qloading ? '불러오는 중…' : '리뷰 전체 보기' + (remain > 0 ? ' (+' + remain + '건)' : '')) + '</button></li>';
+                }
+                $('#sheet-list').html((cards ||
+                    '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>') + more);
                 var subs = window.QSUBS[curCat] || [];
-                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + list.length + '</button>'];
+                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + cnt(null) + '</button>'];
                 subs.forEach(function(s){
-                    var n = list.filter(function(q){ return q.s === s; }).length;
+                    var n = cnt(s);
                     if (!n) return;
                     chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + ' ' + n + '</button>');
                 });
@@ -336,10 +369,15 @@
                 open($(this).data('cat'), $(this).data('sub'));
             });
             $(document).on('click', '.more-btn', function(){ open($(this).data('cat')); });
+            $sheet.on('click', '.sheet-more-btn', function(){ loadFull(render); });
             $(document).on('click', '.sheet-chip', function(){
                 curSub = $(this).data('sub') || null; render();
             });
-            $sheet.on('click', '#sheet-kr', function(){ krOnly = !krOnly; render(); });
+            // 한국인 리뷰만: 정확한 한국어 총건 위해 미로드 상태면 전체 먼저 로드
+            $sheet.on('click', '#sheet-kr', function(){
+                krOnly = !krOnly;
+                if (krOnly && !qfull) loadFull(render); else render();
+            });
             var CATLIST = Object.keys(window.QSUBS);
             function shift(dir){
                 var i = (CATLIST.indexOf(curCat) + dir + CATLIST.length) % CATLIST.length;
