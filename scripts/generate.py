@@ -1104,14 +1104,20 @@ def build_search(city_avg_pct):
     </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── detail ─────────────────────────
-def gauge_html(p_crit, city_crit):
-    """원본 퍼블리싱 게이지 구조 그대로 — 중앙 = 도시 평균, 좌 우수 / 우 위험"""
+def gauge_html(p_crit, city_crit, rank_pct=None, tone='safe'):
+    """원본 퍼블리싱 게이지 구조 + F22 백분위 라벨(마커 위 "후쿠오카 상위/하위 N%") — 중앙 = 도시 평균"""
     if p_crit <= city_crit:
         pos = 50.0 * p_crit / city_crit
     else:
         pos = 50.0 + 50.0 * min((p_crit - city_crit) / (2 * city_crit), 1.0)
+    rank_html = ''
+    if rank_pct:
+        txt = (f'{CITY["ko"]} 상위 {rank_pct}%' if rank_pct <= 50 else f'{CITY["ko"]} 하위 {100 - rank_pct}%')
+        clamp = ' is-clamp-l' if pos <= 18 else (' is-clamp-r' if pos >= 82 else '')
+        rank_html = f'<span class="g-rank is-{tone}{clamp}" style="left:{pos:.1f}%">{E(txt)}</span>'
     return f'''<div class="gauge">
         <div class="bar">
+            {rank_html}
             <div class="pointer" style="left:calc({pos:.1f}% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
         </div>
         <div class="label">
@@ -1397,7 +1403,7 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
         if n_serious == 0:
             serious_txt = '최근 1년 한국인 리뷰에선 심각한 문제 언급이 없었어요'
         else:
-            serious_txt = f'최근 1년 기준, 한국인 100명 중 <b>{n_serious}</b>명이 심각한 문제를 언급했어요'
+            serious_txt = f'최근 1년 기준, 한국인 리뷰의 <b>{n_serious}%</b>가 심각한 문제를 언급했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
         serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
     # §2-b 비교 — 지표당 세로 막대 2개(한국인 primary vs 전체 회색), 값은 막대 위(목업①② 스타일).
@@ -1531,7 +1537,35 @@ def _faq_date(d):
     d = str(d or '')[:10]
     return d[2:].replace('-', '.') if len(d) == 10 else d.replace('-', '.')
 
-def _faq_ev_preview(ev):
+# F23: 토픽별 ko 키워드 — **정본은 pipeline/faq_topics.py TOPICS** (pipeline/은 gitignored라 프론트 빌드용 복제.
+# faq_topics 변경 시 여기도 동기화). 인용 하이라이트 전용 — 원문 글자는 변형하지 않고 <b>로 감싸기만 한다.
+FAQ_KO_KW = {
+    'family': ['아이', '아기', '유아', '애기', '가족', '키즈'],
+    'beds': ['엑스트라베드', '침대 추가', '트윈', '더블', '소파베드', '침대'],
+    'bath': ['대욕장', '온천', '사우나', '스파', '목욕탕'],
+    'breakfast': ['조식', '아침식사', '뷔페'],
+    'kitchen': ['냉장고', '전자레인지', '주방', '세탁', '런드리', '인덕션'],
+    'luggage': ['짐 보관', '짐을 맡', '캐리어 보관', '수하물', '짐 맡', '짐'],
+    'checkout': ['레이트 체크아웃', '얼리 체크인', '일찍 체크인', '늦은 체크아웃', '체크아웃', '체크인'],
+    'parking': ['주차'],
+    'elevator': ['엘리베이터', '엘베', '계단'],
+    'access': ['역에서', '도보', '걸어서', '공항에서'],
+}
+_FAQ_NUM_RX = r'\d[\d,]*\s?(?:분|엔|층)|무료|유료'
+
+def faq_hl(text, topic):
+    """근거 인용 결정적 하이라이트(F23): 토픽 ko 키워드 + 숫자단위(N분|N엔|N층|무료|유료)만 <b> 래핑.
+    원문 무변형 — escape 후 감싸기만. 창작·의역 아님."""
+    t = E(str(text or ''))
+    kws = sorted((k for k in FAQ_KO_KW.get(topic, []) if k), key=len, reverse=True)
+    pats = [re.escape(E(k)) for k in kws] + [_FAQ_NUM_RX]
+    return re.sub('(' + '|'.join(pats) + ')', r'<b>\1</b>', t)
+
+def faq_answer_html(a):
+    """답변 렌더(F23): emph(**→primary span) 후 문장 종결('다. '/'요. ')마다 줄바꿈."""
+    return re.sub(r'(?<=[다요])\.\s+', '.<br>', emph(a or ''))
+
+def _faq_ev_preview(ev, topic=''):
     """FAQ 카드 내 리뷰 근거 미니카드 — 고객 id(마스킹) 우선, 출처는 보조, 별점 있으면 별점(§7: 별 0개 금지)."""
     st = ev.get('st')
     try: stw = int(float(st)) * 20
@@ -1542,7 +1576,7 @@ def _faq_ev_preview(ev):
             f'<span class="fe-src">{E(ev.get("o") or "Google")}</span>{star}'
             + (f'<span class="fe-date">{d}</span>' if d else ''))
     return (f'<li class="fe-item"><div class="fe-meta">{meta}</div>'
-            f'<div class="fe-q">"{E(ev.get("q") or "")}"</div></li>')
+            f'<div class="fe-q">"{faq_hl(ev.get("q") or "", topic)}"</div></li>')
 
 def faq_section(faq):
     """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8."""
@@ -1564,11 +1598,12 @@ def faq_section(faq):
             chips_html = f'<div class="faq-chips">{chips}</div>' if chips else ''
             ev_block = ''
             if evlist:
-                prev = ''.join(_faq_ev_preview(ev) for ev in evlist[:3])
+                prev = ''.join(_faq_ev_preview(ev, t) for ev in evlist[:3])
                 more = ''
                 if len(evlist) > 3:
-                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3)
-                    faqevid[t] = [{'q': ev.get('q') or '', 'd': ev.get('d') or '', 'st': ev.get('st'),
+                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3). qh=키워드 하이라이트 HTML(F23)
+                    faqevid[t] = [{'q': ev.get('q') or '', 'qh': faq_hl(ev.get('q') or '', t),
+                                   'd': ev.get('d') or '', 'st': ev.get('st'),
                                    'o': ev.get('o') or 'Google', 'n': mask_name(ev.get('rn'))} for ev in evlist]
                     more = (f'<button type="button" class="faq-more-btn" data-topic="{E(t)}" '
                             f'data-q="{E(it.get("q") or "")}">리뷰 {len(evlist)}개 모두 보기</button>')
@@ -1579,7 +1614,7 @@ def faq_section(faq):
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">{E(it.get('q') or '')}</span><span class="faq-arrow"></span></button>
                 {chips_html}
                 <div class="faq-body">
-                    <p class="faq-a">{emph(it.get('a') or '')}</p>
+                    <p class="faq-a">{faq_answer_html(it.get('a'))}</p>
                     {ev_block}
                 </div>
             </div>''')
@@ -1672,8 +1707,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     _chips.append(f'<button type="button" class="fj-btn fj-q" data-target="faq-{_key}">{_lbl}</button>')
                     _slots -= 1
             _chips.append(f'<button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 {len(faq)}개 전체보기</button>')
-        # F14: 우측 화이트 페이드(스크롤 어포던스) 래퍼
-        faq_jump_html = f'<div class="faq-jump-wrap"><div class="faq-jump">{"".join(_chips)}</div></div>'
+        # F14: 우측 화이트 페이드(스크롤 어포던스) 래퍼 · F19: 칩 위 마이크로 타이틀(칩 없으면 미출력)
+        faq_jump_html = (f'<div class="fj-title">리뷰에서 찾아봤어요</div>'
+                         f'<div class="faq-jump-wrap"><div class="faq-jump">{"".join(_chips)}</div></div>')
 
     # 이 호텔이 속한 컬렉션 칩 (지역 1 + 테마 매칭, 최대 3 — HUB §3-d)
     col_chip_block = ''
@@ -1706,7 +1742,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         radar_vals = [round(h['cats'][c]['score']) for c in CATS]
         radar_max = max(65, min(100, (max(radar_vals) // 10 + 2) * 10))  # 동적 상한(폴리곤이 안 눌리게, 50은 항상 노출)
 
-        # ── F8+F15: 4-CASE verdict 헤드라인 + 근거 2줄(핵심 숫자 <b>) — 숫자는 전부 실측, 만들어낸 % 금지 ──
+        # ── F8+F15+F25: 4-CASE verdict 헤드라인 + 근거 2줄(핵심 숫자 <b>) — 숫자는 전부 실측, 비유("100명 중") 금지 ──
+        # F25: 최근 1년 심각 실측 카운트 — sev_by_cat(카테고리별 심각 finding 수) · crit_reviews_1y(고유 리뷰 union)
+        sev_by_cat = {}
+        crit_reviews_1y = 0
+        if cut_1y:
+            _seen = set()
+            for _c in CATS:
+                _k = 0
+                for q in quotes.get((pid, _c), []):
+                    if q.get('grade') == '심각' and str(q.get('pub') or '')[:10] >= cut_1y:
+                        _k += 1
+                        _seen.add((q.get('reviewer_name'), str(q.get('pub'))[:10], q.get('review_origin')))
+                if _k:
+                    sev_by_cat[_c] = _k
+            crit_reviews_1y = len(_seen)
         _worst = max(CATS, key=lambda c: h['cats'][c]['score'])
         _worst_sc = h['cats'][_worst]['score']
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
@@ -1717,7 +1767,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             elif _all_safe:
                 v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석한 결과,<br>6개 항목 모두 평균보다 안전했어요'
             else:
-                v_why = f'심각 문제 언급이 100명 중 <b>{v}명</b>,<br>평균(<b>{avg}명</b>)보다 낮아요'
+                v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 낮아요'
         elif ratio < 1.15:                            # B
             v_head, v_tone = '무난하게 통과', 'safe'
             if h['cats'][_worst]['band'] in ('warning', 'danger'):
@@ -1730,15 +1780,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _warns = sorted((c for c in CATS if h['cats'][c]['band'] in ('warning', 'danger')),
                             key=lambda c: -h['cats'][c]['score'])[:2] or [_worst]
             _names = '·'.join(cat_ko(c) for c in _warns)
-            if cut_1y:
-                _k = sum(1 for c in _warns for q in quotes.get((pid, c), [])
-                         if q.get('grade') == '심각' and str(q.get('pub') or '')[:10] >= cut_1y)
-                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>최근 1년 심각 <b>{_k}건</b>'
+            _k = sum(sev_by_cat.get(c, 0) for c in _warns)
+            if _k:
+                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>최근 1년 심각 <b>{_k}건</b>이 확인됐어요'
             else:
                 v_why = f'<b>{E(_names)}</b> 불만이 집중돼요'
-        else:                                         # D
+        else:                                         # D — F25: 실측 카운트(고유 리뷰 수 + 최다 카테고리)
             v_head, v_tone = '실망 위험이 높은 호텔이에요', 'danger'
-            v_why = f'최근 투숙객 100명 중 <b>{v}명</b>이 심각한 문제를 겪었어요,<br>특히 <b>{E(cat_ko(_worst))}</b>'
+            _top_sev = max(sev_by_cat, key=sev_by_cat.get) if sev_by_cat else None
+            if crit_reviews_1y and _top_sev:
+                v_why = (f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요,<br>'
+                         f'특히 <b>{E(cat_ko(_top_sev))}</b> 불만이 <b>{sev_by_cat[_top_sev]}건</b>으로 가장 많았어요')
+            elif crit_reviews_1y:
+                v_why = f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
+            else:   # 가드(빈값): 실측 비율만
+                v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
         verdict_html = (f'<div class="verdict is-{v_tone}">{E(v_head)}</div>'
                         f'<div class="verdict-why">{v_why}</div>')
 
@@ -1837,11 +1893,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         delta_txt = '지난 달과 비슷한 수준이에요'
                     else:
                         delta_txt = f'지난 달 대비 {dt:+.1f}p {"증가했어요" if dt > 0 else "줄었어요"}'
-                    cat_trend = (f'<div class="cat-trend" data-ci="{ci}">'
-                        f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
-                        f'<span class="ct-now">{E(now_txt)}</span></div>'
+                    # F24: 기본 접힘 — 토글 줄에 현재값 요약 유지(정보 손실 방지), 차트는 펼칠 때 지연 렌더
+                    cat_trend = (f'<div class="trend-fold ct-fold" data-ci="{ci}">'
+                        f'<button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span>'
+                        f'<span class="tf-now">{E(now_txt)}</span><span class="tf-arrow"></span></button>'
+                        f'<div class="trend-fold-body">'
+                        f'<div class="cat-trend" data-ci="{ci}">'
                         f'<div class="ct-canvas"><canvas id="cat-trend-{ci}"></canvas></div>'
-                        f'<div class="ct-delta">{E(delta_txt)}</div></div>')
+                        f'<div class="ct-delta">{E(delta_txt)}</div></div>'
+                        f'</div></div>')
 
             groups.append(f'''<div class="risk-acc-item{is_open}" id="risk-{ci}" data-order="{order}">
                 <button type="button" class="risk-acc-head">
@@ -1887,16 +1947,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         body_scored = f'''
         <div class="sect disappear">
             <div class="head">
-                <div class="tit">이 호텔에서 실망할 확률</div>
+                <div class="tit">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="num">{v}%</div>
             </div>
-            {gauge_html(h['p_crit'], city['crit'])}
+            {gauge_html(h['p_crit'], city['crit'], crit_rank_pct, v_tone)}
             {verdict_html}
             {overall_trend}
             <div class="basis-fold">
-                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
-                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}
-                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+                <div class="basis">
+                    <p>최근 리뷰일수록 높은 가중치로 반영됩니다</p>
+                    <p>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</p>
+                    <p class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></p>
+                </div>
             </div>
         </div>
         {dealbreaker_strip}
@@ -2184,7 +2246,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 return '<li><div class="item">'
                     + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
-                    + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
+                    + '<div class="item-bottom"><div class="text">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
                     + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }}
@@ -2269,26 +2331,32 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
-            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            // F16+F21: 산출 기준(basis) — 기본 숨김, 타이틀 옆 ? 버튼이 하단 basis-fold 토글
             $('#detail').on('click', '.basis-toggle', function(){{
-                $(this).closest('.basis-fold').toggleClass('is-open');
+                $('.disappear .basis-fold').toggleClass('is-open');
             }});
 
-            // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
+            // F7+F24: 월별 트렌드 폴드(전체·카테고리 공용) — 기본 접힘, 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
+            var trendInited = {{}};
             $('#detail').on('click', '.trend-fold-btn', function(){{
                 var $fold = $(this).closest('.trend-fold');
                 $fold.toggleClass('is-open');
-                if ($fold.hasClass('is-open') && !allTrendInited && window.TRENDC && TRENDC['all'] && window.Chart && document.getElementById('cat-trend-all')) {{
-                    allTrendInited = true; makeTrendChart('cat-trend-all', TRENDC['all']);
+                if (!$fold.hasClass('is-open') || !window.TRENDC || !window.Chart) return;
+                if ($fold.find('#cat-trend-all').length) {{
+                    if (!allTrendInited && TRENDC['all']) {{ allTrendInited = true; makeTrendChart('cat-trend-all', TRENDC['all']); }}
+                    return;
+                }}
+                var ci = $fold.data('ci');
+                if (ci !== undefined && !trendInited[ci] && TRENDC[ci]) {{
+                    trendInited[ci] = 1; makeTrendChart('cat-trend-'+ci, TRENDC[ci]);
                 }}
             }});
 
-            // ── 카테고리별 월별 위험 흐름 라인차트: 지연 초기화(숨김 canvas 0폭 함정 회피) ──
-            var trendInited = {{}};
+            // 아코디언 재오픈 시: 이미 펼쳐둔 폴드가 있는데 차트 미생성이면 보완 초기화 (F24 가드)
             function initCatTrend($item){{
-                var $ct = $item.find('.cat-trend'); if (!$ct.length) return;
-                var ci = $ct.data('ci'); if (trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
+                var $fold = $item.find('.trend-fold.is-open'); if (!$fold.length) return;
+                var ci = $fold.data('ci'); if (ci === undefined || trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
                 trendInited[ci] = 1;
                 makeTrendChart('cat-trend-'+ci, TRENDC[ci]);
             }}

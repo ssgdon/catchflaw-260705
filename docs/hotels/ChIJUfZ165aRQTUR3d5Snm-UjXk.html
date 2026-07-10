@@ -34,18 +34,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
-    <link rel="stylesheet" href="../css/common.css?v=1783668430">
-    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
-    <script src="../js/backnav.js?v=1783668430"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783670204">
+    <link rel="stylesheet" href="../css/common.css?v=1783670204">
+    <link rel="stylesheet" href="../css/layout.css?v=1783670204">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783670204">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783670204">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783670204">
+    <script src="../js/backnav.js?v=1783670204"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783668430" defer></script>
-    <script src="../js/recommend.js?v=1783668430"></script>
+    <script src="../js/engage.js?v=1783670204" defer></script>
+    <script src="../js/recommend.js?v=1783670204"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -363,7 +363,7 @@
                 return '<li><div class="item">'
                     + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
-                    + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
+                    + '<div class="item-bottom"><div class="text">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
                     + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
@@ -448,26 +448,32 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
-            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            // F16+F21: 산출 기준(basis) — 기본 숨김, 타이틀 옆 ? 버튼이 하단 basis-fold 토글
             $('#detail').on('click', '.basis-toggle', function(){
-                $(this).closest('.basis-fold').toggleClass('is-open');
+                $('.disappear .basis-fold').toggleClass('is-open');
             });
 
-            // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
+            // F7+F24: 월별 트렌드 폴드(전체·카테고리 공용) — 기본 접힘, 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
+            var trendInited = {};
             $('#detail').on('click', '.trend-fold-btn', function(){
                 var $fold = $(this).closest('.trend-fold');
                 $fold.toggleClass('is-open');
-                if ($fold.hasClass('is-open') && !allTrendInited && window.TRENDC && TRENDC['all'] && window.Chart && document.getElementById('cat-trend-all')) {
-                    allTrendInited = true; makeTrendChart('cat-trend-all', TRENDC['all']);
+                if (!$fold.hasClass('is-open') || !window.TRENDC || !window.Chart) return;
+                if ($fold.find('#cat-trend-all').length) {
+                    if (!allTrendInited && TRENDC['all']) { allTrendInited = true; makeTrendChart('cat-trend-all', TRENDC['all']); }
+                    return;
+                }
+                var ci = $fold.data('ci');
+                if (ci !== undefined && !trendInited[ci] && TRENDC[ci]) {
+                    trendInited[ci] = 1; makeTrendChart('cat-trend-'+ci, TRENDC[ci]);
                 }
             });
 
-            // ── 카테고리별 월별 위험 흐름 라인차트: 지연 초기화(숨김 canvas 0폭 함정 회피) ──
-            var trendInited = {};
+            // 아코디언 재오픈 시: 이미 펼쳐둔 폴드가 있는데 차트 미생성이면 보완 초기화 (F24 가드)
             function initCatTrend($item){
-                var $ct = $item.find('.cat-trend'); if (!$ct.length) return;
-                var ci = $ct.data('ci'); if (trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
+                var $fold = $item.find('.trend-fold.is-open'); if (!$fold.length) return;
+                var ci = $fold.data('ci'); if (ci === undefined || trendInited[ci] || !window.TRENDC || !window.Chart || !TRENDC[ci]) return;
                 trendInited[ci] = 1;
                 makeTrendChart('cat-trend-'+ci, TRENDC[ci]);
             }
