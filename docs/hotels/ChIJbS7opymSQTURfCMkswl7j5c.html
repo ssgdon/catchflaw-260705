@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783686894">
-    <link rel="stylesheet" href="../css/common.css?v=1783686894">
-    <link rel="stylesheet" href="../css/layout.css?v=1783686894">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783686894">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783686894">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783686894">
-    <script src="../js/backnav.js?v=1783686894"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783689233">
+    <link rel="stylesheet" href="../css/common.css?v=1783689233">
+    <link rel="stylesheet" href="../css/layout.css?v=1783689233">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783689233">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783689233">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783689233">
+    <script src="../js/backnav.js?v=1783689233"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783686894" defer></script>
-    <script src="../js/recommend.js?v=1783686894"></script>
+    <script src="../js/engage.js?v=1783689233" defer></script>
+    <script src="../js/recommend.js?v=1783689233"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -54,7 +54,7 @@
     <main id="container">
         <section id="detail">
             <div class="det-header">
-                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
+                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back_b.svg" alt="뒤로가기"></a>
                 <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
                 <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
             </div>
@@ -65,12 +65,20 @@
                     <nav class="dd-nav">
                         <a href="../">홈</a>
                         <a href="../search">호텔 검색</a>
-                        <a href="../wishlist">찜한 호텔</a>
                         <a href="../recent">최근 본 호텔</a>
                         <a href="../about">산출 방법</a>
                     </nav>
                 </div>
             </div>
+            <script>
+            $(function(){
+                var $drawer = $('.det-drawer');
+                function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
+                $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
+                $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
+                $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+            });
+            </script>
             <div class="content">
                 <div class="visual"><div class="swiper hotel-gallery"><div class="swiper-wrapper"><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/0.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" fetchpriority="high"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/1.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/2.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/3.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/4.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/5.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/6.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/7.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/8.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/9.webp" alt="Nissei Hotel Fukuoka" width="800" height="600" decoding="async"></div></div><div class="swiper-pagination"></div><div class="gallery-count">1 / 10</div></div></div>
                 <div class="sect information">
@@ -104,18 +112,18 @@
                 
         <div class="sect disappear">
             <div class="head">
-                <div class="tit">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
-                <div class="num">8%</div>
+                <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
+                <div class="pct">8%</div>
+                <div class="vh is-safe">무난하게 통과</div>
             </div>
-            <div class="verdict is-safe">무난하게 통과</div>
             <div class="gauge">
         <div class="bar">
-            <span class="g-rank is-safe" style="left:44.4%">후쿠오카 상위 41%</span>
-            <div class="pointer" style="left:calc(44.4% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
+            <span class="g-rank is-safe" style="left:41.0%">후쿠오카 상위 41%</span>
+            <div class="pointer" style="left:calc(41.0% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
         </div>
         <div class="label">
             <span>우수</span>
-            <span class="analysis">평균 9%</span>
+            <span class="analysis" style="left:49.4%">평균 9%</span>
             <span>위험</span>
         </div>
     </div>
@@ -186,21 +194,25 @@
                     <div class="trend-fold ct-fold" data-ci="3"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-now">6월 45.0% · 평균 14.4%</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend" data-ci="3"><div class="ct-canvas"><canvas id="cat-trend-3"></canvas></div><div class="ct-delta">지난 달 대비 +15.0p 증가했어요</div></div></div></div>
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-danger">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>노후/고장</div><div class="keywords">낡은 시설 · 설비 고장</div><div class="sub-1y">최근 1년 33건 · 리뷰의 24.3%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>노후/고장</div><div class="keywords">낡은 시설 · 설비 고장</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:100%"><i class="bubble">100</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="노후/고장">33건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 24.3%</div>
                 </li><li class="stat-row is-danger">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>공간 협소</div><div class="keywords">비좁음 · 사진보다 작음</div><div class="sub-1y">최근 1년 31건 · 리뷰의 22.8%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>공간 협소</div><div class="keywords">비좁음 · 사진보다 작음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:81%"><i class="bubble">81</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="공간 협소">31건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 22.8%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>냉난방/수압</div><div class="keywords">냉난방 불량 · 수압 약함</div><div class="sub-1y">최근 1년 2건 · 리뷰의 1.5%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>냉난방/수압</div><div class="keywords">냉난방 불량 · 수압 약함</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:19%"><i class="bubble">19</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="냉난방/수압">2건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 1.5%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>네트워크/TV</div><div class="keywords">와이파이 · TV 불량</div><div class="sub-1y">최근 1년 없음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>네트워크/TV</div><div class="keywords">와이파이 · TV 불량</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:9%"><i class="bubble">9</i></div></div>
                     <span class="stat-count zero">0건</span>
+                    <div class="sub-1y">최근 1년 없음</div>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
             <div class="item-top">
@@ -280,16 +292,18 @@
                     <div class="trend-fold ct-fold" data-ci="5"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-now">6월 10.0% · 평균 6.0%</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend" data-ci="5"><div class="ct-canvas"><canvas id="cat-trend-5"></canvas></div><div class="ct-delta">지난 달 대비 +10.0p 증가했어요</div></div></div></div>
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-danger">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>접근성</div><div class="keywords">역에서 멀다 · 언덕 · 계단</div><div class="sub-1y">최근 1년 16건 · 리뷰의 11.8%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>접근성</div><div class="keywords">역에서 멀다 · 언덕 · 계단</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:72%"><i class="bubble">72</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="접근성">16건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 11.8%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>주변 편의</div><div class="keywords">편의점 · 식당 없음</div><div class="sub-1y">최근 1년 1건 · 리뷰의 0.7%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>주변 편의</div><div class="keywords">편의점 · 식당 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:44%"><i class="bubble">44</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="주변 편의">1건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 0.7%</div>
                 </li><li class="stat-row is-rare">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>치안·안심</div><div class="keywords">밤길 · 보안 미비 · 프라이버시</div></div>
-                    <div class="rare-chip is-clear">최근 1년 신고 없음</div>
+                    <div class="rare-chip is-clear">최근 1년 심각 리뷰 없음</div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="치안·안심">2건</button>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
@@ -370,13 +384,15 @@
                     <div class="trend-fold ct-fold" data-ci="1"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-now">6월 5.0% · 평균 3.6%</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend" data-ci="1"><div class="ct-canvas"><canvas id="cat-trend-1"></canvas></div><div class="ct-delta">지난 달 대비 -5.0p 줄었어요</div></div></div></div>
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>담배 냄새</div><div class="keywords">금연실 담배 냄새 · 배인 냄새</div><div class="sub-1y">최근 1년 3건 · 리뷰의 2.2%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>담배 냄새</div><div class="keywords">금연실 담배 냄새 · 배인 냄새</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:65%"><i class="bubble">65</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="냄새" data-sub="담배 냄새">3건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 2.2%</div>
                 </li><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>화장실·곰팡 악취</div><div class="keywords">하수구 · 꿉꿉함 · 곰팡내</div><div class="sub-1y">최근 1년 6건 · 리뷰의 4.4%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>화장실·곰팡 악취</div><div class="keywords">하수구 · 꿉꿉함 · 곰팡내</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:58%"><i class="bubble">58</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="냄새" data-sub="화장실·곰팡 악취">6건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 4.4%</div>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
             <div class="item-top">
@@ -456,13 +472,15 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>내부 소음</div><div class="keywords">옆방 소리 · 복도 · 기기음</div><div class="sub-1y">최근 1년 7건 · 리뷰의 5.1%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>내부 소음</div><div class="keywords">옆방 소리 · 복도 · 기기음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:60%"><i class="bubble">60</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="소음" data-sub="내부 소음">7건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 5.1%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>외부 소음</div><div class="keywords">도로 · 전철 · 유흥가 소음</div><div class="sub-1y">최근 1년 없음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>외부 소음</div><div class="keywords">도로 · 전철 · 유흥가 소음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:9%"><i class="bubble">9</i></div></div>
                     <span class="stat-count zero">0건</span>
+                    <div class="sub-1y">최근 1년 없음</div>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
             <div class="item-top">
@@ -542,13 +560,15 @@
                     <div class="trend-fold ct-fold" data-ci="0"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-now">6월 0.0% · 평균 6.6%</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend" data-ci="0"><div class="ct-canvas"><canvas id="cat-trend-0"></canvas></div><div class="ct-delta">지난 달과 비슷한 수준이에요</div></div></div></div>
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>청소 상태</div><div class="keywords">청소 불량 · 쓰레기 방치</div><div class="sub-1y">최근 1년 3건 · 리뷰의 2.2%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>청소 상태</div><div class="keywords">청소 불량 · 쓰레기 방치</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:42%"><i class="bubble">42</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위생" data-sub="청소 상태">3건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 2.2%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>침구/바닥 청결</div><div class="keywords">얼룩 · 머리카락 · 먼지</div><div class="sub-1y">최근 1년 2건 · 리뷰의 1.5%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>침구/바닥 청결</div><div class="keywords">얼룩 · 머리카락 · 먼지</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:21%"><i class="bubble">21</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위생" data-sub="침구/바닥 청결">2건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 1.5%</div>
                 </li><li class="stat-row is-rare">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>해충/곰팡이</div><div class="keywords">벌레 · 빈대 · 곰팡이 발견</div></div>
                     <div class="rare-chip is-alert">최근 1년 심각 1건</div>
@@ -632,17 +652,20 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>사후 대처</div><div class="keywords">보상 거부 · 무대응</div><div class="sub-1y">최근 1년 3건 · 리뷰의 2.2%</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>사후 대처</div><div class="keywords">보상 거부 · 무대응</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:51%"><i class="bubble">51</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="불친절" data-sub="사후 대처">3건</button>
+                    <div class="sub-1y">최근 1년 리뷰의 2.2%</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>체크인/처리 지연</div><div class="keywords">체크인 지연 · 긴 대기</div><div class="sub-1y">최근 1년 없음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>체크인/처리 지연</div><div class="keywords">체크인 지연 · 긴 대기</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:9%"><i class="bubble">9</i></div></div>
                     <span class="stat-count zero">0건</span>
+                    <div class="sub-1y">최근 1년 없음</div>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>응대 태도</div><div class="keywords">불친절 · 무시 · 언어소통</div><div class="sub-1y">최근 1년 없음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>응대 태도</div><div class="keywords">불친절 · 무시 · 언어소통</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:9%"><i class="bubble">9</i></div></div>
                     <span class="stat-count zero">0건</span>
+                    <div class="sub-1y">최근 1년 없음</div>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
             <div class="item-top">
@@ -684,7 +707,7 @@
                 <span class="lg is-danger">위험 70+</span><span class="lg is-warning">주의 45~70</span><span class="lg is-safe">양호 ~45</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 신고 건수로 보여드려요</span>
+                <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         <div class="sect faq" id="hotel-faq">
@@ -696,35 +719,35 @@
                 <div class="faq-chips"><span class="faq-chip">화장실 매우 작음</span><span class="faq-chip">방 좁음</span><span class="faq-chip">흡연방 냄새</span><span class="faq-chip">곰팡이</span></div>
                 <div class="faq-body">
                     <p class="faq-a">아이와 함께 가기에는 <span>화장실이 매우 작고</span> 방도 좁아 <span>불편할 수 있다</span>는 후기가 있습니다.<br>또한, <span>흡연방의 냄새와 곰팡이</span>가 언급되어 다른 곳을 추천하는 의견도 있습니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.12.14</span><span class="rel-badge" data-d="2025-12-14"></span></div><div class="fe-q">"화장실은 정말 작아서 <b>아이</b>랑 둘이 들어가면 꽉찹니다."</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.10.28</span><span class="rel-badge" data-d="2025-10-28"></span></div><div class="fe-q">"3인<b>가족</b>이 숙박가능한 곳을 찾다가 예약했는데 흡연방이나 일단 냄새가 너무 심했는데 방 내부에 곰팡이도 보이고 화장실이 너무 너무 작아서 불편했습니다 방도 작아서 캐리어 두개 펼치니 걸어다닐수 없었어요"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.10.28</span><span class="rel-badge" data-d="2025-10-28"></span></div><div class="fe-q">"혹시라도 <b>아이</b>랑 숙박은 다른곳으로 가는걸 추첨합니다"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li></ul>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.12.14</span><span class="rel-badge" data-d="2025-12-14"></span></div><div class="fe-q">"화장실은 정말 작아서 <b>아이</b>랑 둘이 들어가면 꽉찹니다."</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.10.28</span><span class="rel-badge" data-d="2025-10-28"></span></div><div class="fe-q">"3인<b>가족</b>이 숙박가능한 곳을 찾다가 예약했는데 흡연방이나 일단 냄새가 너무 심했는데 방 내부에 곰팡이도 보이고 화장실이 너무 너무 작아서 불편했습니다 방도 작아서 캐리어 두개 펼치니 걸어다닐수 없었어요"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.10.28</span><span class="rel-badge" data-d="2025-10-28"></span></div><div class="fe-q">"혹시라도 <b>아이</b>랑 숙박은 다른곳으로 가는걸 추첨합니다"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li></ul>
                 </div>
             </div><div class="faq-card" id="faq-kitchen" data-group="시설·어메니티">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">냉장고·주방·세탁은요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">냉장고 있음</span><span class="faq-chip">웰컴워터 없음</span><span class="faq-chip">유료 코인 세탁</span><span class="faq-chip">세제 프런트 판매</span></div>
                 <div class="faq-body">
                     <p class="faq-a">냉장고는 객실에 있으나 웰컴 워터나 얼음 트레이는 없으며, 프런트에서 얼음 트레이를 맡아주거나 정수기를 이용하실 수 있습니다.<br>주방 시설에 대한 언급은 없으며, 세탁은 <span>유료 코인 세탁기 1대</span>가 있고 세제는 프런트에서 판매합니다.<br>도보 5분 거리에 코인 세탁소가 <span>별도로 있습니다.</span></p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.12.14</span><span class="rel-badge" data-d="2025-12-14"></span></div><div class="fe-q">"<b>냉장고</b>에 웰컴워터는 없습니다. 프론트 앞에 정수기가 있습니다."</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.07.29</span><span class="rel-badge" data-d="2025-07-29"></span></div><div class="fe-q">"객실은 괜찮지만 <b>냉장고</b>에 얼음 트레이가 없습니다 (리셉션에 얼음 트레이를 맡겨두시면 됩니다)."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.02.11</span><span class="rel-badge" data-d="2026-02-11"></span></div><div class="fe-q">"편의시설: <b>무료</b> Wi-Fi | <b>유료</b> <b>세탁</b> 서비스 | 자전거 대여 | 음료수 자판기"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.12.14</span><span class="rel-badge" data-d="2025-12-14"></span></div><div class="fe-q">"<b>냉장고</b>에 웰컴워터는 없습니다. 프론트 앞에 정수기가 있습니다."</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.07.29</span><span class="rel-badge" data-d="2025-07-29"></span></div><div class="fe-q">"객실은 괜찮지만 <b>냉장고</b>에 얼음 트레이가 없습니다 (리셉션에 얼음 트레이를 맡겨두시면 됩니다)."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.02.11</span><span class="rel-badge" data-d="2026-02-11"></span></div><div class="fe-q">"편의시설: <b>무료</b> Wi-Fi | <b>유료</b> <b>세탁</b> 서비스 | 자전거 대여 | 음료수 자판기"</div><a class="fe-link" href="https://kr.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-elevator" data-group="서비스·정책">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">엘리베이터가 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">엘리베이터 있음</span><span class="faq-chip">계단 이용 필요</span><span class="faq-chip">엘리베이터 작음</span></div>
                 <div class="faq-body">
                     <p class="faq-a">네, 호텔에 엘리베이터가 <span>있습니다</span>. 하지만 엘리베이터를 이용한 후에도 방까지 <span>계단을 올라가야 하는</span> 구조이며, 엘리베이터가 <span>작습니다</span>.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.04.27</span><span class="rel-badge" data-d="2026-04-27"></span></div><div class="fe-q">"게다가 <b>엘리베이터</b>를 타고 나서도 방까지 <b>계단</b>을 올라가야 하는 이상한 구조가 있습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.31</span><span class="rel-badge" data-d="2026-01-31"></span></div><div class="fe-q">"다만, 객실이 다른 건물에 있어 <b>엘리베이터</b>를 이용한 후에도 <b>계단</b>을 올라가야 하는 점은 아쉬웠습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.02</span><span class="rel-badge" data-d="2026-01-02"></span></div><div class="fe-q">"트립닷컴과 호텔 측에서 우리 방과 연결된 <b>엘리베이터</b>가 없다는 사실을 알려주지 않은 것은 정말 최악이었습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="elevator" data-q="엘리베이터가 있나요?">리뷰 5개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.04.27</span><span class="rel-badge" data-d="2026-04-27"></span></div><div class="fe-q">"게다가 <b>엘리베이터</b>를 타고 나서도 방까지 <b>계단</b>을 올라가야 하는 이상한 구조가 있습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.31</span><span class="rel-badge" data-d="2026-01-31"></span></div><div class="fe-q">"다만, 객실이 다른 건물에 있어 <b>엘리베이터</b>를 이용한 후에도 <b>계단</b>을 올라가야 하는 점은 아쉬웠습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.02</span><span class="rel-badge" data-d="2026-01-02"></span></div><div class="fe-q">"트립닷컴과 호텔 측에서 우리 방과 연결된 <b>엘리베이터</b>가 없다는 사실을 알려주지 않은 것은 정말 최악이었습니다."</div><a class="fe-link" href="https://www.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="elevator" data-q="엘리베이터가 있나요?">리뷰 5개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-parking" data-group="서비스·정책">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">주차할 수 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">주차 가능</span><span class="faq-chip">호텔 옆 주차장</span></div>
                 <div class="faq-body">
                     <p class="faq-a">네, 호텔 바로 옆에 주차장이 있어서 <span>주차할 수 있습니다.</span></p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.05.08</span><span class="rel-badge" data-d="2026-05-08"></span></div><div class="fe-q">"바로 옆에 <b>주차</b>장이 있어서 <b>주차</b>도 편리합니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.19</span><span class="rel-badge" data-d="2026-06-19"></span></div><div class="fe-q">"근처에 <b>주차</b> 공간도 많습니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li></ul>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.05.08</span><span class="rel-badge" data-d="2026-05-08"></span></div><div class="fe-q">"바로 옆에 <b>주차</b>장이 있어서 <b>주차</b>도 편리합니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.19</span><span class="rel-badge" data-d="2026-06-19"></span></div><div class="fe-q">"근처에 <b>주차</b> 공간도 많습니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li></ul>
                 </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">아카사카역 3~5분</span><span class="faq-chip">텐진 6분</span></div>
                 <div class="faq-body">
                     <p class="faq-a">호텔은 아카사카역에서 <span>도보 3~5분</span> 거리에 위치하며, 텐진 쇼핑가에서는 <span>도보 6분</span> 정도 소요됩니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.21</span><span class="rel-badge" data-d="2026-06-21"></span></div><div class="fe-q">"아카사카<b>역에서</b> <b>도보</b>로 <b>5분</b> 정도 걸리고, 텐진호에서도 멀지 않습니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.06</span><span class="rel-badge" data-d="2026-06-06"></span></div><div class="fe-q">"지하철<b>역에서</b> <b>걸어서</b> 3~<b>5분</b> 거리입니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.05.29</span><span class="rel-badge" data-d="2026-05-29"></span></div><div class="fe-q">"지하철<b>역에서</b> 호텔까지는 <b>도보</b>로 약 <b>5분</b> 정도 걸립니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">Trip.com에서 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 6개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.21</span><span class="rel-badge" data-d="2026-06-21"></span></div><div class="fe-q">"아카사카<b>역에서</b> <b>도보</b>로 <b>5분</b> 정도 걸리고, 텐진호에서도 멀지 않습니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.06</span><span class="rel-badge" data-d="2026-06-06"></span></div><div class="fe-q">"지하철<b>역에서</b> <b>걸어서</b> 3~<b>5분</b> 거리입니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.05.29</span><span class="rel-badge" data-d="2026-05-29"></span></div><div class="fe-q">"지하철<b>역에서</b> 호텔까지는 <b>도보</b>로 약 <b>5분</b> 정도 걸립니다."</div><a class="fe-link" href="https://hk.trip.com/hotels/detail?hotelid=705409&amp;Allianceid=810504&amp;Sid=1394411&amp;utm_medium=cpc&amp;utm_campaign=HPA&amp;utm_source=google#review" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 6개 모두 보기</button>
                 </div>
             </div></div>
         </div><script>window.FAQEVID={"kitchen": [{"q": "냉장고에 웰컴워터는 없습니다. 프론트 앞에 정수기가 있습니다.", "qh": "<b>냉장고</b>에 웰컴워터는 없습니다. 프론트 앞에 정수기가 있습니다.", "d": "2025-12-14", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "객실은 괜찮지만 냉장고에 얼음 트레이가 없습니다 (리셉션에 얼음 트레이를 맡겨두시면 됩니다).", "qh": "객실은 괜찮지만 <b>냉장고</b>에 얼음 트레이가 없습니다 (리셉션에 얼음 트레이를 맡겨두시면 됩니다).", "d": "2025-07-29", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "객실은 괜찮지만 냉장고에 얼음 트레이가 없습니다 (리셉션에 얼음 트레이를 맡겨두시면 됩니다). 객실 출입 시에는 키를 사용하시고, 꼭 잠그세요! (첫날에는 외출 시 잠금장치가 없습니다.) 외출 시에는 리셉션에 키를 맡겨두시고, 돌아오실 때 다시 리셉션에서 찾아가시면 됩니다."}, {"q": "편의시설: 무료 Wi-Fi | 유료 세탁 서비스 | 자전거 대여 | 음료수 자판기", "qh": "편의시설: <b>무료</b> Wi-Fi | <b>유료</b> <b>세탁</b> 서비스 | 자전거 대여 | 음료수 자판기", "d": "2026-02-11", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "세탁 1대만. 세탁 건조별. 세제는 프런트 판매. 젤 볼. 도보 5분 정도의 장소에 동전 세탁이 있다는 것.", "qh": "<b>세탁</b> 1대만. <b>세탁</b> 건조별. 세제는 프런트 판매. 젤 볼. 도보 <b>5분</b> 정도의 장소에 동전 <b>세탁</b>이 있다는 것.", "d": "2025-08-15", "st": 3, "o": "Google", "n": "h**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25wMGRtRXpTRlZIWkRsTVJVVnhVMFZzTWxaTFRGRRAB!2m1!1s0x0:0x978f7b09b324237c!3m1!1s2@1:CAIQACodChtycF9oOnp0dmEzSFVHZDlMRUVxU0VsMlZLTFE%7C%7C?hl=ko", "l": "ja", "tf": "☆호텔 비망록☆요돗 좋은 or나쁜 이외는 기본, 세세한 설비 정보의 기록\n\n【2025.8상순~싱글】\n・지하철역에서 가깝다. 대로에 접해 있어 알기 쉽다. 한가로이 걸으면 텐진까지 갈 수 있다.\n・편의점은 로손, 세븐이 가까운\n・음식점 많다. 과연. 시장도 가깝다. 벨로체도 가깝다. 아침 식사도 점심도 곤란하지 않다.\n・방이 넓다. 어쨌든 넓다. 대신 욕실이 엄청 좁다. 거실 면적 줄여도 조금 욕실 확장되면 좋을 것 같다.\n・천장의 라이트는 ON 또는 OFF만. 취침시 빛을 원하면 룸 라이트로 조정. 벽에 닿는 느낌으로 점등시키면 좋은 상태.\n・세탁 1대만. 세탁 건조별. 세제는 프런트 판매. 젤 볼. 도보 5분 정도의 장소에 동전 세탁이 있다는 것.\n・버튼식 로브. 바지 없음.\n・어메니티 바에 바디 스폰지 있음.\n・방은 수동 락."}, {"q": "그러나, 동전 세탁을 이용할 때의, 프런트의 대응은 정중했습니다.", "qh": "그러나, 동전 <b>세탁</b>을 이용할 때의, 프런트의 대응은 정중했습니다.", "d": "2026-06-03", "st": 2, "o": "Google", "n": "市**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xKMk5VUnRSa1J5UlVaTFpVeE9iMGhVVkVwdGVVRRAB!2m1!1s0x0:0x978f7b09b324237c!3m1!1s2@1:CAIQACodChtycF9oOlJ2NURtRkRyRUZLZUxOb0hUVEpteUE%7C%7C?hl=ko", "l": "ja", "tf": "편리성과 가격만으로 셀렉트.\n가격 상응이었습니다.\n그러나, 동전 세탁을 이용할 때의, 프런트의 대응은 정중했습니다."}], "elevator": [{"q": "게다가 엘리베이터를 타고 나서도 방까지 계단을 올라가야 하는 이상한 구조가 있습니다.", "qh": "게다가 <b>엘리베이터</b>를 타고 나서도 방까지 <b>계단</b>을 올라가야 하는 이상한 구조가 있습니다.", "d": "2026-04-27", "st": null, "o": "Trip.com", "n": "T**", "u": "https://www.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "en", "tf": "위치는 꽤 좋습니다. 하지만 그게 전부입니다. 방은 작고 낡았습니다. 게다가 엘리베이터를 타고 나서도 방까지 계단을 올라가야 하는 이상한 구조가 있습니다. 무거운 짐을 가지고 가기에는 불편합니다."}, {"q": "다만, 객실이 다른 건물에 있어 엘리베이터를 이용한 후에도 계단을 올라가야 하는 점은 아쉬웠습니다.", "qh": "다만, 객실이 다른 건물에 있어 <b>엘리베이터</b>를 이용한 후에도 <b>계단</b>을 올라가야 하는 점은 아쉬웠습니다.", "d": "2026-01-31", "st": null, "o": "Trip.com", "n": "T**", "u": "https://www.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "en", "tf": "후쿠오카 중심부에 위치한 이 호텔은 정말 훌륭한 숙박 경험을 제공합니다. 새해 첫날이었음에도 불구하고 호텔 측에서 친절하게 응대해 주셨습니다. 객실 공간도 넉넉하고 침대도 편안했으며, 조명도 밝았습니다. 다만, 객실이 다른 건물에 있어 엘리베이터를 이용한 후에도 계단을 올라가야 하는 점은 아쉬웠습니다."}, {"q": "트립닷컴과 호텔 측에서 우리 방과 연결된 엘리베이터가 없다는 사실을 알려주지 않은 것은 정말 최악이었습니다.", "qh": "트립닷컴과 호텔 측에서 우리 방과 연결된 <b>엘리베이터</b>가 없다는 사실을 알려주지 않은 것은 정말 최악이었습니다.", "d": "2026-01-02", "st": null, "o": "Trip.com", "n": "T**", "u": "https://www.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "en", "tf": "트립닷컴과 호텔 측에서 우리 방과 연결된 엘리베이터가 없다는 사실을 알려주지 않은 것은 정말 최악이었습니다. 만약 거동이 불편한 분들과 함께 여행한다면 얼마나 불편할지 상상도 하기 싫습니다. 저는 조부모님과 함께 여행 중이었는데, 무거운 여행 가방을 들고 계단을 오르내리는 것이 두 분께는 너무나 힘든 일이었습니다. 게다가 같은 층에 있는 방을 배정받을 수 없다는 점도 매우 불편했습니다. 특히 다른 방으로 이동할 때 계단을 이용해야 하는 상황에서는 더욱 그랬습니다. 이 외에도 의자 나사가 제대로 고정되어 있지 않고, 온수 온도도 일정하지 않았으며, 화장실은 너무 좁고, 에어컨은 제대로 작동하지 않아 더욱 불편했습니다. 그나마 다행인 점은 위생 상태였습니다. 프런트 데스크 직원들은 직접적인 도움은 주지 않았지만, 친절하게 응대해 주었습니다. 전반적으로 매우 실망스러웠고, 호텔은 시설 개선과 고객 경험 향상에 더욱 노력해야 할 것입니다."}, {"q": "건물자체가 연식이 있고 엘리베이터도 정말 작아요", "qh": "건물자체가 연식이 있고 <b>엘리베이터</b>도 정말 작아요", "d": "2025-10-28", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "건물이 드문 구조를 하고 있어(프런트 후, 엘리베이터를 내려, 한번 밖의 건너 복도에 나온다)", "qh": "건물이 드문 구조를 하고 있어(프런트 후, <b>엘리베이터</b>를 내려, 한번 밖의 건너 복도에 나온다)", "d": "2025-07-30", "st": 4, "o": "Google", "n": "e**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pKb09EWTFkMHMxV2pFd1RERlVkRFV5ZFd4eWRXYxAB!2m1!1s0x0:0x978f7b09b324237c!3m1!1s2@1:CAIQACodChtycF9oOjJoODY1d0s1WjEwTDFUdDUydWxydWc%7C%7C?hl=ko", "l": "ja", "tf": "방에 시계가 없습니다.\n화장실 좁다.\n욕실의 세세한 곰팡이에는 눈을 감자.\n침대의 잠 기분은 매우 좋았습니다.\n프론트 접객, 좋아.\n\n건물이 드문 구조를 하고 있어(프런트 후, 엘리베이터를 내려, 한번 밖의 건너 복도에 나온다), 모기라든지가 들어오기 쉬운 것일까라고 생각한다."}], "access": [{"q": "아카사카역에서 도보로 5분 정도 걸리고, 텐진호에서도 멀지 않습니다.", "qh": "아카사카<b>역에서</b> <b>도보</b>로 <b>5분</b> 정도 걸리고, 텐진호에서도 멀지 않습니다.", "d": "2026-06-21", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "서비스는 훌륭했습니다. 출입할 때마다 반갑게 맞아주셨고, 열쇠를 맡겨두라고 하셨습니다. 근처에 써니 슈퍼마켓, 어시장, 편의점이 있습니다. 아카사카역에서 도보로 5분 정도 걸리고, 텐진호에서도 멀지 않습니다. 단점은 객실이 다소 작다는 점입니다."}, {"q": "지하철역에서 걸어서 3~5분 거리입니다.", "qh": "지하철<b>역에서</b> <b>걸어서</b> 3~<b>5분</b> 거리입니다.", "d": "2026-06-06", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "위치는 다른 리뷰에서 언급된 것만큼 나쁘지 않아요. 지하철역에서 걸어서 3~5분 거리입니다. 에어컨 소음이 좀 크긴 하지만, 다른 시설들은 괜찮습니다. 카운터 직원들도 친절하고 상냥해요."}, {"q": "지하철역에서 호텔까지는 도보로 약 5분 정도 걸립니다.", "qh": "지하철<b>역에서</b> 호텔까지는 <b>도보</b>로 약 <b>5분</b> 정도 걸립니다.", "d": "2026-05-29", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "호텔은 번화가에 있지는 않지만, 텐진역에서 다음 정거장인 아카사카에 위치해 있습니다. 지하철역에서 호텔까지는 도보로 약 5분 정도 걸립니다. 호텔은 길가에 있으며, 객실은 넉넉하고 근처에 편의점이 있습니다."}, {"q": "호텔은 아카사카역 6번 출구 근처에 있고, 텐진 쇼핑가에서 도보로 6분 정도 거리에 있어 교통이 매우 편리합니다.", "qh": "호텔은 아카사카역 6번 출구 근처에 있고, 텐진 쇼핑가에서 <b>도보</b>로 <b>6분</b> 정도 거리에 있어 교통이 매우 편리합니다.", "d": "2026-04-19", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "이번이 이 호텔에 두 번째 숙박이었는데, 직원분들이 정말 친절하셨어요. 비 오는 날에는 우산을, 필요하면 얼음도 바로바로 챙겨주셔서 정말 감사했습니다. 호텔은 아카사카역 6번 출구 근처에 있고, 텐진 쇼핑가에서 도보로 6분 정도 거리에 있어 교통이 매우 편리합니다. 근처에 버스 정류장도 있고, 오호리 공원도 가까워요. 텐후로도코로 히라오와 풀풀 베이커리도 아주 인근에 있습니다. 이 호텔을 강력 추천합니다. 객실도 넓고, 가격 대비 만족도가 높으며, 서비스도 훌륭합니다."}, {"q": "장점 : 아카사카역 도보 3분 거리.", "qh": "장점 : 아카사카역 <b>도보</b> <b>3분</b> 거리.", "d": "2025-10-10", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=705409&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "가까운 역에서 5 분 정도 도착합니다.", "qh": "가까운 <b>역에서</b> <b>5 분</b> 정도 도착합니다.", "d": "2025-07-27", "st": 3, "o": "Google", "n": "Y**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT210dFYyZzBhbnBuWTA1S2NWUnFXVkJ5WlhOd01GRRAB!2m1!1s0x0:0x978f7b09b324237c!3m1!1s2@1:CAIQACodChtycF9oOmttV2g0anpnY05KcVRqWVByZXNwMFE%7C%7C?hl=ko", "l": "ja", "tf": "가까운 역에서 5 분 정도 도착합니다. 근처에 LAWSON 있습니다. 대략 청결하게 유지되고 있다. 묵을 뿐이라면 싸게 묵기 때문에, 전혀 있어."}]};</script>
@@ -928,12 +951,7 @@
                 new Swiper(el, {slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true});
             });
 
-            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
-            var $drawer = $('.det-drawer');
-            function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
-            $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
-            $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
-            $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+            // F36 드로어 JS는 site_header() 공통 컴포넌트에 포함 (상세·recent 공유)
 
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){
@@ -1023,11 +1041,10 @@
                     + foot + full
                     + '</div></li>';
             }
-            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
             function origLink(o, u){
                 if (!u) return '<span></span>';
-                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
-                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
             }
             // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
             function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }

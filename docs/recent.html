@@ -1,0 +1,2651 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
+    <title>최근 본 호텔 | 캐치플로</title>
+    
+    <meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4M1BGXJZYQ"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-4M1BGXJZYQ');
+</script>
+    <script type="text/javascript">
+    (function(c,l,a,r,i,t,y){
+        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+    })(window, document, "clarity", "script", "xi5o022ef1");
+</script>
+    <meta name="robots" content="noindex">
+    <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
+    <link rel="apple-touch-icon" href="img/favicon.svg">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+    <link rel="stylesheet" href="css/tokens.css?v=1783689233">
+    <link rel="stylesheet" href="css/common.css?v=1783689233">
+    <link rel="stylesheet" href="css/layout.css?v=1783689233">
+    <link rel="stylesheet" href="css/swiper.css?v=1783689233">
+    <link rel="stylesheet" href="css/uplift.css?v=1783689233">
+    <link rel="stylesheet" href="css/mvp.css?v=1783689233">
+    <script src="js/backnav.js?v=1783689233"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/swiper.js"></script>
+    <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
+    <script src="js/engage.js?v=1783689233" defer></script>
+    <script src="js/recommend.js?v=1783689233"></script>
+</head>
+<body>
+<div id="wrapper">
+    <main id="container">
+        <section id="main">
+            <div class="det-header">
+                <a class="dh-back" href="./" aria-label="뒤로가기"><img src="img/back_b.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="./" aria-label="CATCHFLAW 홈"><img src="img/logo.svg" alt="CATCHFLAW"></a>
+                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+            </div>
+            <div class="det-drawer" hidden>
+                <div class="dd-dim"></div>
+                <div class="dd-panel">
+                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
+                    <nav class="dd-nav">
+                        <a href="./">홈</a>
+                        <a href="search">호텔 검색</a>
+                        <a href="recent">최근 본 호텔</a>
+                        <a href="about">산출 방법</a>
+                    </nav>
+                </div>
+            </div>
+            <script>
+            $(function(){
+                var $drawer = $('.det-drawer');
+                function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
+                $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
+                $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
+                $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+            });
+            </script>
+            <div class="hotel-list recent-list">
+                <div class="head"><div class="title">최근 본 호텔</div></div>
+                <div class="list"><ul id="recent-list"></ul></div>
+            </div>
+            <div class="recent-empty" id="recent-empty" hidden>
+                <div class="re-txt">아직 본 호텔이 없어요</div>
+                <a class="re-btn" href="./search">호텔 검색하기</a>
+            </div>
+            <ul id="recent-pool" hidden><li class="swiper-slide">
+        <a href="hotels/ChIJCzoI9WyRQTURh61LiaaVZNo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCzoI9WyRQTURh61LiaaVZNo/0.webp" alt="MKホテルズ西中洲" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">MKホテルズ西中洲</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 162개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJxxNgtRmRQTUROQQOwLGOsm8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJxxNgtRmRQTUROQQOwLGOsm8/0.webp" alt="HOTEL ORIGO HAKATA - Gion -" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL ORIGO HAKATA - Gion -</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 42개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJrR-wmZuRQTURTkV1xr-oJmk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJrR-wmZuRQTURTkV1xr-oJmk/0.webp" alt="Plaza Fuyo Hotel" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Plaza Fuyo Hotel</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 164개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJl0kkLKyRQTURL1a_2QrT_xk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJl0kkLKyRQTURL1a_2QrT_xk/0.webp" alt="A.T. HOTEL HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">A.T. HOTEL HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 164개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJKZ6JiUeRQTUR-8BsBzO6eLw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 17%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJKZ6JiUeRQTUR-8BsBzO6eLw/0.webp" alt="mizuka Business キャナルシティ博多前" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">mizuka Business キャナルシティ博多前</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:66%"></i></div>
+                <div class="text">구글 3.3 · 리뷰 188개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ4bLmVn6RQTURWs2dvDeWOyE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ4bLmVn6RQTURWs2dvDeWOyE/0.webp" alt="그랜드베이스후쿠오카텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">그랜드베이스후쿠오카텐진</h3>
+                <div class="eng">グランドベース福岡天神（無人ホテル）／ Grand Base Fukuoka Tenjin (Unmanned Hotel)</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 68개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ7aQhNUKRQTUROX0NwJXdWgU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="img/placeholder.svg" alt="Legatio Hakata Hotel" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Legatio Hakata Hotel</h3>
+                <div class="eng">レガティオ博多ホテル</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 87개</div>
+                <div class="price-line">1박 <b>약 15만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJN3CnKYmRQTUR8gDOs_JYKwM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 16%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJN3CnKYmRQTUR8gDOs_JYKwM/1.webp" alt="Residence Hotel Hakata 19" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Residence Hotel Hakata 19</h3>
+                <div class="eng">レジデンスホテル博多19</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 83개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJUfZ165aRQTUR3d5Snm-UjXk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="img/placeholder.svg" alt="THE HOTELS HAKATA HARUSHIGE HONKAN" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">THE HOTELS HAKATA HARUSHIGE HONKAN</h3>
+                <div class="eng">THE HOTELS HAKATA 春重本館</div>
+                <div class="star"><i style="width:96%"></i></div>
+                <div class="text">구글 4.8 · 리뷰 20개</div>
+                <div class="price-line">1박 <b>약 36만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-7dHJiiRQTURW2E-M5Xm4K0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="img/placeholder.svg" alt="하카타 호텔 오이사!" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 호텔 오이사!</h3>
+                <div class="eng">HAKATA HOTEL OISA!</div>
+                <div class="star"><i style="width:98%"></i></div>
+                <div class="text">구글 4.9 · 리뷰 7개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJEQyMkjGSQTURcKQ6aix5-LM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 18%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEQyMkjGSQTURcKQ6aix5-LM/0.webp" alt="Heiwadai Hotel Arato" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Heiwadai Hotel Arato</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:66%"></i></div>
+                <div class="text">구글 3.3 · 리뷰 552개</div>
+                <div class="price-line">1박 <b>약 3만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJbS7opymSQTURfCMkswl7j5c" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbS7opymSQTURfCMkswl7j5c/0.webp" alt="Nissei Hotel Fukuoka" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Nissei Hotel Fukuoka</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:64%"></i></div>
+                <div class="text">구글 3.2 · 리뷰 470개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJWbnV_8aRQTURX1bIzMiGmGE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJWbnV_8aRQTURX1bIzMiGmGE/0.webp" alt="博多駅前エスビーホテル" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">博多駅前エスビーホテル</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:68%"></i></div>
+                <div class="text">구글 3.4 · 리뷰 643개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJoT192L-RQTUR8hhu3mfTBHQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 15%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJoT192L-RQTUR8hhu3mfTBHQ/0.webp" alt="Wellbe fukuoka" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Wellbe fukuoka</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,220개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJqUsSUsaRQTURBb01ZGRTXlw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJqUsSUsaRQTURBb01ZGRTXlw/0.webp" alt="Toyoko INN Hakata Station Bus Terminal" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Toyoko INN Hakata Station Bus Terminal</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,027개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJi_euFMyRQTURImJjbEDysoE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 21%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJi_euFMyRQTURImJjbEDysoE/0.webp" alt="SG RESIDENCE INN HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">SG RESIDENCE INN HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 169개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-xf-ueCRQTURvRoCqKKk6Zo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 19%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xf-ueCRQTURvRoCqKKk6Zo/0.webp" alt="福岡シェアホテル" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">福岡シェアホテル</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:64%"></i></div>
+                <div class="text">구글 3.2 · 리뷰 140개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ93IwcoaRQTURIjtUKkvQiP0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ93IwcoaRQTURIjtUKkvQiP0/0.webp" alt="H Hotel" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">H Hotel</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 109개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJlcyw5pORQTURr26-RU7LBw4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJlcyw5pORQTURr26-RU7LBw4/0.webp" alt="Fukuoka Floral Inn Nishinakasu" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Fukuoka Floral Inn Nishinakasu</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 836개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJH7bcYsKRQTURehrVivv9dn4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJH7bcYsKRQTURehrVivv9dn4/0.webp" alt="Hotel New Gaea Kamigofuku" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel New Gaea Kamigofuku</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 403개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJP2FpmOiRQTURrukAaGocwd8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJP2FpmOiRQTURrukAaGocwd8/0.webp" alt="HOTEL NINESTATES HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL NINESTATES HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:68%"></i></div>
+                <div class="text">구글 3.4 · 리뷰 172개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJMYqyVbeRQTURdouEhylxFBo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMYqyVbeRQTURdouEhylxFBo/0.webp" alt="THE LANG HOTEL Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">THE LANG HOTEL Hakata</h3>
+                <div class="eng">THE LANG HOTEL</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 162개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJT4ZlipyRQTURNZIUGvXrIPo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJT4ZlipyRQTURNZIUGvXrIPo/0.webp" alt="퀸텟사 호텔 후쿠오카 텐진미나미" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">퀸텟사 호텔 후쿠오카 텐진미나미</h3>
+                <div class="eng">クインテッサホテル 福岡天神南</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 920개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJh6Pqq8eRQTURhR9J5_B3iic" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 3%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJh6Pqq8eRQTURhR9J5_B3iic/0.webp" alt="Toyoko Inn Hakataguchi Ekimae" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Toyoko Inn Hakataguchi Ekimae</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,546개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJx46ouseRQTURWZdg1EIngcc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJx46ouseRQTURWZdg1EIngcc/0.webp" alt="Hotel Route Inn Hakata Ekimae" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Route Inn Hakata Ekimae</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 1,503개</div>
+                <div class="price-line">1박 <b>약 14만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJe-auJuyRQTURiFai7yrK4QY" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 15%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJe-auJuyRQTURiFai7yrK4QY/0.webp" alt="Smile Smart Inn Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Smile Smart Inn Hakata</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:68%"></i></div>
+                <div class="text">구글 3.4 · 리뷰 519개</div>
+                <div class="price-line">1박 <b>약 16만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ1yNtgrqRQTUR-8RXYQdDl9U" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ1yNtgrqRQTUR-8RXYQdDl9U/0.webp" alt="Hotel WBF Grande Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel WBF Grande Hakata</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 2,069개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJgWrMlsiRQTURCBItac2yu58" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJgWrMlsiRQTURCBItac2yu58/0.webp" alt="하카타 그린호텔 1호관" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 그린호텔 1호관</h3>
+                <div class="eng">博多グリーンホテル1号館</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 2,933개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg/0.webp" alt="Wellcabin Tenjin" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Wellcabin Tenjin</h3>
+                <div class="eng">ウェルキャビン天神</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 536개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJWa_zq-aRQTURHvczbLHiqIk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 19%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJWa_zq-aRQTURHvczbLHiqIk/0.webp" alt="호텔 리브맥스 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 리브맥스 후쿠오카 텐진</h3>
+                <div class="eng">ホテルリブマックス福岡天神</div>
+                <div class="star"><i style="width:70%"></i></div>
+                <div class="text">구글 3.5 · 리뷰 383개</div>
+                <div class="price-line">1박 <b>약 3만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJRwwUhqWRQTUReqn3w09SwhI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 20%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJRwwUhqWRQTUReqn3w09SwhI/0.webp" alt="레지던스 호텔 하카타 8" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">레지던스 호텔 하카타 8</h3>
+                <div class="eng">レジデンスホテル博多8 / Residence Hotel Hakata 8</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 238개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJ_sDqwSRQTUR0v-D8v7kRPg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJ_sDqwSRQTUR0v-D8v7kRPg/0.webp" alt="그린 리치 호텔 니시테츠 오하시 에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">그린 리치 호텔 니시테츠 오하시 에키마에</h3>
+                <div class="eng">グリーンリッチホテル西鉄大橋駅前</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 251개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJwxo8PACRQTUR_bjMa7ZsEBU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJwxo8PACRQTUR_bjMa7ZsEBU/0.webp" alt="후쿠오카 텐진 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">후쿠오카 텐진 호텔</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:100%"></i></div>
+                <div class="text">구글 5.0 · 리뷰 1개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ_aYq7GGRQTUR471m1xaCnPU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ_aYq7GGRQTUR471m1xaCnPU/0.webp" alt="NOT A HOTEL Fukuoka" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">NOT A HOTEL Fukuoka</h3>
+                <div class="eng">NOT A HOTEL FUKUOKA</div>
+                <div class="star"><i style="width:96%"></i></div>
+                <div class="text">구글 4.8 · 리뷰 33개</div>
+                <div class="price-line">1박 <b>약 105만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJU-_LKtiRQTURYAQdCAszAHA" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJU-_LKtiRQTURYAQdCAszAHA/2.webp" alt="Grand Prime HAKATA HOTEL" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Grand Prime HAKATA HOTEL</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:94%"></i></div>
+                <div class="text">구글 4.7 · 리뷰 13개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJpVf-NgCRQTURB0j4VTtdFIQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJpVf-NgCRQTURB0j4VTtdFIQ/0.webp" alt="BAND HOTEL HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">BAND HOTEL HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:94%"></i></div>
+                <div class="text">구글 4.7 · 리뷰 38개</div>
+                <div class="price-line">1박 <b>약 19만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJVVWZNZGRQTURpJmMxMRhBjw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJVVWZNZGRQTURpJmMxMRhBjw/0.webp" alt="THE HOTELS HAKATA 春重" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">THE HOTELS HAKATA 春重</h3>
+                <div class="eng">Asuite Hakata by ASUMIRU</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 39개</div>
+                <div class="price-line">1박 <b>약 30만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-3-QiYuRQTURmnCBjaszU6k" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-3-QiYuRQTURmnCBjaszU6k/0.webp" alt="HOTEL FUN" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL FUN</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 18개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJBSBZbpORQTUR6u21VMHletc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 20%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJBSBZbpORQTUR6u21VMHletc/0.webp" alt="웰 캐빈 나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">웰 캐빈 나카스</h3>
+                <div class="eng">HEARTSカプセルホテル＆スパ中洲</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 548개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJS6Mnt--RQTURlHJ3KWdU5rU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJS6Mnt--RQTURlHJ3KWdU5rU/0.webp" alt="Sun Palace Hotel" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Sun Palace Hotel</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 4,308개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJdzvjciRQTURJFfZlB7UnhE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJdzvjciRQTURJFfZlB7UnhE/0.webp" alt="Mars Garden Hotel Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Mars Garden Hotel Hakata</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,380개</div>
+                <div class="price-line">1박 <b>약 18만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJHwR7gZORQTURmCrVc4xO2Eg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 16%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJHwR7gZORQTURmCrVc4xO2Eg/0.webp" alt="종크호텔 나카스 데아이바시" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">종크호텔 나카스 데아이바시</h3>
+                <div class="eng">ゾンクホテル中洲であい橋</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 517개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJmevWGu2RQTURHCX71AT7o3A" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 17%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJmevWGu2RQTURHCX71AT7o3A/0.webp" alt="The Grand Residence Hotel Tenjin" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The Grand Residence Hotel Tenjin</h3>
+                <div class="eng">グランドレジデンスホテル天神</div>
+                <div class="star"><i style="width:70%"></i></div>
+                <div class="text">구글 3.5 · 리뷰 154개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJU8yQc0ORQTURVJ4Z6-vdcsU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 16%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJU8yQc0ORQTURVJ4Z6-vdcsU/0.webp" alt="Grand Cabin Tenjin Minami" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Grand Cabin Tenjin Minami</h3>
+                <div class="eng">グランドキャビン天神南</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 151개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJyWW9bpKRQTURlC77CK9pwGg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJyWW9bpKRQTURlC77CK9pwGg/0.webp" alt="Hotel Reference TenjinⅢ" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Reference TenjinⅢ</h3>
+                <div class="eng">ホテルリファレンス天神Ⅲ</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 124개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJkzKkFeyRQTURaSBMM5-DQx0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJkzKkFeyRQTURaSBMM5-DQx0/0.webp" alt="The OneFive Marine Fukuoka" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The OneFive Marine Fukuoka</h3>
+                <div class="eng">ザ・ワンファイブマリン福岡</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 638개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJN8gZRr2RQTURTCySI4acn5g" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJN8gZRr2RQTURTCySI4acn5g/0.webp" alt="호텔 트라드 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 트라드 하카타</h3>
+                <div class="eng">ホテルトラッド博多</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,010개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJfWox07uRQTUR_oeqKxDx_6E" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJfWox07uRQTUR_oeqKxDx_6E/0.webp" alt="호텔 JAL 시티 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 JAL 시티 후쿠오카 텐진</h3>
+                <div class="eng">ホテルJALシティ福岡 天神</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,006개</div>
+                <div class="price-line">1박 <b>약 13만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJcxNwW8CRQTUR4Z3C-epscJQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJcxNwW8CRQTUR4Z3C-epscJQ/0.webp" alt="도미 인 하카타기온" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">도미 인 하카타기온</h3>
+                <div class="eng">ドーミーイン博多祇園</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,941개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJf86VromRQTURk0szjkELzWE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJf86VromRQTURk0szjkELzWE/0.webp" alt="헤이와다이호텔 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">헤이와다이호텔 텐진</h3>
+                <div class="eng">平和台ホテル天神</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 708개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJCaAKbcCRQTURx6jyllUVdB8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCaAKbcCRQTURx6jyllUVdB8/0.webp" alt="다이와 로이넷 호텔 하카타 레이센 프리미어" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">다이와 로이넷 호텔 하카타 레이센 프리미어</h3>
+                <div class="eng">ダイワロイネットホテル博多冷泉PREMIER</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 634개</div>
+                <div class="price-line">1박 <b>약 14만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ59RBu4iRQTURkgZXFUhXXfY" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 26%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ59RBu4iRQTURkgZXFUhXXfY/0.webp" alt="더 원파이브 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 원파이브 후쿠오카 텐진</h3>
+                <div class="eng">ザ・ワンファイブ福岡天神</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 735개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJSVV6LJGRQTURA94m3aCpxn4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJSVV6LJGRQTURA94m3aCpxn4/0.webp" alt="LIBERATED HOTEL HARUYOSHI KAICHI" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">LIBERATED HOTEL HARUYOSHI KAICHI</h3>
+                <div class="eng">LIBERATED HOTEL 春吉開地</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 161개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJCc7zssuRQTURzuoRJwI3gic" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCc7zssuRQTURzuoRJwI3gic/0.webp" alt="몬탄 하카타 호스텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">몬탄 하카타 호스텔</h3>
+                <div class="eng">モンタン博多 montan HAKATA</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 1,329개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJrfbiHeuRQTURwhxJptKEbvk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJrfbiHeuRQTURwhxJptKEbvk/0.webp" alt="Hotel Vista Fukuoka Nakasu-Kawabata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Vista Fukuoka Nakasu-Kawabata</h3>
+                <div class="eng">ホテルビスタ福岡[中洲川端]</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,064개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJawlcVY-RQTURiHOsh2jWrRc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJawlcVY-RQTURiHOsh2jWrRc/0.webp" alt="니시테츠 그랜드 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">니시테츠 그랜드 호텔</h3>
+                <div class="eng">西鉄グランドホテル Nishitetsu Grand Hotel</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 3,989개</div>
+                <div class="price-line">1박 <b>약 13만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJK1ALvDKRQTURpXnuVoRkK38" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJK1ALvDKRQTURpXnuVoRkK38/0.webp" alt="램프라이트북스호텔 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">램프라이트북스호텔 후쿠오카</h3>
+                <div class="eng">ランプライトブックスホテル福岡</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 631개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJkXqoOZORQTURyBBg18vUy4o" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJkXqoOZORQTURyBBg18vUy4o/0.webp" alt="더 로얄 파크 캔버스 후쿠오카 나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 로얄 파크 캔버스 후쿠오카 나카스</h3>
+                <div class="eng">ザ ロイヤルパーク キャンバス 福岡中洲</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 716개</div>
+                <div class="price-line">1박 <b>약 15만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJsfwEDbqRQTURjNJzC4bcUWc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJsfwEDbqRQTURjNJzC4bcUWc/0.webp" alt="Hotel Livemax Hakata Nakasu" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Livemax Hakata Nakasu</h3>
+                <div class="eng">ホテルリブマックス 博多中洲</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 296개</div>
+                <div class="price-line">1박 <b>약 13만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJl5HpFryRQTURBmmKGU8Vb6Y" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJl5HpFryRQTURBmmKGU8Vb6Y/0.webp" alt="호텔 홋케클럽 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 홋케클럽 하카타</h3>
+                <div class="eng">ホテル法華クラブ福岡</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 2,208개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJIyaOR8aRQTURYUE-kujhvOI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJIyaOR8aRQTURYUE-kujhvOI/0.webp" alt="니시테츠 호텔 크룸 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">니시테츠 호텔 크룸 하카타</h3>
+                <div class="eng">西鉄ホテルクルーム 博多</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 2,777개</div>
+                <div class="price-line">1박 <b>약 14만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJfxQJh5CRQTURWiLobGQQqV0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJfxQJh5CRQTURWiLobGQQqV0/0.webp" alt="토요코인 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">토요코인 후쿠오카 텐진</h3>
+                <div class="eng">東横INN福岡天神</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,053개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJCc2YRmeRQTUR2XF_iEfSJac" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCc2YRmeRQTUR2XF_iEfSJac/0.webp" alt="미쓰이 가든 호텔 후쿠오카 기온" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">미쓰이 가든 호텔 후쿠오카 기온</h3>
+                <div class="eng">三井ガーデンホテル福岡祇園</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 2,090개</div>
+                <div class="price-line">1박 <b>약 16만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJt0CdF5WRQTUR8Mwy4gzauOA" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJt0CdF5WRQTUR8Mwy4gzauOA/0.webp" alt="하카타 나카스 워싱턴 호텔 플라자" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 나카스 워싱턴 호텔 플라자</h3>
+                <div class="eng">博多中洲ワシントンホテルプラザ</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 1,052개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJtRQKxJqRQTUR0dPMYPLotcQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJtRQKxJqRQTUR0dPMYPLotcQ/0.webp" alt="니시테츠 인 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">니시테츠 인 텐진</h3>
+                <div class="eng">西鉄イン天神</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 745개</div>
+                <div class="price-line">1박 <b>약 13만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJwYSHTfCRQTURRUbgMtC2xjc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJwYSHTfCRQTURRUbgMtC2xjc/0.webp" alt="리츠 칼튼 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">리츠 칼튼 후쿠오카</h3>
+                <div class="eng">ザ・リッツ・カールトン福岡</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,085개</div>
+                <div class="price-line">1박 <b>약 77만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 몬토레 후쿠오카</h3>
+                <div class="eng">ホテルモントレ福岡</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,136개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJlcknT8iRQTURycShRMUTenA" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 3%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJlcknT8iRQTURycShRMUTenA/0.webp" alt="미야코 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">미야코 호텔 하카타</h3>
+                <div class="eng">都ホテル博多</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 2,113개</div>
+                <div class="price-line">1박 <b>약 32만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJDx-HcQCRQTURcqhNvffmeXU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 3%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJDx-HcQCRQTURcqhNvffmeXU/0.webp" alt="The Gate Hotel Fukuoka by HULIC" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The Gate Hotel Fukuoka by HULIC</h3>
+                <div class="eng">THE GATE HOTEL 福岡 by HULIC</div>
+                <div class="star"><i style="width:92%"></i></div>
+                <div class="text">구글 4.6 · 리뷰 272개</div>
+                <div class="price-line">1박 <b>약 27만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJNbSQrVKSQTURMqlkgfyJtjs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJNbSQrVKSQTURMqlkgfyJtjs/0.webp" alt="힐튼 후쿠오카 씨호크" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">힐튼 후쿠오카 씨호크</h3>
+                <div class="eng">ヒルトン福岡シーホーク</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 10,180개</div>
+                <div class="price-line">1박 <b>약 15만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJay60vMmRQTUR-oNtHPZQ5Ko" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 15%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJay60vMmRQTUR-oNtHPZQ5Ko/0.webp" alt="Hotel Live Max Fukuoka Tenjin West" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Live Max Fukuoka Tenjin West</h3>
+                <div class="eng">ホテルリブマックス福岡天神WEST</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 441개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJOd141YWRQTUR5DITYknScw8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 22%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOd141YWRQTUR5DITYknScw8/0.webp" alt="플라자호텔 프리미어" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">플라자호텔 프리미어</h3>
+                <div class="eng">プラザホテルプルミエ</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 1,337개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJV1EM9l2RQTURS-feTbILpI4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJV1EM9l2RQTURS-feTbILpI4/0.webp" alt="lyf Tenjin Fukuoka" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">lyf Tenjin Fukuoka</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 465개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJr7BXD8eRQTURu3ZPUWX4wPE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJr7BXD8eRQTURu3ZPUWX4wPE/0.webp" alt="하카타 도큐 레이 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 도큐 레이 호텔</h3>
+                <div class="eng">博多東急REIホテル</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 2,040개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJR8JER5KRQTURR1mNYi4ePNk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJR8JER5KRQTURR1mNYi4ePNk/0.webp" alt="니시테츠 인 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">니시테츠 인 후쿠오카</h3>
+                <div class="eng">西鉄イン福岡</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,812개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJVVUpyeyRQTURCtvQ5M0r1nI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJVVUpyeyRQTURCtvQ5M0r1nI/0.webp" alt="에스페리아 호텔 후쿠오카 나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">에스페리아 호텔 후쿠오카 나카스</h3>
+                <div class="eng">エスペリアホテル福岡中洲</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 359개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJMV4GYbmRQTUREdxclAmv9fI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMV4GYbmRQTUREdxclAmv9fI/0.webp" alt="야오지 하카타 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">야오지 하카타 호텔</h3>
+                <div class="eng">八百治博多ホテル</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 2,107개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJd2hyGJGRQTURNTjti9FlcHs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJd2hyGJGRQTURNTjti9FlcHs/0.webp" alt="코트 호텔 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">코트 호텔 후쿠오카 텐진</h3>
+                <div class="eng">コートホテル福岡天神</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 741개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJORKG0Y6RQTURBnURhgfNxGI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJORKG0Y6RQTURBnURhgfNxGI/0.webp" alt="호텔 마이스테이스 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 마이스테이스 후쿠오카 텐진</h3>
+                <div class="eng">ホテルマイステイズ福岡天神</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,731개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJS4RJa-RQTURm4UYU-yhSRU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJS4RJa-RQTURm4UYU-yhSRU/0.webp" alt="호텔 와 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 와 하카타</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 178개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJF6b6G7yRQTURiOEC43qAxIE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 17%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJF6b6G7yRQTURiOEC43qAxIE/0.webp" alt="포포인츠 바이 쉐라톤 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">포포인츠 바이 쉐라톤 후쿠오카</h3>
+                <div class="eng">フォーポイント フレックス by シェラトン 福岡博多</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 920개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJoeiqKb6RQTURjVwF_1OcKDU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJoeiqKb6RQTURjVwF_1OcKDU/0.webp" alt="캐널시티 후쿠오카 워싱턴 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">캐널시티 후쿠오카 워싱턴 호텔</h3>
+                <div class="eng">キャナルシティ・福岡ワシントンホテル</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 2,132개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJW2I4FzWRQTUR_bMnb6uKaHs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJW2I4FzWRQTUR_bMnb6uKaHs/0.webp" alt="YOU STYLE HOTEL HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">YOU STYLE HOTEL HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 156개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU/0.webp" alt="호텔 그란돌체 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 그란돌체 하카타</h3>
+                <div class="eng">ホテルグランドルチェ博多</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 353개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJMZBRyoiRQTURoKCXNbiVF0E" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMZBRyoiRQTURoKCXNbiVF0E/0.webp" alt="호텔 몬토레 라 스루 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 몬토레 라 스루 후쿠오카</h3>
+                <div class="eng">ホテルモントレ ラ・スール福岡</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 2,297개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ9RkQ07iRQTURgyYPLR0sXx4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9RkQ07iRQTURgyYPLR0sXx4/0.webp" alt="Hotel Active! Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Active! Hakata</h3>
+                <div class="eng">ホテルアクティブ！ 博多</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,796개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ4y8nKrmRQTURPqdJtGO4kXg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ4y8nKrmRQTURPqdJtGO4kXg/0.webp" alt="코코 호텔 하카타 에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">코코 호텔 하카타 에키마에</h3>
+                <div class="eng">KOKO HOTEL 博多駅前</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,482개</div>
+                <div class="price-line">1박 <b>약 16만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJwwuJcbmRQTURoXSe0JmZowc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJwwuJcbmRQTURoXSe0JmZowc/0.webp" alt="APA HOTEL HAKATA-EKIMAE" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">APA HOTEL HAKATA-EKIMAE</h3>
+                <div class="eng">アパホテル〈博多駅前４丁目〉</div>
+                <div class="star"><i style="width:70%"></i></div>
+                <div class="text">구글 3.5 · 리뷰 1,092개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJbYAU1F2RQTURF3-Mhhvz774" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbYAU1F2RQTURF3-Mhhvz774/0.webp" alt="후쿠오카 유벨 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">후쿠오카 유벨 호텔</h3>
+                <div class="eng">福岡ユウベルホテル</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 364개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJN7w-E8iRQTUROp9WFa576-E" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJN7w-E8iRQTUROp9WFa576-E/0.webp" alt="호텔 클리오 코트 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 클리오 코트 하카타</h3>
+                <div class="eng">ホテルクリオコート博多</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 2,081개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJn1TykzuTQTURdHnTUOXWZI0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJn1TykzuTQTURdHnTUOXWZI0/0.webp" alt="호텔 마리노아 리조트 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 마리노아 리조트 후쿠오카</h3>
+                <div class="eng">ホテルマリノアリゾート福岡</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,034개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJZaGRhr6RQTUR8VDMgwvkeV8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJZaGRhr6RQTUR8VDMgwvkeV8/0.webp" alt="미쓰이 가든 호텔 후쿠오카 나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">미쓰이 가든 호텔 후쿠오카 나카스</h3>
+                <div class="eng">三井ガーデンホテル福岡中洲</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,311개</div>
+                <div class="price-line">1박 <b>약 16만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJp64OfMeRQTUR7jjgUNG-Rr4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp64OfMeRQTUR7jjgUNG-Rr4/0.webp" alt="JR 규슈 호텔 블라섬 하카타 주오" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">JR 규슈 호텔 블라섬 하카타 주오</h3>
+                <div class="eng">JR九州ホテル ブラッサム博多中央</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 2,428개</div>
+                <div class="price-line">1박 <b>약 16만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ54P-U8eRQTURFxDTByO6mAw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ54P-U8eRQTURFxDTByO6mAw/0.webp" alt="네스트 호텔 하카타에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">네스트 호텔 하카타에키마에</h3>
+                <div class="eng">ネストホテル博多駅前</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,246개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ96YwxI6RQTURWRw3Xuj6ui8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ96YwxI6RQTURWRw3Xuj6ui8/0.webp" alt="아크 호텔 로열 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">아크 호텔 로열 후쿠오카 텐진</h3>
+                <div class="eng">アークホテルロイヤル福岡天神</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 1,472개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJrcuZL8CRQTURkKRU2AEsvuM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJrcuZL8CRQTURkKRU2AEsvuM/0.webp" alt="HOTEL TORIFITO HAKATA GION" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL TORIFITO HAKATA GION</h3>
+                <div class="eng">ホテル・トリフィート博多祇園</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 825개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJeQ6qjsaRQTURTyoMNvstlXQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJeQ6qjsaRQTURTyoMNvstlXQ/0.webp" alt="프레지던트 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">프레지던트 호텔 하카타</h3>
+                <div class="eng">プレジデントホテル博多</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 1,364개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">도큐스테이 후쿠오카 텐진</h3>
+                <div class="eng">東急ステイ 福岡天神</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,459개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJaxffFQCRQTURDirRfyM4VDY" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJaxffFQCRQTURDirRfyM4VDY/0.webp" alt="원 후쿠오카 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">원 후쿠오카 호텔</h3>
+                <div class="eng">ONE FUKUOKA HOTEL</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 160개</div>
+                <div class="price-line">1박 <b>약 42만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ5V16ZceRQTURhxinixnvb_g" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ5V16ZceRQTURhxinixnvb_g/0.webp" alt="호텔 포르자 하카타역 하카타구치" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 포르자 하카타역 하카타구치</h3>
+                <div class="eng">ホテルフォルツァ博多駅博多口</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,269개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJE6V9F7mRQTUR3iua2CG3Ofs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 22%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJE6V9F7mRQTUR3iua2CG3Ofs/0.webp" alt="R&amp;B호텔 하카타 에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">R&amp;B호텔 하카타 에키마에</h3>
+                <div class="eng">ワシントンR&amp;Bホテル博多駅前第1</div>
+                <div class="star"><i style="width:70%"></i></div>
+                <div class="text">구글 3.5 · 리뷰 919개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJQWgKdo2RQTURu_I5bt-1_uk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQWgKdo2RQTURu_I5bt-1_uk/0.webp" alt="후쿠오카 가든 팰리스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">후쿠오카 가든 팰리스</h3>
+                <div class="eng">福岡ガーデンパレス</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 502개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJSyPm5puRQTURy7U0ODoUb8Y" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJSyPm5puRQTURy7U0ODoUb8Y/0.webp" alt="후쿠오카 토에이 호텔" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">후쿠오카 토에이 호텔</h3>
+                <div class="eng">福岡東映ホテル</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,459개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJpVPcr6iRQTUR5p2bNALvWHo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 21%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJpVPcr6iRQTUR5p2bNALvWHo/0.webp" alt="나인아워스 하카타 스테이션" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">나인아워스 하카타 스테이션</h3>
+                <div class="eng">ナインアワーズ博多駅</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 856개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJzUQCx5KRQTUR5AOVDowLn2U" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJzUQCx5KRQTUR5AOVDowLn2U/0.webp" alt="HOTEL博多中洲ＩＮＮ" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL博多中洲ＩＮＮ</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 422개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJwZUrn5aRQTURE_Q-temopY4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJwZUrn5aRQTURE_Q-temopY4/0.webp" alt="더 원파이브 테라스 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 원파이브 테라스 후쿠오카</h3>
+                <div class="eng">ザ・ワンファイブテラス福岡</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 680개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">니시테츠 호텔 크룸 하카타 기온</h3>
+                <div class="eng">西鉄ホテル クルーム 博多祇園櫛田神社前</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 837개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJPQDg0uqRQTURynTlJGU9QeY" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJPQDg0uqRQTURynTlJGU9QeY/0.webp" alt="레이센카쿠 호텔 카와바타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">레이센카쿠 호텔 카와바타</h3>
+                <div class="eng">冷泉閣ホテル川端</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 844개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-7vPp4SRQTURByZi0_8i46o" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-7vPp4SRQTURByZi0_8i46o/0.webp" alt="HOTEL MYSTAYS Fukuoka Tenjin Minami" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL MYSTAYS Fukuoka Tenjin Minami</h3>
+                <div class="eng">ホテルマイステイズ福岡天神南</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 1,168개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ-_EMA3-RQTUR04yZwrwBHhM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-_EMA3-RQTUR04yZwrwBHhM/0.webp" alt="KKR 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">KKR 호텔 하카타</h3>
+                <div class="eng">KKRホテル博多</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,094개</div>
+                <div class="price-line">1박 <b>약 17만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ_0mjd5CRQTUROsF1EigVii0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ_0mjd5CRQTUROsF1EigVii0/0.webp" alt="호텔 카스비 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 카스비 텐진</h3>
+                <div class="eng">HOTEL CASVI TENJIN</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 223개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJR9TuLImRQTURdiiBk2Kj6Go" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJR9TuLImRQTURdiiBk2Kj6Go/0.webp" alt="호텔 에트와스 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 에트와스 텐진</h3>
+                <div class="eng">ホテルエトワス天神 / HOTEL ETWAS TENJIN</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 421개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJI4rGZ7eRQTURCRHpMnRmn5M" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJI4rGZ7eRQTURCRHpMnRmn5M/0.webp" alt="WITH THE STYLE FUKUOKA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">WITH THE STYLE FUKUOKA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 2,014개</div>
+                <div class="price-line">1박 <b>약 30만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJt99bHJGRQTURl_vSNsHvgJk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJt99bHJGRQTURl_vSNsHvgJk/0.webp" alt="후쿠오카 아르티 인" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">후쿠오카 아르티 인</h3>
+                <div class="eng">福岡アルティ・イン</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 555개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJW0oXLoaRQTUR_OLlH0Sp6Nw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJW0oXLoaRQTUR_OLlH0Sp6Nw/0.webp" alt="하카타 그린 호텔 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 그린 호텔 텐진</h3>
+                <div class="eng">博多グリーンホテル 天神</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 665개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJWw-PmY-RQTUR4AXrNcv1Q9E" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJWw-PmY-RQTUR4AXrNcv1Q9E/0.webp" alt="솔라리아 니시테츠 호텔 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">솔라리아 니시테츠 호텔 후쿠오카</h3>
+                <div class="eng">ソラリア西鉄ホテル福岡</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,838개</div>
+                <div class="price-line">1박 <b>약 23만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJVZgzsuyRQTURur7zzn1dFOI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJVZgzsuyRQTURur7zzn1dFOI/0.webp" alt="호텔 오쿠라 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 오쿠라 후쿠오카</h3>
+                <div class="eng">ホテルオークラ福岡</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 3,722개</div>
+                <div class="price-line">1박 <b>약 36만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJcVWby5aRQTURj8m_3FSipWM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 18%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJcVWby5aRQTURj8m_3FSipWM/0.webp" alt="The BREAKFAST HOTEL 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The BREAKFAST HOTEL 후쿠오카 텐진</h3>
+                <div class="eng">The BREAKFAST HOTEL 福岡天神</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,294개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJR80PD8mRQTURgLa9vggLjmk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJR80PD8mRQTURgLa9vggLjmk/0.webp" alt="The BREAKFAST HOTEL 후쿠오카 나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The BREAKFAST HOTEL 후쿠오카 나카스</h3>
+                <div class="eng">The BREAKFAST HOTEL 福岡中洲</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,227개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJBY9hIJSRQTURxBGk8hEalEc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 6%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJBY9hIJSRQTURxBGk8hEalEc/0.webp" alt="호텔 일 팔라조" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 일 팔라조</h3>
+                <div class="eng">ホテル イル・パラッツォ</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,039개</div>
+                <div class="price-line">1박 <b>약 14만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ_SMsbMeRQTURfHRC82EmGhk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ_SMsbMeRQTURfHRC82EmGhk/0.webp" alt="호텔 캐비너스 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 캐비너스 후쿠오카</h3>
+                <div class="eng">ホテルキャビナス福岡</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,826개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJvabcBJWRQTURyCTpGgWj_gk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJvabcBJWRQTURyCTpGgWj_gk/0.webp" alt="퍼스트캐빈 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">퍼스트캐빈 하카타</h3>
+                <div class="eng">ファーストキャビン博多</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 820개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJHzNwgZSRQTURrA4sA7FemCw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJHzNwgZSRQTURrA4sA7FemCw/0.webp" alt="호텔 리솔 트리니티 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 리솔 트리니티 하카타</h3>
+                <div class="eng">ホテルリソルトリニティ博多</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 2,561개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ14bGADaRQTURYEPm3a-BEdw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ14bGADaRQTURYEPm3a-BEdw/0.webp" alt="APA Hotel Hakata Gion Station" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">APA Hotel Hakata Gion Station</h3>
+                <div class="eng">アパホテル〈博多祇園駅前〉</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,118개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJebeP15eRQTURVcSxB1j2p08" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJebeP15eRQTURVcSxB1j2p08/0.webp" alt="스테이 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">스테이 하카타</h3>
+                <div class="eng">Stay Hakata</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 256개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U/0.webp" alt="호텔 텐진 플레이스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 텐진 플레이스</h3>
+                <div class="eng">ホテル天神プレイス</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 542개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJn4-0_cKRQTUReOEwOZRBs_Q" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJn4-0_cKRQTUReOEwOZRBs_Q/0.webp" alt="헨나호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">헨나호텔 하카타</h3>
+                <div class="eng">変なホテル 博多</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 749개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJuW269sCRQTURiVXQwiPuXqU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJuW269sCRQTURiVXQwiPuXqU/0.webp" alt="다이와 로이넷 호텔 하카타-기온" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">다이와 로이넷 호텔 하카타-기온</h3>
+                <div class="eng">ダイワロイネットホテル博多祇園</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,595개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJd3-Ub-RQTURCLwL1ueCeMs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJd3-Ub-RQTURCLwL1ueCeMs/0.webp" alt="더 로얄 파크 호텔 후쿠오카 (The Royal Park Hotel Fukuoka)" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 로얄 파크 호텔 후쿠오카 (The Royal Park Hotel Fukuoka)</h3>
+                <div class="eng">ザ ロイヤルパークホテル 福岡</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,760개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJNWMSRISRQTURHEpvfWlCev0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJNWMSRISRQTURHEpvfWlCev0/0.webp" alt="종크 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">종크 호텔 하카타</h3>
+                <div class="eng">ゾンクホテル博多</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 729개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJj0fFx0eRQTURy3r4qGwCKA0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 18%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJj0fFx0eRQTURy3r4qGwCKA0/0.webp" alt="라쿠텐 스테이 하카타역북" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">라쿠텐 스테이 하카타역북</h3>
+                <div class="eng">Grand STAY 博多駅北</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 159개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJmyKVCduTQTUR1njKnDyhw0I" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 9%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJmyKVCduTQTUR1njKnDyhw0I/0.webp" alt="힐탑리조트 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">힐탑리조트 후쿠오카</h3>
+                <div class="eng">HILLTOP RESORT FUKUOKA／ヒルトップリゾート 福岡</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,671개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJBcM_dS-RQTURXrj2DIHK6Tk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJBcM_dS-RQTURXrj2DIHK6Tk/0.webp" alt="더 밀래니얼스 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 밀래니얼스 후쿠오카</h3>
+                <div class="eng">The Millennials 福岡（ザ・ミレニアルズ福岡）</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 601개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g/0.webp" alt="베스트 웨스턴 플러스 후쿠오카 텐진-미나미" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">베스트 웨스턴 플러스 후쿠오카 텐진-미나미</h3>
+                <div class="eng">ベストウェスタンプラス福岡天神南</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 732개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJbxVMD-CRQTURius479Mmxcc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbxVMD-CRQTURius479Mmxcc/0.webp" alt="시즈테츠 호텔 프레지오 하카타에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">시즈테츠 호텔 프레지오 하카타에키마에</h3>
+                <div class="eng">静鉄ホテルプレジオ博多駅前</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,085개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJR37QbyeSQTUR3zwpIYP3XtM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJR37QbyeSQTUR3zwpIYP3XtM/0.webp" alt="Hotel Hakata Place" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Hakata Place</h3>
+                <div class="eng">ホテル博多プレイス</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 699개</div>
+                <div class="price-line">1박 <b>약 3만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ3_aRopqRQTURgz56M7qF3aE" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ3_aRopqRQTURgz56M7qF3aE/0.webp" alt="리치몬드호텔 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">리치몬드호텔 후쿠오카 텐진</h3>
+                <div class="eng">リッチモンドホテル福岡天神</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,654개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJse2TgpORQTURltanf1kfWlg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJse2TgpORQTURltanf1kfWlg/0.webp" alt="하카타 엑셀 호텔 도큐" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">하카타 엑셀 호텔 도큐</h3>
+                <div class="eng">博多エクセルホテル東急</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 3,084개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJtacDgKaNQTURE5Nw5RKUhBc" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJtacDgKaNQTURE5Nw5RKUhBc/0.webp" alt="The Luigans Spa＆Resort" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">The Luigans Spa＆Resort</h3>
+                <div class="eng">THE LUIGANS Spa＆Resort｜ザ・ルイガンズ．スパ &amp; リゾート</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,915개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">리치몬드 호텔 텐진 니시도리</h3>
+                <div class="eng">リッチモンドホテル天神西通</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,113개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJdzvjciRQTURZlr-nALZ8Vk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 8%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJdzvjciRQTURZlr-nALZ8Vk/0.webp" alt="호텔 포르자 하카타역 치쿠시구치Ⅰ" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 포르자 하카타역 치쿠시구치Ⅰ</h3>
+                <div class="eng">ホテルフォルツァ博多駅筑紫口Ⅰ</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,924개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ1VcAWGCRQTUR27SYejxrbp8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-collect">리뷰 수집중</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ1VcAWGCRQTUR27SYejxrbp8/0.webp" alt="HOTEL STAR RESIDENCE" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">HOTEL STAR RESIDENCE</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 50개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJMbD7rmWTQTURqhaRkee5VKQ" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMbD7rmWTQTURqhaRkee5VKQ/0.webp" alt="언플랜 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">언플랜 후쿠오카</h3>
+                <div class="eng">UNPLAN Fukuoka（ホステル）</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 970개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJfSVKNqSRQTURiq-6pU75Jmk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJfSVKNqSRQTURiq-6pU75Jmk/0.webp" alt="퀸테사 호텔 후쿠오카 텐진 코믹앤북스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">퀸테사 호텔 후쿠오카 텐진 코믹앤북스</h3>
+                <div class="eng">クインテッサホテル福岡天神 Comic &amp; Books</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 672개</div>
+                <div class="price-line">1박 <b>약 11만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJoXPEM4ORQTURaPj-VkmmW7c" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJoXPEM4ORQTURaPj-VkmmW7c/0.webp" alt="Hotel Mei Fukuoka Tenjin" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Mei Fukuoka Tenjin</h3>
+                <div class="eng">Hotel Mei [ホテルメイ福岡天神]</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 366개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJQdfWp8mRQTURO-NbGyeDRVk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQdfWp8mRQTURO-NbGyeDRVk/0.webp" alt="APA Hotel Hakata-Ekimae-2chome" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">APA Hotel Hakata-Ekimae-2chome</h3>
+                <div class="eng">アパホテル〈博多駅前２丁目〉</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 706개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJ1j4y7-RQTUR3dJDzin0iQY" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJ1j4y7-RQTUR3dJDzin0iQY/0.webp" alt="도미인 프리미엄 하카타 캐널시티 마에 내추럴 핫 스프링" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">도미인 프리미엄 하카타 캐널시티 마에 내추럴 핫 스프링</h3>
+                <div class="eng">ドーミーインPREMIUM博多・キャナルシティ前</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 1,629개</div>
+                <div class="price-line">1박 <b>약 18만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJFUAeLsCRQTURaRSjgwuXWEM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJFUAeLsCRQTURaRSjgwuXWEM/0.webp" alt="&amp;HOTEL HAKATA" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">&amp;HOTEL HAKATA</h3>
+                <div class="eng">Fukuoka</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 352개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJP-fgBg2RQTUR8cwEcdKIQgo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 15%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJP-fgBg2RQTUR8cwEcdKIQgo/0.webp" alt="호텔 오리엔탈 익스프레스 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 오리엔탈 익스프레스 후쿠오카 텐진</h3>
+                <div class="eng">ホテル オリエンタル エクスプレス 福岡天神</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,172개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJAQDw5beRQTURHsuueB78hUk" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJAQDw5beRQTURHsuueB78hUk/0.webp" alt="리치몬드 호텔 하카타 에키마에" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">리치몬드 호텔 하카타 에키마에</h3>
+                <div class="eng">リッチモンドホテル博多駅前</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 1,025개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM/0.webp" alt="다이와 로이넷 호텔 후쿠오카 - 니시나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">다이와 로이넷 호텔 후쿠오카 - 니시나카스</h3>
+                <div class="eng">DEL style 福岡西中洲 by Daiwa Roynet Hotel</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 681개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJScDPvuyRQTURlkZLtzukjs8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJScDPvuyRQTURlkZLtzukjs8/0.webp" alt="Hotel Eclair Hakata" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">Hotel Eclair Hakata</h3>
+                <div class="eng">ホテルエクレール博多</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 599개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJY87E866RQTURJFzymHniFSs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJY87E866RQTURJFzymHniFSs/0.webp" alt="호텔 오리엔탈 익스프레스 후쿠오카 나카스카와바타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 오리엔탈 익스프레스 후쿠오카 나카스카와바타</h3>
+                <div class="eng">ホテル オリエンタル エクスプレス 福岡中洲川端</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 659개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJVral4SRQTURIyHZs8absG4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJVral4SRQTURIyHZs8absG4/0.webp" alt="APA Hotel Hakata Ekimae 3-chome" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">APA Hotel Hakata Ekimae 3-chome</h3>
+                <div class="eng">アパホテル〈博多駅前３丁目〉</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 645개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJL1JVUJGRQTURpGUbKVQ801c" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJL1JVUJGRQTURpGUbKVQ801c/0.webp" alt="토요코인 하카타 니시나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">토요코인 하카타 니시나카스</h3>
+                <div class="eng">東横INN博多西中洲</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,396개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJOSpAft2RQTURutvK_470dzA" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOSpAft2RQTURutvK_470dzA/0.webp" alt="코코 호텔 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">코코 호텔 후쿠오카 텐진</h3>
+                <div class="eng">KOKO HOTEL 福岡天神</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 542개</div>
+                <div class="price-line">1박 <b>약 19만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJi6RV0Q2RQTURTE85NgyAX_Y" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJi6RV0Q2RQTURTE85NgyAX_Y/0.webp" alt="컴포트인 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">컴포트인 후쿠오카 텐진</h3>
+                <div class="eng">コンフォートイン福岡天神</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 393개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJTQIVPT2RQTURYLMF-wBI6E4" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJTQIVPT2RQTURYLMF-wBI6E4/0.webp" alt="APA Hotel Hakata Eki Chikushiguchi" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">APA Hotel Hakata Eki Chikushiguchi</h3>
+                <div class="eng">アパホテル〈博多駅筑紫口〉CENTRAL</div>
+                <div class="star"><i style="width:80%"></i></div>
+                <div class="text">구글 4.0 · 리뷰 1,394개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJQcE_CqmRQTURM5J1jZL77bM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 12%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQcE_CqmRQTURM5J1jZL77bM/0.webp" alt="호텔 라 포레스타 by 리그나" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 라 포레스타 by 리그나</h3>
+                <div class="eng">ホテル ラ フォレスタ</div>
+                <div class="star"><i style="width:76%"></i></div>
+                <div class="text">구글 3.8 · 리뷰 761개</div>
+                <div class="price-line">1박 <b>약 4만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJM2r6fpqRQTUR4mC4nmQPYBs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 15%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJM2r6fpqRQTUR4mC4nmQPYBs/0.webp" alt="칸데오 호텔스 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">칸데오 호텔스 후쿠오카 텐진</h3>
+                <div class="eng">カンデオホテルズ福岡天神</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 1,673개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJJaJ3CsaRQTURxfgCsRvt8sw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 11%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJJaJ3CsaRQTURxfgCsRvt8sw/0.webp" alt="오리엔탈 호텔 후쿠오카 하카타스테이션" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">오리엔탈 호텔 후쿠오카 하카타스테이션</h3>
+                <div class="eng">オリエンタルホテル 福岡博多ステーション</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 3,455개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJQbt1YKSRQTURw0w0Vkrg3xo" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQbt1YKSRQTURw0w0Vkrg3xo/0.webp" alt="아미스타드호텔 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">아미스타드호텔 후쿠오카</h3>
+                <div class="eng">アミスタホテル福岡 博多駅前</div>
+                <div class="star"><i style="width:92%"></i></div>
+                <div class="text">구글 4.6 · 리뷰 198개</div>
+                <div class="price-line">1박 <b>약 17만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 10%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0/0.webp" alt="도큐스테이 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">도큐스테이 하카타</h3>
+                <div class="eng">東急ステイ 博多</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 1,575개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw/0.webp" alt="호텔 몬테 에르마나 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 몬테 에르마나 후쿠오카</h3>
+                <div class="eng">ホテル モンテ エルマーナ福岡</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 3,685개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJlZDi2JaRQTURxGdb1977HPI" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJlZDi2JaRQTURxGdb1977HPI/0.webp" alt="크로스라이프 하카타텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">크로스라이프 하카타텐진</h3>
+                <div class="eng">クロスライフ博多天神</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,350개</div>
+                <div class="price-line">1박 <b>약 12만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ9yX8lJyRQTURlJxzdI5_KrA" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9yX8lJyRQTURlJxzdI5_KrA/0.webp" alt="더 블라섬 하카타 프리미어" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 블라섬 하카타 프리미어</h3>
+                <div class="eng">ザ ブラッサム 博多プレミア</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 1,511개</div>
+                <div class="price-line">1박 <b>약 19만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJcR4hWniRQTURFJifxW1ZK9o" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 20%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJcR4hWniRQTURFJifxW1ZK9o/0.webp" alt="더 라이블리 후쿠오카 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">더 라이블리 후쿠오카 하카타</h3>
+                <div class="eng">THE LIVELY 福岡博多（ザ・ライブリー福岡博多）</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 1,267개</div>
+                <div class="price-line">1박 <b>약 6만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJ6WkfjZWRQTURwRQoB0njLT8" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 7%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ6WkfjZWRQTURwRQoB0njLT8/0.webp" alt="그랜드 하얏트 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">그랜드 하얏트 후쿠오카</h3>
+                <div class="eng">Grand Hyatt Fukuoka</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 4,291개</div>
+                <div class="price-line">1박 <b>약 19만원</b></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJVVVJB7-RQTURZfef49AR2Fw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-warning">주의</div><div class="badge-item badge-down">실망 확률 13%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJVVVJB7-RQTURZfef49AR2Fw/0.webp" alt="EN 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">EN 호텔 하카타</h3>
+                <div class="eng">EN HOTEL Hakata（エンホテル博多）</div>
+                <div class="star"><i style="width:72%"></i></div>
+                <div class="text">구글 3.6 · 리뷰 1,233개</div>
+                <div class="price-line">&nbsp;</div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJy_hLcceRQTURnbO4mkaV_Vs" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-danger">위험</div><div class="badge-item badge-down">실망 확률 14%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJy_hLcceRQTURnbO4mkaV_Vs/0.webp" alt="컴포트 호텔 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">컴포트 호텔 하카타</h3>
+                <div class="eng">コンフォートホテル博多</div>
+                <div class="star"><i style="width:74%"></i></div>
+                <div class="text">구글 3.7 · 리뷰 2,012개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+            </div>
+        </a>
+    </li></ul>
+        </section>
+    </main>
+    <script>
+    $(function(){
+        var ids = [];
+        try { ids = JSON.parse(localStorage.getItem('cf_recent') || '[]'); } catch (e) {}
+        if (!Array.isArray(ids)) ids = [];
+        var $list = $('#recent-list'), n = 0;
+        ids.slice(0, 20).forEach(function(pid){
+            var $a = $('#recent-pool a[href="hotels/' + String(pid).replace(/[^\w-]/g, '') + '"]');
+            if ($a.length) { $list.append($a.closest('li')); n++; }
+        });
+        $('#recent-pool').remove();
+        if (!n) { $('#recent-empty').prop('hidden', false); $('.recent-list').hide(); }
+    });
+    </script>
+    <footer id="site-foot">
+        <div class="foot-note">캐치플로의 실망 확률·위험도는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이며, 특정 업소의 객관적 품질을 단정하지 않습니다.</div>
+        <div class="foot-links"><a href="./about">캐치플로 소개·산출 방법</a> · <a href="mailto:fibinc8967@gmail.com">정정·이의제기</a></div>
+        <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
+    </footer></div>
+</body>
+</html>

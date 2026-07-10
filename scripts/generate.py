@@ -316,6 +316,38 @@ def build_footer(depth=0):
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
 
+def site_header(depth=1, back=None):
+    """F36+F40: 공통 사이트 헤더(좌 back·중앙 로고·우 햄버거)+드로어 4링크 — 상세·recent 공유. sticky는 CSS."""
+    p = '../' * depth
+    home = p or './'
+    back_href = back or home
+    return f'''<div class="det-header">
+                <a class="dh-back" href="{back_href}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
+                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+            </div>
+            <div class="det-drawer" hidden>
+                <div class="dd-dim"></div>
+                <div class="dd-panel">
+                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
+                    <nav class="dd-nav">
+                        <a href="{home}">홈</a>
+                        <a href="{p}search">호텔 검색</a>
+                        <a href="{p}recent">최근 본 호텔</a>
+                        <a href="{p}about">산출 방법</a>
+                    </nav>
+                </div>
+            </div>
+            <script>
+            $(function(){{
+                var $drawer = $('.det-drawer');
+                function drawerClose(){{ $drawer.removeClass('is-open'); setTimeout(function(){{ $drawer.prop('hidden', true); }}, 300); }}
+                $('.dh-menu').on('click', function(e){{ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); }});
+                $drawer.on('click', '.dd-dim, .dd-close', function(e){{ e.preventDefault(); drawerClose(); }});
+                $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); }});
+            }});
+            </script>'''
+
 def badge_html(h):
     if not h['scored']:
         return '<div class="badge-item badge-collect">리뷰 수집중</div>'
@@ -572,6 +604,42 @@ def build_404():
             <a class="notice-btn" href="/search" style="margin-left:8px;background:var(--ink)">호텔 전체 보기</a>
         </div>
     </section></main>''' + build_footer(0) + FOOT
+
+# ───────────────────────── recent (F40) ─────────────────────────
+def build_recent(hotels_meta, H):
+    """F40-c: 최근 본 호텔 — localStorage(cf_recent, 최신순 pid 배열·기록은 js/engage.js) 기반 개인화 페이지.
+       카드 = hotel_card 동일 마크업(빌드시 전 호텔 숨김 풀 프리렌더 → JS가 기록 순서로 노출, 최대 20). sitemap 제외·noindex."""
+    pool = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=0) for p in hotels_meta if p in H)
+    return head('최근 본 호텔 | 캐치플로', depth=0,
+        extra_head='<meta name="robots" content="noindex">') + f'''
+    <main id="container">
+        <section id="main">
+            {site_header(0, back='./')}
+            <div class="hotel-list recent-list">
+                <div class="head"><div class="title">최근 본 호텔</div></div>
+                <div class="list"><ul id="recent-list"></ul></div>
+            </div>
+            <div class="recent-empty" id="recent-empty" hidden>
+                <div class="re-txt">아직 본 호텔이 없어요</div>
+                <a class="re-btn" href="./search">호텔 검색하기</a>
+            </div>
+            <ul id="recent-pool" hidden>{pool}</ul>
+        </section>
+    </main>
+    <script>
+    $(function(){{
+        var ids = [];
+        try {{ ids = JSON.parse(localStorage.getItem('cf_recent') || '[]'); }} catch (e) {{}}
+        if (!Array.isArray(ids)) ids = [];
+        var $list = $('#recent-list'), n = 0;
+        ids.slice(0, 20).forEach(function(pid){{
+            var $a = $('#recent-pool a[href="hotels/' + String(pid).replace(/[^\\w-]/g, '') + '"]');
+            if ($a.length) {{ $list.append($a.closest('li')); n++; }}
+        }});
+        $('#recent-pool').remove();
+        if (!n) {{ $('#recent-empty').prop('hidden', false); $('.recent-list').hide(); }}
+    }});
+    </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── search ─────────────────────────
 def build_search_index(hotels_meta, H):
@@ -1104,12 +1172,11 @@ def build_search(city_avg_pct):
     </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── detail ─────────────────────────
-def gauge_html(p_crit, city_crit, rank_pct=None, tone='safe'):
-    """원본 퍼블리싱 게이지 구조 + F22 백분위 라벨(마커 위 "후쿠오카 상위/하위 N%") — 중앙 = 도시 평균"""
-    if p_crit <= city_crit:
-        pos = 50.0 * p_crit / city_crit
-    else:
-        pos = 50.0 + 50.0 * min((p_crit - city_crit) / (2 * city_crit), 1.0)
+def gauge_html(rank_pct, avg_rank_pct, city_crit, tone='safe'):
+    """F37: 백분위(상대순위) 축 게이지 — 마커 위치 = crit_rank_pct(좌 0=우수, 우 100=최악).
+    평균 마커 = city_crit이 실제로 위치하는 백분위(실계산, 50 고정 아님). 말풍선은 마커와 동일 좌표(축 일치)."""
+    pos = min(max(float(rank_pct if rank_pct is not None else 50), 0.0), 100.0)
+    avg_pos = min(max(float(avg_rank_pct if avg_rank_pct is not None else 50), 8.0), 92.0)  # 끝 라벨(우수/위험)과 겹침 방지 클램프
     rank_html = ''
     if rank_pct:
         txt = (f'{CITY["ko"]} 상위 {rank_pct}%' if rank_pct <= 50 else f'{CITY["ko"]} 하위 {100 - rank_pct}%')
@@ -1122,10 +1189,16 @@ def gauge_html(p_crit, city_crit, rank_pct=None, tone='safe'):
         </div>
         <div class="label">
             <span>우수</span>
-            <span class="analysis">평균 {pct(city_crit)}%</span>
+            <span class="analysis" style="left:{avg_pos:.1f}%">평균 {pct(city_crit)}%</span>
             <span>위험</span>
         </div>
     </div>'''
+
+def city_crit_rank_pct(H, city_crit):
+    """F37-b: 도시 평균 실망확률(city_crit)이 scored 호텔 p_crit 분포에서 차지하는 백분위(실계산)."""
+    vals = [h['p_crit'] for h in H.values() if h['scored']]
+    if not vals: return 50.0
+    return 100.0 * sum(1 for v in vals if v < city_crit) / len(vals)
 
 def ratio_from_score(score):
     return score / 50.0 if score <= 50 else 1.0 + (score - 50.0) / 25.0
@@ -1566,8 +1639,8 @@ def faq_answer_html(a):
     return re.sub(r'(?<=[다요])\.\s+', '.<br>', emph(a or ''))
 
 def orig_link_label(o):
-    """F32: 출처별 원문 링크 라벨 (Google / Trip.com / 기타)."""
-    return '구글 리뷰 보기 ↗' if o == 'Google' else ('Trip.com에서 보기 ↗' if o == 'Trip.com' else '원문 보기 ↗')
+    """F32+F39: 원문 링크 라벨 통일 — 목적지 URL은 현행 그대로(변형 금지)."""
+    return '리뷰 원문 보기 ↗'
 
 def _faq_ev_preview(ev, topic=''):
     """FAQ 카드 내 리뷰 근거 미니카드 — 고객 id(마스킹) 우선, 출처는 보조, 별점 있으면 별점(§7: 별 0개 금지)."""
@@ -1689,15 +1762,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # ── 딜브레이커 발동 계산 (경고 스트립·점프칩·verdict 공용): 희소·고위험 최근 1년 심각 ≥3건 — 캘리브레이션 고정 ──
     db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만 (점프칩 fj-risk·verdict 공용, F35로 스트립은 삭제)
     rare_crit = {}        # {scat: 최근1년 심각 건수} — 발동 여부 무관 원시 카운트 (F8 verdict A① 판정용)
-    rare_cascade = {}     # F33: {scat: (label, tone)} — 희소 칩 최신성 캐스케이드(최근 3달 → 최근 1년 → 신고 없음)
+    rare_cascade = {}     # F33: {scat: (label, tone)} — 희소 칩 최신성 캐스케이드(최근 3달 → 최근 1년 → 심각 리뷰 없음)
     cut_1y = None         # 최근 1년 컷 날짜 문자열 (F8 case C 재사용)
     if CITY['asof']:
         from datetime import date as _date, timedelta as _td
         _y, _m, _d = map(int, CITY['asof'].split('-'))
         cut_1y = str(_date(_y, _m, _d) - _td(days=365))
         cut_3m = str(_date(_y, _m, _d) - _td(days=90))
-        for _cat, _scat, _slabel, _clabel in (('위생', '해충/곰팡이', '벌레·곰팡이', '벌레 신고'),
-                                              ('위치·안전', '치안·안심', '치안·안심', '치안 신고')):
+        for _cat, _scat, _slabel, _clabel in (('위생', '해충/곰팡이', '벌레·곰팡이', '벌레 리뷰'),   # F43: 신고→리뷰
+                                              ('위치·안전', '치안·안심', '치안·안심', '치안 리뷰')):
             _sev = [str(q.get('pub') or '')[:10] for q in quotes.get((pid, _cat), [])
                     if (q.get('scat') or '') == _scat and q.get('grade') == '심각']
             _n = sum(1 for p in _sev if p >= cut_1y)          # 최근 1년 심각
@@ -1705,13 +1778,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             rare_crit[_scat] = _n
             if _n >= 3:
                 db_data.append((_cat, _slabel, _clabel, _n))
-            # F33 캐스케이드: 최근 3달 심각 ≥1 → 최근 1년 심각 ≥1 → 둘 다 0(신고 없음)
+            # F33 캐스케이드: 최근 3달 심각 ≥1 → 최근 1년 심각 ≥1 → 둘 다 0(심각 리뷰 없음 — F43 워딩)
             if _n3 >= 1:
                 rare_cascade[_scat] = (f'최근 3달 심각 {_n3}건', 'alert')
             elif _n >= 1:
                 rare_cascade[_scat] = (f'최근 1년 심각 {_n}건', 'alert')
             else:
-                rare_cascade[_scat] = ('최근 1년 신고 없음', 'clear')
+                rare_cascade[_scat] = ('최근 1년 심각 리뷰 없음', 'clear')
 
     # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩(primary) + 전체 (최대 4칩) ──
     FAQ_CHIP_Q = [('bath', '대욕장 있나요?'), ('luggage', '짐 맡아주나요?'), ('breakfast', '조식 어때요?'),
@@ -1786,7 +1859,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         if ratio <= 0.8:                              # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석했지만,<br>벌레·치안 심각 신고는 <b>0건</b>이었어요'
+                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석했지만,<br>벌레·치안 심각 리뷰는 <b>0건</b>이었어요'
             elif _all_safe:
                 v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석한 결과,<br>6개 항목 모두 평균보다 안전했어요'
             else:
@@ -1818,8 +1891,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 v_why = f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
             else:   # 가드(빈값): 실측 비율만
                 v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
-        # F31: verdict 헤드라인은 게이지 위로 승격, 근거(why)는 게이지 아래 — 분리 렌더
-        verdict_head_html = f'<div class="verdict is-{v_tone}">{E(v_head)}</div>'
+        # F41: 히어로 줄 = %+판정 같은 줄·같은 케이스색(verdict 별도 줄 흡수). 근거(why)는 게이지 아래 유지
         verdict_why_html = f'<div class="verdict-why">{v_why}</div>'
 
         # F35: 딜브레이커 경고 스트립 삭제(db_data 계산은 점프칩 fj-risk·verdict용으로 유지)
@@ -1864,7 +1936,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                             if cnt > 0 else '<span class="stat-count zero">0건</span>')
                 if s in RARE_SUBS:
                     # §3-c 희소·고위험: 점수 막대 대신 칩 (점수는 내부 계산 유지, 화면만 미노출) — F33 최신성 캐스케이드
-                    _clabel, _ctone = rare_cascade.get(s, ('최근 1년 신고 없음', 'clear'))
+                    _clabel, _ctone = rare_cascade.get(s, ('최근 1년 심각 리뷰 없음', 'clear'))
                     rdot = 'danger' if _ctone == 'alert' else 'safe'
                     chip = f'<div class="rare-chip is-{_ctone}">{E(_clabel)}</div>'
                     rare_btn = cnt_html if cnt > 0 else ''      # 우측 "N건" 전체보기 링크 현행 유지
@@ -1874,14 +1946,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     {rare_btn}
                 </li>''')
                     continue
-                # F34: 소분류 행 최근 1년 비율 캡션 (N=1y finding 수, P=N/analyzed·소수1자리). 희소 칩 행은 F33이 대체.
+                # F34+F38: 소분류 행 최근 1년 비율 캡션 — "최근 1년 리뷰의 P%"(P=1y finding/analyzed·소수1자리), 우측 건수 링크 아래 우측정렬. 희소 칩 행은 F33이 대체.
                 n1y = sub.get('count_1y', 0)
-                cap_1y = (f'최근 1년 {n1y}건 · 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
+                cap_1y = (f'최근 1년 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
                           if n1y > 0 and h['analyzed'] else '최근 1년 없음')
                 rows.append(f'''<li class="stat-row is-{sub['band']}">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div><div class="sub-1y">{E(cap_1y)}</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:{sc}%"><i class="bubble">{sc}</i></div></div>
                     {cnt_html}
+                    <div class="sub-1y">{E(cap_1y)}</div>
                 </li>''')
             qc = quote_cards(qlist)
             total_q = len(qlist)
@@ -1969,11 +2042,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         body_scored = f'''
         <div class="sect disappear">
             <div class="head">
-                <div class="tit">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
-                <div class="num">{v}%</div>
+                <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
+                <div class="pct">{v}%</div>
+                <div class="vh is-{v_tone}">{E(v_head)}</div>
             </div>
-            {verdict_head_html}
-            {gauge_html(h['p_crit'], city['crit'], crit_rank_pct, v_tone)}
+            {gauge_html(crit_rank_pct, city_crit_rank_pct(H, city['crit']), city['crit'], v_tone)}
             {verdict_why_html}
             {overall_trend}
             <div class="basis-fold">
@@ -2036,7 +2109,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="lg is-danger">위험 70+</span><span class="lg is-warning">주의 45~70</span><span class="lg is-safe">양호 ~45</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 신고 건수로 보여드려요</span>
+                <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         {faq_section(faq)}
@@ -2091,24 +2164,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
     <main id="container">
         <section id="detail">
-            <div class="det-header">
-                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
-                <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
-                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
-            </div>
-            <div class="det-drawer" hidden>
-                <div class="dd-dim"></div>
-                <div class="dd-panel">
-                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
-                    <nav class="dd-nav">
-                        <a href="../">홈</a>
-                        <a href="../search">호텔 검색</a>
-                        <a href="../wishlist">찜한 호텔</a>
-                        <a href="../recent">최근 본 호텔</a>
-                        <a href="../about">산출 방법</a>
-                    </nav>
-                </div>
-            </div>
+            {site_header(1, back='../search')}
             <div class="content">
                 {gallery_html(meta, name, img)}
                 <div class="sect information">
@@ -2161,12 +2217,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 new Swiper(el, {{slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true}});
             }});
 
-            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
-            var $drawer = $('.det-drawer');
-            function drawerClose(){{ $drawer.removeClass('is-open'); setTimeout(function(){{ $drawer.prop('hidden', true); }}, 300); }}
-            $('.dh-menu').on('click', function(e){{ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); }});
-            $drawer.on('click', '.dd-dim, .dd-close', function(e){{ e.preventDefault(); drawerClose(); }});
-            $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); }});
+            // F36 드로어 JS는 site_header() 공통 컴포넌트에 포함 (상세·recent 공유)
 
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){{
@@ -2256,11 +2307,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     + foot + full
                     + '</div></li>';
             }}
-            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
             function origLink(o, u){{
                 if (!u) return '<span></span>';
-                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
-                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
             }}
             // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
             function relSpan(d){{ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }}
@@ -2999,6 +3049,7 @@ def main():
     W('index.html', build_index(hotels_meta, H, quotes, col_index))
     W('search.html', build_search(pct(city['crit'])))
     W('404.html', build_404())
+    W('recent.html', build_recent(hotels_meta, H))   # F40: 개인화 페이지 — sitemap 제외
     W('about.html', build_about(hotels_meta, H, city))
     idx = build_search_index(hotels_meta, H)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')

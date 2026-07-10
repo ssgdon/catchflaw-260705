@@ -8,6 +8,16 @@
     var H = window.CF_HOTEL;
     if (!H) return;
 
+    // ───────── 최근 본 호텔 기록 (F40) ─────────
+    // localStorage 'cf_recent' = 최신순 pid 배열(중복 제거, 최대 20) — recent 페이지(build_recent)가 동일 키로 읽음
+    try {
+      var rec = JSON.parse(localStorage.getItem('cf_recent') || '[]');
+      if (!Array.isArray(rec)) rec = [];
+      rec = rec.filter(function (p) { return p !== H.pid; });
+      rec.unshift(H.pid);
+      localStorage.setItem('cf_recent', JSON.stringify(rec.slice(0, 20)));
+    } catch (e) {}
+
     // 카카오톡 인앱 브라우저 감지
     var isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
 

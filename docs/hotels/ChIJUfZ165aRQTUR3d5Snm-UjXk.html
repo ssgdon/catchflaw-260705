@@ -34,18 +34,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783686894">
-    <link rel="stylesheet" href="../css/common.css?v=1783686894">
-    <link rel="stylesheet" href="../css/layout.css?v=1783686894">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783686894">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783686894">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783686894">
-    <script src="../js/backnav.js?v=1783686894"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783689233">
+    <link rel="stylesheet" href="../css/common.css?v=1783689233">
+    <link rel="stylesheet" href="../css/layout.css?v=1783689233">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783689233">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783689233">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783689233">
+    <script src="../js/backnav.js?v=1783689233"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783686894" defer></script>
-    <script src="../js/recommend.js?v=1783686894"></script>
+    <script src="../js/engage.js?v=1783689233" defer></script>
+    <script src="../js/recommend.js?v=1783689233"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -53,7 +53,7 @@
     <main id="container">
         <section id="detail">
             <div class="det-header">
-                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
+                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back_b.svg" alt="뒤로가기"></a>
                 <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
                 <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
             </div>
@@ -64,12 +64,20 @@
                     <nav class="dd-nav">
                         <a href="../">홈</a>
                         <a href="../search">호텔 검색</a>
-                        <a href="../wishlist">찜한 호텔</a>
                         <a href="../recent">최근 본 호텔</a>
                         <a href="../about">산출 방법</a>
                     </nav>
                 </div>
             </div>
+            <script>
+            $(function(){
+                var $drawer = $('.det-drawer');
+                function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
+                $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
+                $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
+                $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+            });
+            </script>
             <div class="content">
                 <div class="visual"><img src="../img/placeholder.svg" alt="THE HOTELS HAKATA HARUSHIGE HONKAN" width="800" height="600"></div>
                 <div class="sect information">
@@ -254,12 +262,7 @@
                 new Swiper(el, {slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true});
             });
 
-            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
-            var $drawer = $('.det-drawer');
-            function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
-            $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
-            $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
-            $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+            // F36 드로어 JS는 site_header() 공통 컴포넌트에 포함 (상세·recent 공유)
 
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){
@@ -349,11 +352,10 @@
                     + foot + full
                     + '</div></li>';
             }
-            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
             function origLink(o, u){
                 if (!u) return '<span></span>';
-                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
-                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
             }
             // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
             function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }
