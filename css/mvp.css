@@ -781,3 +781,55 @@
 #detail .information .info-cont .meta span.price,
 #search .list .cont .info .meta span.price,
 #hub .hub-list .cont .info .meta span.price{gap:var(--sp-1);}
+
+/* ══════════ F26: 상세 전면 폴리시 패스 — 하드 미니멈 정규화 (mvp.css 오버라이드, layout.css 원본 불변) ══════════
+   원칙: 읽기 본문 ≥15px·lh 1.6+ / 메타만 12~13px / 터치 타깃 ≥40px / 카드 패딩 ≥16 / 중첩박스 보더 다이어트.
+   지시 수치 중 토큰 스케일(30·24·22·18·17·15·13·12) 밖의 값(16px·12.5px·14px)은 최근접 토큰으로 매핑(UI-STANDARDS §3). */
+
+/* 1) 리스크 아코디언 헤드: 상하 16px 패딩(행높이 ~56px)·이름 17px/700·점수 17px/700·백분위 13px 분리 */
+#detail .analysis .risk-acc-head{height:auto;padding:16px;gap:10px;}
+#detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-body-lg);font-weight:var(--fw-bold);}
+#detail .analysis .risk-acc-head .cat-score{font-size:var(--fs-body-lg);font-weight:var(--fw-bold);}
+#detail .analysis .risk-acc-head .cat-score .pctl{font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .analysis .risk-acc-body{padding:4px 16px 16px;}
+#detail .analysis .risk-acc-body .stat-info .keywords{font-size:var(--fs-micro);line-height:1.4;}
+#detail .analysis .risk-acc-body .stat-fill .bubble{font-size:var(--fs-micro);}
+
+/* 2) FAQ 카드: 패딩 16px·질문 17px/700 유지·칩 30px/13px·답변/인용 15px·1.65·메타 12px */
+#detail .faq .faq-card{padding:16px;}
+#detail .faq .faq-q{min-height:24px;}
+#detail .faq .faq-chips{gap:8px;margin-top:10px;}
+#detail .faq .faq-chip{height:30px;padding:0 12px;font-size:var(--fs-caption);}
+#detail .faq .faq-a{line-height:1.65;}
+#detail .faq .faq-ev .fe-item{padding:14px 16px;}
+#detail .faq .faq-ev .fe-q{font-size:var(--fs-body);line-height:1.65;}
+#detail .faq .faq-ev .fe-name{font-size:var(--fs-micro);}
+#detail .faq .head{margin:0 0 20px;}   /* 공통 .sect .head 40px → 20px (섹션 head 여백 20~24) */
+
+/* 3) 각주·범례: 12px/1.6·문장별 별도 줄(마크업 분리)·줄 간 6px */
+#detail .analysis .stat-legend{row-gap:6px;}
+#detail .analysis .stat-legend .lg{font-size:var(--fs-micro);}
+#detail .analysis .stat-legend .note{font-size:var(--fs-micro);line-height:1.6;}
+#detail .disappear .basis{font-size:var(--fs-micro);}
+
+/* 4) verdict 18px/700·why 15px/1.6·게이지 말풍선 12px 유지 */
+#detail .disappear .verdict{font-weight:var(--fw-bold);}
+#detail .disappear .verdict-why{line-height:1.6;}
+
+/* 5) 칩 규격 통일: 높이 30~32·텍스트 13px(--fs-caption)·x패딩 12px. fj-btn은 보더+배경만(그림자 제거 — 층위 중복 금지) */
+#detail .fj-btn{height:32px;padding:0 12px;font-size:var(--fs-caption);box-shadow:none;}
+#detail .location .lc-chip{height:30px;padding:0 12px;font-size:var(--fs-caption);}
+#detail .fj-title{font-size:var(--fs-caption);}
+
+/* 6) 필터 탭: 높이 36px·15px·선택 = primary-soft 배경+primary 보더 */
+#detail .faq .faq-tab{height:36px;padding:0 14px;font-size:var(--fs-body);font-weight:var(--fw-bold);}
+#detail .faq .faq-tab.is-on{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);}
+
+/* 7) 더보기·trend-fold·딜브레이커: 터치 타깃 40~44px·라벨 15px */
+#detail .faq .faq-more-btn{height:44px;font-size:var(--fs-body);}
+#detail .trend-fold-btn{min-height:44px;padding:12px;}
+#detail .trend-fold-btn .tf-tit{font-size:var(--fs-body);}
+#detail .db-strip .db-item{min-height:44px;}
+#detail .db-strip .db-txt{font-size:var(--fs-body);}
+/* ? 버튼: 시각 20px 원 유지 + 히트영역 40px 확보 */
+#detail .disappear .head .tit .basis-toggle{padding:10px;margin:-10px -4px -10px -4px;}
