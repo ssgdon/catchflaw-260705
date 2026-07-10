@@ -749,13 +749,6 @@
 .review-sheet.faq-mode .sheet-tools,
 .review-sheet.faq-mode .sheet-chips{display:none;}
 
-/* ── 딜브레이커 경고 스트립 — 희소·고위험 최근 1년 심각 신고 ≥3건. danger-soft/text · 라운드 14 · 4px 그리드 ── */
-#detail .db-strip{display:flex;flex-direction:column;gap:var(--sp-2);margin:var(--sp-3) 0 0;}
-#detail .db-strip .db-item{display:flex;align-items:center;gap:var(--sp-2);width:100%;padding:var(--sp-3) var(--sp-4);border:0;border-radius:var(--radius-btn);background:var(--danger-soft);text-align:left;cursor:pointer;}
-#detail .db-strip .db-txt{flex:1 1 auto;min-width:0;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--danger-text);}
-#detail .db-strip .db-txt b{font-weight:var(--fw-display);font-variant-numeric:tabular-nums;}
-#detail .db-strip .db-link{flex:0 0 auto;font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--danger-text);text-decoration:underline;text-underline-offset:2px;}
-
 /* ── 진입점 점프 칩 (info-bottom 아래·1줄 고정) — F10 CTA + F14 3톤(위험 danger·질문 primary·전체 중립) ── */
 /* F4: 단일 줄 고정, 넘치면 가로 스크롤(스크롤바 숨김). F14: 우측 화이트 페이드. F19: 칩 위 마이크로 타이틀 */
 #detail .fj-title{margin-top:var(--sp-3);font-size:var(--fs-micro);font-weight:600;color:var(--ink-3);}
@@ -825,11 +818,47 @@
 #detail .faq .faq-tab{height:36px;padding:0 14px;font-size:var(--fs-body);font-weight:var(--fw-bold);}
 #detail .faq .faq-tab.is-on{background:var(--primary-soft);border-color:var(--primary);color:var(--primary-deep);}
 
-/* 7) 더보기·trend-fold·딜브레이커: 터치 타깃 40~44px·라벨 15px */
+/* 7) 더보기·trend-fold: 터치 타깃 40~44px·라벨 15px */
 #detail .faq .faq-more-btn{height:44px;font-size:var(--fs-body);}
 #detail .trend-fold-btn{min-height:44px;padding:12px;}
 #detail .trend-fold-btn .tf-tit{font-size:var(--fs-body);}
-#detail .db-strip .db-item{min-height:44px;}
-#detail .db-strip .db-txt{font-size:var(--fs-body);}
 /* ? 버튼: 시각 20px 원 유지 + 히트영역 40px 확보 */
 #detail .disappear .head .tit .basis-toggle{padding:10px;margin:-10px -4px -10px -4px;}
+
+/* ══════════ F27+F31 (7라운드) ══════════ */
+/* F27: 상대시간 뱃지 — 날짜 옆 미세 중립 칩 (FAQ 미리보기·리스크/ FAQ 시트 공통) */
+.rel-badge{display:inline-flex;align-items:center;height:18px;margin-left:6px;padding:0 6px;border-radius:var(--radius-chip);background:var(--surface);font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);white-space:nowrap;}
+.rel-badge:empty{display:none;}
+
+/* F31: 실망확률 헤더 재배치 — tit+? 와 % 를 한 묶음, verdict 를 게이지 위로 승격 */
+#detail .disappear .head{margin:0 0 14px;}
+#detail .disappear .head .tit{font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:1.35;color:var(--ink-2);margin:0 0 2px;}
+#detail .disappear .head .num{line-height:1.05;font-size:34px;font-weight:var(--fw-display);color:var(--primary);}   /* F31: tit 바로 아래 밀착 % (32~36/800 primary) */
+#detail .disappear .verdict{margin:0 0 14px;font-size:var(--fs-h2);font-weight:var(--fw-bold);}
+#detail .disappear .gauge{margin-top:0;}
+#detail .disappear .verdict-why{margin:14px 0 0;}
+
+/* ══════════ F32/F34/F36 (8라운드 완결) ══════════ */
+/* F32: FAQ 근거 미니카드 원문 링크 — 중립 톤(FAQ는 시맨틱색 금지) */
+#detail .faq .faq-ev .fe-link{display:inline-flex;align-items:center;margin-top:6px;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);text-decoration:underline;text-underline-offset:2px;}
+
+/* F34: 소분류 행 최근 1년 비율 캡션 — keywords 아래 미세 캡션(중립) */
+#detail .analysis .risk-acc-body .stat-info .sub-1y{margin:2px 0 0;line-height:1.35;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);font-variant-numeric:tabular-nums;}
+
+/* F36: 상세 사이트 헤더 (좌 back · 중앙 로고 · 우 햄버거) — 갤러리 위 플로팅 back 대체 */
+#detail .det-header{position:relative;z-index:5;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 var(--page-x);background:#fff;border-bottom:1px solid var(--line);}
+#detail .det-header .dh-back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;margin-left:-8px;}
+#detail .det-header .dh-back img{display:block;width:24px;height:24px;}
+#detail .det-header .dh-logo{display:flex;align-items:center;height:15px;aspect-ratio:122/15;}
+#detail .det-header .dh-logo img{display:block;width:100%;height:100%;object-fit:contain;}
+#detail .det-header .dh-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;margin-right:-8px;padding:8px;background:none;border:0;cursor:pointer;}
+#detail .det-header .dh-menu span{display:block;width:20px;height:2px;border-radius:2px;background:var(--ink);}
+/* F36 드로어 — 우측 슬라이드, tokens·시트 규격 재사용 */
+#detail .det-drawer{position:fixed;z-index:400;inset:0;}
+#detail .det-drawer .dd-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);opacity:0;transition:opacity .3s;}
+#detail .det-drawer .dd-panel{position:absolute;top:0;right:0;bottom:0;width:74%;max-width:300px;transform:translateX(100%);transition:transform .3s;background:#fff;padding:calc(env(safe-area-inset-top) + 16px) var(--page-x) 24px;}
+#detail .det-drawer.is-open .dd-dim{opacity:1;}
+#detail .det-drawer.is-open .dd-panel{transform:translateX(0);}
+#detail .det-drawer .dd-close{display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:0 -8px 12px auto;font-size:18px;color:var(--ink-2);background:none;border:0;cursor:pointer;}
+#detail .det-drawer .dd-nav{display:flex;flex-direction:column;}
+#detail .det-drawer .dd-nav a{display:flex;align-items:center;height:52px;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);border-bottom:1px solid var(--line);}

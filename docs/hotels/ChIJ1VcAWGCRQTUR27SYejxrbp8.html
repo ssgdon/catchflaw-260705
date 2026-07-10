@@ -34,26 +34,41 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783670998">
-    <link rel="stylesheet" href="../css/common.css?v=1783670998">
-    <link rel="stylesheet" href="../css/layout.css?v=1783670998">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783670998">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783670998">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783670998">
-    <script src="../js/backnav.js?v=1783670998"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783686894">
+    <link rel="stylesheet" href="../css/common.css?v=1783686894">
+    <link rel="stylesheet" href="../css/layout.css?v=1783686894">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783686894">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783686894">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783686894">
+    <script src="../js/backnav.js?v=1783686894"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783670998" defer></script>
-    <script src="../js/recommend.js?v=1783670998"></script>
+    <script src="../js/engage.js?v=1783686894" defer></script>
+    <script src="../js/recommend.js?v=1783686894"></script>
 </head>
 <body>
 <div id="wrapper">
     <script>window.CF_HOTEL={pid:"ChIJ1VcAWGCRQTUR27SYejxrbp8",name:"HOTEL STAR RESIDENCE",gmap:"https://www.google.com/maps/search/?api=1&query=HOTEL%20STAR%20RESIDENCE&query_place_id=ChIJ1VcAWGCRQTUR27SYejxrbp8"};</script>
     <main id="container">
         <section id="detail">
-            <div class="header">
-                <div class="back"><a href="../search"><img src="../img/back.svg" alt="뒤로가기"></a></div>
+            <div class="det-header">
+                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
+                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+            </div>
+            <div class="det-drawer" hidden>
+                <div class="dd-dim"></div>
+                <div class="dd-panel">
+                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
+                    <nav class="dd-nav">
+                        <a href="../">홈</a>
+                        <a href="../search">호텔 검색</a>
+                        <a href="../wishlist">찜한 호텔</a>
+                        <a href="../recent">최근 본 호텔</a>
+                        <a href="../about">산출 방법</a>
+                    </nav>
+                </div>
             </div>
             <div class="content">
                 <div class="visual"><div class="swiper hotel-gallery"><div class="swiper-wrapper"><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ1VcAWGCRQTUR27SYejxrbp8/0.webp" alt="HOTEL STAR RESIDENCE" width="800" height="600" fetchpriority="high"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ1VcAWGCRQTUR27SYejxrbp8/1.webp" alt="HOTEL STAR RESIDENCE" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ1VcAWGCRQTUR27SYejxrbp8/2.webp" alt="HOTEL STAR RESIDENCE" width="800" height="600" decoding="async"></div></div><div class="swiper-pagination"></div><div class="gallery-count">1 / 3</div></div></div>
@@ -239,6 +254,13 @@
                 new Swiper(el, {slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true});
             });
 
+            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
+            var $drawer = $('.det-drawer');
+            function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
+            $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
+            $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
+            $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){
                 $('#float').toggleClass('is-active', $(window).scrollTop() > 50);
@@ -248,6 +270,28 @@
                 $('html, body').stop().animate({scrollTop: 0}, 400);
             });
             // 공유(.btn-share)는 js/engage.js 에서 처리 (OS 공유시트 + 카카오 인앱 폴백)
+
+            // F16+F21+F31: 산출 기준(basis) ? 토글 — 가드 없는 블록에서 바인딩(항상 실행). 모바일 탭 확실성 위해 preventDefault
+            $('#detail').on('click', '.basis-toggle', function(e){
+                e.preventDefault();
+                $('.disappear .basis-fold').toggleClass('is-open');
+            });
+
+            // F27: 상대시간 뱃지 — 클라이언트 계산(로드 시점 기준, 빌드 고정 아님). <7일 N일 전 / <35일 N주 전 / <12개월 N개월 전 / 그 외 N년 전
+            window.CF_rel = function(iso){
+                if (!iso) return '';
+                var t = Date.parse(iso.length > 10 ? iso : iso + 'T00:00:00');
+                if (isNaN(t)) return '';
+                var days = Math.floor((Date.now() - t) / 86400000);
+                if (days < 0) days = 0;
+                if (days < 7) return (days || 0) + '일 전';
+                if (days < 35) return Math.floor(days / 7) + '주 전';
+                var mon = Math.floor(days / 30);
+                if (mon < 12) return mon + '개월 전';
+                return Math.floor(days / 365) + '년 전';
+            };
+            // 서버 렌더된 FAQ 미리보기 뱃지 채우기 (동적 시트 카드는 렌더 시 inline 처리)
+            $('.rel-badge[data-d]').each(function(){ var s = window.CF_rel($(this).data('d')); if (s) $(this).text(s); });
 
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
@@ -292,17 +336,8 @@
                         + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
                         + '</div>';
                 }
-                // 링크: 구글 origin만 개별 리뷰 원본으로, 그 외(Trip.com·Booking 등)는 전부 호텔 구글 리뷰 페이지로
-                // (Trip.com/Booking 원본 URL은 예약페이지로 빠져 리뷰가 안 보임)
-                var linkHtml = '<span></span>';
-                var isGoogle = (q.o === 'Google') && q.u && q.u.toLowerCase().indexOf('google.') >= 0;
-                if (isGoogle) {
-                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                } else if (window.CF_GREVIEWS) {
-                    linkHtml = '<a class="orig-link" href="' + esc(window.CF_GREVIEWS) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                }
                 var foot = '<div class="item-foot">'
-                    + linkHtml
+                    + origLink(q.o, q.u)
                     + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
                     + '</div>';
                 return '<li><div class="item">'
@@ -310,10 +345,18 @@
                     + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div>' + (langLabel(q.l) ? '<span class="q-lang">' + langLabel(q.l) + '</span>' : '') + '</div>'
                     + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
-                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + '</div></div>'
+                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + relSpan(q.d) + '</div></div>'
                     + foot + full
                     + '</div></li>';
             }
+            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            function origLink(o, u){
+                if (!u) return '<span></span>';
+                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+            }
+            // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
+            function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }
 
             function render(){
                 var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
@@ -355,16 +398,21 @@
                 $('body').css('overflow', '');
                 setTimeout(function(){ $sheet.prop('hidden', true); }, 300);
             }
-            // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
+            // F28: FAQ 시트 카드 = 리스크 시트 카드 동형(이름·별점·출처·언어칩·인용·날짜+상대뱃지·원문링크·tf 토글). grade만 미해당→생략.
             function faqCard(e){
                 var stw = parseInt(e.st, 10) || 0;
                 var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
                 var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
+                var hasFull = !!e.tf;
+                var full = hasFull ? '<div class="full" hidden><div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(e.tf) + '</div></div>' : '';
+                var foot = '<div class="item-foot">' + origLink(e.o, e.u)
+                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '') + '</div>';
                 return '<li><div class="item">'
                     + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
-                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
-                    + '<div class="item-bottom"><div class="text">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
-                    + '<div class="date">' + esc(d) + '</div></div>'
+                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div>' + (langLabel(e.l) ? '<span class="q-lang">' + langLabel(e.l) + '</span>' : '') + '</div>'
+                    + '<div class="item-bottom"><div class="text clamp">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
+                    + '<div class="date">' + esc(d) + relSpan(e.d) + '</div></div>'
+                    + foot + full
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -448,10 +496,6 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
-            // F16+F21: 산출 기준(basis) — 기본 숨김, 타이틀 옆 ? 버튼이 하단 basis-fold 토글
-            $('#detail').on('click', '.basis-toggle', function(){
-                $('.disappear .basis-fold').toggleClass('is-open');
-            });
 
             // F7+F24: 월별 트렌드 폴드(전체·카테고리 공용) — 기본 접힘, 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
@@ -494,9 +538,14 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
-            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
-            $('#hotel-faq').on('click', '.faq-q', function(){
+            // F18 FAQ 카드 접힘/펼침 — Q줄 클릭은 토글(펼침 상태에서 접기 가능)
+            $('#hotel-faq').on('click', '.faq-q', function(e){
                 $(this).closest('.faq-card').toggleClass('is-open');
+                e.stopPropagation();   // 카드 레벨 핸들러 중복 방지
+            });
+            // F29 접힘 상태 = 카드 박스 전체가 클릭 영역. 펼친 상태에선 내부 인터랙션(더보기·링크) 보존
+            $('#hotel-faq').on('click', '.faq-card', function(){
+                if (!$(this).hasClass('is-open')) $(this).addClass('is-open');
             });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
@@ -510,10 +559,6 @@
                 $('html, body').stop().animate({scrollTop: top}, 350);
             }
             $('.radar-cats').on('click', '.radar-cat', function(){
-                openAndScroll($(this).data('target'));
-            });
-            // 딜브레이커 스트립 → 해당 카테고리 아코디언 열고 스크롤 (radar-cat 패턴 재사용)
-            $('.db-strip').on('click', '.db-item', function(){
                 openAndScroll($(this).data('target'));
             });
             // 점프 칩(진입점·위치 섹션 공용): risk-* → 아코디언 오픈, faq-* → 해당 카드로 스크롤, hotel-faq → 섹션 앵커

@@ -1565,6 +1565,10 @@ def faq_answer_html(a):
     """답변 렌더(F23): emph(**→primary span) 후 문장 종결('다. '/'요. ')마다 줄바꿈."""
     return re.sub(r'(?<=[다요])\.\s+', '.<br>', emph(a or ''))
 
+def orig_link_label(o):
+    """F32: 출처별 원문 링크 라벨 (Google / Trip.com / 기타)."""
+    return '구글 리뷰 보기 ↗' if o == 'Google' else ('Trip.com에서 보기 ↗' if o == 'Trip.com' else '원문 보기 ↗')
+
 def _faq_ev_preview(ev, topic=''):
     """FAQ 카드 내 리뷰 근거 미니카드 — 고객 id(마스킹) 우선, 출처는 보조, 별점 있으면 별점(§7: 별 0개 금지)."""
     st = ev.get('st')
@@ -1572,11 +1576,18 @@ def _faq_ev_preview(ev, topic=''):
     except (TypeError, ValueError): stw = 0
     star = f'<span class="star"><i style="width:{stw}%"></i></span>' if stw else ''
     d = _faq_date(ev.get('d'))
+    iso = str(ev.get('d') or '')[:10]
+    # F27: 날짜 옆 상대시간 뱃지 자리(fe-rel) — 클라이언트 JS가 채움(빌드시점 고정 아님)
+    date_html = (f'<span class="fe-date">{d}</span><span class="rel-badge" data-d="{E(iso)}"></span>'
+                 if d else '')
     meta = (f'<span class="fe-name">{E(mask_name(ev.get("rn")))}</span>'
-            f'<span class="fe-src">{E(ev.get("o") or "Google")}</span>{star}'
-            + (f'<span class="fe-date">{d}</span>' if d else ''))
+            f'<span class="fe-src">{E(ev.get("o") or "Google")}</span>{star}{date_html}')
+    # F32: 근거 미니카드 원문 링크 (url 빈값이면 미출력, 저장값 그대로)
+    u = ev.get('u') or ''
+    link = (f'<a class="fe-link" href="{E(u)}" target="_blank" rel="noopener">{orig_link_label(ev.get("o") or "Google")}</a>'
+            if u else '')
     return (f'<li class="fe-item"><div class="fe-meta">{meta}</div>'
-            f'<div class="fe-q">"{faq_hl(ev.get("q") or "", topic)}"</div></li>')
+            f'<div class="fe-q">"{faq_hl(ev.get("q") or "", topic)}"</div>{link}</li>')
 
 def faq_section(faq):
     """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8."""
@@ -1601,10 +1612,12 @@ def faq_section(faq):
                 prev = ''.join(_faq_ev_preview(ev, t) for ev in evlist[:3])
                 more = ''
                 if len(evlist) > 3:
-                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3). qh=키워드 하이라이트 HTML(F23)
+                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3). qh=하이라이트 HTML(F23). u/l/tf=F28 동형화용
                     faqevid[t] = [{'q': ev.get('q') or '', 'qh': faq_hl(ev.get('q') or '', t),
                                    'd': ev.get('d') or '', 'st': ev.get('st'),
-                                   'o': ev.get('o') or 'Google', 'n': mask_name(ev.get('rn'))} for ev in evlist]
+                                   'o': ev.get('o') or 'Google', 'n': mask_name(ev.get('rn')),
+                                   'u': ev.get('u') or '', 'l': ev.get('l') or '', 'tf': ev.get('tf') or ''}
+                                  for ev in evlist]
                     more = (f'<button type="button" class="faq-more-btn" data-topic="{E(t)}" '
                             f'data-q="{E(it.get("q") or "")}">리뷰 {len(evlist)}개 모두 보기</button>')
                 ev_block = (f'<div class="faq-ev-head">실제 투숙객 리뷰</div>'
@@ -1674,21 +1687,31 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>'''
 
     # ── 딜브레이커 발동 계산 (경고 스트립·점프칩·verdict 공용): 희소·고위험 최근 1년 심각 ≥3건 — 캘리브레이션 고정 ──
-    db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만
+    db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만 (점프칩 fj-risk·verdict 공용, F35로 스트립은 삭제)
     rare_crit = {}        # {scat: 최근1년 심각 건수} — 발동 여부 무관 원시 카운트 (F8 verdict A① 판정용)
+    rare_cascade = {}     # F33: {scat: (label, tone)} — 희소 칩 최신성 캐스케이드(최근 3달 → 최근 1년 → 신고 없음)
     cut_1y = None         # 최근 1년 컷 날짜 문자열 (F8 case C 재사용)
     if CITY['asof']:
         from datetime import date as _date, timedelta as _td
         _y, _m, _d = map(int, CITY['asof'].split('-'))
         cut_1y = str(_date(_y, _m, _d) - _td(days=365))
+        cut_3m = str(_date(_y, _m, _d) - _td(days=90))
         for _cat, _scat, _slabel, _clabel in (('위생', '해충/곰팡이', '벌레·곰팡이', '벌레 신고'),
                                               ('위치·안전', '치안·안심', '치안·안심', '치안 신고')):
-            _n = sum(1 for q in quotes.get((pid, _cat), [])
-                     if (q.get('scat') or '') == _scat and q.get('grade') == '심각'
-                     and str(q.get('pub') or '')[:10] >= cut_1y)
+            _sev = [str(q.get('pub') or '')[:10] for q in quotes.get((pid, _cat), [])
+                    if (q.get('scat') or '') == _scat and q.get('grade') == '심각']
+            _n = sum(1 for p in _sev if p >= cut_1y)          # 최근 1년 심각
+            _n3 = sum(1 for p in _sev if p >= cut_3m)          # 최근 3달 심각
             rare_crit[_scat] = _n
             if _n >= 3:
                 db_data.append((_cat, _slabel, _clabel, _n))
+            # F33 캐스케이드: 최근 3달 심각 ≥1 → 최근 1년 심각 ≥1 → 둘 다 0(신고 없음)
+            if _n3 >= 1:
+                rare_cascade[_scat] = (f'최근 3달 심각 {_n3}건', 'alert')
+            elif _n >= 1:
+                rare_cascade[_scat] = (f'최근 1년 심각 {_n}건', 'alert')
+            else:
+                rare_cascade[_scat] = ('최근 1년 신고 없음', 'clear')
 
     # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩(primary) + 전체 (최대 4칩) ──
     FAQ_CHIP_Q = [('bath', '대욕장 있나요?'), ('luggage', '짐 맡아주나요?'), ('breakfast', '조식 어때요?'),
@@ -1795,16 +1818,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 v_why = f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
             else:   # 가드(빈값): 실측 비율만
                 v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
-        verdict_html = (f'<div class="verdict is-{v_tone}">{E(v_head)}</div>'
-                        f'<div class="verdict-why">{v_why}</div>')
+        # F31: verdict 헤드라인은 게이지 위로 승격, 근거(why)는 게이지 아래 — 분리 렌더
+        verdict_head_html = f'<div class="verdict is-{v_tone}">{E(v_head)}</div>'
+        verdict_why_html = f'<div class="verdict-why">{v_why}</div>'
 
-        # ── 딜브레이커 경고 스트립 (db_data 공용 계산 재사용 — 해충 16%·치안 12% 발동) ──
-        db_items = [f'''<button type="button" class="db-item" data-target="risk-{CATS.index(_cat)}">
-                        <span class="risk-dot is-danger"></span>
-                        <span class="db-txt">최근 1년 {_slabel} 심각 신고 <b>{_n}건</b></span>
-                        <span class="db-link">리뷰 근거 보기</span>
-                    </button>''' for _cat, _slabel, _clabel, _n in db_data]
-        dealbreaker_strip = f'<div class="db-strip">{"".join(db_items)}</div>' if db_items else ''
+        # F35: 딜브레이커 경고 스트립 삭제(db_data 계산은 점프칩 fj-risk·verdict용으로 유지)
         radar_labels = json.dumps([cat_ko(c) for c in CATS], ensure_ascii=False)  # 표시 라벨만 순화(순서=CATS 고정)
 
         # 카테고리 × 소분류 — 아코디언(§4) + 리뷰 시트 데이터. 위험도 내림차순 정렬(§4-d).
@@ -1845,19 +1863,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 cnt_html = (f'<button type="button" class="stat-count has-reviews" data-cat="{E(c)}" data-sub="{E(s)}">{cnt}건</button>'
                             if cnt > 0 else '<span class="stat-count zero">0건</span>')
                 if s in RARE_SUBS:
-                    # §3-c 희소·고위험: 점수 막대 대신 "신고 N건" 칩 (점수는 내부 계산 유지, 화면만 미노출)
-                    rdot = 'danger' if cnt > 0 else 'safe'
-                    chip = (f'<div class="rare-chip is-alert">신고 {cnt}건</div>' if cnt > 0
-                            else '<div class="rare-chip is-clear">신고 없음</div>')
-                    rare_btn = cnt_html if cnt > 0 else ''
+                    # §3-c 희소·고위험: 점수 막대 대신 칩 (점수는 내부 계산 유지, 화면만 미노출) — F33 최신성 캐스케이드
+                    _clabel, _ctone = rare_cascade.get(s, ('최근 1년 신고 없음', 'clear'))
+                    rdot = 'danger' if _ctone == 'alert' else 'safe'
+                    chip = f'<div class="rare-chip is-{_ctone}">{E(_clabel)}</div>'
+                    rare_btn = cnt_html if cnt > 0 else ''      # 우측 "N건" 전체보기 링크 현행 유지
                     rows.append(f'''<li class="stat-row is-rare">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{rdot}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
                     {chip}
                     {rare_btn}
                 </li>''')
                     continue
+                # F34: 소분류 행 최근 1년 비율 캡션 (N=1y finding 수, P=N/analyzed·소수1자리). 희소 칩 행은 F33이 대체.
+                n1y = sub.get('count_1y', 0)
+                cap_1y = (f'최근 1년 {n1y}건 · 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
+                          if n1y > 0 and h['analyzed'] else '최근 1년 없음')
                 rows.append(f'''<li class="stat-row is-{sub['band']}">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div><div class="sub-1y">{E(cap_1y)}</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:{sc}%"><i class="bubble">{sc}</i></div></div>
                     {cnt_html}
                 </li>''')
@@ -1950,8 +1972,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="tit">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="num">{v}%</div>
             </div>
+            {verdict_head_html}
             {gauge_html(h['p_crit'], city['crit'], crit_rank_pct, v_tone)}
-            {verdict_html}
+            {verdict_why_html}
             {overall_trend}
             <div class="basis-fold">
                 <div class="basis">
@@ -1961,7 +1984,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 </div>
             </div>
         </div>
-        {dealbreaker_strip}
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">{CITY['ko']} 평균 = 50</div></div>
@@ -2007,7 +2029,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <div class="sect analysis" id="risk-detail">
             <div class="head"><div class="title">리스크 상세 분석</div>
-            <div class="desc">숫자는 위험도 0~100 (평균 50)<br>높을수록 주의하세요</div></div>
+            <div class="desc">위험도 0~100 · {CITY['ko']} 평균이 50이에요<br>100에 가까울수록 같은 불만이 많다는 뜻 (100 = 평균의 3배 이상)</div></div>
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">
@@ -2069,8 +2091,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
     <main id="container">
         <section id="detail">
-            <div class="header">
-                <div class="back"><a href="../search"><img src="../img/back.svg" alt="뒤로가기"></a></div>
+            <div class="det-header">
+                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
+                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+            </div>
+            <div class="det-drawer" hidden>
+                <div class="dd-dim"></div>
+                <div class="dd-panel">
+                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
+                    <nav class="dd-nav">
+                        <a href="../">홈</a>
+                        <a href="../search">호텔 검색</a>
+                        <a href="../wishlist">찜한 호텔</a>
+                        <a href="../recent">최근 본 호텔</a>
+                        <a href="../about">산출 방법</a>
+                    </nav>
+                </div>
             </div>
             <div class="content">
                 {gallery_html(meta, name, img)}
@@ -2124,6 +2161,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 new Swiper(el, {{slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true}});
             }});
 
+            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
+            var $drawer = $('.det-drawer');
+            function drawerClose(){{ $drawer.removeClass('is-open'); setTimeout(function(){{ $drawer.prop('hidden', true); }}, 300); }}
+            $('.dh-menu').on('click', function(e){{ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); }});
+            $drawer.on('click', '.dd-dim, .dd-close', function(e){{ e.preventDefault(); drawerClose(); }});
+            $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); }});
+
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){{
                 $('#float').toggleClass('is-active', $(window).scrollTop() > 50);
@@ -2133,6 +2177,28 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 $('html, body').stop().animate({{scrollTop: 0}}, 400);
             }});
             // 공유(.btn-share)는 js/engage.js 에서 처리 (OS 공유시트 + 카카오 인앱 폴백)
+
+            // F16+F21+F31: 산출 기준(basis) ? 토글 — 가드 없는 블록에서 바인딩(항상 실행). 모바일 탭 확실성 위해 preventDefault
+            $('#detail').on('click', '.basis-toggle', function(e){{
+                e.preventDefault();
+                $('.disappear .basis-fold').toggleClass('is-open');
+            }});
+
+            // F27: 상대시간 뱃지 — 클라이언트 계산(로드 시점 기준, 빌드 고정 아님). <7일 N일 전 / <35일 N주 전 / <12개월 N개월 전 / 그 외 N년 전
+            window.CF_rel = function(iso){{
+                if (!iso) return '';
+                var t = Date.parse(iso.length > 10 ? iso : iso + 'T00:00:00');
+                if (isNaN(t)) return '';
+                var days = Math.floor((Date.now() - t) / 86400000);
+                if (days < 0) days = 0;
+                if (days < 7) return (days || 0) + '일 전';
+                if (days < 35) return Math.floor(days / 7) + '주 전';
+                var mon = Math.floor(days / 30);
+                if (mon < 12) return mon + '개월 전';
+                return Math.floor(days / 365) + '년 전';
+            }};
+            // 서버 렌더된 FAQ 미리보기 뱃지 채우기 (동적 시트 카드는 렌더 시 inline 처리)
+            $('.rel-badge[data-d]').each(function(){{ var s = window.CF_rel($(this).data('d')); if (s) $(this).text(s); }});
 
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
@@ -2177,17 +2243,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
                         + '</div>';
                 }}
-                // 링크: 구글 origin만 개별 리뷰 원본으로, 그 외(Trip.com·Booking 등)는 전부 호텔 구글 리뷰 페이지로
-                // (Trip.com/Booking 원본 URL은 예약페이지로 빠져 리뷰가 안 보임)
-                var linkHtml = '<span></span>';
-                var isGoogle = (q.o === 'Google') && q.u && q.u.toLowerCase().indexOf('google.') >= 0;
-                if (isGoogle) {{
-                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                }} else if (window.CF_GREVIEWS) {{
-                    linkHtml = '<a class="orig-link" href="' + esc(window.CF_GREVIEWS) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                }}
                 var foot = '<div class="item-foot">'
-                    + linkHtml
+                    + origLink(q.o, q.u)
                     + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
                     + '</div>';
                 return '<li><div class="item">'
@@ -2195,10 +2252,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div>' + (langLabel(q.l) ? '<span class="q-lang">' + langLabel(q.l) + '</span>' : '') + '</div>'
                     + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
-                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + '</div></div>'
+                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + relSpan(q.d) + '</div></div>'
                     + foot + full
                     + '</div></li>';
             }}
+            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            function origLink(o, u){{
+                if (!u) return '<span></span>';
+                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+            }}
+            // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
+            function relSpan(d){{ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }}
 
             function render(){{
                 var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
@@ -2240,16 +2305,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 $('body').css('overflow', '');
                 setTimeout(function(){{ $sheet.prop('hidden', true); }}, 300);
             }}
-            // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
+            // F28: FAQ 시트 카드 = 리스크 시트 카드 동형(이름·별점·출처·언어칩·인용·날짜+상대뱃지·원문링크·tf 토글). grade만 미해당→생략.
             function faqCard(e){{
                 var stw = parseInt(e.st, 10) || 0;
                 var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
                 var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
+                var hasFull = !!e.tf;
+                var full = hasFull ? '<div class="full" hidden><div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(e.tf) + '</div></div>' : '';
+                var foot = '<div class="item-foot">' + origLink(e.o, e.u)
+                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '') + '</div>';
                 return '<li><div class="item">'
                     + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
-                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
-                    + '<div class="item-bottom"><div class="text">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
-                    + '<div class="date">' + esc(d) + '</div></div>'
+                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div>' + (langLabel(e.l) ? '<span class="q-lang">' + langLabel(e.l) + '</span>' : '') + '</div>'
+                    + '<div class="item-bottom"><div class="text clamp">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
+                    + '<div class="date">' + esc(d) + relSpan(e.d) + '</div></div>'
+                    + foot + full
                     + '</div></li>';
             }}
             function faqOpen(topic, q){{
@@ -2333,10 +2403,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
-            // F16+F21: 산출 기준(basis) — 기본 숨김, 타이틀 옆 ? 버튼이 하단 basis-fold 토글
-            $('#detail').on('click', '.basis-toggle', function(){{
-                $('.disappear .basis-fold').toggleClass('is-open');
-            }});
 
             // F7+F24: 월별 트렌드 폴드(전체·카테고리 공용) — 기본 접힘, 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
@@ -2379,9 +2445,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     $(this).toggle(!g || $(this).data('group') === g);
                 }});
             }});
-            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
-            $('#hotel-faq').on('click', '.faq-q', function(){{
+            // F18 FAQ 카드 접힘/펼침 — Q줄 클릭은 토글(펼침 상태에서 접기 가능)
+            $('#hotel-faq').on('click', '.faq-q', function(e){{
                 $(this).closest('.faq-card').toggleClass('is-open');
+                e.stopPropagation();   // 카드 레벨 핸들러 중복 방지
+            }});
+            // F29 접힘 상태 = 카드 박스 전체가 클릭 영역. 펼친 상태에선 내부 인터랙션(더보기·링크) 보존
+            $('#hotel-faq').on('click', '.faq-card', function(){{
+                if (!$(this).hasClass('is-open')) $(this).addClass('is-open');
             }});
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
@@ -2395,10 +2466,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 $('html, body').stop().animate({{scrollTop: top}}, 350);
             }}
             $('.radar-cats').on('click', '.radar-cat', function(){{
-                openAndScroll($(this).data('target'));
-            }});
-            // 딜브레이커 스트립 → 해당 카테고리 아코디언 열고 스크롤 (radar-cat 패턴 재사용)
-            $('.db-strip').on('click', '.db-item', function(){{
                 openAndScroll($(this).data('target'));
             }});
             // 점프 칩(진입점·위치 섹션 공용): risk-* → 아코디언 오픈, faq-* → 해당 카드로 스크롤, hotel-faq → 섹션 앵커

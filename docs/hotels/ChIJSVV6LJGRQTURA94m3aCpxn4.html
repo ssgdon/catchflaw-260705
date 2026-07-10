@@ -35,26 +35,41 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783670998">
-    <link rel="stylesheet" href="../css/common.css?v=1783670998">
-    <link rel="stylesheet" href="../css/layout.css?v=1783670998">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783670998">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783670998">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783670998">
-    <script src="../js/backnav.js?v=1783670998"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783686894">
+    <link rel="stylesheet" href="../css/common.css?v=1783686894">
+    <link rel="stylesheet" href="../css/layout.css?v=1783686894">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783686894">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783686894">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783686894">
+    <script src="../js/backnav.js?v=1783686894"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783670998" defer></script>
-    <script src="../js/recommend.js?v=1783670998"></script>
+    <script src="../js/engage.js?v=1783686894" defer></script>
+    <script src="../js/recommend.js?v=1783686894"></script>
 </head>
 <body>
 <div id="wrapper">
     <script>window.CF_HOTEL={pid:"ChIJSVV6LJGRQTURA94m3aCpxn4",name:"LIBERATED HOTEL HARUYOSHI KAICHI",gmap:"https://www.google.com/maps/search/?api=1&query=LIBERATED%20HOTEL%20HARUYOSHI%20KAICHI&query_place_id=ChIJSVV6LJGRQTURA94m3aCpxn4"};</script>
     <main id="container">
         <section id="detail">
-            <div class="header">
-                <div class="back"><a href="../search"><img src="../img/back.svg" alt="뒤로가기"></a></div>
+            <div class="det-header">
+                <a class="dh-back" href="../search" aria-label="뒤로가기"><img src="../img/back.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
+                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+            </div>
+            <div class="det-drawer" hidden>
+                <div class="dd-dim"></div>
+                <div class="dd-panel">
+                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
+                    <nav class="dd-nav">
+                        <a href="../">홈</a>
+                        <a href="../search">호텔 검색</a>
+                        <a href="../wishlist">찜한 호텔</a>
+                        <a href="../recent">최근 본 호텔</a>
+                        <a href="../about">산출 방법</a>
+                    </nav>
+                </div>
             </div>
             <div class="content">
                 <div class="visual"><div class="swiper hotel-gallery"><div class="swiper-wrapper"><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJSVV6LJGRQTURA94m3aCpxn4/0.webp" alt="LIBERATED HOTEL HARUYOSHI KAICHI" width="800" height="600" fetchpriority="high"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJSVV6LJGRQTURA94m3aCpxn4/1.webp" alt="LIBERATED HOTEL HARUYOSHI KAICHI" width="800" height="600" decoding="async"></div><div class="swiper-slide"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJSVV6LJGRQTURA94m3aCpxn4/2.webp" alt="LIBERATED HOTEL HARUYOSHI KAICHI" width="800" height="600" decoding="async"></div></div><div class="swiper-pagination"></div><div class="gallery-count">1 / 3</div></div></div>
@@ -92,6 +107,7 @@
                 <div class="tit">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="num">6%</div>
             </div>
+            <div class="verdict is-safe">까다롭게 봐도 통과</div>
             <div class="gauge">
         <div class="bar">
             <span class="g-rank is-safe" style="left:35.2%">후쿠오카 상위 26%</span>
@@ -103,7 +119,7 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-safe">까다롭게 봐도 통과</div><div class="verdict-why">최근 1년 내 <b>59건</b>을 분석했지만,<br>벌레·치안 심각 신고는 <b>0건</b>이었어요</div>
+            <div class="verdict-why">최근 1년 내 <b>59건</b>을 분석했지만,<br>벌레·치안 심각 신고는 <b>0건</b>이었어요</div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 50.0% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 -50.0p 줄었어요</div></div></div></div>
             <div class="basis-fold">
                 <div class="basis">
@@ -113,7 +129,6 @@
                 </div>
             </div>
         </div>
-        
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">후쿠오카 평균 = 50</div></div>
@@ -159,7 +174,7 @@
         </div>
         <div class="sect analysis" id="risk-detail">
             <div class="head"><div class="title">리스크 상세 분석</div>
-            <div class="desc">숫자는 위험도 0~100 (평균 50)<br>높을수록 주의하세요</div></div>
+            <div class="desc">위험도 0~100 · 후쿠오카 평균이 50이에요<br>100에 가까울수록 같은 불만이 많다는 뜻 (100 = 평균의 3배 이상)</div></div>
             <div class="risk-acc"><div class="risk-acc-item is-open" id="risk-4" data-order="0">
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-warning"></span>
@@ -171,15 +186,15 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>사후 대처</div><div class="keywords">보상 거부 · 무대응</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>사후 대처</div><div class="keywords">보상 거부 · 무대응</div><div class="sub-1y">최근 1년 1건 · 리뷰의 1.7%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:65%"><i class="bubble">65</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="불친절" data-sub="사후 대처">1건</button>
                 </li><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>응대 태도</div><div class="keywords">불친절 · 무시 · 언어소통</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>응대 태도</div><div class="keywords">불친절 · 무시 · 언어소통</div><div class="sub-1y">최근 1년 2건 · 리뷰의 3.4%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:46%"><i class="bubble">46</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="불친절" data-sub="응대 태도">5건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>체크인/처리 지연</div><div class="keywords">체크인 지연 · 긴 대기</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>체크인/처리 지연</div><div class="keywords">체크인 지연 · 긴 대기</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="불친절" data-sub="체크인/처리 지연">8건</button>
                 </li></ul>
@@ -261,16 +276,16 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>접근성</div><div class="keywords">역에서 멀다 · 언덕 · 계단</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>접근성</div><div class="keywords">역에서 멀다 · 언덕 · 계단</div><div class="sub-1y">최근 1년 4건 · 리뷰의 6.8%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:57%"><i class="bubble">57</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="접근성">8건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>주변 편의</div><div class="keywords">편의점 · 식당 없음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>주변 편의</div><div class="keywords">편의점 · 식당 없음</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="주변 편의">1건</button>
                 </li><li class="stat-row is-rare">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-danger"></span>치안·안심</div><div class="keywords">밤길 · 보안 미비 · 프라이버시</div></div>
-                    <div class="rare-chip is-alert">신고 1건</div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>치안·안심</div><div class="keywords">밤길 · 보안 미비 · 프라이버시</div></div>
+                    <div class="rare-chip is-clear">최근 1년 신고 없음</div>
                     <button type="button" class="stat-count has-reviews" data-cat="위치·안전" data-sub="치안·안심">1건</button>
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
@@ -351,16 +366,16 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-warning">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>청소 상태</div><div class="keywords">청소 불량 · 쓰레기 방치</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-warning"></span>청소 상태</div><div class="keywords">청소 불량 · 쓰레기 방치</div><div class="sub-1y">최근 1년 1건 · 리뷰의 1.7%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:51%"><i class="bubble">51</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위생" data-sub="청소 상태">7건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>침구/바닥 청결</div><div class="keywords">얼룩 · 머리카락 · 먼지</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>침구/바닥 청결</div><div class="keywords">얼룩 · 머리카락 · 먼지</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="위생" data-sub="침구/바닥 청결">2건</button>
                 </li><li class="stat-row is-rare">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>해충/곰팡이</div><div class="keywords">벌레 · 빈대 · 곰팡이 발견</div></div>
-                    <div class="rare-chip is-clear">신고 없음</div>
+                    <div class="rare-chip is-clear">최근 1년 신고 없음</div>
                     
                 </li></ul>
                     <div class="review"><div class="list review-slider"><ul class="swiper-wrapper"><li class="swiper-slide"><div class="item">
@@ -441,11 +456,11 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>화장실·곰팡 악취</div><div class="keywords">하수구 · 꿉꿉함 · 곰팡내</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>화장실·곰팡 악취</div><div class="keywords">하수구 · 꿉꿉함 · 곰팡내</div><div class="sub-1y">최근 1년 1건 · 리뷰의 1.7%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:30%"><i class="bubble">30</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="냄새" data-sub="화장실·곰팡 악취">1건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>담배 냄새</div><div class="keywords">금연실 담배 냄새 · 배인 냄새</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>담배 냄새</div><div class="keywords">금연실 담배 냄새 · 배인 냄새</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <span class="stat-count zero">0건</span>
                 </li></ul>
@@ -472,11 +487,11 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>내부 소음</div><div class="keywords">옆방 소리 · 복도 · 기기음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>내부 소음</div><div class="keywords">옆방 소리 · 복도 · 기기음</div><div class="sub-1y">최근 1년 1건 · 리뷰의 1.7%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:31%"><i class="bubble">31</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="소음" data-sub="내부 소음">6건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>외부 소음</div><div class="keywords">도로 · 전철 · 유흥가 소음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>외부 소음</div><div class="keywords">도로 · 전철 · 유흥가 소음</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <span class="stat-count zero">0건</span>
                 </li></ul>
@@ -558,19 +573,19 @@
                     
                     <div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>
                     <ul class="stat-list"><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>노후/고장</div><div class="keywords">낡은 시설 · 설비 고장</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>노후/고장</div><div class="keywords">낡은 시설 · 설비 고장</div><div class="sub-1y">최근 1년 2건 · 리뷰의 3.4%</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:31%"><i class="bubble">31</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="노후/고장">7건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>공간 협소</div><div class="keywords">비좁음 · 사진보다 작음</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>공간 협소</div><div class="keywords">비좁음 · 사진보다 작음</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="공간 협소">1건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>냉난방/수압</div><div class="keywords">냉난방 불량 · 수압 약함</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>냉난방/수압</div><div class="keywords">냉난방 불량 · 수압 약함</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="냉난방/수압">4건</button>
                 </li><li class="stat-row is-safe">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>네트워크/TV</div><div class="keywords">와이파이 · TV 불량</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-safe"></span>네트워크/TV</div><div class="keywords">와이파이 · TV 불량</div><div class="sub-1y">최근 1년 없음</div></div>
                     <div class="stat-track"><div class="stat-fill" style="width:20%"><i class="bubble">20</i></div></div>
                     <button type="button" class="stat-count has-reviews" data-cat="시설" data-sub="네트워크/TV">1건</button>
                 </li></ul>
@@ -659,52 +674,52 @@
                 <div class="faq-chips"><span class="faq-chip">4인 가족 적합</span><span class="faq-chip">객실 넓음</span><span class="faq-chip">직원 친절</span><span class="faq-chip">아이와 방문 좋음</span></div>
                 <div class="faq-body">
                     <p class="faq-a">네, 아이와 함께 방문하기에 <span>괜찮은</span> 숙소입니다.<br><span>4인 가족</span>이 머물기에 충분히 넓은 객실이 많고, <span>7살, 12살 아이들</span>과 함께 텐진역까지 걸어 다녔다는 후기도 있습니다.<br>또한, 아이가 아플 때 직원이 병원 예약을 도와주는 등 <span>친절한 서비스</span>를 제공합니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">안**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.20</span></div><div class="fe-q">"진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 <b>가족</b>단위로 오는것도 괜찮을듯?"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">정**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.31</span></div><div class="fe-q">"<b>아이</b>들 혹은 부모님과 함께 4인 <b>가족</b> 숙소를 찾는다면 좋은 선택입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">국**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.30</span></div><div class="fe-q">"같이 온 일행 <b>아이</b>가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="family" data-q="아이랑 가도 괜찮나요?">리뷰 7개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">안**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.20</span><span class="rel-badge" data-d="2026-03-20"></span></div><div class="fe-q">"진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 <b>가족</b>단위로 오는것도 괜찮을듯?"</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25SVVp5MVVhVTVtUjBaTmFWbFpieTFETTFJNFQzYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnRUZy1UaU5mR0ZNaVlZby1DM1I4T3c%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">정**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.31</span><span class="rel-badge" data-d="2025-12-31"></span></div><div class="fe-q">"<b>아이</b>들 혹은 부모님과 함께 4인 <b>가족</b> 숙소를 찾는다면 좋은 선택입니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s5MmNuQTJORkJEZG1SQk4ycHRlRWRrY21adlJtYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOk92cnA2NFBDdmRBN2pteEdkcmZvRmc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">국**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.30</span><span class="rel-badge" data-d="2025-12-30"></span></div><div class="fe-q">"같이 온 일행 <b>아이</b>가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2sweGVESkRNMFZHWDFNNWFUSnlVVmR5V1dkeVlsRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOk0xeDJDM0VGX1M5aTJyUVdyWWdyYlE%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="family" data-q="아이랑 가도 괜찮나요?">리뷰 7개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-beds" data-group="가족·인원">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">침대 구성·엑스트라베드는요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">더블베드 2개</span><span class="faq-chip">더블침대 2개</span><span class="faq-chip">소파베드</span><span class="faq-chip">더블베드 4개</span></div>
                 <div class="faq-body">
                     <p class="faq-a">9층 객실에는 거실에 큰 더블베드 <span>2개</span>와 단독룸에 더블침대 <span>2개</span>가 있으며, 거실 소파는 소파베드로 이용 가능합니다.<br>9층 슈페리어 스위트룸에는 더블베드가 <span>4개</span> 있습니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">임**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.18</span></div><div class="fe-q">"<b>9층</b> 넓은객실 이용했는데 거실에 큰<b>더블</b>배드 2개가 깔려있고, 단독룸에 <b>더블</b><b>침대</b>가 2개가 또 있고, 거실소파가 눕힐수있는 <b>소파베드</b>임"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">이**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">24.04.29</span></div><div class="fe-q">"<b>9층</b> 슈페리어스위트는 한층 전체를 사용하며 <b>더블</b>베드가 4개가 있어서 이번 여행에 너무나 최적이었어요."</div></li></ul>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">임**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.18</span><span class="rel-badge" data-d="2026-04-18"></span></div><div class="fe-q">"<b>9층</b> 넓은객실 이용했는데 거실에 큰<b>더블</b>배드 2개가 깔려있고, 단독룸에 <b>더블</b><b>침대</b>가 2개가 또 있고, 거실소파가 눕힐수있는 <b>소파베드</b>임"</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pONWNXeFBWVlZDU2paNlpWVnBUMHhpYm5KV05IYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjN5cWxPVVVCSjZ6ZVVpT0xibnJWNHc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">이**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">24.04.29</span><span class="rel-badge" data-d="2024-04-29"></span></div><div class="fe-q">"<b>9층</b> 슈페리어스위트는 한층 전체를 사용하며 <b>더블</b>베드가 4개가 있어서 이번 여행에 너무나 최적이었어요."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURqbUp5b3pBRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDjmJyozAE%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul>
                 </div>
             </div><div class="faq-card" id="faq-kitchen" data-group="시설·어메니티">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">냉장고·주방·세탁은요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">냉장고 있음</span><span class="faq-chip">간이 주방 있음</span><span class="faq-chip">세탁기 없음</span><span class="faq-chip">조리도구 제공</span></div>
                 <div class="faq-body">
                     <p class="faq-a">객실에 냉장고와 간이 주방이 <span>구비</span>되어 있으며, 가스레인지, 전자레인지, 식탁, 수저 냄비 세트까지 <span>제공</span>됩니다.<br>다만, 세탁기는 <span>없습니다</span>.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">임**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.18</span></div><div class="fe-q">"<b>냉장고</b> 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">Y**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.17</span></div><div class="fe-q">"특히!!!!<b>냉장고</b>가미쳤어요 일본<b>냉장고</b>는 진짜 미지근하거나 시원하다정도지 여기<b>냉장고</b>는 물에 살얼음이껴요"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">S**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.07</span></div><div class="fe-q">"객실에는 간이 <b>주방</b>이 있어 간단한 요리를 즐기는 여행객에게 적합합니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 7개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">임**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.18</span><span class="rel-badge" data-d="2026-04-18"></span></div><div class="fe-q">"<b>냉장고</b> 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!"</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pONWNXeFBWVlZDU2paNlpWVnBUMHhpYm5KV05IYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjN5cWxPVVVCSjZ6ZVVpT0xibnJWNHc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">Y**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.17</span><span class="rel-badge" data-d="2026-03-17"></span></div><div class="fe-q">"특히!!!!<b>냉장고</b>가미쳤어요 일본<b>냉장고</b>는 진짜 미지근하거나 시원하다정도지 여기<b>냉장고</b>는 물에 살얼음이껴요"</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25WNWRsbElYell0ZW5KMU9UY3dia1JuUW1vd1VuYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnV5dllIXzYtenJ1OTcwbkRnQmowUnc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">S**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.07</span><span class="rel-badge" data-d="2025-12-07"></span></div><div class="fe-q">"객실에는 간이 <b>주방</b>이 있어 간단한 요리를 즐기는 여행객에게 적합합니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21ad2VYWlNUVWxQZEVKeFlWcFVRVGhSWWpoTlQwRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmZweXZSTUlPdEJxYVpUQThRYjhNT0E%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 7개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-luggage" data-group="서비스·정책">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">짐 보관 되나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">체크아웃 후 불가</span><span class="faq-chip">직원 없어 비추</span><span class="faq-chip">첫날 밤 가능</span></div>
                 <div class="faq-body">
                     <p class="faq-a">체크아웃 후 짐 보관은 <span>불가능</span>하며, 호텔에 직원이 없어 짐 보관 서비스 이용이 <span>권장되지 않습니다</span>. 다만, 첫날 밤 시외에 머무는 동안에는 짐 보관 서비스를 <span>제공</span>받았다는 후기도 있습니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">J**</span><span class="fe-src">Google</span><span class="star"><i style="width:40%"></i></span><span class="fe-date">26.06.04</span></div><div class="fe-q">"체크아웃 후 단 한 시간이라도 <b>짐을 맡</b>길 수 없다는 점이 아쉬웠습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">U**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.14</span></div><div class="fe-q">"호텔은 첫날 밤 시외에 머무는 동안 <b>짐 보관</b> 서비스를 제공했습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">J**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">24.05.17</span></div><div class="fe-q">"<b>짐을 맡</b>아주는 서비스도 직원이 없어서 권장하지 않습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="luggage" data-q="짐 보관 되나요?">리뷰 4개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">J**</span><span class="fe-src">Google</span><span class="star"><i style="width:40%"></i></span><span class="fe-date">26.06.04</span><span class="rel-badge" data-d="2026-06-04"></span></div><div class="fe-q">"체크아웃 후 단 한 시간이라도 <b>짐을 맡</b>길 수 없다는 점이 아쉬웠습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pWakxXSnFhMVJGYzJWeVlXTkpOMnRSYlhONlMyYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjVjLWJqa1RFc2VyYWNJN2tRbXN6S2c%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">U**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.14</span><span class="rel-badge" data-d="2026-04-14"></span></div><div class="fe-q">"호텔은 첫날 밤 시외에 머무는 동안 <b>짐 보관</b> 서비스를 제공했습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xCd09GazBZa0pWUjFaeWJuTnZRbFpUVldkSGNYYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOlBwOFk0YkJVR1ZybnNvQlZTVWdHcXc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">J**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">24.05.17</span><span class="rel-badge" data-d="2024-05-17"></span></div><div class="fe-q">"<b>짐을 맡</b>아주는 서비스도 직원이 없어서 권장하지 않습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNUNWZfYkFnEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgICT5f_bAg%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="luggage" data-q="짐 보관 되나요?">리뷰 4개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-elevator" data-group="서비스·정책">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">엘리베이터가 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">엘리베이터 있음</span><span class="faq-chip">1층 로비</span></div>
                 <div class="faq-body">
                     <p class="faq-a">네, 호텔에 엘리베이터가 <span>있습니다</span>. 1층 로비 엘리베이터 앞에서 어메니티를 가져갈 수 있습니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">아**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.25</span></div><div class="fe-q">"어매니티는 <b>1층</b> 로비 <b>엘리베이터</b> 앞에서 셀프로 가져서 쓰시면 되세요."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">C**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.09.02</span></div><div class="fe-q">"편의시설은 <b>1층</b> <b>엘리베이터</b> 앞에서 제공되었는데, 정말 좋았어요."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">p**</span><span class="fe-src">Google</span><span class="star"><i style="width:20%"></i></span><span class="fe-date">25.08.08</span></div><div class="fe-q">"저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 <b>엘리베이터</b> 버튼조차 눌러주지 않았어요."</div></li></ul><button type="button" class="faq-more-btn" data-topic="elevator" data-q="엘리베이터가 있나요?">리뷰 5개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">아**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.25</span><span class="rel-badge" data-d="2025-11-25"></span></div><div class="fe-q">"어매니티는 <b>1층</b> 로비 <b>엘리베이터</b> 앞에서 셀프로 가져서 쓰시면 되세요."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2paT1ZVVllVSGxFZW5KNmFVcFZhVEpsVFROdlZWRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjZOVUVYUHlEenJ6aUpVaTJlTTNvVVE%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">C**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.09.02</span><span class="rel-badge" data-d="2025-09-02"></span></div><div class="fe-q">"편의시설은 <b>1층</b> <b>엘리베이터</b> 앞에서 제공되었는데, 정말 좋았어요."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21keU0xQnRSMXAwZW1KNVJsTk5ielZDZDFjeFptYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmdyM1BtR1p0emJ5RlNNbzVCd1cxZmc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">p**</span><span class="fe-src">Google</span><span class="star"><i style="width:20%"></i></span><span class="fe-date">25.08.08</span><span class="rel-badge" data-d="2025-08-08"></span></div><div class="fe-q">"저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 <b>엘리베이터</b> 버튼조차 눌러주지 않았어요."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGMlF6VnBUVXMzVXpSWlpqQkphRFp3TmpoMGJrRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjF2QzVpTUs3UzRZZjBJaDZwNjh0bkE%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="elevator" data-q="엘리베이터가 있나요?">리뷰 5개 모두 보기</button>
                 </div>
             </div><div class="faq-card" id="faq-parking" data-group="서비스·정책">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">주차할 수 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">호텔 주차장 없음</span><span class="faq-chip">근처 유료 주차</span><span class="faq-chip">야간 주차 비쌈</span></div>
                 <div class="faq-body">
                     <p class="faq-a">호텔 자체 주차장은 없지만, 근처에 <span>유료 주차장</span>이 있습니다.<br>야간 주차는 <span>비쌀 수</span> 있습니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">U**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.14</span></div><div class="fe-q">"호텔에는 자체 <b>주차</b>장이 없지만, 근처에 <b>유료</b> <b>주차</b>장이 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">小**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.03.24</span></div><div class="fe-q">"다만 주변 <b>주차</b> 요금이 천차만별이라 야간 <b>주차</b>는 꽤 비쌀 것 같습니다."</div></li></ul>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">U**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.14</span><span class="rel-badge" data-d="2026-04-14"></span></div><div class="fe-q">"호텔에는 자체 <b>주차</b>장이 없지만, 근처에 <b>유료</b> <b>주차</b>장이 있습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xCd09GazBZa0pWUjFaeWJuTnZRbFpUVldkSGNYYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOlBwOFk0YkJVR1ZybnNvQlZTVWdHcXc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">小**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.03.24</span><span class="rel-badge" data-d="2026-03-24"></span></div><div class="fe-q">"다만 주변 <b>주차</b> 요금이 천차만별이라 야간 <b>주차</b>는 꽤 비쌀 것 같습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2psbVQyOU9PRW8xWlZCM1RrVnFUa0kwY20xdWFYYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjlmT29OOEo1ZVB3TkVqTkI0cm1uaXc%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul>
                 </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
                 <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">텐진미나미역 5~6분</span><span class="faq-chip">캐널시티 9분</span><span class="faq-chip">텐진역 도보 가능</span></div>
                 <div class="faq-body">
                     <p class="faq-a">텐진미나미역에서 <span>도보 5~6분</span> 거리에 위치해 있으며, 캐널시티까지는 <span>도보 9분</span> 정도 소요됩니다.<br>텐진역까지는 <span>7살, 12살 아이들과 함께 걸어서</span> 다녀올 수 있는 거리입니다.</p>
-                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">F**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.08.14</span></div><div class="fe-q">"텐진미나미<b>역에서</b> <b>걸어서</b> <b>5,6분</b>사이의 거리여서 편리합니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">엠**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.02.27</span></div><div class="fe-q">"텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 <b>걸어서</b> 딱 <b>9분</b> 걸렸습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">B**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.06.06</span></div><div class="fe-q">"저희 가족은 묶을 때 7살 12살 아이들 데리고 <b>걸어서</b> 텐진역 잘 다녀왔어요."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">F**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.08.14</span><span class="rel-badge" data-d="2025-08-14"></span></div><div class="fe-q">"텐진미나미<b>역에서</b> <b>걸어서</b> <b>5,6분</b>사이의 거리여서 편리합니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25oVGQwd3RaelJ0YkdNeU1teGxabnBCV1VvelIxRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnhTd0wtZzRtbGMyMmxlZnpBWUozR1E%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">엠**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.02.27</span><span class="rel-badge" data-d="2025-02-27"></span></div><div class="fe-q">"텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 <b>걸어서</b> 딱 <b>9분</b> 걸렸습니다."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURnbzVhS1VREAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgMDgo5aKUQ%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">B**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.06.06</span><span class="rel-badge" data-d="2026-06-06"></span></div><div class="fe-q">"저희 가족은 묶을 때 7살 12살 아이들 데리고 <b>걸어서</b> 텐진역 잘 다녀왔어요."</div><a class="fe-link" href="https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGRGVtSk5hR1IzTTFacFkyaElXamg2VDFWUWNFRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjFDemJNaGR3M1ZpY2hIWjh6T1VQcEE%7C%7C?hl=ko" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
                 </div>
             </div></div>
-        </div><script>window.FAQEVID={"family": [{"q": "진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 가족단위로 오는것도 괜찮을듯?", "qh": "진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 <b>가족</b>단위로 오는것도 괜찮을듯?", "d": "2026-03-20", "st": 5, "o": "Google", "n": "안**"}, {"q": "아이들 혹은 부모님과 함께 4인 가족 숙소를 찾는다면 좋은 선택입니다.", "qh": "<b>아이</b>들 혹은 부모님과 함께 4인 <b>가족</b> 숙소를 찾는다면 좋은 선택입니다.", "d": "2025-12-31", "st": 5, "o": "Google", "n": "정**"}, {"q": "같이 온 일행 아이가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다.", "qh": "같이 온 일행 <b>아이</b>가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다.", "d": "2025-12-30", "st": 5, "o": "Google", "n": "국**"}, {"q": "가족여행에 만족스러운 기억을 안고 가네요", "qh": "<b>가족</b>여행에 만족스러운 기억을 안고 가네요", "d": "2025-08-01", "st": 5, "o": "Google", "n": "김**"}, {"q": "아기와 함께 다녀왔습니다. 직원분들의 친절함은 물론이거니와 아주 편안하게 지내고 왔습니다.", "qh": "<b>아기</b>와 함께 다녀왔습니다. 직원분들의 친절함은 물론이거니와 아주 편안하게 지내고 왔습니다.", "d": "2025-05-22", "st": 5, "o": "Google", "n": "S**"}, {"q": "초등학생 2명 포함 4인가족 2박 했습니다. 침구류도 깨끗하고 대체로 청결했습니다.", "qh": "초등학생 2명 포함 4인<b>가족</b> 2박 했습니다. 침구류도 깨끗하고 대체로 청결했습니다.", "d": "2025-02-27", "st": 5, "o": "Google", "n": "엠**"}, {"q": "그룹으로 여행가시거나 가족이 가시기에는 정말 최고의 호텔이에요!", "qh": "그룹으로 여행가시거나 <b>가족</b>이 가시기에는 정말 최고의 호텔이에요!", "d": "2024-04-29", "st": 5, "o": "Google", "n": "이**"}], "kitchen": [{"q": "냉장고 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!", "qh": "<b>냉장고</b> 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!", "d": "2026-04-18", "st": 5, "o": "Google", "n": "임**"}, {"q": "특히!!!!냉장고가미쳤어요 일본냉장고는 진짜 미지근하거나 시원하다정도지 여기냉장고는 물에 살얼음이껴요", "qh": "특히!!!!<b>냉장고</b>가미쳤어요 일본<b>냉장고</b>는 진짜 미지근하거나 시원하다정도지 여기<b>냉장고</b>는 물에 살얼음이껴요", "d": "2026-03-17", "st": 5, "o": "Google", "n": "Y**"}, {"q": "객실에는 간이 주방이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.", "qh": "객실에는 간이 <b>주방</b>이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.", "d": "2025-12-07", "st": 5, "o": "Google", "n": "S**"}, {"q": "작은 단점: 세탁기가 없어서 단기 여행에 더 적합합니다.", "qh": "작은 단점: <b>세탁</b>기가 없어서 단기 여행에 더 적합합니다.", "d": "2025-12-07", "st": 5, "o": "Google", "n": "S**"}, {"q": "첫째, 냉장고에 이전 투숙객이 남긴 음료가 치워지지 않은 채 남아 있었습니다.", "qh": "첫째, <b>냉장고</b>에 이전 투숙객이 남긴 음료가 치워지지 않은 채 남아 있었습니다.", "d": "2025-04-02", "st": 5, "o": "Google", "n": "劉**"}, {"q": "특히 레인지 후드는 켜도 제대로 작동하지 않는 것 같았어요. 주방용품은 사용하기 불편했고 음식 양도 부족했어요.", "qh": "특히 레인지 후드는 켜도 제대로 작동하지 않는 것 같았어요. <b>주방</b>용품은 사용하기 불편했고 음식 양도 부족했어요.", "d": "2024-10-06", "st": 4, "o": "Google", "n": "L**"}, {"q": "냉장고 청소가 안 되었고, 바닥 일부도 제대로 닦이지 않았습니다.", "qh": "<b>냉장고</b> 청소가 안 되었고, 바닥 일부도 제대로 닦이지 않았습니다.", "d": "2024-08-08", "st": 3, "o": "Google", "n": "H**"}], "luggage": [{"q": "체크아웃 후 단 한 시간이라도 짐을 맡길 수 없다는 점이 아쉬웠습니다.", "qh": "체크아웃 후 단 한 시간이라도 <b>짐을 맡</b>길 수 없다는 점이 아쉬웠습니다.", "d": "2026-06-04", "st": 2, "o": "Google", "n": "J**"}, {"q": "호텔은 첫날 밤 시외에 머무는 동안 짐 보관 서비스를 제공했습니다.", "qh": "호텔은 첫날 밤 시외에 머무는 동안 <b>짐 보관</b> 서비스를 제공했습니다.", "d": "2026-04-14", "st": 5, "o": "Google", "n": "U**"}, {"q": "짐을 맡아주는 서비스도 직원이 없어서 권장하지 않습니다.", "qh": "<b>짐을 맡</b>아주는 서비스도 직원이 없어서 권장하지 않습니다.", "d": "2024-05-17", "st": 4, "o": "Google", "n": "J**"}, {"q": "무인호텔이라 좀 아쉬웠던 점은 짐을 맡길 수 있는 호텔이 도보 10분거리에 있었던 점", "qh": "무인호텔이라 좀 아쉬웠던 점은 <b>짐을 맡</b>길 수 있는 호텔이 도보 <b>10분</b>거리에 있었던 점", "d": "2024-04-29", "st": 5, "o": "Google", "n": "이**"}], "elevator": [{"q": "어매니티는 1층 로비 엘리베이터 앞에서 셀프로 가져서 쓰시면 되세요.", "qh": "어매니티는 <b>1층</b> 로비 <b>엘리베이터</b> 앞에서 셀프로 가져서 쓰시면 되세요.", "d": "2025-11-25", "st": 5, "o": "Google", "n": "아**"}, {"q": "편의시설은 1층 엘리베이터 앞에서 제공되었는데, 정말 좋았어요.", "qh": "편의시설은 <b>1층</b> <b>엘리베이터</b> 앞에서 제공되었는데, 정말 좋았어요.", "d": "2025-09-02", "st": 4, "o": "Google", "n": "C**"}, {"q": "저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 엘리베이터 버튼조차 눌러주지 않았어요.", "qh": "저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 <b>엘리베이터</b> 버튼조차 눌러주지 않았어요.", "d": "2025-08-08", "st": 1, "o": "Google", "n": "p**"}, {"q": "필요한 비품은 1층 엘리베이터 옆", "qh": "필요한 비품은 <b>1층</b> <b>엘리베이터</b> 옆", "d": "2025-06-01", "st": 5, "o": "Google", "n": "김**"}, {"q": "그리고 엘리베이터 앞에 샴푸나 칫솔 등 비치돼 있어서 본인 필요한 대로 가져가면 돼서 좋았습니다.", "qh": "그리고 <b>엘리베이터</b> 앞에 샴푸나 칫솔 등 비치돼 있어서 본인 필요한 대로 가져가면 돼서 좋았습니다.", "d": "2024-12-15", "st": 5, "o": "Google", "n": "익**"}], "access": [{"q": "텐진미나미역에서 걸어서 5,6분사이의 거리여서 편리합니다.", "qh": "텐진미나미<b>역에서</b> <b>걸어서</b> <b>5,6분</b>사이의 거리여서 편리합니다.", "d": "2025-08-14", "st": 5, "o": "Google", "n": "F**"}, {"q": "텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 걸어서 딱 9분 걸렸습니다.", "qh": "텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 <b>걸어서</b> 딱 <b>9분</b> 걸렸습니다.", "d": "2025-02-27", "st": 5, "o": "Google", "n": "엠**"}, {"q": "저희 가족은 묶을 때 7살 12살 아이들 데리고 걸어서 텐진역 잘 다녀왔어요.", "qh": "저희 가족은 묶을 때 7살 12살 아이들 데리고 <b>걸어서</b> 텐진역 잘 다녀왔어요.", "d": "2026-06-06", "st": 5, "o": "Google", "n": "B**"}, {"q": "텐진미나미역에서 가깝습니다. 주변에 식당도 많고 쇼핑몰과 거리도 가깝습니다.", "qh": "텐진미나미<b>역에서</b> 가깝습니다. 주변에 식당도 많고 쇼핑몰과 거리도 가깝습니다.", "d": "2025-11-10", "st": 5, "o": "Google", "n": "이**"}, {"q": "방이 정말 넓었어요! 지하철역에서도 멀지 않았고요. 정말 훌륭한 호텔이었어요!", "qh": "방이 정말 넓었어요! 지하철<b>역에서</b>도 멀지 않았고요. 정말 훌륭한 호텔이었어요!", "d": "2025-08-30", "st": 5, "o": "Google", "n": "阿**"}, {"q": "숙소에서 나가서 하천 건너면 바로 덴진미나미 6번출구임 이곳으로 들어가서 걸어가면 덴진지하상가 파르코와 연결됨.", "qh": "숙소에서 나가서 하천 건너면 바로 덴진미나미 6번출구임 이곳으로 들어가서 걸어가면 덴진지하상가 파르코와 연결됨.", "d": "2024-08-07", "st": 5, "o": "Google", "n": "J**"}, {"q": "캐널시티, 텐진 도보로 갈만한거리로 위치도 꽤 괜찮은편이고 주위에 맛집도 많습니다.", "qh": "캐널시티, 텐진 <b>도보</b>로 갈만한거리로 위치도 꽤 괜찮은편이고 주위에 맛집도 많습니다.", "d": "2025-10-28", "st": 5, "o": "Google", "n": "O**"}, {"q": "캐널시티, 텐진 지하상가, 돈키호테 등 모두 걸어서 이동가능합니다.", "qh": "캐널시티, 텐진 지하상가, 돈키호테 등 모두 <b>걸어서</b> 이동가능합니다.", "d": "2025-07-29", "st": 5, "o": "Google", "n": "한**"}]};</script>
+        </div><script>window.FAQEVID={"family": [{"q": "진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 가족단위로 오는것도 괜찮을듯?", "qh": "진짜 넓고 층고도 좋고 음식 조리도 가능함 가스렌지 싱크대 전자렌지 다있음 <b>가족</b>단위로 오는것도 괜찮을듯?", "d": "2026-03-20", "st": 5, "o": "Google", "n": "안**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25SVVp5MVVhVTVtUjBaTmFWbFpieTFETTFJNFQzYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnRUZy1UaU5mR0ZNaVlZby1DM1I4T3c%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "아이들 혹은 부모님과 함께 4인 가족 숙소를 찾는다면 좋은 선택입니다.", "qh": "<b>아이</b>들 혹은 부모님과 함께 4인 <b>가족</b> 숙소를 찾는다면 좋은 선택입니다.", "d": "2025-12-31", "st": 5, "o": "Google", "n": "정**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2s5MmNuQTJORkJEZG1SQk4ycHRlRWRrY21adlJtYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOk92cnA2NFBDdmRBN2pteEdkcmZvRmc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "같이 온 일행 아이가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다.", "qh": "같이 온 일행 <b>아이</b>가 열이 나서 병원을 가야했는데, 직접 구글링해주시면서 전화해서 증상 이야기해주시고 예약잡아주시고 하셨습니다.", "d": "2025-12-30", "st": 5, "o": "Google", "n": "국**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2sweGVESkRNMFZHWDFNNWFUSnlVVmR5V1dkeVlsRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOk0xeDJDM0VGX1M5aTJyUVdyWWdyYlE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "가족여행에 만족스러운 기억을 안고 가네요", "qh": "<b>가족</b>여행에 만족스러운 기억을 안고 가네요", "d": "2025-08-01", "st": 5, "o": "Google", "n": "김**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25OVU4yWnRkVFZJYjNGNE15MVZWWEI2ZURCQ1pVRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnNUN2ZtdTVIb3F4My1VVXB6eDBCZUE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "아기와 함께 다녀왔습니다. 직원분들의 친절함은 물론이거니와 아주 편안하게 지내고 왔습니다.", "qh": "<b>아기</b>와 함께 다녀왔습니다. 직원분들의 친절함은 물론이거니와 아주 편안하게 지내고 왔습니다.", "d": "2025-05-22", "st": 5, "o": "Google", "n": "S**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJU2loOEwzeXFPeDlRRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEISih8L3yqOx9QE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "초등학생 2명 포함 4인가족 2박 했습니다. 침구류도 깨끗하고 대체로 청결했습니다.", "qh": "초등학생 2명 포함 4인<b>가족</b> 2박 했습니다. 침구류도 깨끗하고 대체로 청결했습니다.", "d": "2025-02-27", "st": 5, "o": "Google", "n": "엠**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURnbzVhS1VREAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgMDgo5aKUQ%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "그룹으로 여행가시거나 가족이 가시기에는 정말 최고의 호텔이에요!", "qh": "그룹으로 여행가시거나 <b>가족</b>이 가시기에는 정말 최고의 호텔이에요!", "d": "2024-04-29", "st": 5, "o": "Google", "n": "이**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURqbUp5b3pBRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDjmJyozAE%7C%7C?hl=ko", "l": "ko", "tf": ""}], "kitchen": [{"q": "냉장고 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!", "qh": "<b>냉장고</b> 전자렌지 가스렌지 식탁 수저냄비세트까지 완전편했어요!", "d": "2026-04-18", "st": 5, "o": "Google", "n": "임**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pONWNXeFBWVlZDU2paNlpWVnBUMHhpYm5KV05IYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjN5cWxPVVVCSjZ6ZVVpT0xibnJWNHc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "특히!!!!냉장고가미쳤어요 일본냉장고는 진짜 미지근하거나 시원하다정도지 여기냉장고는 물에 살얼음이껴요", "qh": "특히!!!!<b>냉장고</b>가미쳤어요 일본<b>냉장고</b>는 진짜 미지근하거나 시원하다정도지 여기<b>냉장고</b>는 물에 살얼음이껴요", "d": "2026-03-17", "st": 5, "o": "Google", "n": "Y**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25WNWRsbElYell0ZW5KMU9UY3dia1JuUW1vd1VuYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnV5dllIXzYtenJ1OTcwbkRnQmowUnc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "객실에는 간이 주방이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.", "qh": "객실에는 간이 <b>주방</b>이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.", "d": "2025-12-07", "st": 5, "o": "Google", "n": "S**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21ad2VYWlNUVWxQZEVKeFlWcFVRVGhSWWpoTlQwRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmZweXZSTUlPdEJxYVpUQThRYjhNT0E%7C%7C?hl=ko", "l": "zh-hant", "tf": "지하철역과 가깝고 슈퍼마켓, 편의점, 카페, 레스토랑 등이 가까워 편리합니다. 객실에는 간이 주방이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.\n\n넓은 객실에는 네 개의 개별 침대가 있으며, 그중 두 개는 칸막이 문 뒤에 있어 코골이를 차단합니다.\n\n직원들은 친절하고, 한 명은 중국어를 구사합니다.\n\n작은 단점: 세탁기가 없어서 단기 여행에 더 적합합니다."}, {"q": "작은 단점: 세탁기가 없어서 단기 여행에 더 적합합니다.", "qh": "작은 단점: <b>세탁</b>기가 없어서 단기 여행에 더 적합합니다.", "d": "2025-12-07", "st": 5, "o": "Google", "n": "S**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21ad2VYWlNUVWxQZEVKeFlWcFVRVGhSWWpoTlQwRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmZweXZSTUlPdEJxYVpUQThRYjhNT0E%7C%7C?hl=ko", "l": "zh-hant", "tf": "지하철역과 가깝고 슈퍼마켓, 편의점, 카페, 레스토랑 등이 가까워 편리합니다. 객실에는 간이 주방이 있어 간단한 요리를 즐기는 여행객에게 적합합니다.\n\n넓은 객실에는 네 개의 개별 침대가 있으며, 그중 두 개는 칸막이 문 뒤에 있어 코골이를 차단합니다.\n\n직원들은 친절하고, 한 명은 중국어를 구사합니다.\n\n작은 단점: 세탁기가 없어서 단기 여행에 더 적합합니다."}, {"q": "첫째, 냉장고에 이전 투숙객이 남긴 음료가 치워지지 않은 채 남아 있었습니다.", "qh": "첫째, <b>냉장고</b>에 이전 투숙객이 남긴 음료가 치워지지 않은 채 남아 있었습니다.", "d": "2025-04-02", "st": 5, "o": "Google", "n": "劉**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTUNJOGVLM1hnEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgMCI8eK3Xg%7C%7C?hl=ko", "l": "zh-hant", "tf": "어제 체크인 소감: 숙소는 생각보다 넓었고 셀프 체크인이 매우 편리했습니다. 침대도 편안해서 꿀잠을 잤습니다. 하지만 두 가지 아쉬운 점이 있었습니다. 첫째, 냉장고에 이전 투숙객이 남긴 음료가 치워지지 않은 채 남아 있었습니다. 둘째, 1층에 비치된 무료 칫솔이 불편했습니다. 살짝만 닦아도 잇몸에서 피가 났습니다. 함께 투숙한 가족들도 같은 경험을 했습니다."}, {"q": "특히 레인지 후드는 켜도 제대로 작동하지 않는 것 같았어요. 주방용품은 사용하기 불편했고 음식 양도 부족했어요.", "qh": "특히 레인지 후드는 켜도 제대로 작동하지 않는 것 같았어요. <b>주방</b>용품은 사용하기 불편했고 음식 양도 부족했어요.", "d": "2024-10-06", "st": 4, "o": "Google", "n": "L**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURudnZXb2RBEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDnvvWodA%7C%7C?hl=ko", "l": "zh-hant", "tf": "셀프 체크인이었어요. 호텔 조명이 좀 특이했고요. 방은 넓었지만 일부 설비에 문제가 있었어요. 특히 레인지 후드는 켜도 제대로 작동하지 않는 것 같았어요. 주방용품은 사용하기 불편했고 음식 양도 부족했어요."}, {"q": "냉장고 청소가 안 되었고, 바닥 일부도 제대로 닦이지 않았습니다.", "qh": "<b>냉장고</b> 청소가 안 되었고, 바닥 일부도 제대로 닦이지 않았습니다.", "d": "2024-08-08", "st": 3, "o": "Google", "n": "H**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSURidmJPUEhBEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDbvbOPHA%7C%7C?hl=ko", "l": "en", "tf": "장점: 넓은 객실, 넓은 침대, 청결, 편리한 위치, 호텔 직원의 빠른 응대\n\n나쁜 점:\n- 객실 전체가 한 단계 높은 곳에 위치해 있어서 옆방 사람들의 발소리가 너무 크게 들립니다.\n- 냉장고 청소가 안 되었고, 바닥 일부도 제대로 닦이지 않았습니다.\n- 모든 도구/장식은 빠듯한 예산으로 만든 것 같았습니다. 변기를 내리면 물이 쏟아지고, 물받이 테이프가 너무 팽팽해서 기둥을 제대로 조절할 수 없었습니다.\n- 샤워기 물 온도가 계속 바뀌어서 샤워를 끝내기가 어려웠고, 계속 기다려야 했습니다.\n- 보안: 정시에 입구가 잠기지 않았고, 객실 문 잠금 장치가 미리 설정된 비밀번호로 되어 있어 보안이 취약했습니다."}], "luggage": [{"q": "체크아웃 후 단 한 시간이라도 짐을 맡길 수 없다는 점이 아쉬웠습니다.", "qh": "체크아웃 후 단 한 시간이라도 <b>짐을 맡</b>길 수 없다는 점이 아쉬웠습니다.", "d": "2026-06-04", "st": 2, "o": "Google", "n": "J**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pWakxXSnFhMVJGYzJWeVlXTkpOMnRSYlhONlMyYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjVjLWJqa1RFc2VyYWNJN2tRbXN6S2c%7C%7C?hl=ko", "l": "en", "tf": "호텔은 전반적으로 괜찮았지만, 체크아웃 후 점심을 먹으러 가려고 했을 때, 체크아웃 후 단 한 시간이라도 짐을 맡길 수 없다는 점이 아쉬웠습니다. 전날 다른 투숙객의 짐이 꽤 많이 보관되어 있는 것을 봤는데도 말이죠. 일본에서 이런 서비스를 경험한 건 처음이었습니다. 만약 체크아웃 시 모든 짐을 가지고 나가는 것이 괜찮다면 숙박해도 괜찮을 것 같습니다. 다만, 서비스 개선이 시급합니다!"}, {"q": "호텔은 첫날 밤 시외에 머무는 동안 짐 보관 서비스를 제공했습니다.", "qh": "호텔은 첫날 밤 시외에 머무는 동안 <b>짐 보관</b> 서비스를 제공했습니다.", "d": "2026-04-14", "st": 5, "o": "Google", "n": "U**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xCd09GazBZa0pWUjFaeWJuTnZRbFpUVldkSGNYYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOlBwOFk0YkJVR1ZybnNvQlZTVWdHcXc%7C%7C?hl=ko", "l": "th", "tf": "호텔은 깨끗하고 편리하며 현대적이고 안전합니다.\n\n하지만 흡연은 금지되어 있습니다.\n\n샤워실은 있지만 욕조는 없습니다.\n\n3박 동안 묵었는데, 수건과 쓰레기만 교체해 주었습니다.\n\n침대 시트는 교체해 주지 않았고, 객실 청소도 해주지 않았습니다. 생수는 매일 추가로 제공되었습니다.\n객실에는 카세트 라디오가 있습니다.\n\n호텔은 첫날 밤 시외에 머무는 동안 짐 보관 서비스를 제공했습니다. 저희가 호텔에 묵었던 2~4일 동안은\n택시 서비스를 예약해 주었습니다.\n\n직원들은 영어를 아주 잘했습니다.\n\n호텔에는 자체 주차장이 없지만, 근처에 유료 주차장이 있습니다.\n\n기차역, 텐진 언더몰, 아임 도넛까지 걸어서 갈 수 있는 거리에 있습니다."}, {"q": "짐을 맡아주는 서비스도 직원이 없어서 권장하지 않습니다.", "qh": "<b>짐을 맡</b>아주는 서비스도 직원이 없어서 권장하지 않습니다.", "d": "2024-05-17", "st": 4, "o": "Google", "n": "J**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUNUNWZfYkFnEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgICT5f_bAg%7C%7C?hl=ko", "l": "en", "tf": "외국인과 일본 호텔 입장에서는 넓고 편안한 객실이 제공되어 좋습니다. 호텔에는 체크인 직원이 없어서(1층에는 아무도 없어서) 셀프 체크인(영어 선택 가능)에 시간이 좀 걸립니다. 짐을 맡아주는 서비스도 직원이 없어서 권장하지 않습니다. 또한, 룸서비스나 객실 청소처럼 청결을 위해 서비스를 이용하는 투숙객에게는 적합하지 않습니다. 깨끗한 수건만 주고 쓰레기는 버립니다. 객실에 별점을 주지 않은 이유가 궁금합니다. 하지만 위치만큼은 최고입니다. 편의점과 마트, 레스토랑이 많고 파르코나 캐널시티 쇼핑몰까지 걸어서 15~20분 정도 걸립니다. 어쨌든 전반적인 경험은 꽤 신선했고, 직원이 없으니 이 호텔은 B&B라고 불러야 할 것 같습니다."}, {"q": "무인호텔이라 좀 아쉬웠던 점은 짐을 맡길 수 있는 호텔이 도보 10분거리에 있었던 점", "qh": "무인호텔이라 좀 아쉬웠던 점은 <b>짐을 맡</b>길 수 있는 호텔이 도보 <b>10분</b>거리에 있었던 점", "d": "2024-04-29", "st": 5, "o": "Google", "n": "이**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURqbUp5b3pBRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDjmJyozAE%7C%7C?hl=ko", "l": "ko", "tf": ""}], "elevator": [{"q": "어매니티는 1층 로비 엘리베이터 앞에서 셀프로 가져서 쓰시면 되세요.", "qh": "어매니티는 <b>1층</b> 로비 <b>엘리베이터</b> 앞에서 셀프로 가져서 쓰시면 되세요.", "d": "2025-11-25", "st": 5, "o": "Google", "n": "아**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2paT1ZVVllVSGxFZW5KNmFVcFZhVEpsVFROdlZWRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjZOVUVYUHlEenJ6aUpVaTJlTTNvVVE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "편의시설은 1층 엘리베이터 앞에서 제공되었는데, 정말 좋았어요.", "qh": "편의시설은 <b>1층</b> <b>엘리베이터</b> 앞에서 제공되었는데, 정말 좋았어요.", "d": "2025-09-02", "st": 4, "o": "Google", "n": "C**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21keU0xQnRSMXAwZW1KNVJsTk5ielZDZDFjeFptYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmdyM1BtR1p0emJ5RlNNbzVCd1cxZmc%7C%7C?hl=ko", "l": "en", "tf": "방이 정말 정말 넓었어요. 일본에서 이렇게 큰 스탠다드룸은 처음 봤어요. 다만, 위층에서 사람들이 움직이거나 걷는 소리가 들렸어요. 그건 절대 안 되는 소리였지만, 그 외에는 괜찮았어요.\n직원들은 정말 친절하고 궁금한 게 있으면 무엇이든 친절하게 대답해 줬어요.\n편의시설은 1층 엘리베이터 앞에서 제공되었는데, 정말 좋았어요.\n지하철역과 비교적 가까웠지만, 호텔로 가는 보행자 도로가 조금 좁아서 걸어가기 어려웠어요."}, {"q": "저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 엘리베이터 버튼조차 눌러주지 않았어요.", "qh": "저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 <b>엘리베이터</b> 버튼조차 눌러주지 않았어요.", "d": "2025-08-08", "st": 1, "o": "Google", "n": "p**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGMlF6VnBUVXMzVXpSWlpqQkphRFp3TmpoMGJrRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjF2QzVpTUs3UzRZZjBJaDZwNjh0bkE%7C%7C?hl=ko", "l": "zh-hant", "tf": "셀레스티얼 센터에서 걸어서 20분 거리입니다. 저희는 두 명이고 짐이 네 개나 있었는데, 직원들이 엘리베이터 버튼조차 눌러주지 않았어요. 정말 이해할 수 없는 일이었습니다."}, {"q": "필요한 비품은 1층 엘리베이터 옆", "qh": "필요한 비품은 <b>1층</b> <b>엘리베이터</b> 옆", "d": "2025-06-01", "st": 5, "o": "Google", "n": "김**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VOaVNzSlRfdTVteHh3RRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKENiSsJT_u5mxxwE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "그리고 엘리베이터 앞에 샴푸나 칫솔 등 비치돼 있어서 본인 필요한 대로 가져가면 돼서 좋았습니다.", "qh": "그리고 <b>엘리베이터</b> 앞에 샴푸나 칫솔 등 비치돼 있어서 본인 필요한 대로 가져가면 돼서 좋았습니다.", "d": "2024-12-15", "st": 5, "o": "Google", "n": "익**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnSUN2cDdiMERnEAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgICvp7b0Dg%7C%7C?hl=ko", "l": "ko", "tf": ""}], "access": [{"q": "텐진미나미역에서 걸어서 5,6분사이의 거리여서 편리합니다.", "qh": "텐진미나미<b>역에서</b> <b>걸어서</b> <b>5,6분</b>사이의 거리여서 편리합니다.", "d": "2025-08-14", "st": 5, "o": "Google", "n": "F**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25oVGQwd3RaelJ0YkdNeU1teGxabnBCV1VvelIxRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnhTd0wtZzRtbGMyMmxlZnpBWUozR1E%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 걸어서 딱 9분 걸렸습니다.", "qh": "텐진미나미역 근처라 번화가 다니기 너무 좋고 바로 근처에 코메다커피/24시간 우동집/편의점 그리고 캐널시티까지 <b>걸어서</b> 딱 <b>9분</b> 걸렸습니다.", "d": "2025-02-27", "st": 5, "o": "Google", "n": "엠**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChZDSUhNMG9nS0VJQ0FnTURnbzVhS1VREAE!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgMDgo5aKUQ%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "저희 가족은 묶을 때 7살 12살 아이들 데리고 걸어서 텐진역 잘 다녀왔어요.", "qh": "저희 가족은 묶을 때 7살 12살 아이들 데리고 <b>걸어서</b> 텐진역 잘 다녀왔어요.", "d": "2026-06-06", "st": 5, "o": "Google", "n": "B**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pGRGVtSk5hR1IzTTFacFkyaElXamg2VDFWUWNFRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOjFDemJNaGR3M1ZpY2hIWjh6T1VQcEE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "텐진미나미역에서 가깝습니다. 주변에 식당도 많고 쇼핑몰과 거리도 가깝습니다.", "qh": "텐진미나미<b>역에서</b> 가깝습니다. 주변에 식당도 많고 쇼핑몰과 거리도 가깝습니다.", "d": "2025-11-10", "st": 5, "o": "Google", "n": "이**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25wcFZuWkNTbTV6TWpOR1lVMDBWRkZ0U1dRNGFGRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnppVnZCSm5zMjNGYU00VFFtSWQ4aFE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "방이 정말 넓었어요! 지하철역에서도 멀지 않았고요. 정말 훌륭한 호텔이었어요!", "qh": "방이 정말 넓었어요! 지하철<b>역에서</b>도 멀지 않았고요. 정말 훌륭한 호텔이었어요!", "d": "2025-08-30", "st": 5, "o": "Google", "n": "阿**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21ObFNGWldXRk01ZFdSM1ZIWkhOMGxQUkRoT2EwRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOmNlSFZWWFM5dWR3VHZHN0lPRDhOa0E%7C%7C?hl=ko", "l": "zh-hant", "tf": "방이 정말 넓었어요! 지하철역에서도 멀지 않았고요. 정말 훌륭한 호텔이었어요!"}, {"q": "숙소에서 나가서 하천 건너면 바로 덴진미나미 6번출구임 이곳으로 들어가서 걸어가면 덴진지하상가 파르코와 연결됨.", "qh": "숙소에서 나가서 하천 건너면 바로 덴진미나미 6번출구임 이곳으로 들어가서 걸어가면 덴진지하상가 파르코와 연결됨.", "d": "2024-08-07", "st": 5, "o": "Google", "n": "J**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sChdDSUhNMG9nS0VJQ0FnSURiNGFIc3RnRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CIHM0ogKEICAgIDb4aHstgE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "캐널시티, 텐진 도보로 갈만한거리로 위치도 꽤 괜찮은편이고 주위에 맛집도 많습니다.", "qh": "캐널시티, 텐진 <b>도보</b>로 갈만한거리로 위치도 꽤 괜찮은편이고 주위에 맛집도 많습니다.", "d": "2025-10-28", "st": 5, "o": "Google", "n": "O**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT20xaFIybHZXVkp5ZURkWk0yRktOMUJZT1dac2JuYxAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOm1hR2lvWVJyeDdZM2FKN1BYOWZsbnc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "캐널시티, 텐진 지하상가, 돈키호테 등 모두 걸어서 이동가능합니다.", "qh": "캐널시티, 텐진 지하상가, 돈키호테 등 모두 <b>걸어서</b> 이동가능합니다.", "d": "2025-07-29", "st": 5, "o": "Google", "n": "한**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT25VNFJrWmxYelJrUjNkWGNrOVFTMmd5WTFadWExRRAB!2m1!1s0x0:0x7ec6a9a0dd26de03!3m1!1s2@1:CAIQACodChtycF9oOnU4RkZlXzRkR3dXck9QS2gyY1Zua1E%7C%7C?hl=ko", "l": "ko", "tf": ""}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 3%</b> 입니다.</div>
@@ -905,6 +920,13 @@
                 new Swiper(el, {slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true});
             });
 
+            // ───── F36: 상세 헤더 햄버거 드로어 (딤 탭·X 닫기) ─────
+            var $drawer = $('.det-drawer');
+            function drawerClose(){ $drawer.removeClass('is-open'); setTimeout(function(){ $drawer.prop('hidden', true); }, 300); }
+            $('.dh-menu').on('click', function(e){ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); });
+            $drawer.on('click', '.dd-dim, .dd-close', function(e){ e.preventDefault(); drawerClose(); });
+            $(document).on('keydown', function(e){ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); });
+
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){
                 $('#float').toggleClass('is-active', $(window).scrollTop() > 50);
@@ -914,6 +936,28 @@
                 $('html, body').stop().animate({scrollTop: 0}, 400);
             });
             // 공유(.btn-share)는 js/engage.js 에서 처리 (OS 공유시트 + 카카오 인앱 폴백)
+
+            // F16+F21+F31: 산출 기준(basis) ? 토글 — 가드 없는 블록에서 바인딩(항상 실행). 모바일 탭 확실성 위해 preventDefault
+            $('#detail').on('click', '.basis-toggle', function(e){
+                e.preventDefault();
+                $('.disappear .basis-fold').toggleClass('is-open');
+            });
+
+            // F27: 상대시간 뱃지 — 클라이언트 계산(로드 시점 기준, 빌드 고정 아님). <7일 N일 전 / <35일 N주 전 / <12개월 N개월 전 / 그 외 N년 전
+            window.CF_rel = function(iso){
+                if (!iso) return '';
+                var t = Date.parse(iso.length > 10 ? iso : iso + 'T00:00:00');
+                if (isNaN(t)) return '';
+                var days = Math.floor((Date.now() - t) / 86400000);
+                if (days < 0) days = 0;
+                if (days < 7) return (days || 0) + '일 전';
+                if (days < 35) return Math.floor(days / 7) + '주 전';
+                var mon = Math.floor(days / 30);
+                if (mon < 12) return mon + '개월 전';
+                return Math.floor(days / 365) + '년 전';
+            };
+            // 서버 렌더된 FAQ 미리보기 뱃지 채우기 (동적 시트 카드는 렌더 시 inline 처리)
+            $('.rel-badge[data-d]').each(function(){ var s = window.CF_rel($(this).data('d')); if (s) $(this).text(s); });
 
             // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
             if (!window.QDATA) return;
@@ -958,17 +1002,8 @@
                         + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
                         + '</div>';
                 }
-                // 링크: 구글 origin만 개별 리뷰 원본으로, 그 외(Trip.com·Booking 등)는 전부 호텔 구글 리뷰 페이지로
-                // (Trip.com/Booking 원본 URL은 예약페이지로 빠져 리뷰가 안 보임)
-                var linkHtml = '<span></span>';
-                var isGoogle = (q.o === 'Google') && q.u && q.u.toLowerCase().indexOf('google.') >= 0;
-                if (isGoogle) {
-                    linkHtml = '<a class="orig-link" href="' + esc(q.u) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                } else if (window.CF_GREVIEWS) {
-                    linkHtml = '<a class="orig-link" href="' + esc(window.CF_GREVIEWS) + '" target="_blank" rel="noopener">구글 리뷰 보기 ↗</a>';
-                }
                 var foot = '<div class="item-foot">'
-                    + linkHtml
+                    + origLink(q.o, q.u)
                     + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
                     + '</div>';
                 return '<li><div class="item">'
@@ -976,10 +1011,18 @@
                     + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div>' + (langLabel(q.l) ? '<span class="q-lang">' + langLabel(q.l) + '</span>' : '') + '</div>'
                     + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
-                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + '</div></div>'
+                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + relSpan(q.d) + '</div></div>'
                     + foot + full
                     + '</div></li>';
             }
+            // F32: 출처별 원문 링크 (Google 개별 딥링크 / Trip.com 호텔 #review 앵커 / 기타). URL 빈값이면 미출력
+            function origLink(o, u){
+                if (!u) return '<span></span>';
+                var label = o === 'Google' ? '구글 리뷰 보기 ↗' : (o === 'Trip.com' ? 'Trip.com에서 보기 ↗' : '원문 보기 ↗');
+                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">' + label + '</a>';
+            }
+            // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
+            function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }
 
             function render(){
                 var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
@@ -1021,16 +1064,21 @@
                 $('body').css('overflow', '');
                 setTimeout(function(){ $sheet.prop('hidden', true); }, 300);
             }
-            // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
+            // F28: FAQ 시트 카드 = 리스크 시트 카드 동형(이름·별점·출처·언어칩·인용·날짜+상대뱃지·원문링크·tf 토글). grade만 미해당→생략.
             function faqCard(e){
                 var stw = parseInt(e.st, 10) || 0;
                 var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
                 var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
+                var hasFull = !!e.tf;
+                var full = hasFull ? '<div class="full" hidden><div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(e.tf) + '</div></div>' : '';
+                var foot = '<div class="item-foot">' + origLink(e.o, e.u)
+                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '') + '</div>';
                 return '<li><div class="item">'
                     + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
-                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
-                    + '<div class="item-bottom"><div class="text">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
-                    + '<div class="date">' + esc(d) + '</div></div>'
+                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div>' + (langLabel(e.l) ? '<span class="q-lang">' + langLabel(e.l) + '</span>' : '') + '</div>'
+                    + '<div class="item-bottom"><div class="text clamp">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
+                    + '<div class="date">' + esc(d) + relSpan(e.d) + '</div></div>'
+                    + foot + full
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -1114,10 +1162,6 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
-            // F16+F21: 산출 기준(basis) — 기본 숨김, 타이틀 옆 ? 버튼이 하단 basis-fold 토글
-            $('#detail').on('click', '.basis-toggle', function(){
-                $('.disappear .basis-fold').toggleClass('is-open');
-            });
 
             // F7+F24: 월별 트렌드 폴드(전체·카테고리 공용) — 기본 접힘, 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
@@ -1160,9 +1204,14 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
-            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
-            $('#hotel-faq').on('click', '.faq-q', function(){
+            // F18 FAQ 카드 접힘/펼침 — Q줄 클릭은 토글(펼침 상태에서 접기 가능)
+            $('#hotel-faq').on('click', '.faq-q', function(e){
                 $(this).closest('.faq-card').toggleClass('is-open');
+                e.stopPropagation();   // 카드 레벨 핸들러 중복 방지
+            });
+            // F29 접힘 상태 = 카드 박스 전체가 클릭 영역. 펼친 상태에선 내부 인터랙션(더보기·링크) 보존
+            $('#hotel-faq').on('click', '.faq-card', function(){
+                if (!$(this).hasClass('is-open')) $(this).addClass('is-open');
             });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
@@ -1176,10 +1225,6 @@
                 $('html, body').stop().animate({scrollTop: top}, 350);
             }
             $('.radar-cats').on('click', '.radar-cat', function(){
-                openAndScroll($(this).data('target'));
-            });
-            // 딜브레이커 스트립 → 해당 카테고리 아코디언 열고 스크롤 (radar-cat 패턴 재사용)
-            $('.db-strip').on('click', '.db-item', function(){
                 openAndScroll($(this).data('target'));
             });
             // 점프 칩(진입점·위치 섹션 공용): risk-* → 아코디언 오픈, faq-* → 해당 카드로 스크롤, hotel-faq → 섹션 앵커

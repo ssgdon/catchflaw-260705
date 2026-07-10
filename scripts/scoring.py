@@ -66,11 +66,13 @@ def compute(data_dir):
         m_num[k] += f['n'] * W[f['bucket']] * f['s']
         m_cnt[k] += f['n']
 
-    s_num = defaultdict(float); s_cnt = defaultdict(int)
+    s_num = defaultdict(float); s_cnt = defaultdict(int); s_cnt_1y = defaultdict(int)
     for f in findings_sub:
         k = (f['place_id'], f['mcat'], f['scat'])
         s_num[k] += f['n'] * W[f['bucket']] * f['s']
         s_cnt[k] += f['n']
+        if f['bucket'] != 'w015':          # F34: 최근 1년(365일 이내) finding 수 — 표시 전용(산식 불변)
+            s_cnt_1y[k] += f['n']
 
     crit_w = defaultdict(float)
     for r in reviewlevel:
@@ -103,7 +105,8 @@ def compute(data_dir):
                     radj_s = (s_num[(p, c, s)] + K * city['sub'][(c, s)]) / (den[p] + K)
                     ss = _score_from_ratio(radj_s / city['sub'][(c, s)])
                     if s_cnt[(p, c, s)] < GUARD_MIN: ss = min(ss, GUARD_CAP)
-                    h['cats'][c]['subs'][s] = {'score': ss, 'band': grade_band(ss), 'count': s_cnt[(p, c, s)]}
+                    h['cats'][c]['subs'][s] = {'score': ss, 'band': grade_band(ss),
+                                               'count': s_cnt[(p, c, s)], 'count_1y': s_cnt_1y[(p, c, s)]}
         hotels[p] = h
 
     # 백분위 (같은 도시 내, 카테고리 점수 기준)
