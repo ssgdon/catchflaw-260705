@@ -1526,51 +1526,62 @@ def jsonld_detail(pid, meta):
 # ── B층 FAQ 섹션 (TAXONOMY-V4 §3-d). faq = [{t,g,q,a,c:[chips],e:[{q,d,st,o}],n}] 또는 None ──
 FAQ_GROUP_ORDER = ['가족·인원', '시설·어메니티', '서비스·정책', '위치']
 
+def _faq_date(d):
+    """근거 날짜 YY.MM.DD (예 26.02.19)."""
+    d = str(d or '')[:10]
+    return d[2:].replace('-', '.') if len(d) == 10 else d.replace('-', '.')
+
 def _faq_ev_preview(ev):
-    """FAQ 카드 내 리뷰 근거 미니카드 (날짜·출처·별점 있으면 별점/없으면 출처만·인용). §7 준수(별 0개 금지)."""
-    d = (ev.get('d') or '')[:10].replace('-', '.')
-    o = E(ev.get('o') or 'Google')
+    """FAQ 카드 내 리뷰 근거 미니카드 — 고객 id(마스킹) 우선, 출처는 보조, 별점 있으면 별점(§7: 별 0개 금지)."""
     st = ev.get('st')
-    star = f'<span class="star"><i style="width:{int(st) * 20}%"></i></span>' if st else ''
-    meta = f'{star}<span class="fe-src">{o}</span>' + (f'<span class="fe-date">{d}</span>' if d else '')
+    try: stw = int(float(st)) * 20
+    except (TypeError, ValueError): stw = 0
+    star = f'<span class="star"><i style="width:{stw}%"></i></span>' if stw else ''
+    d = _faq_date(ev.get('d'))
+    meta = (f'<span class="fe-name">{E(mask_name(ev.get("rn")))}</span>'
+            f'<span class="fe-src">{E(ev.get("o") or "Google")}</span>{star}'
+            + (f'<span class="fe-date">{d}</span>' if d else ''))
     return (f'<li class="fe-item"><div class="fe-meta">{meta}</div>'
             f'<div class="fe-q">"{E(ev.get("q") or "")}"</div></li>')
 
 def faq_section(faq):
-    """F12: 필터 탭 + 카드(질문→답변→칩→리뷰 근거 미리보기 e[:3]→더보기 시트). e 최대 8."""
+    """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8."""
     if not faq: return ''
     by_g = defaultdict(list)
     for item in faq:
         by_g[item.get('g') or '기타'].append(item)
     present = [g for g in FAQ_GROUP_ORDER if by_g.get(g)]
     if not present: return ''
-    # 탭
     tabs = ['<button type="button" class="faq-tab is-on" data-g="">전체</button>']
     tabs += [f'<button type="button" class="faq-tab" data-g="{E(g)}">{E(g)}</button>' for g in present]
-    # 카드 (그룹 순서 → 그룹 내 n 내림차순), 각 카드 data-group
     cards = []
     faqevid = {}
     for g in present:
         for it in sorted(by_g[g], key=lambda x: -(x.get('n') or 0)):
             t = str(it.get('t') or '')
             evlist = [ev for ev in (it.get('e') or []) if ev.get('q')]
-            chips = ''.join(f'<span class="faq-chip">{E(c)}</span>' for c in (it.get('c') or []) if c)
+            chips = ''.join(f'<span class="faq-chip">{E(c)}</span>' for c in (it.get('c') or [])[:4] if c)
             chips_html = f'<div class="faq-chips">{chips}</div>' if chips else ''
             ev_block = ''
             if evlist:
                 prev = ''.join(_faq_ev_preview(ev) for ev in evlist[:3])
                 more = ''
                 if len(evlist) > 3:
-                    faqevid[t] = evlist
+                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3)
+                    faqevid[t] = [{'q': ev.get('q') or '', 'd': ev.get('d') or '', 'st': ev.get('st'),
+                                   'o': ev.get('o') or 'Google', 'n': mask_name(ev.get('rn'))} for ev in evlist]
                     more = (f'<button type="button" class="faq-more-btn" data-topic="{E(t)}" '
                             f'data-q="{E(it.get("q") or "")}">리뷰 {len(evlist)}개 모두 보기</button>')
                 ev_block = (f'<div class="faq-ev-head">실제 투숙객 리뷰</div>'
                             f'<ul class="faq-ev">{prev}</ul>{more}')
+            # F18: 접힘(기본) = Q.질문+칩 한 덩어리 / 펼침 = 답변·근거(.faq-body)
             cards.append(f'''<div class="faq-card" id="faq-{E(t)}" data-group="{E(g)}">
-                <div class="faq-q"><span class="q-txt">{E(it.get('q') or '')}</span></div>
-                <p class="faq-a">{emph(it.get('a') or '')}</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">{E(it.get('q') or '')}</span><span class="faq-arrow"></span></button>
                 {chips_html}
-                {ev_block}
+                <div class="faq-body">
+                    <p class="faq-a">{emph(it.get('a') or '')}</p>
+                    {ev_block}
+                </div>
             </div>''')
     evid_script = (f'<script>window.FAQEVID={json.dumps(faqevid, ensure_ascii=False)};</script>'
                    if faqevid else '')
@@ -1644,9 +1655,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if _n >= 3:
                 db_data.append((_cat, _slabel, _clabel, _n))
 
-    # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩 + 전체 (최대 4칩) ──
-    FAQ_CHIP_Q = [('bath', '대욕장 있나요'), ('luggage', '짐 맡아주나요'), ('breakfast', '조식 어때요'),
-                  ('family', '아이동반 되나요'), ('parking', '주차 되나요')]
+    # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩(primary) + 전체 (최대 4칩) ──
+    FAQ_CHIP_Q = [('bath', '대욕장 있나요?'), ('luggage', '짐 맡아주나요?'), ('breakfast', '조식 어때요?'),
+                  ('family', '아이동반 되나요?'), ('parking', '주차 되나요?')]
     faq_jump_html = ''
     if h['scored'] and (faq or db_data):
         _chips = []
@@ -1658,10 +1669,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             for _key, _lbl in FAQ_CHIP_Q:
                 if _slots <= 0: break
                 if _key in _tset:
-                    _chips.append(f'<button type="button" class="fj-btn" data-target="faq-{_key}">{_lbl}</button>')
+                    _chips.append(f'<button type="button" class="fj-btn fj-q" data-target="faq-{_key}">{_lbl}</button>')
                     _slots -= 1
             _chips.append(f'<button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 {len(faq)}개 전체보기</button>')
-        faq_jump_html = f'<div class="faq-jump">{"".join(_chips)}</div>'
+        # F14: 우측 화이트 페이드(스크롤 어포던스) 래퍼
+        faq_jump_html = f'<div class="faq-jump-wrap"><div class="faq-jump">{"".join(_chips)}</div></div>'
 
     # 이 호텔이 속한 컬렉션 칩 (지역 1 + 테마 매칭, 최대 3 — HUB §3-d)
     col_chip_block = ''
@@ -1687,30 +1699,30 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         body_scored = f'''<div class="sect"><div class="head">
             <div class="title">아직 분석 리뷰가 부족해요</div>
             <div class="desc">이 호텔은 분석된 리뷰가 {h['analyzed']}건이라 신뢰할 수 있는 확률을 내기 어려워요 (최소 {MIN_REVIEWS}건). 데이터가 쌓이면 공개할게요.</div>
-        </div></div>
-        {map_block}'''    # F11: 별점 분포 없는 호텔 → 위치는 다음 섹션 앞
+        </div></div>'''
     else:
         v = pct(h['p_crit']); avg = pct(city['crit'])
         ratio = h['p_crit'] / city['crit']
         radar_vals = [round(h['cats'][c]['score']) for c in CATS]
         radar_max = max(65, min(100, (max(radar_vals) // 10 + 2) * 10))  # 동적 상한(폴리곤이 안 눌리게, 50은 항상 노출)
 
-        # ── F8: 4-CASE verdict 헤드라인 + 근거 한 줄 (숫자는 전부 실측 — 만들어낸 % 금지) ──
+        # ── F8+F15: 4-CASE verdict 헤드라인 + 근거 2줄(핵심 숫자 <b>) — 숫자는 전부 실측, 만들어낸 % 금지 ──
         _worst = max(CATS, key=lambda c: h['cats'][c]['score'])
         _worst_sc = h['cats'][_worst]['score']
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
         if ratio <= 0.8:                              # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'리뷰 {h["analyzed"]:,}건을 분석했지만, 벌레·치안 심각 신고는 0건이었어요'
+                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석했지만,<br>벌레·치안 심각 신고는 <b>0건</b>이었어요'
             elif _all_safe:
-                v_why = f'6개 위험 항목 모두 {CITY["ko"]} 평균 아래예요'
+                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석한 결과,<br>6개 항목 모두 평균보다 안전했어요'
             else:
-                v_why = f'심각 언급 100명 중 {v}명 — 평균({avg}명)보다 낮아요'
+                v_why = f'심각 문제 언급이 100명 중 <b>{v}명</b>,<br>평균(<b>{avg}명</b>)보다 낮아요'
         elif ratio < 1.15:                            # B
             v_head, v_tone = '무난하게 통과', 'safe'
             if h['cats'][_worst]['band'] in ('warning', 'danger'):
-                v_why = f'다만 {cat_ko(_worst)}({round(_worst_sc)}){josa_eun(cat_ko(_worst))} 평균보다 높아요 — 아래에서 확인하세요'
+                v_why = (f'다만 <b>{E(cat_ko(_worst))}</b>({round(_worst_sc)}){josa_eun(cat_ko(_worst))} '
+                         f'평균보다 높아요,<br>아래 상세에서 확인하세요')
             else:
                 v_why = '튀는 위험 항목 없이 고른 수준이에요'
         elif ratio < 1.5:                             # C
@@ -1721,14 +1733,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if cut_1y:
                 _k = sum(1 for c in _warns for q in quotes.get((pid, c), [])
                          if q.get('grade') == '심각' and str(q.get('pub') or '')[:10] >= cut_1y)
-                v_why = f'{_names} 불만이 집중돼요 — 최근 1년 심각 {_k}건'
+                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>최근 1년 심각 <b>{_k}건</b>'
             else:
-                v_why = f'{_names} 불만이 집중돼요'
+                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요'
         else:                                         # D
             v_head, v_tone = '실망 위험이 높은 호텔이에요', 'danger'
-            v_why = f'최근 투숙객 100명 중 {v}명이 심각한 문제를 언급 — 특히 {cat_ko(_worst)}'
+            v_why = f'최근 투숙객 100명 중 <b>{v}명</b>이 심각한 문제를 겪었어요,<br>특히 <b>{E(cat_ko(_worst))}</b>'
         verdict_html = (f'<div class="verdict is-{v_tone}">{E(v_head)}</div>'
-                        f'<div class="verdict-why">{E(v_why)}</div>')
+                        f'<div class="verdict-why">{v_why}</div>')
 
         # ── 딜브레이커 경고 스트립 (db_data 공용 계산 재사용 — 해충 16%·치안 12% 발동) ──
         db_items = [f'''<button type="button" class="db-item" data-target="risk-{CATS.index(_cat)}">
@@ -1881,11 +1893,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {gauge_html(h['p_crit'], city['crit'])}
             {verdict_html}
             {overall_trend}
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            </div>
         </div>
         {dealbreaker_strip}
-        {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">{CITY['ko']} 평균 = 50</div></div>
@@ -1941,7 +1955,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         {faq_section(faq)}
         {stars_block}
-        {map_block}
+        {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -2017,6 +2031,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {faq_jump_html}
                 </div>
+                {map_block}
                 {body_scored}
                 {col_chip_block}
                 {similar_block}
@@ -2163,11 +2178,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }}
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){{
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }}
             function faqOpen(topic, q){{
@@ -2251,6 +2269,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){{
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            }});
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){{
@@ -2286,6 +2309,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     $(this).toggle(!g || $(this).data('group') === g);
                 }});
             }});
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){{
+                $(this).closest('.faq-card').toggleClass('is-open');
+            }});
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){{
@@ -2310,6 +2337,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 if (t.indexOf('risk-') === 0) {{ openAndScroll(t); return; }}
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({{scrollTop: $el.offset().top - 8}}, 350);
             }});
 

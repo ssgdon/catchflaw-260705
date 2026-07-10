@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783652417">
-    <link rel="stylesheet" href="../css/common.css?v=1783652417">
-    <link rel="stylesheet" href="../css/layout.css?v=1783652417">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783652417">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783652417">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783652417">
-    <script src="../js/backnav.js?v=1783652417"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
+    <link rel="stylesheet" href="../css/common.css?v=1783668430">
+    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
+    <script src="../js/backnav.js?v=1783668430"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783652417" defer></script>
-    <script src="../js/recommend.js?v=1783652417"></script>
+    <script src="../js/engage.js?v=1783668430" defer></script>
+    <script src="../js/recommend.js?v=1783668430"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -77,8 +77,15 @@
                             <span class="txt"><span class="label">분석 리뷰 60개</span><span class="count">AI 분석 리포트</span></span>
                         </a>
                     </div>
-                    <div class="faq-jump"><button type="button" class="fj-btn" data-target="faq-luggage">짐 맡아주나요</button><button type="button" class="fj-btn" data-target="faq-family">아이동반 되나요</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 4개 전체보기</button></div>
+                    <div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-luggage">짐 맡아주나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-family">아이동반 되나요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 4개 전체보기</button></div></div>
                 </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div></div>
+            
+            <div class="loc-chips"><span class="lc-chip">나카스카와바타역 도보 7분 · 407m</span><span class="lc-chip">텐진권</span></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5912549,130.4046067&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="MKホテルズ西中洲 지도"></iframe></div>
+        </div>
                 
         <div class="sect disappear">
             <div class="head">
@@ -95,24 +102,15 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 14명이 심각한 문제를 언급 — 특히 위생</div>
+            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 <b>14명</b>이 심각한 문제를 겪었어요,<br>특히 <b>위생</b></div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 60.0% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 -6.6p 줄었어요</div></div></div></div>
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 60건 · 기준 2026년 7월
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
-        </div>
-        
-        
-        <div class="sect kr-card">
-            <div class="head kr-head">
-                <div class="title">한국인 리뷰 현황</div>
-                <div class="kr-count"><b>39</b>건 · 전체 65%</div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 60건 · 기준 2026년 7월
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
             </div>
-            <div class="kr-dist"><div class="kd-chart" role="img" aria-label="후쿠오카 호텔 한국인 비중 분포에서 이 호텔 위치"><div class="kd-bar" style="height:8%"></div><div class="kd-bar" style="height:12%"></div><div class="kd-bar" style="height:17%"></div><div class="kd-bar" style="height:23%"></div><div class="kd-bar" style="height:25%"></div><div class="kd-bar" style="height:29%"></div><div class="kd-bar" style="height:34%"></div><div class="kd-bar" style="height:36%"></div><div class="kd-bar" style="height:38%"></div><div class="kd-bar" style="height:40%"></div><div class="kd-bar" style="height:42%"></div><div class="kd-bar" style="height:44%"></div><div class="kd-bar" style="height:48%"></div><div class="kd-bar" style="height:50%"></div><div class="kd-bar" style="height:52%"></div><div class="kd-bar" style="height:53%"></div><div class="kd-bar" style="height:58%"></div><div class="kd-bar" style="height:61%"></div><div class="kd-bar" style="height:76%"></div><div class="kd-bar is-hl" style="height:95%"><span class="kd-val">65%</span></div></div><div class="kp-cap">한국인 비중 <b>후쿠오카 상위 2%</b></div><div class="kp-sub">후쿠오카 호텔 중 한국인 투숙객이 <b>많은 편</b>이에요</div></div>
-            <div class="kr-vbars"><div class="kv-group"><div class="kv-tit">구글 평균 별점</div><div class="kv-bars"><div class="kv-col"><div class="kv-val kv-val-ko">4.3</div><div class="kv-track"><span class="kv-fill kv-fill-ko" style="height:87%"></span></div><div class="kv-lab">한국인</div></div><div class="kv-col"><div class="kv-val">3.6</div><div class="kv-track"><span class="kv-fill" style="height:73%"></span></div><div class="kv-lab">전체</div></div></div></div><div class="kv-group"><div class="kv-tit">심각·주의 리뷰 비율</div><div class="kv-bars"><div class="kv-col"><div class="kv-val kv-val-ko">54%</div><div class="kv-track"><span class="kv-fill kv-fill-ko" style="height:100%"></span></div><div class="kv-lab">한국인</div></div><div class="kv-col"><div class="kv-val">52%</div><div class="kv-track"><span class="kv-fill" style="height:96%"></span></div><div class="kv-lab">전체</div></div></div></div></div>
-            <div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰(별점만 남긴 리뷰 포함)</div>
-            <div class="kr-insight">별점은 후하지만, <b>심각·주의 언급은 더 많았어요</b></div>
-            <div class="kr-serious">최근 1년 기준, 한국인 100명 중 <b>15</b>명이 심각한 문제를 언급했어요</div>
         </div>
+        
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
             <div class="desc">후쿠오카 평균 = 50</div></div>
@@ -575,39 +573,52 @@
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
             <div class="faq-tabs"><button type="button" class="faq-tab is-on" data-g="">전체</button><button type="button" class="faq-tab" data-g="가족·인원">가족·인원</button><button type="button" class="faq-tab" data-g="시설·어메니티">시설·어메니티</button><button type="button" class="faq-tab" data-g="서비스·정책">서비스·정책</button><button type="button" class="faq-tab" data-g="위치">위치</button></div>
             <div class="faq-cards"><div class="faq-card" id="faq-family" data-group="가족·인원">
-                <div class="faq-q"><span class="q-txt">아이랑 가도 괜찮나요?</span></div>
-                <p class="faq-a">네, 아이와 함께 가기 <span>좋습니다</span>. 특히 가족 여행에 적합한 시설을 갖추고 있으며, 위치도 매우 좋습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">아이랑 가도 괜찮나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">가족여행 적합</span><span class="faq-chip">위치 좋음</span><span class="faq-chip">주방/세탁기 있음</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.08</span></div><div class="fe-q">"작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2026.06.22</span></div><div class="fe-q">"아이를 데리고 간다면 아이를 씻길때 조금 불편할수는 있을거 같지만 위치가 불편함을 이길수 있습니다"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2026.06.22</span></div><div class="fe-q">"위치가 너무 좋아서 하카타도 텐진역도 걸어서 다닐수 있었습니다!"</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">네, 아이와 함께 가기 <span>좋습니다</span>. 특히 가족 여행에 적합한 시설을 갖추고 있으며, 위치도 매우 좋습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">Y**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.08</span></div><div class="fe-q">"작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.22</span></div><div class="fe-q">"아이를 데리고 간다면 아이를 씻길때 조금 불편할수는 있을거 같지만 위치가 불편함을 이길수 있습니다"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.06.22</span></div><div class="fe-q">"위치가 너무 좋아서 하카타도 텐진역도 걸어서 다닐수 있었습니다!"</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-kitchen" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">냉장고·주방·세탁은요?</span></div>
-                <p class="faq-a">객실에 <span>작은 주방, 냉장고, 세탁기</span>가 구비되어 있습니다. 세탁기는 건조까지 가능하며, 체크아웃 후에도 24시간 캐리어 보관함에 짐을 맡길 수 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">냉장고·주방·세탁은요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">작은 주방</span><span class="faq-chip">냉장고</span><span class="faq-chip">세탁기</span><span class="faq-chip">건조 가능</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.08</span></div><div class="fe-q">"작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.15</span></div><div class="fe-q">"세탁기가 건조까지 가능했다"</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.08.24</span></div><div class="fe-q">"커피포트키 냄비 인덕션있지만 수저가없어서 따로챙겨야하고 소파가더럽다고했는데 다행히 소파도 깨끗했습니다"</div></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">객실에 <span>작은 주방, 냉장고, 세탁기</span>가 구비되어 있습니다. 세탁기는 건조까지 가능하며, 체크아웃 후에도 24시간 캐리어 보관함에 짐을 맡길 수 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">Y**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.08</span></div><div class="fe-q">"작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">K**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.05.15</span></div><div class="fe-q">"세탁기가 건조까지 가능했다"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">독**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.08.24</span></div><div class="fe-q">"커피포트키 냄비 인덕션있지만 수저가없어서 따로챙겨야하고 소파가더럽다고했는데 다행히 소파도 깨끗했습니다"</div></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-luggage" data-group="서비스·정책">
-                <div class="faq-q"><span class="q-txt">짐 보관 되나요?</span></div>
-                <p class="faq-a">네, 짐 보관이 <span>가능</span>합니다. 체크인 전에 로비에 짐 보관함이 마련되어 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">짐 보관 되나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">짐 보관 가능</span><span class="faq-chip">체크인 전</span><span class="faq-chip">로비 보관함</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2026.01.09</span></div><div class="fe-q">"체크인 전 로비에 짐 보관하는 칸 같은게 있어서 좋았어요!"</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">네, 짐 보관이 <span>가능</span>합니다. 체크인 전에 로비에 짐 보관함이 마련되어 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.09</span></div><div class="fe-q">"체크인 전 로비에 짐 보관하는 칸 같은게 있어서 좋았어요!"</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
-                <div class="faq-q"><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span></div>
-                <p class="faq-a">텐진역과 하카타역까지는 평균 <span>1km</span> 거리로, 도보로 <span>20분 이상</span> 걸리지 않습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">텐진역 1km</span><span class="faq-chip">하카타역 1km</span><span class="faq-chip">도보 20분 이내</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2026.01.27</span></div><div class="fe-q">"텐진역, 하카타역 까지의 거리는 평균 1km로 거리가 좀 있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2026.01.09</span></div><div class="fe-q">"텐진 하카타 캐널시티 어딜 가든 도보로 20분 이상은 안 걸었던거 같아요 !"</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">텐진역과 하카타역까지는 평균 <span>1km</span> 거리로, 도보로 <span>20분 이상</span> 걸리지 않습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.27</span></div><div class="fe-q">"텐진역, 하카타역 까지의 거리는 평균 1km로 거리가 좀 있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">26.01.09</span></div><div class="fe-q">"텐진 하카타 캐널시티 어딜 가든 도보로 20분 이상은 안 걸었던거 같아요 !"</div></li></ul>
+                </div>
             </div></div>
-        </div><script>window.FAQEVID={"kitchen": [{"q": "작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다.", "d": "2025-11-08", "st": 5, "o": "Google"}, {"q": "세탁기가 건조까지 가능했다", "d": "2026-05-15", "st": 4, "o": "Google"}, {"q": "커피포트키 냄비 인덕션있지만 수저가없어서 따로챙겨야하고 소파가더럽다고했는데 다행히 소파도 깨끗했습니다", "d": "2025-08-24", "st": 4, "o": "Google"}, {"q": "수건 리필은 안되지만 안에 세탁기 있어서 돌리고 베란다에건조 했슴미다 조아요", "d": "2025-08-04", "st": null, "o": "Trip.com"}, {"q": "체크인옆에 24시간 캐리어보관함이있어 마지막날 체크아웃후 자물쇠잠그고 돌아다니다 복귀때 찾으니 편리합니다", "d": "2025-08-24", "st": 4, "o": "Google"}]};</script>
+        </div><script>window.FAQEVID={"kitchen": [{"q": "작은 주방, 냉장고, 세탁기, 별도의 욕실이 있어 가족 여행에 안성맞춤입니다.", "d": "2025-11-08", "st": 5, "o": "Google", "n": "Y**"}, {"q": "세탁기가 건조까지 가능했다", "d": "2026-05-15", "st": 4, "o": "Google", "n": "K**"}, {"q": "커피포트키 냄비 인덕션있지만 수저가없어서 따로챙겨야하고 소파가더럽다고했는데 다행히 소파도 깨끗했습니다", "d": "2025-08-24", "st": 4, "o": "Google", "n": "독**"}, {"q": "수건 리필은 안되지만 안에 세탁기 있어서 돌리고 베란다에건조 했슴미다 조아요", "d": "2025-08-04", "st": null, "o": "Trip.com", "n": "T**"}, {"q": "체크인옆에 24시간 캐리어보관함이있어 마지막날 체크아웃후 자물쇠잠그고 돌아다니다 복귀때 찾으니 편리합니다", "d": "2025-08-24", "st": 4, "o": "Google", "n": "독**"}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 20%</b> 입니다.</div>
                 <div class="count">총 35건</div></div>
                 <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:14%"></i></div><div class="per">14%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:6%"></i></div><div class="per">6%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:23%"></i></div><div class="per">23%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:17%"></i></div><div class="per">17%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:40%"></i></div><div class="per">40%</div></li></ul></div>
             </div>
-        <div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
-            
-            <div class="loc-chips"><span class="lc-chip">나카스카와바타역 도보 7분 · 407m</span><span class="lc-chip">텐진권</span></div>
-            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5912549,130.4046067&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="MKホテルズ西中洲 지도"></iframe></div>
+        
+        <div class="sect kr-card">
+            <div class="head kr-head">
+                <div class="title">한국인 리뷰 현황</div>
+                <div class="kr-count"><b>39</b>건 · 전체 65%</div>
+            </div>
+            <div class="kr-dist"><div class="kd-chart" role="img" aria-label="후쿠오카 호텔 한국인 비중 분포에서 이 호텔 위치"><div class="kd-bar" style="height:8%"></div><div class="kd-bar" style="height:12%"></div><div class="kd-bar" style="height:17%"></div><div class="kd-bar" style="height:23%"></div><div class="kd-bar" style="height:25%"></div><div class="kd-bar" style="height:29%"></div><div class="kd-bar" style="height:34%"></div><div class="kd-bar" style="height:36%"></div><div class="kd-bar" style="height:38%"></div><div class="kd-bar" style="height:40%"></div><div class="kd-bar" style="height:42%"></div><div class="kd-bar" style="height:44%"></div><div class="kd-bar" style="height:48%"></div><div class="kd-bar" style="height:50%"></div><div class="kd-bar" style="height:52%"></div><div class="kd-bar" style="height:53%"></div><div class="kd-bar" style="height:58%"></div><div class="kd-bar" style="height:61%"></div><div class="kd-bar" style="height:76%"></div><div class="kd-bar is-hl" style="height:95%"><span class="kd-val">65%</span></div></div><div class="kp-cap">한국인 비중 <b>후쿠오카 상위 2%</b></div><div class="kp-sub">후쿠오카 호텔 중 한국인 투숙객이 <b>많은 편</b>이에요</div></div>
+            <div class="kr-vbars"><div class="kv-group"><div class="kv-tit">구글 평균 별점</div><div class="kv-bars"><div class="kv-col"><div class="kv-val kv-val-ko">4.3</div><div class="kv-track"><span class="kv-fill kv-fill-ko" style="height:87%"></span></div><div class="kv-lab">한국인</div></div><div class="kv-col"><div class="kv-val">3.6</div><div class="kv-track"><span class="kv-fill" style="height:73%"></span></div><div class="kv-lab">전체</div></div></div></div><div class="kv-group"><div class="kv-tit">심각·주의 리뷰 비율</div><div class="kv-bars"><div class="kv-col"><div class="kv-val kv-val-ko">54%</div><div class="kv-track"><span class="kv-fill kv-fill-ko" style="height:100%"></span></div><div class="kv-lab">한국인</div></div><div class="kv-col"><div class="kv-val">52%</div><div class="kv-track"><span class="kv-fill" style="height:96%"></span></div><div class="kv-lab">전체</div></div></div></div></div>
+            <div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰(별점만 남긴 리뷰 포함)</div>
+            <div class="kr-insight">별점은 후하지만, <b>심각·주의 언급은 더 많았어요</b></div>
+            <div class="kr-serious">최근 1년 기준, 한국인 100명 중 <b>15</b>명이 심각한 문제를 언급했어요</div>
         </div>
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
@@ -909,11 +920,14 @@
             }
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -997,6 +1011,11 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            });
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){
@@ -1032,6 +1051,10 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){
+                $(this).closest('.faq-card').toggleClass('is-open');
+            });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){
@@ -1056,6 +1079,7 @@
                 if (t.indexOf('risk-') === 0) { openAndScroll(t); return; }
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({scrollTop: $el.offset().top - 8}, 350);
             });
 

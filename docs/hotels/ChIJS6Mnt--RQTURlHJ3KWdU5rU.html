@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783652417">
-    <link rel="stylesheet" href="../css/common.css?v=1783652417">
-    <link rel="stylesheet" href="../css/layout.css?v=1783652417">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783652417">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783652417">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783652417">
-    <script src="../js/backnav.js?v=1783652417"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
+    <link rel="stylesheet" href="../css/common.css?v=1783668430">
+    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
+    <script src="../js/backnav.js?v=1783668430"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783652417" defer></script>
-    <script src="../js/recommend.js?v=1783652417"></script>
+    <script src="../js/engage.js?v=1783668430" defer></script>
+    <script src="../js/recommend.js?v=1783668430"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -77,8 +77,15 @@
                             <span class="txt"><span class="label">분석 리뷰 251개</span><span class="count">AI 분석 리포트</span></span>
                         </a>
                     </div>
-                    <div class="faq-jump"><button type="button" class="fj-btn" data-target="faq-breakfast">조식 어때요</button><button type="button" class="fj-btn" data-target="faq-family">아이동반 되나요</button><button type="button" class="fj-btn" data-target="faq-parking">주차 되나요</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 4개 전체보기</button></div>
+                    <div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-breakfast">조식 어때요?</button><button type="button" class="fj-btn fj-q" data-target="faq-family">아이동반 되나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-parking">주차 되나요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 4개 전체보기</button></div></div>
                 </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div></div>
+            
+            <div class="loc-chips"><span class="lc-chip">나카스카와바타역 도보 17분 · 1099m</span></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.6037889,130.4020344&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Sun Palace Hotel 지도"></iframe></div>
+        </div>
                 
         <div class="sect disappear">
             <div class="head">
@@ -95,12 +102,14 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-safe">까다롭게 봐도 통과</div><div class="verdict-why">6개 위험 항목 모두 후쿠오카 평균 아래예요</div>
+            <div class="verdict is-safe">까다롭게 봐도 통과</div><div class="verdict-why">최근 1년 내 <b>251건</b>을 분석한 결과,<br>6개 항목 모두 평균보다 안전했어요</div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 9.6% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 +4.8p 증가했어요</div></div></div></div>
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 251건 · 기준 2026년 7월
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 251건 · 기준 2026년 7월
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            </div>
         </div>
-        
         
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -533,40 +542,42 @@
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
             <div class="faq-tabs"><button type="button" class="faq-tab is-on" data-g="">전체</button><button type="button" class="faq-tab" data-g="가족·인원">가족·인원</button><button type="button" class="faq-tab" data-g="시설·어메니티">시설·어메니티</button><button type="button" class="faq-tab" data-g="서비스·정책">서비스·정책</button><button type="button" class="faq-tab" data-g="위치">위치</button></div>
             <div class="faq-cards"><div class="faq-card" id="faq-family" data-group="가족·인원">
-                <div class="faq-q"><span class="q-txt">아이랑 가도 괜찮나요?</span></div>
-                <p class="faq-a">네, 아이와 함께 방문하기 <span>괜찮습니다</span>. 기저귀 서비스나 그림책 대출 등 아이를 위한 서비스가 제공되며, 일본식 객실도 있어 편안하게 머무실 수 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">아이랑 가도 괜찮나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">기저귀 서비스</span><span class="faq-chip">그림책 대출</span><span class="faq-chip">일본식 객실</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.06.21</span></div><div class="fe-q">"호빵맨 박물관에 가는데 이용했습니다만 기저귀 서비스나 그림책의 대출 등 아이에게 상냥하고 고맙습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.01.12</span></div><div class="fe-q">"아이와 어머니와 3 세대에 머물렀다. 일본식 객실에서 목욕도 화장실도 다르기 때문에 편안했습니다."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">네, 아이와 함께 방문하기 <span>괜찮습니다</span>. 기저귀 서비스나 그림책 대출 등 아이를 위한 서비스가 제공되며, 일본식 객실도 있어 편안하게 머무실 수 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">M**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.06.21</span></div><div class="fe-q">"호빵맨 박물관에 가는데 이용했습니다만 기저귀 서비스나 그림책의 대출 등 아이에게 상냥하고 고맙습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">木**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.01.12</span></div><div class="fe-q">"아이와 어머니와 3 세대에 머물렀다. 일본식 객실에서 목욕도 화장실도 다르기 때문에 편안했습니다."</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-breakfast" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">조식은 어때요?</span></div>
-                <p class="faq-a">조식은 <span>일식</span>으로 맛있다는 평이 있으며, <span>뷔페는 아니지만</span> 효율적으로 식사할 수 있도록 제공됩니다. 음료는 원하는 만큼 마실 수 있으며, <span>추가 요금은 1,000엔</span>입니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">조식은 어때요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">일식</span><span class="faq-chip">맛있음</span><span class="faq-chip">뷔페 아님</span><span class="faq-chip">1,000엔</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.02.08</span></div><div class="fe-q">"아침 식사도 일식으로 매우 맛있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.16</span></div><div class="fe-q">"아침 식사 포함해도 ➕ 1000 엔은 고맙습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.08.23</span></div><div class="fe-q">"아침 식사는 뷔페는 아니지만, 효율적으로 먹을 수 있는 것이 제공되는 것, 음료는 좋아하는 것을 원하는 만큼 마실 수 있으므로 편리합니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="breakfast" data-q="조식은 어때요?">리뷰 7개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">조식은 <span>일식</span>으로 맛있다는 평이 있으며, <span>뷔페는 아니지만</span> 효율적으로 식사할 수 있도록 제공됩니다. 음료는 원하는 만큼 마실 수 있으며, <span>추가 요금은 1,000엔</span>입니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">h**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.02.08</span></div><div class="fe-q">"아침 식사도 일식으로 매우 맛있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">い**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.16</span></div><div class="fe-q">"아침 식사 포함해도 ➕ 1000 엔은 고맙습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">K**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.08.23</span></div><div class="fe-q">"아침 식사는 뷔페는 아니지만, 효율적으로 먹을 수 있는 것이 제공되는 것, 음료는 좋아하는 것을 원하는 만큼 마실 수 있으므로 편리합니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="breakfast" data-q="조식은 어때요?">리뷰 7개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-parking" data-group="서비스·정책">
-                <div class="faq-q"><span class="q-txt">주차할 수 있나요?</span></div>
-                <p class="faq-a">네, 호텔에 주차장이 있으며 <span>예약도 가능</span>합니다. 다만, 주차 요금이 <span>비싸다는 후기</span>가 있으며, <span>30분당 200엔</span>입니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">주차할 수 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">주차 가능</span><span class="faq-chip">예약 가능</span><span class="faq-chip">유료 30분/200엔</span><span class="faq-chip">주차비 비쌈</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.26</span></div><div class="fe-q">"후쿠오카 시내에서 주차장이 있는 호텔을 찾았습니다. 주차장 예약을 할 수 있어 안심입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.01.12</span></div><div class="fe-q">"주차장도 있어, 이벤트 후의 저녁을 고민하고 있었습니다만, 야식이 있다고 하는 일로 부탁해, 엘리베이터 옆의 전자 레인지로 따뜻하게 했습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.02.23</span></div><div class="fe-q">"주차 요금 30 분 / 200 엔이었습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="parking" data-q="주차할 수 있나요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">네, 호텔에 주차장이 있으며 <span>예약도 가능</span>합니다. 다만, 주차 요금이 <span>비싸다는 후기</span>가 있으며, <span>30분당 200엔</span>입니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">k**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.05.26</span></div><div class="fe-q">"후쿠오카 시내에서 주차장이 있는 호텔을 찾았습니다. 주차장 예약을 할 수 있어 안심입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">木**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.01.12</span></div><div class="fe-q">"주차장도 있어, 이벤트 후의 저녁을 고민하고 있었습니다만, 야식이 있다고 하는 일로 부탁해, 엘리베이터 옆의 전자 레인지로 따뜻하게 했습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">o**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.02.23</span></div><div class="fe-q">"주차 요금 30 분 / 200 엔이었습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="parking" data-q="주차할 수 있나요?">리뷰 8개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
-                <div class="faq-q"><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span></div>
-                <p class="faq-a">리뷰에 따르면 역에서 걸어가기에는 <span>조금 멀 수 있으며</span>, 지하철역이 근처에 없어 주로 <span>버스를 이용</span>해야 합니다. 텐진역에서 택시를 이용할 경우 <span>1500~2000엔</span> 정도의 요금이 나옵니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">도보로 멀 수 있음</span><span class="faq-chip">버스 이용</span><span class="faq-chip">택시 1500~2000엔</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.03.11</span></div><div class="fe-q">"다만 액세스는 조금 불편하고, 지하철역이 근처에 없기 때문에 기본 버스 이동이 됩니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.03.11</span></div><div class="fe-q">"휴일에 텐진역에서 택시를 이용했는데, 대체로 1500~2000엔 정도였습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.06</span></div><div class="fe-q">"하카타 역에서 버스로 바로 갈 수 있기 때문에 좋네요. 걷고 가려면 조금 멀지도 모릅니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 4개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">리뷰에 따르면 역에서 걸어가기에는 <span>조금 멀 수 있으며</span>, 지하철역이 근처에 없어 주로 <span>버스를 이용</span>해야 합니다. 텐진역에서 택시를 이용할 경우 <span>1500~2000엔</span> 정도의 요금이 나옵니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">C**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.11</span></div><div class="fe-q">"다만 액세스는 조금 불편하고, 지하철역이 근처에 없기 때문에 기본 버스 이동이 됩니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">C**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.03.11</span></div><div class="fe-q">"휴일에 텐진역에서 택시를 이용했는데, 대체로 1500~2000엔 정도였습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">s**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.06</span></div><div class="fe-q">"하카타 역에서 버스로 바로 갈 수 있기 때문에 좋네요. 걷고 가려면 조금 멀지도 모릅니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 4개 모두 보기</button>
+                </div>
             </div></div>
-        </div><script>window.FAQEVID={"breakfast": [{"q": "아침 식사도 일식으로 매우 맛있었습니다.", "d": "2026-02-08", "st": 5, "o": "Google"}, {"q": "아침 식사 포함해도 ➕ 1000 엔은 고맙습니다.", "d": "2025-11-16", "st": 5, "o": "Google"}, {"q": "아침 식사는 뷔페는 아니지만, 효율적으로 먹을 수 있는 것이 제공되는 것, 음료는 좋아하는 것을 원하는 만큼 마실 수 있으므로 편리합니다.", "d": "2025-08-23", "st": 5, "o": "Google"}, {"q": "아침 식사도 맛있게 받았습니다.", "d": "2025-08-21", "st": 5, "o": "Google"}, {"q": "음료의 선택이 잘 충실한 카페 타임입니다.", "d": "2025-11-23", "st": 5, "o": "Google"}, {"q": "아침 식사가 조금 만네리였던 것은 유감입니다만, 방도 깨끗하고 그 이외는 확실히 만족했습니다!", "d": "2025-08-04", "st": 4, "o": "Google"}, {"q": "1세 9개월의 아이였습니다만 아침 식사에 과일이나 요구르트등이 있으면 먹기 쉽고 또한 좋다고 생각합니다.", "d": "2026-06-21", "st": 5, "o": "Google"}], "parking": [{"q": "후쿠오카 시내에서 주차장이 있는 호텔을 찾았습니다. 주차장 예약을 할 수 있어 안심입니다.", "d": "2026-05-26", "st": 5, "o": "Google"}, {"q": "주차장도 있어, 이벤트 후의 저녁을 고민하고 있었습니다만, 야식이 있다고 하는 일로 부탁해, 엘리베이터 옆의 전자 레인지로 따뜻하게 했습니다.", "d": "2026-01-12", "st": 5, "o": "Google"}, {"q": "주차 요금 30 분 / 200 엔이었습니다.", "d": "2026-02-23", "st": 5, "o": "Google"}, {"q": "주차 요금이 높다 (TдT)", "d": "2025-09-29", "st": 3, "o": "Google"}, {"q": "주차장비가 높다", "d": "2025-08-13", "st": 5, "o": "Google"}, {"q": "주차장은 구내에도 있습니다. 인근에 저렴한 주차장이 많이 있습니다.", "d": "2025-09-07", "st": 4, "o": "Google"}, {"q": "주차장도 풍부하고 편리한 장소입니다. 카페의 케이크도 맛있다.", "d": "2025-08-22", "st": 4, "o": "Google"}, {"q": "구식의 좋은 홀. 주차장도 홀 앞이나 고가 아래에 있습니다.", "d": "2026-02-10", "st": 5, "o": "Google"}], "access": [{"q": "다만 액세스는 조금 불편하고, 지하철역이 근처에 없기 때문에 기본 버스 이동이 됩니다.", "d": "2026-03-11", "st": 5, "o": "Google"}, {"q": "휴일에 텐진역에서 택시를 이용했는데, 대체로 1500~2000엔 정도였습니다.", "d": "2026-03-11", "st": 5, "o": "Google"}, {"q": "하카타 역에서 버스로 바로 갈 수 있기 때문에 좋네요. 걷고 가려면 조금 멀지도 모릅니다.", "d": "2025-12-06", "st": 5, "o": "Google"}, {"q": "근처에 버스 정류장이 있습니다. 하카타 역에서 이용 가능", "d": "2025-11-04", "st": 4, "o": "Google"}]};</script>
+        </div><script>window.FAQEVID={"breakfast": [{"q": "아침 식사도 일식으로 매우 맛있었습니다.", "d": "2026-02-08", "st": 5, "o": "Google", "n": "h**"}, {"q": "아침 식사 포함해도 ➕ 1000 엔은 고맙습니다.", "d": "2025-11-16", "st": 5, "o": "Google", "n": "い**"}, {"q": "아침 식사는 뷔페는 아니지만, 효율적으로 먹을 수 있는 것이 제공되는 것, 음료는 좋아하는 것을 원하는 만큼 마실 수 있으므로 편리합니다.", "d": "2025-08-23", "st": 5, "o": "Google", "n": "K**"}, {"q": "아침 식사도 맛있게 받았습니다.", "d": "2025-08-21", "st": 5, "o": "Google", "n": "M**"}, {"q": "음료의 선택이 잘 충실한 카페 타임입니다.", "d": "2025-11-23", "st": 5, "o": "Google", "n": "岩**"}, {"q": "아침 식사가 조금 만네리였던 것은 유감입니다만, 방도 깨끗하고 그 이외는 확실히 만족했습니다!", "d": "2025-08-04", "st": 4, "o": "Google", "n": "E**"}, {"q": "1세 9개월의 아이였습니다만 아침 식사에 과일이나 요구르트등이 있으면 먹기 쉽고 또한 좋다고 생각합니다.", "d": "2026-06-21", "st": 5, "o": "Google", "n": "M**"}], "parking": [{"q": "후쿠오카 시내에서 주차장이 있는 호텔을 찾았습니다. 주차장 예약을 할 수 있어 안심입니다.", "d": "2026-05-26", "st": 5, "o": "Google", "n": "k**"}, {"q": "주차장도 있어, 이벤트 후의 저녁을 고민하고 있었습니다만, 야식이 있다고 하는 일로 부탁해, 엘리베이터 옆의 전자 레인지로 따뜻하게 했습니다.", "d": "2026-01-12", "st": 5, "o": "Google", "n": "木**"}, {"q": "주차 요금 30 분 / 200 엔이었습니다.", "d": "2026-02-23", "st": 5, "o": "Google", "n": "o**"}, {"q": "주차 요금이 높다 (TдT)", "d": "2025-09-29", "st": 3, "o": "Google", "n": "中**"}, {"q": "주차장비가 높다", "d": "2025-08-13", "st": 5, "o": "Google", "n": "越**"}, {"q": "주차장은 구내에도 있습니다. 인근에 저렴한 주차장이 많이 있습니다.", "d": "2025-09-07", "st": 4, "o": "Google", "n": "R**"}, {"q": "주차장도 풍부하고 편리한 장소입니다. 카페의 케이크도 맛있다.", "d": "2025-08-22", "st": 4, "o": "Google", "n": "お**"}, {"q": "구식의 좋은 홀. 주차장도 홀 앞이나 고가 아래에 있습니다.", "d": "2026-02-10", "st": 5, "o": "Google", "n": "H**"}], "access": [{"q": "다만 액세스는 조금 불편하고, 지하철역이 근처에 없기 때문에 기본 버스 이동이 됩니다.", "d": "2026-03-11", "st": 5, "o": "Google", "n": "C**"}, {"q": "휴일에 텐진역에서 택시를 이용했는데, 대체로 1500~2000엔 정도였습니다.", "d": "2026-03-11", "st": 5, "o": "Google", "n": "C**"}, {"q": "하카타 역에서 버스로 바로 갈 수 있기 때문에 좋네요. 걷고 가려면 조금 멀지도 모릅니다.", "d": "2025-12-06", "st": 5, "o": "Google", "n": "s**"}, {"q": "근처에 버스 정류장이 있습니다. 하카타 역에서 이용 가능", "d": "2025-11-04", "st": 4, "o": "Google", "n": "s**"}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 3%</b> 입니다.</div>
                 <div class="count">총 251건</div></div>
                 <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:2%"></i></div><div class="per">2%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:2%"></i></div><div class="per">2%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:18%"></i></div><div class="per">18%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:33%"></i></div><div class="per">33%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:46%"></i></div><div class="per">46%</div></li></ul></div>
             </div>
-        <div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
-            
-            <div class="loc-chips"><span class="lc-chip">나카스카와바타역 도보 17분 · 1099m</span></div>
-            <div class="map"><iframe src="https://maps.google.com/maps?q=33.6037889,130.4020344&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Sun Palace Hotel 지도"></iframe></div>
-        </div>
+        
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -867,11 +878,14 @@
             }
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -955,6 +969,11 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            });
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){
@@ -990,6 +1009,10 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){
+                $(this).closest('.faq-card').toggleClass('is-open');
+            });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){
@@ -1014,6 +1037,7 @@
                 if (t.indexOf('risk-') === 0) { openAndScroll(t); return; }
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({scrollTop: $el.offset().top - 8}, 350);
             });
 

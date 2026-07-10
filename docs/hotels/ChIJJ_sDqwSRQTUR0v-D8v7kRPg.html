@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783652417">
-    <link rel="stylesheet" href="../css/common.css?v=1783652417">
-    <link rel="stylesheet" href="../css/layout.css?v=1783652417">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783652417">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783652417">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783652417">
-    <script src="../js/backnav.js?v=1783652417"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
+    <link rel="stylesheet" href="../css/common.css?v=1783668430">
+    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
+    <script src="../js/backnav.js?v=1783668430"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783652417" defer></script>
-    <script src="../js/recommend.js?v=1783652417"></script>
+    <script src="../js/engage.js?v=1783668430" defer></script>
+    <script src="../js/recommend.js?v=1783668430"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -77,8 +77,15 @@
                             <span class="txt"><span class="label">분석 리뷰 35개</span><span class="count">AI 분석 리포트</span></span>
                         </a>
                     </div>
-                    <div class="faq-jump"><button type="button" class="fj-btn" data-target="faq-parking">주차 되나요</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 2개 전체보기</button></div>
+                    <div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-parking">주차 되나요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 2개 전체보기</button></div></div>
                 </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div></div>
+            
+            <div class="loc-chips"><span class="lc-chip">하카타역 도보 52분 · 3441m</span></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5590555,130.4258902&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="그린 리치 호텔 니시테츠 오하시 에키마에 지도"></iframe></div>
+        </div>
                 
         <div class="sect disappear">
             <div class="head">
@@ -95,12 +102,14 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-safe">무난하게 통과</div><div class="verdict-why">다만 위치·안전(66)은 평균보다 높아요 — 아래에서 확인하세요</div>
+            <div class="verdict is-safe">무난하게 통과</div><div class="verdict-why">다만 <b>위치·안전</b>(66)은 평균보다 높아요,<br>아래 상세에서 확인하세요</div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 50.0% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 -16.7p 줄었어요</div></div></div></div>
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 35건 · 기준 2026년 7월
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 35건 · 기준 2026년 7월
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            </div>
         </div>
-        
         
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -466,30 +475,28 @@
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
             <div class="faq-tabs"><button type="button" class="faq-tab is-on" data-g="">전체</button><button type="button" class="faq-tab" data-g="서비스·정책">서비스·정책</button><button type="button" class="faq-tab" data-g="위치">위치</button></div>
             <div class="faq-cards"><div class="faq-card" id="faq-parking" data-group="서비스·정책">
-                <div class="faq-q"><span class="q-txt">주차할 수 있나요?</span></div>
-                <p class="faq-a">호텔에 <span>주차장이 없습니다.</span> 다만, 호텔 근처에 유료 코인 주차장이 있으며, 가장 가까운 곳은 선로 건너편의 &quot;하베스트 오하시 주차&quot;입니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">주차할 수 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">주차 불가</span><span class="faq-chip">코인 주차장</span><span class="faq-chip">유료</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.06.17</span></div><div class="fe-q">"주차장이 없습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:40%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.08</span></div><div class="fe-q">"지하 주차장을 사용할 수 없어 호텔을 보고 왼쪽에 있는 주차장이 호텔의 주차장이라고 생각합니다. 이해하기 어렵다! 동전 주차 많이 있지만"</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.04.06</span></div><div class="fe-q">"주차장이 없는 것이 유감입니다만, 방도 깨끗하고 좋은 시간을 보낼 수 있었습니다✨"</div></li></ul><button type="button" class="faq-more-btn" data-topic="parking" data-q="주차할 수 있나요?">리뷰 4개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">호텔에 <span>주차장이 없습니다.</span> 다만, 호텔 근처에 유료 코인 주차장이 있으며, 가장 가까운 곳은 선로 건너편의 &quot;하베스트 오하시 주차&quot;입니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">t**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.06.17</span></div><div class="fe-q">"주차장이 없습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">に**</span><span class="fe-src">Google</span><span class="star"><i style="width:40%"></i></span><span class="fe-date">26.05.08</span></div><div class="fe-q">"지하 주차장을 사용할 수 없어 호텔을 보고 왼쪽에 있는 주차장이 호텔의 주차장이라고 생각합니다. 이해하기 어렵다! 동전 주차 많이 있지만"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">北**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.04.06</span></div><div class="fe-q">"주차장이 없는 것이 유감입니다만, 방도 깨끗하고 좋은 시간을 보낼 수 있었습니다✨"</div></li></ul><button type="button" class="faq-more-btn" data-topic="parking" data-q="주차할 수 있나요?">리뷰 4개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
-                <div class="faq-q"><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span></div>
-                <p class="faq-a">역에서 호텔까지 <span>도보 1분</span>도 걸리지 않는 매우 가까운 거리에 위치하고 있습니다. 라라포토(키자니아)까지는 <span>도보 20분</span> 정도 소요됩니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">역 도보 1분</span><span class="faq-chip">라라포토 도보 20분</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.09.13</span></div><div class="fe-q">"하카타역에서 전철로 5분 정도, 역을 나오자마자, 도보 1분도 걸리지 않는 가까운 곳에 있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-src">Trip.com</span><span class="fe-date">2025.10.25</span></div><div class="fe-q">"다리역에서 아주 가까워요. 이 지역은 관광객이 적어서 밤에는 활기 넘치는 거리입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.19</span></div><div class="fe-q">"라라포토 (키자니아)에 가기 위해 예약했습니다. 걸어서 20분 정도로 도착합니다. 역에도 가깝고, 스위트룸은 목욕도 넓고 쾌적."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">역에서 호텔까지 <span>도보 1분</span>도 걸리지 않는 매우 가까운 거리에 위치하고 있습니다. 라라포토(키자니아)까지는 <span>도보 20분</span> 정도 소요됩니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">渡**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.09.13</span></div><div class="fe-q">"하카타역에서 전철로 5분 정도, 역을 나오자마자, 도보 1분도 걸리지 않는 가까운 곳에 있었습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">T**</span><span class="fe-src">Trip.com</span><span class="fe-date">25.10.25</span></div><div class="fe-q">"다리역에서 아주 가까워요. 이 지역은 관광객이 적어서 밤에는 활기 넘치는 거리입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">ろ**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.11.19</span></div><div class="fe-q">"라라포토 (키자니아)에 가기 위해 예약했습니다. 걸어서 20분 정도로 도착합니다. 역에도 가깝고, 스위트룸은 목욕도 넓고 쾌적."</div></li></ul>
+                </div>
             </div></div>
-        </div><script>window.FAQEVID={"parking": [{"q": "주차장이 없습니다.", "d": "2026-06-17", "st": 4, "o": "Google"}, {"q": "지하 주차장을 사용할 수 없어 호텔을 보고 왼쪽에 있는 주차장이 호텔의 주차장이라고 생각합니다. 이해하기 어렵다! 동전 주차 많이 있지만", "d": "2026-05-08", "st": 2, "o": "Google"}, {"q": "주차장이 없는 것이 유감입니다만, 방도 깨끗하고 좋은 시간을 보낼 수 있었습니다✨", "d": "2026-04-06", "st": 5, "o": "Google"}, {"q": "나는 차로 갔는데, 가르쳐 주신 주차장의 장소, 입구를 이해하기 어렵다! 밤늦은 시간 빙글빙글 돌아 버렸습니다 (울음). 일방통행인지 다른지 잘 모르기 때문에 무서웠습니다.\n선로 사이에 건너편의 \"하베스트 오하시 주차\"가 1번 가깝습니다. 하지만 제휴 주차장이 아니라고 합니다.", "d": "2025-09-05", "st": 4, "o": "Google"}]};</script>
+        </div><script>window.FAQEVID={"parking": [{"q": "주차장이 없습니다.", "d": "2026-06-17", "st": 4, "o": "Google", "n": "t**"}, {"q": "지하 주차장을 사용할 수 없어 호텔을 보고 왼쪽에 있는 주차장이 호텔의 주차장이라고 생각합니다. 이해하기 어렵다! 동전 주차 많이 있지만", "d": "2026-05-08", "st": 2, "o": "Google", "n": "に**"}, {"q": "주차장이 없는 것이 유감입니다만, 방도 깨끗하고 좋은 시간을 보낼 수 있었습니다✨", "d": "2026-04-06", "st": 5, "o": "Google", "n": "北**"}, {"q": "나는 차로 갔는데, 가르쳐 주신 주차장의 장소, 입구를 이해하기 어렵다! 밤늦은 시간 빙글빙글 돌아 버렸습니다 (울음). 일방통행인지 다른지 잘 모르기 때문에 무서웠습니다.\n선로 사이에 건너편의 \"하베스트 오하시 주차\"가 1번 가깝습니다. 하지만 제휴 주차장이 아니라고 합니다.", "d": "2025-09-05", "st": 4, "o": "Google", "n": "m**"}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 22%</b> 입니다.</div>
                 <div class="count">총 27건</div></div>
                 <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:4%"></i></div><div class="per">4%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:19%"></i></div><div class="per">19%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:15%"></i></div><div class="per">15%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:33%"></i></div><div class="per">33%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:30%"></i></div><div class="per">30%</div></li></ul></div>
             </div>
-        <div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
-            
-            <div class="loc-chips"><span class="lc-chip">하카타역 도보 52분 · 3441m</span></div>
-            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5590555,130.4258902&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="그린 리치 호텔 니시테츠 오하시 에키마에 지도"></iframe></div>
-        </div>
+        
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -790,11 +797,14 @@
             }
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -878,6 +888,11 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            });
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){
@@ -913,6 +928,10 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){
+                $(this).closest('.faq-card').toggleClass('is-open');
+            });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){
@@ -937,6 +956,7 @@
                 if (t.indexOf('risk-') === 0) { openAndScroll(t); return; }
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({scrollTop: $el.offset().top - 8}, 350);
             });
 

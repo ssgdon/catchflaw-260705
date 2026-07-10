@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783652417">
-    <link rel="stylesheet" href="../css/common.css?v=1783652417">
-    <link rel="stylesheet" href="../css/layout.css?v=1783652417">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783652417">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783652417">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783652417">
-    <script src="../js/backnav.js?v=1783652417"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
+    <link rel="stylesheet" href="../css/common.css?v=1783668430">
+    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
+    <script src="../js/backnav.js?v=1783668430"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783652417" defer></script>
-    <script src="../js/recommend.js?v=1783652417"></script>
+    <script src="../js/engage.js?v=1783668430" defer></script>
+    <script src="../js/recommend.js?v=1783668430"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -77,8 +77,15 @@
                             <span class="txt"><span class="label">분석 리뷰 145개</span><span class="count">AI 분석 리포트</span></span>
                         </a>
                     </div>
-                    <div class="faq-jump"><button type="button" class="fj-btn" data-target="faq-bath">대욕장 있나요</button><button type="button" class="fj-btn" data-target="faq-luggage">짐 맡아주나요</button><button type="button" class="fj-btn" data-target="faq-breakfast">조식 어때요</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 5개 전체보기</button></div>
+                    <div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-bath">대욕장 있나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-luggage">짐 맡아주나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-breakfast">조식 어때요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 5개 전체보기</button></div></div>
                 </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div></div>
+            
+            <div class="loc-chips"><span class="lc-chip">기온역 도보 7분 · 449m</span><span class="lc-chip">하카타권</span></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5914268,130.4109955&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Wellbe fukuoka 지도"></iframe></div>
+        </div>
                 
         <div class="sect disappear">
             <div class="head">
@@ -95,12 +102,14 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 15명이 심각한 문제를 언급 — 특히 소음</div>
+            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 <b>15명</b>이 심각한 문제를 겪었어요,<br>특히 <b>소음</b></div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 50.0% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 +16.7p 증가했어요</div></div></div></div>
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 145건 · 기준 2026년 7월
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 145건 · 기준 2026년 7월
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            </div>
         </div>
-        
         
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -652,45 +661,49 @@
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
             <div class="faq-tabs"><button type="button" class="faq-tab is-on" data-g="">전체</button><button type="button" class="faq-tab" data-g="시설·어메니티">시설·어메니티</button><button type="button" class="faq-tab" data-g="서비스·정책">서비스·정책</button><button type="button" class="faq-tab" data-g="위치">위치</button></div>
             <div class="faq-cards"><div class="faq-card" id="faq-bath" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">대욕장·온천이 있나요?</span></div>
-                <p class="faq-a">네, 대욕장과 온천이 있습니다. 이전에는 탕선이 없었으나, 현재는 <span>40℃의 온욕조</span>가 마련되어 있습니다. 또한, <span>6종류의 사우나</span>와 <span>2종류의 냉탕</span>도 이용하실 수 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">대욕장·온천이 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">온욕조 있음</span><span class="faq-chip">40℃</span><span class="faq-chip">사우나 6종</span><span class="faq-chip">냉탕 2종</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.04.23</span></div><div class="fe-q">"전은 사우나뿐이었지만 40℃의 목욕탕도 있어 진화하고 있는 것이 느껴지는 역시 웰비는 훌륭하다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:60%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.06.16</span></div><div class="fe-q">"온욕조가 되어 있었습니다. 사우나는 여전히 개성적이네요. 물욕에 들어가기 어렵다. 전반적으로 그렇게 편안하지 않습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.06.20</span></div><div class="fe-q">"이전에는 탕선이 일절 없었던 것이 불만이었지만, 어느새 하나 탕선이 되어 있어 가볍게 쌓여 나올 수 있게 되었다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="bath" data-q="대욕장·온천이 있나요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">네, 대욕장과 온천이 있습니다. 이전에는 탕선이 없었으나, 현재는 <span>40℃의 온욕조</span>가 마련되어 있습니다. 또한, <span>6종류의 사우나</span>와 <span>2종류의 냉탕</span>도 이용하실 수 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">掛**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.04.23</span></div><div class="fe-q">"전은 사우나뿐이었지만 40℃의 목욕탕도 있어 진화하고 있는 것이 느껴지는 역시 웰비는 훌륭하다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">t**</span><span class="fe-src">Google</span><span class="star"><i style="width:60%"></i></span><span class="fe-date">26.06.16</span></div><div class="fe-q">"온욕조가 되어 있었습니다. 사우나는 여전히 개성적이네요. 물욕에 들어가기 어렵다. 전반적으로 그렇게 편안하지 않습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">z**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.06.20</span></div><div class="fe-q">"이전에는 탕선이 일절 없었던 것이 불만이었지만, 어느새 하나 탕선이 되어 있어 가볍게 쌓여 나올 수 있게 되었다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="bath" data-q="대욕장·온천이 있나요?">리뷰 8개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-breakfast" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">조식은 어때요?</span></div>
-                <p class="faq-a">조식은 숙박 요금에 <span>포함</span>되어 있으며, <span>오전 6시 30분부터 10시까지</span> 이용 가능합니다. 밥과 된장국은 <span>1회 리필</span>이 가능하며, 일식 세트로 제공되어 맛있다는 평이 많습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">조식은 어때요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">숙박 요금 포함</span><span class="faq-chip">6:30~10:00</span><span class="faq-chip">밥/된장국 1회 리필</span><span class="faq-chip">일식 세트</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.16</span></div><div class="fe-q">"아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.12</span></div><div class="fe-q">"아침 식사도 밥과 된장국이 무료로 1회 대체되어 매우 만족합니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.07</span></div><div class="fe-q">"제대로 한 아침 밥 (밥, 된장국 1 회씩 보충 가능했습니다) 붙어 5,000 엔이에요!"</div></li></ul><button type="button" class="faq-more-btn" data-topic="breakfast" data-q="조식은 어때요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">조식은 숙박 요금에 <span>포함</span>되어 있으며, <span>오전 6시 30분부터 10시까지</span> 이용 가능합니다. 밥과 된장국은 <span>1회 리필</span>이 가능하며, 일식 세트로 제공되어 맛있다는 평이 많습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">は**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.05.16</span></div><div class="fe-q">"아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">ぽ**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.12</span></div><div class="fe-q">"아침 식사도 밥과 된장국이 무료로 1회 대체되어 매우 만족합니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">ダ**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.07</span></div><div class="fe-q">"제대로 한 아침 밥 (밥, 된장국 1 회씩 보충 가능했습니다) 붙어 5,000 엔이에요!"</div></li></ul><button type="button" class="faq-more-btn" data-topic="breakfast" data-q="조식은 어때요?">리뷰 8개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-kitchen" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">냉장고·주방·세탁은요?</span></div>
-                <p class="faq-a">같은 건물에 <span>동전 세탁기</span>가 있어서 장기 투숙에 적합하며, 냉장고도 <span>변종으로 좋은 곳</span>이 있다고 합니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">냉장고·주방·세탁은요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">동전 세탁기</span><span class="faq-chip">장기 투숙 적합</span><span class="faq-chip">냉장고 있음</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.01.04</span></div><div class="fe-q">"같은 건물에 동전 세탁도 있으므로 장기 체류에도 적합합니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.02</span></div><div class="fe-q">"그 밖에도 종류가 있으므로 즐길 수 있는 사람은 있다고 생각한다. 냉장고 같은 곳은 변종으로 좋았다."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">같은 건물에 <span>동전 세탁기</span>가 있어서 장기 투숙에 적합하며, 냉장고도 <span>변종으로 좋은 곳</span>이 있다고 합니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">塩**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.01.04</span></div><div class="fe-q">"같은 건물에 동전 세탁도 있으므로 장기 체류에도 적합합니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">〇**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.12.02</span></div><div class="fe-q">"그 밖에도 종류가 있으므로 즐길 수 있는 사람은 있다고 생각한다. 냉장고 같은 곳은 변종으로 좋았다."</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-luggage" data-group="서비스·정책">
-                <div class="faq-q"><span class="q-txt">짐 보관 되나요?</span></div>
-                <p class="faq-a">네, 짐 보관이 <span>가능</span>합니다. 큰 짐은 <span>프런트에 맡길 수 있으며</span>, 캡슐 내부의 사물함은 폭이 좁아 캐리어 같은 큰 가방은 들어가지 않습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">짐 보관 되나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">프런트 보관</span><span class="faq-chip">큰 짐 가능</span><span class="faq-chip">사물함 좁음</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.04.12</span></div><div class="fe-q">"큰 짐은 접수에 맡겨 주지만, 일일이 접수에 가는 것은 귀찮을 것 같습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.04.12</span></div><div class="fe-q">"짐은 사물함이 거기에 둘 수 있기 때문에 캡슐 내부를 압박하지 않습니다. 다만, 이쪽의 로커는 세로 길이로 높이는 어른의 신장 정도 있습니다만, 폭은 20 cm전후이므로 캐리 백 등 큰 백은 들어가지 않습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.12</span></div><div class="fe-q">"큰 수하물도 맡길 수 있습니다."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">네, 짐 보관이 <span>가능</span>합니다. 큰 짐은 <span>프런트에 맡길 수 있으며</span>, 캡슐 내부의 사물함은 폭이 좁아 캐리어 같은 큰 가방은 들어가지 않습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">う**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.04.12</span></div><div class="fe-q">"큰 짐은 접수에 맡겨 주지만, 일일이 접수에 가는 것은 귀찮을 것 같습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">う**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.04.12</span></div><div class="fe-q">"짐은 사물함이 거기에 둘 수 있기 때문에 캡슐 내부를 압박하지 않습니다. 다만, 이쪽의 로커는 세로 길이로 높이는 어른의 신장 정도 있습니다만, 폭은 20 cm전후이므로 캐리 백 등 큰 백은 들어가지 않습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">ぽ**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.12</span></div><div class="fe-q">"큰 수하물도 맡길 수 있습니다."</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
-                <div class="faq-q"><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span></div>
-                <p class="faq-a">하카타역에서는 <span>도보 10분에서 15분</span> 정도 소요되며, 구시다 신사마에역에서는 <span>지하철역 바로 옆</span>이거나 <span>도보 1분</span> 정도 걸립니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">하카타역 도보 10분</span><span class="faq-chip">하카타역 도보 12분</span><span class="faq-chip">하카타역 도보 15분</span><span class="faq-chip">구시다 신사마에역 바로 옆</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:60%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.04.18</span></div><div class="fe-q">"하카타역에서 똑바로 한 도로에서 도보 10분 정도이므로, 짐이 적은 분은 헤매지 않고 도보로 갈 수 있습니다. 지하철 입구까지는 도보 1분 정도입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.09.02</span></div><div class="fe-q">"하카타 역에서 도보 10 분, 나카스에서 5 분, 캐널 시티 바로 옆의 접근성이 좋은 곳에 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.16</span></div><div class="fe-q">"지하철 구시다 신사마에역 바로, 하카타역에서 도보 12분. 텐진에서도 택시 천엔 정도로 교통편이 좋고, 아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">하카타역에서는 <span>도보 10분에서 15분</span> 정도 소요되며, 구시다 신사마에역에서는 <span>지하철역 바로 옆</span>이거나 <span>도보 1분</span> 정도 걸립니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">k**</span><span class="fe-src">Google</span><span class="star"><i style="width:60%"></i></span><span class="fe-date">26.04.18</span></div><div class="fe-q">"하카타역에서 똑바로 한 도로에서 도보 10분 정도이므로, 짐이 적은 분은 헤매지 않고 도보로 갈 수 있습니다. 지하철 입구까지는 도보 1분 정도입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">H**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.09.02</span></div><div class="fe-q">"하카타 역에서 도보 10 분, 나카스에서 5 분, 캐널 시티 바로 옆의 접근성이 좋은 곳에 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">は**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.05.16</span></div><div class="fe-q">"지하철 구시다 신사마에역 바로, 하카타역에서 도보 12분. 텐진에서도 택시 천엔 정도로 교통편이 좋고, 아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
+                </div>
             </div></div>
-        </div><script>window.FAQEVID={"bath": [{"q": "전은 사우나뿐이었지만 40℃의 목욕탕도 있어 진화하고 있는 것이 느껴지는 역시 웰비는 훌륭하다.", "d": "2026-04-23", "st": 4, "o": "Google"}, {"q": "온욕조가 되어 있었습니다. 사우나는 여전히 개성적이네요. 물욕에 들어가기 어렵다. 전반적으로 그렇게 편안하지 않습니다.", "d": "2026-06-16", "st": 3, "o": "Google"}, {"q": "이전에는 탕선이 일절 없었던 것이 불만이었지만, 어느새 하나 탕선이 되어 있어 가볍게 쌓여 나올 수 있게 되었다.", "d": "2026-06-20", "st": 5, "o": "Google"}, {"q": "• 사우나: 6종류 •수욕: 2종류(8℃, 15℃)", "d": "2026-06-15", "st": 5, "o": "Google"}, {"q": "옛 언덕과 같은 곳은 물탕(40℃)으로 바뀌었다.", "d": "2026-04-15", "st": 5, "o": "Google"}, {"q": "미스트 사우나를 포함하여 다양한 사우나를 선택할 수 있습니다. 넓은 사우나는 나무로 마감되어 있고 천장이 낮아 몸을 높이 올려 쾌적하고 고르게 온도를 유지할 수 있습니다. 온도는 적당히 따뜻한 편입니다. 땀이 나면서도 너무 뜨겁지 않아 좋습니다. 냉탕도 두 곳이 있는데, 하나는 정말 차가워서 좋고, 다른 하나는 사우나와 냉탕이 한 공간에 있는 형태입니다. 독특한 아이디어네요! 👏", "d": "2026-03-14", "st": 4, "o": "Google"}, {"q": "사우나는 남성용 3종류, 강냉수, 남녀공용이 여러 종류, 쿨룸 등 매우 풍부.", "d": "2026-02-16", "st": 5, "o": "Google"}, {"q": "사우나가 메인처럼 넓은 욕조가 없는 것이 2번째(먼저 2명 들어가면 방해하는 것의 망설이는 레벨). 단지 목욕은 개인적으로는 유감스러운 것만으로, 신경쓰지 않는 분도 많을 것입니다.", "d": "2026-05-08", "st": 4, "o": "Google"}], "breakfast": [{"q": "아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유.", "d": "2026-05-16", "st": 4, "o": "Google"}, {"q": "아침 식사도 밥과 된장국이 무료로 1회 대체되어 매우 만족합니다.", "d": "2025-12-12", "st": 5, "o": "Google"}, {"q": "제대로 한 아침 밥 (밥, 된장국 1 회씩 보충 가능했습니다) 붙어 5,000 엔이에요!", "d": "2025-12-07", "st": 5, "o": "Google"}, {"q": "아침 식사는 일식 세트였습니다만, 이쪽도 만족.", "d": "2026-05-08", "st": 4, "o": "Google"}, {"q": "아침 식사는 일식으로 품수도 많아, 무료로 기대하고 있지 않았기 때문에, 기대 이상으로 맛있었습니다.", "d": "2026-02-16", "st": 5, "o": "Google"}, {"q": "아침 식사는 수수께끼로 엄청 맛있습니다 😋‼ ️", "d": "2026-01-05", "st": 5, "o": "Google"}, {"q": "덤에게 극상의 아침 식사가 무료로 붙어 옵니다!", "d": "2025-10-04", "st": 5, "o": "Google"}, {"q": "아침 식사가 무료로 확고한 것이 붙어있어, 꽤 만족합니다.", "d": "2025-07-26", "st": 3, "o": "Google"}], "access": [{"q": "하카타역에서 똑바로 한 도로에서 도보 10분 정도이므로, 짐이 적은 분은 헤매지 않고 도보로 갈 수 있습니다. 지하철 입구까지는 도보 1분 정도입니다.", "d": "2026-04-18", "st": 3, "o": "Google"}, {"q": "하카타 역에서 도보 10 분, 나카스에서 5 분, 캐널 시티 바로 옆의 접근성이 좋은 곳에 있습니다.", "d": "2025-09-02", "st": 5, "o": "Google"}, {"q": "지하철 구시다 신사마에역 바로, 하카타역에서 도보 12분. 텐진에서도 택시 천엔 정도로 교통편이 좋고, 아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유.", "d": "2026-05-16", "st": 4, "o": "Google"}, {"q": "하카타 기온 근처에 있는 캡슐 호텔. 하카타역에서 도보 15분 정도. 번화가에 있으며, 편의점은 바로 근처에 있습니다.", "d": "2025-10-11", "st": null, "o": "Tripadvisor"}, {"q": "하카타역에서 도보 권내에서 액세스 양호🚶‍♂️", "d": "2025-12-07", "st": 4, "o": "Google"}, {"q": "개조되어 익숙하지 않은 느낌이 있지만 하카타 역에서 도보 권내에서 좋은", "d": "2026-05-11", "st": 5, "o": "Google"}, {"q": "가장 가까운 역은 구시다 신사마에 역에서 2번 출구가 가장 가깝다.", "d": "2026-04-29", "st": 4, "o": "Google"}, {"q": "나카스의 바로 옆에서 입지적으로 최고. 하카타역에서도 도보로 갈 수 있다.", "d": "2025-08-25", "st": 5, "o": "Google"}]};</script>
+        </div><script>window.FAQEVID={"bath": [{"q": "전은 사우나뿐이었지만 40℃의 목욕탕도 있어 진화하고 있는 것이 느껴지는 역시 웰비는 훌륭하다.", "d": "2026-04-23", "st": 4, "o": "Google", "n": "掛**"}, {"q": "온욕조가 되어 있었습니다. 사우나는 여전히 개성적이네요. 물욕에 들어가기 어렵다. 전반적으로 그렇게 편안하지 않습니다.", "d": "2026-06-16", "st": 3, "o": "Google", "n": "t**"}, {"q": "이전에는 탕선이 일절 없었던 것이 불만이었지만, 어느새 하나 탕선이 되어 있어 가볍게 쌓여 나올 수 있게 되었다.", "d": "2026-06-20", "st": 5, "o": "Google", "n": "z**"}, {"q": "• 사우나: 6종류 •수욕: 2종류(8℃, 15℃)", "d": "2026-06-15", "st": 5, "o": "Google", "n": "6**"}, {"q": "옛 언덕과 같은 곳은 물탕(40℃)으로 바뀌었다.", "d": "2026-04-15", "st": 5, "o": "Google", "n": "H**"}, {"q": "미스트 사우나를 포함하여 다양한 사우나를 선택할 수 있습니다. 넓은 사우나는 나무로 마감되어 있고 천장이 낮아 몸을 높이 올려 쾌적하고 고르게 온도를 유지할 수 있습니다. 온도는 적당히 따뜻한 편입니다. 땀이 나면서도 너무 뜨겁지 않아 좋습니다. 냉탕도 두 곳이 있는데, 하나는 정말 차가워서 좋고, 다른 하나는 사우나와 냉탕이 한 공간에 있는 형태입니다. 독특한 아이디어네요! 👏", "d": "2026-03-14", "st": 4, "o": "Google", "n": "S**"}, {"q": "사우나는 남성용 3종류, 강냉수, 남녀공용이 여러 종류, 쿨룸 등 매우 풍부.", "d": "2026-02-16", "st": 5, "o": "Google", "n": "み**"}, {"q": "사우나가 메인처럼 넓은 욕조가 없는 것이 2번째(먼저 2명 들어가면 방해하는 것의 망설이는 레벨). 단지 목욕은 개인적으로는 유감스러운 것만으로, 신경쓰지 않는 분도 많을 것입니다.", "d": "2026-05-08", "st": 4, "o": "Google", "n": "乙**"}], "breakfast": [{"q": "아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유.", "d": "2026-05-16", "st": 4, "o": "Google", "n": "は**"}, {"q": "아침 식사도 밥과 된장국이 무료로 1회 대체되어 매우 만족합니다.", "d": "2025-12-12", "st": 5, "o": "Google", "n": "ぽ**"}, {"q": "제대로 한 아침 밥 (밥, 된장국 1 회씩 보충 가능했습니다) 붙어 5,000 엔이에요!", "d": "2025-12-07", "st": 5, "o": "Google", "n": "ダ**"}, {"q": "아침 식사는 일식 세트였습니다만, 이쪽도 만족.", "d": "2026-05-08", "st": 4, "o": "Google", "n": "乙**"}, {"q": "아침 식사는 일식으로 품수도 많아, 무료로 기대하고 있지 않았기 때문에, 기대 이상으로 맛있었습니다.", "d": "2026-02-16", "st": 5, "o": "Google", "n": "み**"}, {"q": "아침 식사는 수수께끼로 엄청 맛있습니다 😋‼ ️", "d": "2026-01-05", "st": 5, "o": "Google", "n": "雪**"}, {"q": "덤에게 극상의 아침 식사가 무료로 붙어 옵니다!", "d": "2025-10-04", "st": 5, "o": "Google", "n": "カ**"}, {"q": "아침 식사가 무료로 확고한 것이 붙어있어, 꽤 만족합니다.", "d": "2025-07-26", "st": 3, "o": "Google", "n": "j**"}], "access": [{"q": "하카타역에서 똑바로 한 도로에서 도보 10분 정도이므로, 짐이 적은 분은 헤매지 않고 도보로 갈 수 있습니다. 지하철 입구까지는 도보 1분 정도입니다.", "d": "2026-04-18", "st": 3, "o": "Google", "n": "k**"}, {"q": "하카타 역에서 도보 10 분, 나카스에서 5 분, 캐널 시티 바로 옆의 접근성이 좋은 곳에 있습니다.", "d": "2025-09-02", "st": 5, "o": "Google", "n": "H**"}, {"q": "지하철 구시다 신사마에역 바로, 하카타역에서 도보 12분. 텐진에서도 택시 천엔 정도로 교통편이 좋고, 아침 식사도 6:30~10:00 밥, 된장국 1잔 대신 자유.", "d": "2026-05-16", "st": 4, "o": "Google", "n": "は**"}, {"q": "하카타 기온 근처에 있는 캡슐 호텔. 하카타역에서 도보 15분 정도. 번화가에 있으며, 편의점은 바로 근처에 있습니다.", "d": "2025-10-11", "st": null, "o": "Tripadvisor", "n": "V**"}, {"q": "하카타역에서 도보 권내에서 액세스 양호🚶‍♂️", "d": "2025-12-07", "st": 4, "o": "Google", "n": "清**"}, {"q": "개조되어 익숙하지 않은 느낌이 있지만 하카타 역에서 도보 권내에서 좋은", "d": "2026-05-11", "st": 5, "o": "Google", "n": "マ**"}, {"q": "가장 가까운 역은 구시다 신사마에 역에서 2번 출구가 가장 가깝다.", "d": "2026-04-29", "st": 4, "o": "Google", "n": "K**"}, {"q": "나카스의 바로 옆에서 입지적으로 최고. 하카타역에서도 도보로 갈 수 있다.", "d": "2025-08-25", "st": 5, "o": "Google", "n": "1**"}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 19%</b> 입니다.</div>
                 <div class="count">총 144건</div></div>
                 <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:10%"></i></div><div class="per">10%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:10%"></i></div><div class="per">10%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:10%"></i></div><div class="per">10%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:31%"></i></div><div class="per">31%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:40%"></i></div><div class="per">40%</div></li></ul></div>
             </div>
-        <div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
-            
-            <div class="loc-chips"><span class="lc-chip">기온역 도보 7분 · 449m</span><span class="lc-chip">하카타권</span></div>
-            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5914268,130.4109955&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Wellbe fukuoka 지도"></iframe></div>
-        </div>
+        
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -991,11 +1004,14 @@
             }
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -1079,6 +1095,11 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            });
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){
@@ -1114,6 +1135,10 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){
+                $(this).closest('.faq-card').toggleClass('is-open');
+            });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){
@@ -1138,6 +1163,7 @@
                 if (t.indexOf('risk-') === 0) { openAndScroll(t); return; }
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({scrollTop: $el.offset().top - 8}, 350);
             });
 

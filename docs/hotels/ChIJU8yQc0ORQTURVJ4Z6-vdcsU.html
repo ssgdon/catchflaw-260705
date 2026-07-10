@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1783652417">
-    <link rel="stylesheet" href="../css/common.css?v=1783652417">
-    <link rel="stylesheet" href="../css/layout.css?v=1783652417">
-    <link rel="stylesheet" href="../css/swiper.css?v=1783652417">
-    <link rel="stylesheet" href="../css/uplift.css?v=1783652417">
-    <link rel="stylesheet" href="../css/mvp.css?v=1783652417">
-    <script src="../js/backnav.js?v=1783652417"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1783668430">
+    <link rel="stylesheet" href="../css/common.css?v=1783668430">
+    <link rel="stylesheet" href="../css/layout.css?v=1783668430">
+    <link rel="stylesheet" href="../css/swiper.css?v=1783668430">
+    <link rel="stylesheet" href="../css/uplift.css?v=1783668430">
+    <link rel="stylesheet" href="../css/mvp.css?v=1783668430">
+    <script src="../js/backnav.js?v=1783668430"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1783652417" defer></script>
-    <script src="../js/recommend.js?v=1783652417"></script>
+    <script src="../js/engage.js?v=1783668430" defer></script>
+    <script src="../js/recommend.js?v=1783668430"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -77,8 +77,15 @@
                             <span class="txt"><span class="label">분석 리뷰 33개</span><span class="count">AI 분석 리포트</span></span>
                         </a>
                     </div>
-                    <div class="faq-jump"><button type="button" class="fj-btn" data-target="faq-bath">대욕장 있나요</button><button type="button" class="fj-btn" data-target="faq-luggage">짐 맡아주나요</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 5개 전체보기</button></div>
+                    <div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-bath">대욕장 있나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-luggage">짐 맡아주나요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 5개 전체보기</button></div></div>
                 </div>
+                <div class="sect location">
+            <div class="head"><div class="title">위치</div></div>
+            <div class="loc-addr">3 Chome-3-33 Yakuin, Chuo Ward, Fukuoka, 810-0022 일본</div>
+            <div class="loc-chips"><span class="lc-chip">텐진역 도보 18분 · 1150m</span><span class="lc-chip">텐진권</span></div>
+            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5811585,130.4005916&z=16&hl=ko&output=embed"
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Grand Cabin Tenjin Minami 지도"></iframe></div>
+        </div>
                 
         <div class="sect disappear">
             <div class="head">
@@ -95,12 +102,14 @@
             <span>위험</span>
         </div>
     </div>
-            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 16명이 심각한 문제를 언급 — 특히 소음</div>
+            <div class="verdict is-danger">실망 위험이 높은 호텔이에요</div><div class="verdict-why">최근 투숙객 100명 중 <b>16명</b>이 심각한 문제를 겪었어요,<br>특히 <b>소음</b></div>
             <div class="trend-fold"><button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button><div class="trend-fold-body"><div class="cat-trend cat-trend-all"><div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span><span class="ct-now">6월 0.0% · 평균 29.4%</span></div><div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div><div class="ct-delta">지난 달 대비 -100.0p 줄었어요</div></div></div></div>
-            <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 33건 · 기준 2026년 7월
-                <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            <div class="basis-fold">
+                <button type="button" class="basis-toggle"><i class="bt-q">?</i><span class="bt-label">산출 기준</span></button>
+                <div class="basis">최근 리뷰일수록 높은 가중치로 반영됩니다 <br>분석 리뷰 33건 · 기준 2026년 7월
+                    <br><span class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></span></div>
+            </div>
         </div>
-        
         
         <div class="sect risk">
             <div class="head"><div class="title">카테고리별 위험도</div>
@@ -608,45 +617,49 @@
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
             <div class="faq-tabs"><button type="button" class="faq-tab is-on" data-g="">전체</button><button type="button" class="faq-tab" data-g="가족·인원">가족·인원</button><button type="button" class="faq-tab" data-g="시설·어메니티">시설·어메니티</button><button type="button" class="faq-tab" data-g="서비스·정책">서비스·정책</button><button type="button" class="faq-tab" data-g="위치">위치</button></div>
             <div class="faq-cards"><div class="faq-card" id="faq-beds" data-group="가족·인원">
-                <div class="faq-q"><span class="q-txt">침대 구성·엑스트라베드는요?</span></div>
-                <p class="faq-a">객실의 침대는 2단 침대 형태로, 옆방과 침대 공간이 상하로 겹쳐 있습니다. 엑스트라베드에 대한 정보는 <span>언급되어 있지 않습니다.</span></p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">침대 구성·엑스트라베드는요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">2단 침대</span><span class="faq-chip">상하 겹침</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.05.03</span></div><div class="fe-q">"옆방과 침대 공간이 상하에 겹치는 사양이므로, 2단 침대 아래와 위가 번갈아 있는 느낌입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2024.08.14</span></div><div class="fe-q">"위의 침대 타운밖에 비어 있지 않아 꽤 좁았다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.10.02</span></div><div class="fe-q">"개인 실내의 침대는 우연히 아래였습니다만, 아래쪽이 압도적으로 편리합니다."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">객실의 침대는 2단 침대 형태로, 옆방과 침대 공간이 상하로 겹쳐 있습니다. 엑스트라베드에 대한 정보는 <span>언급되어 있지 않습니다.</span></p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">長**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.05.03</span></div><div class="fe-q">"옆방과 침대 공간이 상하에 겹치는 사양이므로, 2단 침대 아래와 위가 번갈아 있는 느낌입니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">***</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">24.08.14</span></div><div class="fe-q">"위의 침대 타운밖에 비어 있지 않아 꽤 좁았다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">か**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.10.02</span></div><div class="fe-q">"개인 실내의 침대는 우연히 아래였습니다만, 아래쪽이 압도적으로 편리합니다."</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-kitchen" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">냉장고·주방·세탁은요?</span></div>
-                <p class="faq-a">세탁기는 <span>유료</span>로 이용 가능하며, 빨래와 건조에 <span>400엔</span>이 듭니다. 냉장고는 언급이 없으나, 전자레인지와 온수기는 <span>공용 공간</span>에 마련되어 있습니다. 객실 내에서는 음식 섭취가 <span>금지</span>되어 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">냉장고·주방·세탁은요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">세탁 유료</span><span class="faq-chip">세탁 400엔</span><span class="faq-chip">전자레인지 있음</span><span class="faq-chip">객실 내 취식 금지</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.10.03</span></div><div class="fe-q">"캡슐호텔이라 화장실, 샤워실 공용이고 세탁기 있어서 빨래도 했습니다. (빨래,건조 다해서 400엔)"</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.06.14</span></div><div class="fe-q">"최신식 세탁기와 건조기도 아주 잘 작동해서 편리했어요."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.01.13</span></div><div class="fe-q">"호텔에는 온수・전자렌지도 있습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">세탁기는 <span>유료</span>로 이용 가능하며, 빨래와 건조에 <span>400엔</span>이 듭니다. 냉장고는 언급이 없으나, 전자레인지와 온수기는 <span>공용 공간</span>에 마련되어 있습니다. 객실 내에서는 음식 섭취가 <span>금지</span>되어 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">정**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.10.03</span></div><div class="fe-q">"캡슐호텔이라 화장실, 샤워실 공용이고 세탁기 있어서 빨래도 했습니다. (빨래,건조 다해서 400엔)"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">S**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.06.14</span></div><div class="fe-q">"최신식 세탁기와 건조기도 아주 잘 작동해서 편리했어요."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">山**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">26.01.13</span></div><div class="fe-q">"호텔에는 온수・전자렌지도 있습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="kitchen" data-q="냉장고·주방·세탁은요?">리뷰 5개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-bath" data-group="시설·어메니티">
-                <div class="faq-q"><span class="q-txt">대욕장·온천이 있나요?</span></div>
-                <p class="faq-a">이 호텔에는 사우나나 <span>대욕장</span>이 없습니다. 큰 사물함도 없으니 짐 관리에 유의하셔야 합니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">대욕장·온천이 있나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">대욕장 없음</span><span class="faq-chip">사우나 없음</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.12</span></div><div class="fe-q">"다만, 사우나나 대형 공용 목욕탕처럼 큰 사물함은 없으니 외출 시 짐 관리에 유의하시기 바랍니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.18</span></div><div class="fe-q">"다만 사우나나 대욕장 병설의 시설과 같은 큰 로커는 없기 때문에, 외출할 때의 짐의 관리에는 주의가 필요합니다."</div></li></ul>
+                <div class="faq-body">
+                    <p class="faq-a">이 호텔에는 사우나나 <span>대욕장</span>이 없습니다. 큰 사물함도 없으니 짐 관리에 유의하셔야 합니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">無**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.12</span></div><div class="fe-q">"다만, 사우나나 대형 공용 목욕탕처럼 큰 사물함은 없으니 외출 시 짐 관리에 유의하시기 바랍니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">天**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.11.18</span></div><div class="fe-q">"다만 사우나나 대욕장 병설의 시설과 같은 큰 로커는 없기 때문에, 외출할 때의 짐의 관리에는 주의가 필요합니다."</div></li></ul>
+                </div>
             </div><div class="faq-card" id="faq-luggage" data-group="서비스·정책">
-                <div class="faq-q"><span class="q-txt">짐 보관 되나요?</span></div>
-                <p class="faq-a">네, 호텔 1층에 짐 보관함이 있으며, 리셉션에서도 잠금 가능한 가방을 보관할 수 있는 와이어 락식 보관 장소가 <span>무료로</span> 제공됩니다. 또한, 객실 내 개인 사물함이나 캐비닛에도 짐을 보관하실 수 있습니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">짐 보관 되나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">1층 짐 보관함</span><span class="faq-chip">리셉션 보관함</span><span class="faq-chip">객실 내 사물함</span><span class="faq-chip">무료</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.02.07</span></div><div class="fe-q">"만약 짐을 보관해야 한다면 호텔 1층에 짐 보관함(자물쇠⭕️)이 있어요. 그쪽에 짐 보관하고 텐진 둘러보시는 것을 추천드립니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.12.12</span></div><div class="fe-q">"잠금 가능한 캐리어를 소지하신 경우, 1층 리셉션에 있는 보관함을 이용하실 수 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2025.11.18</span></div><div class="fe-q">"잠길 수 있는 가방이라면 1층의 프런트 플로어에 와이어 락식의 보관 장소가 있습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="luggage" data-q="짐 보관 되나요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">네, 호텔 1층에 짐 보관함이 있으며, 리셉션에서도 잠금 가능한 가방을 보관할 수 있는 와이어 락식 보관 장소가 <span>무료로</span> 제공됩니다. 또한, 객실 내 개인 사물함이나 캐비닛에도 짐을 보관하실 수 있습니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">Y**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.02.07</span></div><div class="fe-q">"만약 짐을 보관해야 한다면 호텔 1층에 짐 보관함(자물쇠⭕️)이 있어요. 그쪽에 짐 보관하고 텐진 둘러보시는 것을 추천드립니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">無**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">25.12.12</span></div><div class="fe-q">"잠금 가능한 캐리어를 소지하신 경우, 1층 리셉션에 있는 보관함을 이용하실 수 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">天**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">25.11.18</span></div><div class="fe-q">"잠길 수 있는 가방이라면 1층의 프런트 플로어에 와이어 락식의 보관 장소가 있습니다."</div></li></ul><button type="button" class="faq-more-btn" data-topic="luggage" data-q="짐 보관 되나요?">리뷰 8개 모두 보기</button>
+                </div>
             </div><div class="faq-card" id="faq-access" data-group="위치">
-                <div class="faq-q"><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span></div>
-                <p class="faq-a">야쿠인역에서는 <span>도보 1~2분</span> 거리이며, 텐진역에서는 <span>도보 10분</span> 정도 소요됩니다.</p>
+                <button type="button" class="faq-q"><span class="q-pre">Q.</span><span class="q-txt">역에서 실제로 얼마나 걸리나요?</span><span class="faq-arrow"></span></button>
                 <div class="faq-chips"><span class="faq-chip">야쿠인역 도보 1분</span><span class="faq-chip">야쿠인역 도보 2분</span><span class="faq-chip">텐진역 도보 10분</span></div>
-                <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:80%"></i></span><span class="fe-src">Google</span><span class="fe-date">2024.12.15</span></div><div class="fe-q">"약원역에서 도보 1분 정도로 매우 편리. 텐진 근처에서도 도보권"</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2024.12.08</span></div><div class="fe-q">"위치가 정말 편리합니다. 지하철역에서 도보로 약 1분 거리이며, 가는 길에 약국과 슈퍼마켓도 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="star"><i style="width:100%"></i></span><span class="fe-src">Google</span><span class="fe-date">2026.05.11</span></div><div class="fe-q">"위치가 정말 최고예요! 걸어서 1분 거리에 약국과 세븐일레븐이 있고, 웨스트 레일과 지하철역도 가까워서 교통이 아주 편리해요."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
+                <div class="faq-body">
+                    <p class="faq-a">야쿠인역에서는 <span>도보 1~2분</span> 거리이며, 텐진역에서는 <span>도보 10분</span> 정도 소요됩니다.</p>
+                    <div class="faq-ev-head">실제 투숙객 리뷰</div><ul class="faq-ev"><li class="fe-item"><div class="fe-meta"><span class="fe-name">風**</span><span class="fe-src">Google</span><span class="star"><i style="width:80%"></i></span><span class="fe-date">24.12.15</span></div><div class="fe-q">"약원역에서 도보 1분 정도로 매우 편리. 텐진 근처에서도 도보권"</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">J**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">24.12.08</span></div><div class="fe-q">"위치가 정말 편리합니다. 지하철역에서 도보로 약 1분 거리이며, 가는 길에 약국과 슈퍼마켓도 있습니다."</div></li><li class="fe-item"><div class="fe-meta"><span class="fe-name">李**</span><span class="fe-src">Google</span><span class="star"><i style="width:100%"></i></span><span class="fe-date">26.05.11</span></div><div class="fe-q">"위치가 정말 최고예요! 걸어서 1분 거리에 약국과 세븐일레븐이 있고, 웨스트 레일과 지하철역도 가까워서 교통이 아주 편리해요."</div></li></ul><button type="button" class="faq-more-btn" data-topic="access" data-q="역에서 실제로 얼마나 걸리나요?">리뷰 8개 모두 보기</button>
+                </div>
             </div></div>
-        </div><script>window.FAQEVID={"kitchen": [{"q": "캡슐호텔이라 화장실, 샤워실 공용이고 세탁기 있어서 빨래도 했습니다. (빨래,건조 다해서 400엔)", "d": "2025-10-03", "st": 4, "o": "Google"}, {"q": "최신식 세탁기와 건조기도 아주 잘 작동해서 편리했어요.", "d": "2025-06-14", "st": 5, "o": "Google"}, {"q": "호텔에는 온수・전자렌지도 있습니다.", "d": "2026-01-13", "st": 4, "o": "Google"}, {"q": "객실에서 음식을 먹거나 마실 수 없으며, 남성층의 휴식실로 가셔야 합니다. 전자 레인지와 뜨거운 물이 있습니다.", "d": "2025-10-02", "st": 5, "o": "Google"}, {"q": "2층 여성용, 3층 남성용이나 음식섭취는 3층 휴게실에서만 됩니다. (각방에서 섭취금지)", "d": "2025-10-03", "st": 4, "o": "Google"}], "luggage": [{"q": "만약 짐을 보관해야 한다면 호텔 1층에 짐 보관함(자물쇠⭕️)이 있어요. 그쪽에 짐 보관하고 텐진 둘러보시는 것을 추천드립니다.", "d": "2026-02-07", "st": 5, "o": "Google"}, {"q": "잠금 가능한 캐리어를 소지하신 경우, 1층 리셉션에 있는 보관함을 이용하실 수 있습니다.", "d": "2025-12-12", "st": 5, "o": "Google"}, {"q": "잠길 수 있는 가방이라면 1층의 프런트 플로어에 와이어 락식의 보관 장소가 있습니다.", "d": "2025-11-18", "st": 4, "o": "Google"}, {"q": "1층에 셀프 서비스 짐 보관소가 있습니다.", "d": "2025-07-01", "st": 5, "o": "Google"}, {"q": "로비에는 투숙객의 소지품을 안전하게 보관할 수 있는 보관함이 있어서 정말 좋았습니다.", "d": "2025-06-14", "st": 5, "o": "Google"}, {"q": "16시 체크인에서 사전 수하물 보관소는 로비에 스스로 두어 열쇠를 건 타입.", "d": "2025-05-03", "st": 5, "o": "Google"}, {"q": "열쇠가있는 수납 공간이 조금 있습니다. 짐 보관은 스스로 열쇠걸이는 셀프 방식.", "d": "2025-01-22", "st": null, "o": "Tripadvisor"}, {"q": "# 카드키에 캐비닛 열쇠가 같이 들어있어 캐비닛에 짐을 두고 다녔는데,", "d": "2024-10-06", "st": 5, "o": "Google"}], "access": [{"q": "약원역에서 도보 1분 정도로 매우 편리. 텐진 근처에서도 도보권", "d": "2024-12-15", "st": 4, "o": "Google"}, {"q": "위치가 정말 편리합니다. 지하철역에서 도보로 약 1분 거리이며, 가는 길에 약국과 슈퍼마켓도 있습니다.", "d": "2024-12-08", "st": 5, "o": "Google"}, {"q": "위치가 정말 최고예요! 걸어서 1분 거리에 약국과 세븐일레븐이 있고, 웨스트 레일과 지하철역도 가까워서 교통이 아주 편리해요.", "d": "2026-05-11", "st": 5, "o": "Google"}, {"q": "야쿠인 역에서 도보 2분 거리의 위치", "d": "2024-11-24", "st": 5, "o": "Google"}, {"q": "텐진역 도보 10분 거리", "d": "2024-07-28", "st": 5, "o": "Google"}, {"q": "야쿠인역에서 걸어서 비교적 빨리, 텐진으로부터도 전혀 걸을 수 있는 거리였습니다.", "d": "2025-08-30", "st": 5, "o": "Google"}, {"q": "야쿠인 역에서 도보로 몇 분 거리에 편리한 위치.", "d": "2025-05-03", "st": 5, "o": "Google"}, {"q": "약원역에서 가깝습니다. 뭐라면 텐진에서도 걸을 수 있었다.", "d": "2025-02-22", "st": 5, "o": "Google"}]};</script>
+        </div><script>window.FAQEVID={"kitchen": [{"q": "캡슐호텔이라 화장실, 샤워실 공용이고 세탁기 있어서 빨래도 했습니다. (빨래,건조 다해서 400엔)", "d": "2025-10-03", "st": 4, "o": "Google", "n": "정**"}, {"q": "최신식 세탁기와 건조기도 아주 잘 작동해서 편리했어요.", "d": "2025-06-14", "st": 5, "o": "Google", "n": "S**"}, {"q": "호텔에는 온수・전자렌지도 있습니다.", "d": "2026-01-13", "st": 4, "o": "Google", "n": "山**"}, {"q": "객실에서 음식을 먹거나 마실 수 없으며, 남성층의 휴식실로 가셔야 합니다. 전자 레인지와 뜨거운 물이 있습니다.", "d": "2025-10-02", "st": 5, "o": "Google", "n": "か**"}, {"q": "2층 여성용, 3층 남성용이나 음식섭취는 3층 휴게실에서만 됩니다. (각방에서 섭취금지)", "d": "2025-10-03", "st": 4, "o": "Google", "n": "정**"}], "luggage": [{"q": "만약 짐을 보관해야 한다면 호텔 1층에 짐 보관함(자물쇠⭕️)이 있어요. 그쪽에 짐 보관하고 텐진 둘러보시는 것을 추천드립니다.", "d": "2026-02-07", "st": 5, "o": "Google", "n": "Y**"}, {"q": "잠금 가능한 캐리어를 소지하신 경우, 1층 리셉션에 있는 보관함을 이용하실 수 있습니다.", "d": "2025-12-12", "st": 5, "o": "Google", "n": "無**"}, {"q": "잠길 수 있는 가방이라면 1층의 프런트 플로어에 와이어 락식의 보관 장소가 있습니다.", "d": "2025-11-18", "st": 4, "o": "Google", "n": "天**"}, {"q": "1층에 셀프 서비스 짐 보관소가 있습니다.", "d": "2025-07-01", "st": 5, "o": "Google", "n": "黃**"}, {"q": "로비에는 투숙객의 소지품을 안전하게 보관할 수 있는 보관함이 있어서 정말 좋았습니다.", "d": "2025-06-14", "st": 5, "o": "Google", "n": "S**"}, {"q": "16시 체크인에서 사전 수하물 보관소는 로비에 스스로 두어 열쇠를 건 타입.", "d": "2025-05-03", "st": 5, "o": "Google", "n": "長**"}, {"q": "열쇠가있는 수납 공간이 조금 있습니다. 짐 보관은 스스로 열쇠걸이는 셀프 방식.", "d": "2025-01-22", "st": null, "o": "Tripadvisor", "n": "T**"}, {"q": "# 카드키에 캐비닛 열쇠가 같이 들어있어 캐비닛에 짐을 두고 다녔는데,", "d": "2024-10-06", "st": 5, "o": "Google", "n": "J**"}], "access": [{"q": "약원역에서 도보 1분 정도로 매우 편리. 텐진 근처에서도 도보권", "d": "2024-12-15", "st": 4, "o": "Google", "n": "風**"}, {"q": "위치가 정말 편리합니다. 지하철역에서 도보로 약 1분 거리이며, 가는 길에 약국과 슈퍼마켓도 있습니다.", "d": "2024-12-08", "st": 5, "o": "Google", "n": "J**"}, {"q": "위치가 정말 최고예요! 걸어서 1분 거리에 약국과 세븐일레븐이 있고, 웨스트 레일과 지하철역도 가까워서 교통이 아주 편리해요.", "d": "2026-05-11", "st": 5, "o": "Google", "n": "李**"}, {"q": "야쿠인 역에서 도보 2분 거리의 위치", "d": "2024-11-24", "st": 5, "o": "Google", "n": "a**"}, {"q": "텐진역 도보 10분 거리", "d": "2024-07-28", "st": 5, "o": "Google", "n": "ᄋ**"}, {"q": "야쿠인역에서 걸어서 비교적 빨리, 텐진으로부터도 전혀 걸을 수 있는 거리였습니다.", "d": "2025-08-30", "st": 5, "o": "Google", "n": "d**"}, {"q": "야쿠인 역에서 도보로 몇 분 거리에 편리한 위치.", "d": "2025-05-03", "st": 5, "o": "Google", "n": "長**"}, {"q": "약원역에서 가깝습니다. 뭐라면 텐진에서도 걸을 수 있었다.", "d": "2025-02-22", "st": 5, "o": "Google", "n": "h**"}]};</script>
         <div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
                 <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 6%</b> 입니다.</div>
                 <div class="count">총 76건</div></div>
                 <div class="list"><ul><li><div class="num">1점</div><div class="bar"><i style="width:4%"></i></div><div class="per">4%</div></li><li><div class="num">2점</div><div class="bar"><i style="width:3%"></i></div><div class="per">3%</div></li><li><div class="num">3점</div><div class="bar"><i style="width:13%"></i></div><div class="per">13%</div></li><li><div class="num">4점</div><div class="bar"><i style="width:25%"></i></div><div class="per">25%</div></li><li><div class="num">5점</div><div class="bar"><i style="width:55%"></i></div><div class="per">55%</div></li></ul></div>
             </div>
-        <div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
-            <div class="loc-addr">3 Chome-3-33 Yakuin, Chuo Ward, Fukuoka, 810-0022 일본</div>
-            <div class="loc-chips"><span class="lc-chip">텐진역 도보 18분 · 1150m</span><span class="lc-chip">텐진권</span></div>
-            <div class="map"><iframe src="https://maps.google.com/maps?q=33.5811585,130.4005916&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Grand Cabin Tenjin Minami 지도"></iframe></div>
-        </div>
+        
         <div class="review-sheet" id="review-sheet" hidden>
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -947,11 +960,14 @@
             }
             // F12: FAQ 더보기 — 같은 시트 UI 재사용(카테고리 nav·한국인·QFULL 미사용), FAQEVID inline
             function faqCard(e){
-                var star = e.st ? '<div class="star"><i style="width:' + (e.st*20) + '%"></i></div>' : '';
+                var stw = parseInt(e.st, 10) || 0;
+                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
+                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
                 return '<li><div class="item">'
+                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div></div>'
                     + '<div class="item-bottom"><div class="text">' + emph(e.q) + '</div>'
-                    + '<div class="date">' + esc((e.d||'').replace(/-/g,'. ')) + '</div></div>'
+                    + '<div class="date">' + esc(d) + '</div></div>'
                     + '</div></li>';
             }
             function faqOpen(topic, q){
@@ -1035,6 +1051,11 @@
                                ticks:{font:{size:10}, color:'#8B9097', maxTicksLimit:4, callback:function(v){return v+'%';}}}}}});
             }
 
+            // F16: 산출 기준(basis) — 기본 숨김, ? 버튼 토글
+            $('#detail').on('click', '.basis-toggle', function(){
+                $(this).closest('.basis-fold').toggleClass('is-open');
+            });
+
             // 전체 통합 라인차트: 기본 접힘(F7) → 펼칠 때 1회 지연 렌더(0폭 canvas 함정 회피)
             var allTrendInited = false;
             $('#detail').on('click', '.trend-fold-btn', function(){
@@ -1070,6 +1091,10 @@
                     $(this).toggle(!g || $(this).data('group') === g);
                 });
             });
+            // F18 FAQ 카드 접힘/펼침 (기본 접힘: Q+칩만 → 펼치면 답변·근거)
+            $('#hotel-faq').on('click', '.faq-q', function(){
+                $(this).closest('.faq-card').toggleClass('is-open');
+            });
 
             // 특정 카테고리 열고 그 위치로 스크롤 (칩·캔버스 공용)
             function openAndScroll(id){
@@ -1094,6 +1119,7 @@
                 if (t.indexOf('risk-') === 0) { openAndScroll(t); return; }
                 if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
                 var $el = $('#' + t); if (!$el.length) return;
+                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
                 $('html, body').stop().animate({scrollTop: $el.offset().top - 8}, 350);
             });
 
