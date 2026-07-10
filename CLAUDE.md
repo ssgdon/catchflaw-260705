@@ -22,7 +22,8 @@
 
 - **현행 DB = Oracle VM PostgreSQL `catchflaw`** (158.179.173.211, localhost 전용). 후쿠오카 173곳(active 159 / watch 14 / closed 1, 사이트엔 active+watch만) · 리뷰 6만+ · 분석 3.8만+. Supabase는 `mvp_feedbacks`(피드백)·`analysis_requests`(온디맨드 요청)만 사용.
 - 점수체계 v2 (검증 완료): 도시평균=50, 3배=100 구간선형, k=20 보정, 카테고리 불만 5건 미만 상한 65, 분석 30건 미만 미노출. 실망확률 = 심각 태그 리뷰의 최신성 가중 비율(실측, 도시평균 ~9%). 기준일(asof)은 최신 리뷰일로 매주 이동(`data-src/meta.json` → generate.py 동적 표기).
-- 카테고리: 대분류 6 (위생 경보/오감 지옥/시설 사기단/동선 파괴자/불친절 레이더/안전 그림자) × **소분류 19** (v3). **정본 = `pipeline/prompt.py` SUBS = `scripts/scoring.py` SUBS (동기화 완료).**
+- 카테고리(A층): 대분류 6 (위생/냄새/소음/시설/불친절/위치·안전) × **소분류 17** (v4). **정본 = `pipeline/prompt.py` SUBS = `scripts/scoring.py` SUBS = `pipeline/score.py` CATS (동기화 완료).** v3→v4 전환은 `pipeline/migrate_v4.py`(1회성). 희소·고위험 소분류(해충/곰팡이·치안·안심)는 점수 대신 "신고 N건" 칩으로 렌더.
+- FAQ(B층): 리뷰에서 사전 추출한 실전 정보 카드(짐보관·조식·주차 등). `pipeline/faq_topics.py`(토픽 정본)+`pipeline/faq_extract.py`(gemini 종합, `hotel_faq` 테이블) → `export_pg.py`가 `data-src/faq.json` 생성 → generate.py 상세 FAQ 섹션(근거 없으면 미노출).
 - 추천 제외(`hotels.rec_excluded`): 러브호텔·넷카페 등은 검색·상세엔 노출되나 홈 추천·검색 기본목록·지도에선 숨김(호텔명 직접 검색 시에만 노출).
 
 ## MVP 규칙

@@ -11,23 +11,26 @@ GUARD_MIN = 5         # 소분류 불만 리뷰 최소 건수 (미만이면 상�
 GUARD_CAP = 65
 MIN_REVIEWS = 30      # 점수 노출 최소 분석 리뷰 수
 
-CATS = ['위생 경보', '오감 지옥', '시설 사기단', '동선 파괴자', '불친절 레이더', '안전 그림자']
+# CATS/SUBS/SUB_KEYWORDS = TAXONOMY-V4-AB-DESIGN §1 정본 (pipeline/prompt.py·pipeline/score.py 와 동기화 완료)
+CATS = ['위생', '냄새', '소음', '시설', '불친절', '위치·안전']
 SUBS = {
-    '위생 경보': ['침구/바닥 청결', '청소 서비스', '해충/곰팡이'],
-    '오감 지옥': ['벽간/외부 소음', '악취 역류', '기기 소음'],
-    '시설 사기단': ['공간 협소', '노후/고장', '냉난방/수압', '네트워크/TV'],
-    '동선 파괴자': ['역/거점 접근성', '지형적 난관', '주변 편의성'],
-    '불친절 레이더': ['응대 태도', '처리 지연', '사후 대처'],
-    '안전 그림자': ['보안 시설', '주변 치안', '사생활 보호'],
+    '위생': ['침구/바닥 청결', '청소 상태', '해충/곰팡이'],
+    '냄새': ['담배 냄새', '화장실·곰팡 악취'],
+    '소음': ['내부 소음', '외부 소음'],
+    '시설': ['공간 협소', '노후/고장', '냉난방/수압', '네트워크/TV'],
+    '불친절': ['응대 태도', '체크인/처리 지연', '사후 대처'],
+    '위치·안전': ['접근성', '주변 편의', '치안·안심'],
 }
 SUB_KEYWORDS = {
-    '침구/바닥 청결': '얼룩 · 머리카락 · 먼지', '청소 서비스': '청소 불량 · 쓰레기 방치', '해충/곰팡이': '벌레 · 빈대 · 곰팡이',
-    '벽간/외부 소음': '옆방 소리 · 도로 소음', '악취 역류': '하수구 · 담배 · 곰팡내', '기기 소음': '에어컨 · 냉장고 소음',
+    '침구/바닥 청결': '얼룩 · 머리카락 · 먼지', '청소 상태': '청소 불량 · 쓰레기 방치', '해충/곰팡이': '벌레 · 빈대 · 곰팡이 발견',
+    '담배 냄새': '금연실 담배 냄새 · 배인 냄새', '화장실·곰팡 악취': '하수구 · 꿉꿉함 · 곰팡내',
+    '내부 소음': '옆방 소리 · 복도 · 기기음', '외부 소음': '도로 · 전철 · 유흥가 소음',
     '공간 협소': '비좁음 · 사진보다 작음', '노후/고장': '낡은 시설 · 설비 고장', '냉난방/수압': '냉난방 불량 · 수압 약함', '네트워크/TV': '와이파이 · TV 불량',
-    '역/거점 접근성': '역에서 멀다 · 찾기 어려움', '지형적 난관': '언덕 · 계단', '주변 편의성': '편의점 · 식당 없음',
-    '응대 태도': '불친절 · 무시 · 언어소통', '처리 지연': '체크인 지연 · 대기', '사후 대처': '보상 거부 · 무대응',
-    '보안 시설': '도어락 · CCTV', '주변 치안': '밤길 · 우범지대', '사생활 보호': '방음 · 프라이버시',
+    '응대 태도': '불친절 · 무시 · 언어소통', '체크인/처리 지연': '체크인 지연 · 긴 대기', '사후 대처': '보상 거부 · 무대응',
+    '접근성': '역에서 멀다 · 언덕 · 계단', '주변 편의': '편의점 · 식당 없음', '치안·안심': '밤길 · 보안 미비 · 프라이버시',
 }
+# 희소·고위험 소분류(점수 막대 대신 "신고 N건" 칩으로 렌더 — TAXONOMY-V4 §1·§3-c)
+RARE_SUBS = {'해충/곰팡이', '치안·안심'}
 
 def _score_from_ratio(ratio):
     if ratio <= 1:
@@ -50,10 +53,12 @@ def compute(data_dir):
     denoms, findings_main, findings_sub, reviewlevel = (
         J('agg_denom.json'), J('agg_findings.json'), J('findings_sub.json'), J('agg_reviewlevel.json'))
 
-    den = defaultdict(float); den_n = defaultdict(int)
+    den = defaultdict(float); den_n = defaultdict(int); den_1y = defaultdict(int)
     for d in denoms:
         den[d['place_id']] += d['n'] * W[d['bucket']]
         den_n[d['place_id']] += d['n']
+        if d['bucket'] != 'w015':          # 최근 1년(365일 이내) 카운트 = 표시·게이트 모수 (w015=365일 초과)
+            den_1y[d['place_id']] += d['n']
 
     m_num = defaultdict(float); m_cnt = defaultdict(int)
     for f in findings_main:
@@ -71,7 +76,7 @@ def compute(data_dir):
     for r in reviewlevel:
         crit_w[r['place_id']] += r['has_crit'] * W[r['bucket']]
 
-    scored = [p for p in den if den_n[p] >= MIN_REVIEWS]
+    scored = [p for p in den if den_1y[p] >= MIN_REVIEWS]   # 노출 게이트 = 최근 1년 리뷰 ≥30 (전체기간 아님)
     tot_den = sum(den[p] for p in scored)
 
     city = {
@@ -83,7 +88,7 @@ def compute(data_dir):
 
     hotels = {}
     for p in den:
-        h = {'analyzed': den_n[p], 'scored': den_n[p] >= MIN_REVIEWS}
+        h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS}
         if h['scored']:
             pc = (crit_w[p] + K * city['crit']) / (den[p] + K)
             h['p_crit'] = pc
@@ -91,7 +96,7 @@ def compute(data_dir):
             h['cats'] = {}
             for c in CATS:
                 radj = (m_num[(p, c)] + K * city['cat'][c]) / (den[p] + K)
-                sc = _score_from_ratio(radj / city['cat'][c])
+                sc = _score_from_ratio(radj / (city['cat'][c] or 1e-9))   # 0분모 방어(score.py와 동기화). 산식 불변(정상데이터 시 영향 없음)
                 if m_cnt[(p, c)] < GUARD_MIN: sc = min(sc, GUARD_CAP)
                 h['cats'][c] = {'score': sc, 'band': grade_band(sc), 'count': m_cnt[(p, c)], 'subs': {}}
                 for s in SUBS[c]:

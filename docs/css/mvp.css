@@ -153,7 +153,25 @@
 #detail .cat-trend .ct-now{font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;}
 #detail .cat-trend .ct-canvas{position:relative;height:130px;}
 #detail .cat-trend .ct-delta{margin:10px 0 0;padding:8px 10px;border-radius:10px;background:#fff;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-2);}
-#detail .disappear .cat-trend-all{margin:20px 0 16px;text-align:left;}
+#detail .disappear .cat-trend-all{margin:0;text-align:left;}
+
+/* F8: 4-CASE verdict 헤드라인 + 근거 한 줄 (게이지 아래·트렌드 폴드 위) */
+#detail .disappear .verdict{margin:18px 0 0;text-align:center;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);}
+#detail .disappear .verdict.is-safe{color:var(--safe-text);}
+#detail .disappear .verdict.is-warning{color:var(--warning-text);}
+#detail .disappear .verdict.is-danger{color:var(--danger-text);}
+#detail .disappear .verdict-why{margin:6px 0 0;text-align:center;line-height:1.5;font-size:var(--fs-body);font-weight:var(--fw-medium);color:var(--ink-2);}
+
+/* F7: 전체 월별 트렌드 기본 접힘 — 토글 버튼만 노출, 펼칠 때 차트 표시 */
+#detail .disappear .trend-fold{margin:16px 0 4px;}
+#detail .disappear .trend-fold-btn{display:flex;align-items:center;gap:6px;width:100%;padding:11px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);text-align:left;cursor:pointer;}
+#detail .disappear .trend-fold-btn .tf-tit{flex:1 1 auto;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
+#detail .disappear .trend-fold-btn .tf-arrow{flex:0 0 auto;width:8px;height:8px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(45deg) translateY(-2px);transition:transform .2s;}
+#detail .disappear .trend-fold.is-open .trend-fold-btn{border-bottom-left-radius:0;border-bottom-right-radius:0;}
+#detail .disappear .trend-fold.is-open .trend-fold-btn .tf-arrow{transform:rotate(-135deg) translateY(-2px);}
+#detail .disappear .trend-fold-body{display:none;padding:12px 12px 10px;border:1px solid var(--line-strong);border-top:0;border-radius:0 0 var(--radius-btn) var(--radius-btn);}
+#detail .disappear .trend-fold.is-open .trend-fold-body{display:block;}
+#detail .disappear .trend-fold .cat-trend-all{margin:0;padding:0;background:none;}
 
 /* ---------- 리뷰 바텀시트 ---------- */
 .review-sheet{position:fixed;z-index:300;inset:0;}
@@ -662,3 +680,67 @@
 #about .about-body a{color:var(--primary-deep);font-weight:var(--fw-medium);text-decoration:underline;}
 #about .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;}
 #about .about-list li{list-style:disc;}
+
+/* ── 희소·고위험 소분류 칩 (신고 N건) — TAXONOMY v4 §3-c. 시맨틱 3색 규칙 준수 ── */
+#detail .analysis .risk-acc-body .stat-row.is-rare .rare-chip{flex:1 1 auto;display:inline-flex;align-items:center;min-width:0;height:26px;padding:0 12px;border-radius:var(--radius-chip);font-size:var(--fs-caption);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;}
+#detail .analysis .risk-acc-body .stat-row.is-rare .rare-chip.is-alert{background:var(--danger-soft);color:var(--danger-text);}
+#detail .analysis .risk-acc-body .stat-row.is-rare .rare-chip.is-clear{background:var(--safe-soft);color:var(--safe-text);}
+
+/* ── hotel FAQ (B층) — TAXONOMY v4 §3-d + F12 필터탭·리뷰 근거 미리보기·더보기 시트.
+   질문+답변+칩+근거 미리보기 상시 노출. tokens 변수만 · 시맨틱 3색 미사용 · answer 강조 --primary ── */
+/* 필터 탭 (그룹) — 1줄 가로스크롤, 중립 */
+#detail .faq .faq-tabs{display:flex;flex-wrap:nowrap;gap:var(--sp-1);margin:14px 0 12px;overflow-x:auto;scrollbar-width:none;-ms-overflow-style:none;}
+#detail .faq .faq-tabs::-webkit-scrollbar{display:none;}
+#detail .faq .faq-tab{flex:0 0 auto;height:30px;padding:0 12px;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);white-space:nowrap;cursor:pointer;}
+#detail .faq .faq-tab.is-on{background:var(--primary);border-color:var(--primary);color:#fff;}
+/* 카드 */
+#detail .faq .faq-card{margin-bottom:10px;padding:14px;border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);}
+#detail .faq .faq-q{display:flex;align-items:center;width:100%;}
+#detail .faq .faq-q .q-txt{flex:1 1 auto;min-width:0;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
+#detail .faq .faq-a{margin:6px 0 0;font-size:var(--fs-body);font-weight:var(--fw-medium);line-height:1.5;color:var(--ink);}
+#detail .faq .faq-a span{font-weight:var(--fw-bold);color:var(--primary);}
+#detail .faq .faq-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;}
+#detail .faq .faq-chip{display:inline-flex;align-items:center;height:24px;padding:0 10px;border-radius:var(--radius-chip);background:var(--surface);font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);}
+/* 리뷰 근거 미리보기 */
+#detail .faq .faq-ev-head{margin:14px 0 8px;padding-top:12px;border-top:1px dashed var(--line);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);}
+#detail .faq .faq-ev{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+#detail .faq .faq-ev .fe-item{padding:10px 12px;border-radius:var(--radius-chip);background:var(--surface);}
+#detail .faq .faq-ev .fe-meta{display:flex;align-items:center;gap:6px;margin-bottom:4px;}
+#detail .faq .faq-ev .fe-src{font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);}
+#detail .faq .faq-ev .fe-date{font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .faq .faq-ev .fe-q{font-size:var(--fs-caption);font-weight:var(--fw-medium);line-height:1.45;color:var(--ink-2);}
+#detail .faq .faq-ev .star{position:relative;display:inline-block;width:68px;aspect-ratio:68/12;background:url("../img/star_bg.svg") no-repeat left center / auto 100%;}
+#detail .faq .faq-ev .star i{position:absolute;top:0;left:0;bottom:0;background:url("../img/star_fill.svg") no-repeat left center / auto 100%;}
+#detail .faq .faq-more-btn{margin-top:10px;width:100%;height:38px;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary-deep);cursor:pointer;}
+#detail .faq .faq-more-btn:after{content:' ›';color:var(--primary);}
+/* FAQ 더보기 시트 모드 — 카테고리 nav·정렬/한국인 도구 숨김 (기존 #review-sheet 재사용) */
+.review-sheet.faq-mode .sheet-nav,
+.review-sheet.faq-mode .sheet-tools,
+.review-sheet.faq-mode .sheet-chips{display:none;}
+
+/* ── 딜브레이커 경고 스트립 — 희소·고위험 최근 1년 심각 신고 ≥3건. danger-soft/text · 라운드 14 · 4px 그리드 ── */
+#detail .db-strip{display:flex;flex-direction:column;gap:var(--sp-2);margin:var(--sp-3) 0 0;}
+#detail .db-strip .db-item{display:flex;align-items:center;gap:var(--sp-2);width:100%;padding:var(--sp-3) var(--sp-4);border:0;border-radius:var(--radius-btn);background:var(--danger-soft);text-align:left;cursor:pointer;}
+#detail .db-strip .db-txt{flex:1 1 auto;min-width:0;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--danger-text);}
+#detail .db-strip .db-txt b{font-weight:var(--fw-display);font-variant-numeric:tabular-nums;}
+#detail .db-strip .db-link{flex:0 0 auto;font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--danger-text);text-decoration:underline;text-underline-offset:2px;}
+
+/* ── 진입점 점프 칩 (info-bottom 아래·1줄 고정) — F10: CTA 버튼화(흰 배경+보더+그림자+셰브런) ── */
+/* F4: 단일 줄 고정, 넘치면 가로 스크롤(스크롤바 숨김) */
+#detail .faq-jump{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--sp-1);margin-top:var(--sp-3);overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;-ms-overflow-style:none;padding-bottom:2px;}
+#detail .faq-jump::-webkit-scrollbar{display:none;}
+#detail .fj-btn{flex:0 0 auto;display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border:1px solid var(--line-strong);border-radius:var(--radius-chip);background:var(--surface-card);box-shadow:0 1px 4px rgb(0 0 0 / 6%);font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;cursor:pointer;}
+#detail .faq-jump .fj-btn:after{content:'›';font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary);line-height:1;}
+#detail .faq-jump .fj-risk{background:var(--danger-soft);border-color:var(--danger-soft);color:var(--danger-text);font-variant-numeric:tabular-nums;}
+#detail .faq-jump .fj-risk:after{color:var(--danger-text);}
+#detail .faq-jump .fj-all{color:var(--ink-3);}
+
+/* ── 위치 섹션 — F9: 주소 한 줄 + 사실 기반 칩(역거리·권역)만, 중립 톤 ── */
+#detail .location .loc-addr{margin:6px 0 0;line-height:1.45;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .location .loc-chips{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1);margin:10px 0 0;}
+#detail .location .lc-chip{display:inline-flex;align-items:center;height:26px;padding:0 10px;border-radius:var(--radius-chip);background:var(--surface);font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);font-variant-numeric:tabular-nums;}
+
+/* ── F1: .meta span은 display:flex라 "1박 <b>…</b>" 사이 공백 텍스트노드가 flex 아이템 경계로 소실 → gap으로 복원 ── */
+#detail .information .info-cont .meta span.price,
+#search .list .cont .info .meta span.price,
+#hub .hub-list .cont .info .meta span.price{gap:var(--sp-1);}

@@ -4,13 +4,15 @@
    공유 상수(CFRec.CATS 등)는 검색 rec 모드에서도 사용
    의존: jQuery, backnav.js(CFNav) */
 (function () {
+  /* 내부 카테고리 키(ko)는 TAXONOMY v4 6개(위생/냄새/소음/시설/불친절/위치·안전)와 일치해야
+     검색 rec 모드의 matchScore(h.cs[ko])가 동작한다. 라벨은 고객 언어(UI-STANDARDS §8). */
   var CATS = [
-    { code: 'hyg', ko: '위생 경보',   label: '더러운 건 못 참아',     kw: '침구·벌레·곰팡이',      chip: '청결' },
-    { code: 'sen', ko: '오감 지옥',   label: '시끄럽고 냄새나면 싫어', kw: '소음·악취',            chip: '조용' },
-    { code: 'fac', ko: '시설 사기단', label: '낡은 시설은 실망이야',   kw: '노후·냉난방·와이파이', chip: '시설' },
-    { code: 'loc', ko: '동선 파괴자', label: '위치가 제일 중요해',     kw: '역까지 거리·접근성',   chip: '위치' },
-    { code: 'svc', ko: '불친절 레이더', label: '불친절은 못 넘어가',    kw: '직원 응대',            chip: '응대' },
-    { code: 'saf', ko: '안전 그림자', label: '안전이 최우선이야',      kw: '보안·치안',            chip: '안전' }
+    { code: 'hyg',    ko: '위생',      label: '더러운 건 못 참아',        kw: '침구·벌레·곰팡이',      chip: '청결' },
+    { code: 'smell',  ko: '냄새',      label: '냄새나는 방은 못 참아',    kw: '담배·하수구·곰팡내',    chip: '냄새' },
+    { code: 'noise',  ko: '소음',      label: '시끄러우면 못 자',          kw: '옆방·도로·기기음',      chip: '조용' },
+    { code: 'fac',    ko: '시설',      label: '낡은 시설은 실망이야',      kw: '노후·냉난방·와이파이',  chip: '시설' },
+    { code: 'svc',    ko: '불친절',    label: '불친절은 못 넘어가',        kw: '직원 응대',             chip: '응대' },
+    { code: 'locsaf', ko: '위치·안전', label: '위치와 안전이 제일 중요해', kw: '역까지 거리·치안',      chip: '위치·안전' }
   ];
   var BUDGETS = [
     { code: '',   label: '상관없어요' },
