@@ -905,7 +905,7 @@
 .det-header .dh-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;margin-right:-8px;padding:8px;background:none;border:0;cursor:pointer;}
 .det-header .dh-menu span{display:block;width:20px;height:2px;border-radius:2px;background:var(--ink);}
 /* F36 드로어 — 우측 슬라이드, tokens·시트 규격 재사용 */
-.det-drawer{position:fixed;z-index:400;inset:0;}
+.det-drawer{position:fixed;z-index:2000;inset:0;}
 .det-drawer .dd-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);opacity:0;transition:opacity .3s;}
 .det-drawer .dd-panel{position:absolute;top:0;right:0;bottom:0;width:74%;max-width:300px;transform:translateX(100%);transition:transform .3s;background:#fff;padding:calc(env(safe-area-inset-top) + 16px) var(--page-x) 24px;}
 .det-drawer.is-open .dd-dim{opacity:1;}
