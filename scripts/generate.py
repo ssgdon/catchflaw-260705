@@ -222,7 +222,12 @@ def load():
     if os.path.exists(os.path.join(SRC, 'faq.json')):
         try: faq = json.load(open(os.path.join(SRC, 'faq.json'), encoding='utf-8')) or {}
         except Exception: faq = {}
-    return hotels_meta, quotes, stars, kr, monthly, monthly_cat, faq
+    # 소셜 콘텐츠 (fetch_social — 네이버 블로그·유튜브 후기). 없으면 빈 dict → 섹션 미노출 (SOCIAL).
+    social = {}
+    if os.path.exists(os.path.join(SRC, 'social.json')):
+        try: social = json.load(open(os.path.join(SRC, 'social.json'), encoding='utf-8')) or {}
+        except Exception: social = {}
+    return hotels_meta, quotes, stars, kr, monthly, monthly_cat, faq, social
 
 # ───────────────────────── 공통 조각 ─────────────────────────
 # Microsoft Clarity (히트맵·세션 리플레이). f-string 아님 — JS 중괄호 리터럴 보존.
@@ -1717,6 +1722,66 @@ def faq_section(faq):
             <div class="faq-cards">{''.join(cards)}</div>
         </div>{evid_script}'''
 
+def social_section(soc, name):
+    """소셜 후기 (SOCIAL) — 네이버 블로그 후기 top3 + 유튜브 후기 영상.
+    블로그: 카드(제목·블로거·썸네일) → 바텀시트 iframe(원본 그대로, 이탈 없음).
+    영상: lite-embed(썸네일 → 탭 시 인페이지 재생, 쇼츠는 세로 카드). 콘텐츠 없으면 미노출."""
+    if not soc: return ''
+    blogs = soc.get('b') or []
+    vids = soc.get('v') or []
+    out = []
+    if blogs:
+        cards = []
+        for b in blogs:
+            img = (f'<img src="{E(b["img"])}" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'no-img\')">'
+                   if b.get('img') else '')
+            d = str(b.get('d') or '')
+            dd = f'{d[:4]}. {d[4:6]}. {d[6:8]}' if len(d) == 8 else d
+            meta = ' · '.join(x for x in [b.get('by') or '', dd] if x)
+            cards.append(f'''<button type="button" class="nb-card" data-url="{E(b['u'])}" data-title="{E(b['t'])}">
+                <span class="nb-main"><span class="nb-tit">{E(b['t'])}</span>
+                <span class="nb-meta">{E(meta)}</span></span>
+                <span class="nb-thumb{'' if img else ' no-img'}">{img}</span>
+            </button>''')
+        out.append(f'''<div class="sect social-blog">
+            <div class="head"><div class="title">네이버 블로그 후기</div>
+            <div class="desc">네이버 "{E(name)} 후기" 상위 글이에요 · 탭하면 여기서 바로 읽을 수 있어요</div></div>
+            <div class="nb-list">{''.join(cards)}</div>
+        </div>''')
+    if vids:
+        slides = []
+        for v in vids:
+            scls = ' is-shorts' if v.get('s') else ''
+            badge = '<span class="yt-badge">Shorts</span>' if v.get('s') else ''
+            slides.append(f'''<li class="swiper-slide yt-slide{scls}">
+                <div class="yt-card" data-vid="{E(v['id'])}" data-title="{E(v['t'])}">
+                    <div class="yt-thumb"><img src="https://i.ytimg.com/vi/{E(v['id'])}/hqdefault.jpg" alt="" loading="lazy"><span class="yt-play"></span>{badge}</div>
+                    <div class="yt-tit">{E(v['t'])}</div>
+                    <div class="yt-ch">{E(v.get('ch') or '')}</div>
+                </div>
+            </li>''')
+        out.append(f'''<div class="sect social-video">
+            <div class="head"><div class="title">관련 영상</div>
+            <div class="desc">유튜브 "{E(name)} 후기" 영상 · 탭하면 바로 재생돼요</div></div>
+            <div class="yt-slider"><ul class="swiper-wrapper">{''.join(slides)}</ul></div>
+        </div>''')
+    return '\n'.join(out)
+
+
+BLOG_SHEET_HTML = '''<div class="review-sheet blog-sheet" id="blog-sheet" hidden>
+            <div class="sheet-dim"></div>
+            <div class="sheet-panel">
+                <div class="sheet-head">
+                    <div class="sheet-grab"></div>
+                    <div class="bs-title" id="bs-tit"></div>
+                    <button type="button" class="sheet-close" aria-label="닫기">✕</button>
+                </div>
+                <div class="bs-body"><iframe id="bs-frame" src="about:blank" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                <div class="bs-foot"><a id="bs-link" href="#" target="_blank" rel="noopener">네이버에서 보기 ↗</a></div>
+            </div>
+        </div>'''
+
+
 def faq_jsonld(faq):
     """FAQPage 스키마 (answer = ** 제거 평문 + chips 포함). 항목 없으면 None."""
     if not faq: return None
@@ -1733,7 +1798,7 @@ def faq_jsonld(faq):
     if not entries: return None
     return {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': entries}
 
-def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None, hotel_cols=(), kr_dist=None, faq=None):
+def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None, hotel_cols=(), kr_dist=None, faq=None, social=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
@@ -2117,6 +2182,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             </div>
         </div>
         {faq_section(faq)}
+        {social_section(social, name)}
         {stars_block}
         {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
         <div class="review-sheet" id="review-sheet" hidden>
@@ -2139,6 +2205,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <ul class="sheet-list" id="sheet-list"></ul>
             </div>
         </div>
+        {BLOG_SHEET_HTML if (social or {}).get('b') else ''}
         <script>
         window.QDATA = {json.dumps(sheet_data, ensure_ascii=False)};
         window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
@@ -2218,7 +2285,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     on:{{slideChange:function(){{ if(cnt) cnt.textContent=(this.realIndex+1)+' / '+total; }}}}
                 }});
             }});
-            $('.review-slider, #detail .hotel-slider').each(function(i, el){{
+            $('.review-slider, #detail .hotel-slider, .yt-slider').each(function(i, el){{
                 new Swiper(el, {{slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true}});
             }});
 
@@ -2467,6 +2534,51 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }});
             $sheet.on('click', '.sheet-close, .sheet-dim', close);
             $(document).on('keydown', function(e){{ if (e.key === 'Escape') close(); }});
+        }});
+
+        // ───── 소셜 후기 (SOCIAL): 네이버 블로그 바텀시트 + 유튜브 lite-embed ─────
+        $(function(){{
+            // 블로그: 카드 탭 → 바텀시트 iframe (원본 그대로, X·딤·뒤로가기로 즉시 복귀)
+            var $bs = $('#blog-sheet');
+            function bsCloseVisual(){{
+                $bs.removeClass('is-open');
+                $('body').css('overflow', '');
+                setTimeout(function(){{ $bs.prop('hidden', true); $('#bs-frame').attr('src', 'about:blank'); }}, 300);
+            }}
+            $(document).on('click', '.nb-card', function(){{
+                if (!$bs.length) return;
+                var u = $(this).data('url'), t = $(this).data('title');
+                if (typeof gtag === 'function') {{
+                    var hh = window.CF_HOTEL || {{}};
+                    gtag('event', 'blog_open', {{hotel_name: hh.name || '', hotel_id: hh.pid || '', blog_url: u}});
+                }}
+                $('#bs-tit').text(t);
+                $('#bs-link').attr('href', u);
+                $('#bs-frame').attr('src', u);
+                $bs.prop('hidden', false);
+                void $bs[0].offsetHeight;               // 강제 reflow — hidden 해제가 transition에 반영되도록 (rAF는 백그라운드 탭에서 안 불림)
+                $bs.addClass('is-open');
+                $('body').css('overflow', 'hidden');
+                if (window.CFNav) CFNav.push(bsCloseVisual);
+            }});
+            $bs.on('click', '.sheet-close, .sheet-dim', function(){{
+                if (window.CFNav) CFNav.pop(); else bsCloseVisual();
+            }});
+
+            // 유튜브: 썸네일 탭 → 그 자리에서 플레이어 교체(자동재생, 이탈 없음)
+            $(document).on('click', '.yt-card', function(){{
+                var $c = $(this);
+                if ($c.hasClass('is-playing')) return;
+                var vid = $c.data('vid');
+                if (typeof gtag === 'function') {{
+                    var hh2 = window.CF_HOTEL || {{}};
+                    gtag('event', 'video_play', {{hotel_name: hh2.name || '', hotel_id: hh2.pid || '', video_id: vid, video_title: $c.data('title') || ''}});
+                }}
+                $c.addClass('is-playing');
+                $c.find('.yt-thumb').html('<iframe src="https://www.youtube-nocookie.com/embed/' + vid
+                    + '?autoplay=1&playsinline=1&rel=0" title="YouTube" frameborder="0" '
+                    + 'allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>');
+            }});
         }});
 
         // ───── 리스크 아코디언 + 레이더 칩 + 한국인 필터 (§2-e·§3-b·§4·§5) ─────
@@ -3057,7 +3169,7 @@ def build_sitemap(detail_pids, collection_slugs=()):
 
 def main():
     city, H = compute(SRC)
-    hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data = load()
+    hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data, social_data = load()
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
 
     if os.path.exists(OUT): shutil.rmtree(OUT)
@@ -3113,7 +3225,8 @@ def main():
         W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
             kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat,
             city_avg, city_cat_avg, crit_rank_pct=critrank.get(pid),
-            hotel_cols=detail_col_map.get(pid, [])[:3], kr_dist=kr_dist, faq=faq_data.get(pid)))
+            hotel_cols=detail_col_map.get(pid, [])[:3], kr_dist=kr_dist, faq=faq_data.get(pid),
+            social=social_data.get(pid)))
         written.append(pid)
     n = len(written)
 
