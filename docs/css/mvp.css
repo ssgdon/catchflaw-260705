@@ -104,7 +104,8 @@
 
 /* ---------- 상세: 실망확률 근거·게이지 ---------- */
 #detail .disappear .basis{margin:18px 0 0;text-align:center;line-height:1.5;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);}
-#detail .information .info-bottom .btn-audit .txt .count{color:var(--primary);opacity:.75;}
+/* F44-a: 보조문구 "구글·트립닷컴 등 리뷰 분석" — 2줄 허용, 박스(60px) 내 안전하게 (line-height 축소·워드브레이크) */
+#detail .information .info-bottom .btn-audit .txt .count{color:var(--primary);opacity:.75;line-height:1.3;word-break:keep-all;}
 
 /* ---------- 상세: 리스크 상세 분석 — 축 라벨 (아코디언 본문) ----------
    좌 116px = stat-info 106px + gap 10px · 우 50px = stat-count 40px + gap 10px */
@@ -525,6 +526,9 @@
 .social-blog .nb-thumb{flex:0 0 auto;width:74px;height:74px;border-radius:12px;overflow:hidden;background:var(--surface);}
 .social-blog .nb-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
 .social-blog .nb-thumb.no-img{display:none;}
+.social-blog .nb-card.nb-hidden{display:none;}
+.social-blog .nb-more{width:100%;height:46px;margin-top:10px;border-radius:var(--radius-btn);border:1px solid var(--line-strong);background:#fff;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
+.social-blog .nb-more:active{background:var(--surface);}
 /* 블로그 바텀시트: 베이스(.review-sheet) 재사용, 높이만 풀팝업급으로 */
 .blog-sheet .sheet-panel{max-height:none;height:93dvh;}
 .blog-sheet .sheet-head{padding:10px var(--page-x) 12px;border-bottom:1px solid var(--line);}

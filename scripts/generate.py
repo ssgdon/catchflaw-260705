@@ -1732,21 +1732,27 @@ def social_section(soc, name):
     out = []
     if blogs:
         cards = []
-        for b in blogs:
-            img = (f'<img src="{E(b["img"])}" alt="" loading="lazy" onerror="this.parentNode.classList.add(\'no-img\')">'
+        for i, b in enumerate(blogs):
+            # referrerpolicy=no-referrer 필수 — pstatic 썸네일이 외부 referer를 핫링크 차단(403 실측)
+            img = (f'<img src="{E(b["img"])}" alt="" loading="lazy" referrerpolicy="no-referrer" '
+                   f'onerror="this.parentNode.classList.add(\'no-img\')">'
                    if b.get('img') else '')
             d = str(b.get('d') or '')
             dd = f'{d[:4]}. {d[4:6]}. {d[6:8]}' if len(d) == 8 else d
             meta = ' · '.join(x for x in [b.get('by') or '', dd] if x)
-            cards.append(f'''<button type="button" class="nb-card" data-url="{E(b['u'])}" data-title="{E(b['t'])}">
+            hide = ' nb-hidden' if i >= 3 else ''       # 기본 3개 + 더보기 펼침
+            cards.append(f'''<button type="button" class="nb-card{hide}" data-url="{E(b['u'])}" data-title="{E(b['t'])}">
                 <span class="nb-main"><span class="nb-tit">{E(b['t'])}</span>
                 <span class="nb-meta">{E(meta)}</span></span>
                 <span class="nb-thumb{'' if img else ' no-img'}">{img}</span>
             </button>''')
+        more = (f'<button type="button" class="nb-more">블로그 후기 더보기 (+{len(blogs) - 3})</button>'
+                if len(blogs) > 3 else '')
         out.append(f'''<div class="sect social-blog">
             <div class="head"><div class="title">네이버 블로그 후기</div>
             <div class="desc">네이버 "{E(name)} 후기" 상위 글이에요 · 탭하면 여기서 바로 읽을 수 있어요</div></div>
             <div class="nb-list">{''.join(cards)}</div>
+            {more}
         </div>''')
     if vids:
         slides = []
@@ -2122,6 +2128,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="basis">
                     <p>최근 리뷰일수록 높은 가중치로 반영됩니다</p>
                     <p>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</p>
+                    <p>분석 리뷰는 구글·트립닷컴 등 여러 예약 사이트의 최근 1년 리뷰를 합산한 수예요</p>
                     <p class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></p>
                 </div>
             </div>
@@ -2255,7 +2262,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         </a>
                         <a class="btn-link btn-audit" href="#risk-detail">
                             <span class="ico"><img src="../img/audit.svg" alt=""></span>
-                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}개</span><span class="count">AI 분석 리포트</span></span>
+                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}개</span><span class="count">구글·트립닷컴 등 리뷰 분석</span></span>
                         </a>
                     </div>
                     {faq_jump_html}
@@ -2563,6 +2570,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }});
             $bs.on('click', '.sheet-close, .sheet-dim', function(){{
                 if (window.CFNav) CFNav.pop(); else bsCloseVisual();
+            }});
+            // 블로그 더보기: 숨긴 카드 전체 펼침 (기본 3 → 최대 9)
+            $(document).on('click', '.nb-more', function(){{
+                $('.nb-card.nb-hidden').removeClass('nb-hidden');
+                $(this).remove();
             }});
 
             // 유튜브: 썸네일 탭 → 그 자리에서 플레이어 교체(자동재생, 이탈 없음)
