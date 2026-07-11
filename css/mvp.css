@@ -501,6 +501,8 @@
 .ac-box .ac-miss .ac-miss-q{font-weight:var(--fw-bold);color:var(--ink);}
 .ac-box .ac-miss b{color:var(--primary);font-weight:var(--fw-bold);text-decoration:underline;text-underline-offset:2px;}
 .ac-box .ac-miss:active{background:var(--primary-soft);}
+/* F45: 검색페이지도 공통 헤더(.det-header 56px) 사용 → #title 검색바는 헤더 아래로 스티키. z는 헤더(90) 아래 */
+#title{top:56px;z-index:80;}
 /* search.html: #title .search 내부 드롭다운 (홈 규칙 밖) */
 #title .search .ac-box{position:absolute;z-index:120;top:calc(100% + 8px);left:0;right:0;max-height:60vh;overflow-y:auto;border-radius:14px;background:#fff;box-shadow:0 12px 32px rgb(0 0 0 / 22%);}
 #title .search .ac-box .ac-section{padding:10px 16px 4px;font-size:12px;font-weight:var(--fw-bold);color:var(--ink-3);}
@@ -896,6 +898,8 @@
 .det-header{position:sticky;top:0;z-index:90;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 var(--page-x);background:#fff;border-bottom:1px solid var(--line);}
 .det-header .dh-back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;margin-left:-8px;}
 .det-header .dh-back img{display:block;width:24px;height:24px;}
+/* F45: back 없는 홈 — 동일 폭 스페이서로 로고 중앙 유지 */
+.det-header .dh-back-empty{display:block;width:40px;height:40px;margin-left:-8px;}
 .det-header .dh-logo{display:flex;align-items:center;height:15px;aspect-ratio:122/15;}
 .det-header .dh-logo img{display:block;width:100%;height:100%;object-fit:contain;}
 .det-header .dh-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;margin-right:-8px;padding:8px;background:none;border:0;cursor:pointer;}

@@ -302,15 +302,6 @@ FOOT = '''</div>
 </body>
 </html>'''
 
-def header_nav(depth=0):
-    p = '../' * depth
-    return f'''
-    <header id="header">
-        <div class="header"><div class="inner">
-            <div class="logo"><a href="{p or "./"}"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a></div>
-        </div></div>
-    </header>'''
-
 def build_footer(depth=0):
     """공통 미니 푸터 (LEGAL-SOFTEN §2-b). 전 생성 페이지에 삽입. about·정정창구 링크."""
     p = '../' * depth
@@ -322,12 +313,14 @@ def build_footer(depth=0):
     </footer>'''
 
 def site_header(depth=1, back=None):
-    """F36+F40: 공통 사이트 헤더(좌 back·중앙 로고·우 햄버거)+드로어 4링크 — 상세·recent 공유. sticky는 CSS."""
+    """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+드로어 4링크.
+    back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 드로어 JS는 jQuery 비의존 vanilla."""
     p = '../' * depth
     home = p or './'
-    back_href = back or home
+    back_slot = (f'<a class="dh-back" href="{back}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>'
+                 if back else '<span class="dh-back dh-back-empty" aria-hidden="true"></span>')
     return f'''<div class="det-header">
-                <a class="dh-back" href="{back_href}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>
+                {back_slot}
                 <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
                 <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
             </div>
@@ -344,13 +337,20 @@ def site_header(depth=1, back=None):
                 </div>
             </div>
             <script>
-            $(function(){{
-                var $drawer = $('.det-drawer');
-                function drawerClose(){{ $drawer.removeClass('is-open'); setTimeout(function(){{ $drawer.prop('hidden', true); }}, 300); }}
-                $('.dh-menu').on('click', function(e){{ e.preventDefault(); $drawer.prop('hidden', false); $drawer[0].offsetWidth; $drawer.addClass('is-open'); }});
-                $drawer.on('click', '.dd-dim, .dd-close', function(e){{ e.preventDefault(); drawerClose(); }});
-                $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $drawer.hasClass('is-open')) drawerClose(); }});
-            }});
+            (function(){{
+                var drawer = document.querySelector('.det-drawer'),
+                    menu = document.querySelector('.dh-menu');
+                if (!drawer || !menu) return;
+                function open(){{ drawer.hidden = false; void drawer.offsetWidth; drawer.classList.add('is-open'); }}
+                function close(){{ drawer.classList.remove('is-open'); setTimeout(function(){{ drawer.hidden = true; }}, 300); }}
+                menu.addEventListener('click', function(e){{ e.preventDefault(); open(); }});
+                drawer.addEventListener('click', function(e){{
+                    if (e.target.closest('.dd-dim') || e.target.closest('.dd-close')) {{ e.preventDefault(); close(); }}
+                }});
+                document.addEventListener('keydown', function(e){{
+                    if (e.key === 'Escape' && drawer.classList.contains('is-open')) close();
+                }});
+            }})();
             </script>'''
 
 def badge_html(h):
@@ -444,7 +444,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     '위생·소음·시설·동선·서비스·안전 6개 항목의 위험도를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
     <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + header_nav() + f'''
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0) + f'''
     <main id="container">
         <section id="main">
             <article class="section sec-1">
@@ -600,7 +600,7 @@ def build_404():
     """soft-404 해소용 독립 404 페이지. canonical/description 없이 noindex.
        링크는 절대경로(어느 깊이에서도 서빙되므로 상대경로 금지)."""
     return head('페이지를 찾을 수 없어요 — 캐치플로', depth=0,
-        extra_head='<meta name="robots" content="noindex">') + header_nav() + f'''
+        extra_head='<meta name="robots" content="noindex">') + site_header(0, back='./') + f'''
     <main id="container"><section id="search" style="padding:60px 20px">
         <div class="notice-card">
             <div class="notice-tit">페이지를 찾을 수 없어요</div>
@@ -721,8 +721,8 @@ def build_search(city_avg_pct):
         canonical=f'{BASE}/search') + f'''
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
+        ''' + site_header(0, back='./') + f'''
         <section id="title">
-            <div class="back"><a href="./" class="btn-back"><img src="./img/back_b.svg" alt="뒤로가기"></a></div>
             <div class="search">
                 <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
                 <input type="text" id="q" placeholder="{CITY['ko']} 호텔명 검색 또는 구글맵 링크" autocomplete="off">
@@ -3005,7 +3005,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     ld = _jsonld(itemlist) + '\n' + _jsonld(faqpage) + '\n' + _jsonld(crumbs)
 
     return head(col['title'], depth=depth, description=summary_full, canonical=canonical,
-                og_image=og_img, extra_head=ld) + header_nav(depth) + f'''
+                og_image=og_img, extra_head=ld) + site_header(depth, back=('../' * depth or './')) + f'''
     <main id="container">
         <section id="hub">
             <nav class="hub-crumb"><a href="{'../' * depth}">캐치플로</a> › <a href="{'../' * depth}search">{CITY['ko']} 호텔</a> › <span>{E(col['name'])}</span></nav>
@@ -3127,7 +3127,7 @@ def build_about(hotels_meta, H, city):
         '수수료는 분석 결과에 영향을 주지 않습니다.')
 
     return head('캐치플로 소개 — 실망 확률은 이렇게 계산해요', depth=0,
-                description=desc, canonical=f'{BASE}/about') + header_nav() + f'''
+                description=desc, canonical=f'{BASE}/about') + site_header(0, back='./') + f'''
     <main id="container">
         <section id="about">
             <h1 class="about-h1">캐치플로 소개</h1>
