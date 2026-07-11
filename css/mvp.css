@@ -246,6 +246,10 @@
 .review-sheet .sheet-list .item .full .full-tit{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:8px;background:#fff;font-size:12px;font-weight:var(--fw-bold);color:var(--ink-2);align-self:flex-start;}
 .review-sheet .sheet-list .item .full .full-txt{margin-top:-6px;line-height:1.6;font-size:14px;font-weight:var(--fw-medium);color:var(--ink-2);word-break:break-word;}
 .review-sheet .sheet-empty{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
+/* FAQ-LAZYLOAD: R2 faq_reviews fetch 중 로딩 표시 (스피너 + 안내문) */
+.review-sheet .sheet-loading{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
+.review-sheet .sheet-loading::before{content:'';display:block;width:22px;height:22px;margin:0 auto 10px;border:2.5px solid var(--line);border-top-color:var(--primary);border-radius:50%;animation:cf-sheet-spin .8s linear infinite;}
+@keyframes cf-sheet-spin{to{transform:rotate(360deg);}}
 
 #detail .analysis .stat-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin:2px 0 0;padding:12px 2px 0;border-top:1px solid var(--line);}
 #detail .analysis .stat-legend .lg{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;color:var(--ink-2);}

@@ -1684,15 +1684,19 @@ def faq_section(faq):
             if evlist:
                 prev = ''.join(_faq_ev_preview(ev, t) for ev in evlist[:3])
                 more = ''
-                if len(evlist) > 3:
-                    # 시트용 evidence: rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3). qh=하이라이트 HTML(F23). u/l/tf=F28 동형화용
+                # FAQ-LAZYLOAD: 라벨 N = nt(최근1년 매칭 총수, export_faq_reviews.py) — 없거나 근거수 이하면 근거수 폴백
+                try: nt = int(it.get('nt') or 0)
+                except (TypeError, ValueError): nt = 0
+                n_label = nt if nt > len(evlist) else len(evlist)
+                if n_label > 3:
+                    # 시트용 evidence(R2 fetch 실패 시 폴백): rn은 마스킹된 n으로만 내보냄(실명 금지 — LEGAL §3). qh=하이라이트 HTML(F23). u/l/tf=F28 동형화용
                     faqevid[t] = [{'q': ev.get('q') or '', 'qh': faq_hl(ev.get('q') or '', t),
                                    'd': ev.get('d') or '', 'st': ev.get('st'),
                                    'o': ev.get('o') or 'Google', 'n': mask_name(ev.get('rn')),
                                    'u': ev.get('u') or '', 'l': ev.get('l') or '', 'tf': ev.get('tf') or ''}
                                   for ev in evlist]
                     more = (f'<button type="button" class="faq-more-btn" data-topic="{E(t)}" '
-                            f'data-q="{E(it.get("q") or "")}">리뷰 {len(evlist)}개 모두 보기</button>')
+                            f'data-q="{E(it.get("q") or "")}">리뷰 {n_label}개 모두 보기</button>')
                 ev_block = (f'<div class="faq-ev-head">실제 투숙객 리뷰</div>'
                             f'<ul class="faq-ev">{prev}</ul>{more}')
             # F18: 접힘(기본) = Q.질문+칩 한 덩어리 / 펼침 = 답변·근거(.faq-body)
@@ -2140,6 +2144,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
         window.QSUBS = {json.dumps({c: SUBS[c] for c in CATS}, ensure_ascii=False)};
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
+        window.CF_FAQR = {json.dumps(f'{R2_PUB}/faq_reviews/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
         </script>'''
@@ -2372,18 +2377,55 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     + foot + full
                     + '</div></li>';
             }}
-            function faqOpen(topic, q){{
-                var list = (window.FAQEVID && window.FAQEVID[topic]) || [];
-                $sheet.addClass('faq-mode');
+            // FAQ-LAZYLOAD: 더보기 시트 소스 = R2 faq_reviews/{{pid}}.json (토픽별 최근1년 매칭 전체, 토픽당 최대 60건).
+            // 전체 JSON 1회 fetch 후 캐싱(토픽 전환 시 재요청 없음). 실패/CORS 시 인라인 FAQEVID 폴백 — 빈 시트 금지.
+            var faqFull = null, faqFetchP = null, faqSeq = 0;
+            function maskName(s){{
+                s = String(s || '').trim();
+                return s ? Array.from(s)[0] + '**' : '투숙객';
+            }}
+            // R2 카드(rn 원명) → faqCard 입력형 변환. rn은 반드시 마스킹(LEGAL §3). qh 없음 → faqCard가 emph(q)로 렌더.
+            function faqNorm(r){{
+                return {{n: maskName(r.rn), st: r.st, o: r.o || 'Google', u: r.u || '',
+                        l: r.l || '', q: r.q || '', d: r.d || '', tf: r.tf || ''}};
+            }}
+            function faqFetch(){{
+                if (faqFetchP) return faqFetchP;
+                if (!window.CF_FAQR) return Promise.reject();
+                faqFetchP = fetch(window.CF_FAQR, {{cache: 'force-cache'}})
+                    .then(function(r){{ return r.ok ? r.json() : Promise.reject(r.status); }})
+                    .then(function(j){{ faqFull = j; return j; }})
+                    .catch(function(e){{ faqFetchP = null; return Promise.reject(e); }});
+                return faqFetchP;
+            }}
+            function faqList(topic, q, cnt, cards){{
                 $('#sheet-cat').text(q || '');
-                $('#sheet-cnt').text(list.length + '건');
-                $('#sheet-chips').empty();
-                $('#sheet-list').html(list.map(faqCard).join('') || '<li class="sheet-empty">리뷰 근거가 없어요</li>');
+                $('#sheet-cnt').text(cnt ? cnt + '건' : '');
+                $('#sheet-list').html(cards || '<li class="sheet-empty">리뷰 근거가 없어요</li>');
                 $('#sheet-list').scrollTop(0);
+            }}
+            function faqRender(topic, q){{
+                var t = faqFull && faqFull[topic];
+                if (t && t.r && t.r.length) {{
+                    faqList(topic, q, t.n || t.r.length, t.r.map(faqNorm).map(faqCard).join(''));
+                }} else {{
+                    var list = (window.FAQEVID && window.FAQEVID[topic]) || [];   // 폴백: 인라인 근거 8개(현행)
+                    faqList(topic, q, list.length, list.map(faqCard).join(''));
+                }}
+            }}
+            function faqOpen(topic, q){{
+                $sheet.addClass('faq-mode');
+                $('#sheet-chips').empty();
                 $sheet.prop('hidden', false);
                 requestAnimationFrame(function(){{ $sheet.addClass('is-open'); }});
                 $('body').css('overflow', 'hidden');
                 if (window.CFNav) CFNav.push(closeVisual);
+                var seq = ++faqSeq;   // 로딩 중 토픽 전환/재오픈 시 낡은 응답 렌더 방지
+                if (faqFull) {{ faqRender(topic, q); return; }}
+                faqList(topic, q, 0, '<li class="sheet-loading">리뷰를 불러오는 중…</li>');
+                faqFetch()
+                    .then(function(){{ if (seq === faqSeq) faqRender(topic, q); }})
+                    .catch(function(){{ if (seq === faqSeq) faqRender(topic, q); }});
             }}
             $(document).on('click', '.faq-more-btn', function(){{ faqOpen($(this).data('topic'), $(this).data('q')); }});
             function open(cat, sub){{
