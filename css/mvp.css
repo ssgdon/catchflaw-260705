@@ -1057,3 +1057,68 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #detail .who .who-tag.is-faq{background:var(--surface);color:var(--ink-2);}
 #detail .who .who-quote{margin-top:var(--sp-3);padding:var(--sp-3) var(--sp-4);border-radius:var(--radius-btn);background:var(--surface);font-size:var(--fs-caption);line-height:1.5;color:var(--ink-2);}
 #detail .who .who-quote small{display:block;margin-top:var(--sp-1);font-size:var(--fs-micro);color:var(--ink-3);}
+
+/* 비교 페이지: 호텔 추가 칸·추가 팝업 (모바일 = 바텀시트, PC는 pc.css에서 가운데 팝업) */
+#cmp .cmp-add{display:block;min-width:0;padding:0;border:0;background:none;text-align:left;cursor:pointer;}
+#cmp .cmp-add .ca-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-1);aspect-ratio:4/3;border:1.5px dashed var(--line-strong);border-radius:var(--radius-btn);background:var(--surface);color:var(--ink-2);text-align:center;transition:border-color .15s,background .15s;}
+#cmp .cmp-add:hover .ca-box{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+#cmp .cmp-add .ca-plus{position:relative;width:20px;height:20px;}
+#cmp .cmp-add .ca-plus::before,#cmp .cmp-add .ca-plus::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;border-radius:1px;transform:translate(-50%,-50%);}
+#cmp .cmp-add .ca-plus::before{width:16px;height:2px;}
+#cmp .cmp-add .ca-plus::after{width:2px;height:16px;}
+#cmp .cmp-add .ca-t{font-size:var(--fs-caption);font-weight:var(--fw-bold);}
+#cmp .cmp-add .ca-s{font-size:var(--fs-micro);color:var(--ink-3);}
+#cmp .cmp-cell.is-pad{background:none;}
+#cmp .cmp-cta .cmp-cta-add{height:44px;border:1.5px dashed var(--line-strong);border-radius:var(--radius-btn);background:#fff;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
+#cmp .cmp-empty .ce-btn{border:0;cursor:pointer;}
+#cmp .cmp-empty .ce-link{display:block;margin-top:var(--sp-4);font-size:var(--fs-caption);color:var(--ink-3);text-decoration:underline;}
+.cmp-pick{position:fixed;z-index:400;inset:0;}
+.cmp-pick[hidden]{display:none;}
+.cmp-pick .cp-dim{position:absolute;inset:0;background:rgb(0 0 0 / 55%);opacity:0;transition:opacity .2s;}
+.cmp-pick .cp-panel{position:absolute;left:50%;bottom:0;transform:translate(-50%,100%);width:var(--width);max-width:100%;max-height:86dvh;display:flex;flex-direction:column;border-radius:var(--radius-card) var(--radius-card) 0 0;background:#fff;transition:transform .25s;}
+.cmp-pick.is-open .cp-dim{opacity:1;}
+.cmp-pick.is-open .cp-panel{transform:translate(-50%,0);}
+.cmp-pick .cp-head{display:flex;align-items:center;justify-content:space-between;padding:var(--sp-5) var(--page-x) var(--sp-3);font-size:var(--fs-h3);}
+.cmp-pick .cp-head b{font-weight:var(--fw-display);}
+.cmp-pick .cp-close{width:36px;height:36px;border:0;border-radius:50%;background:none;font-size:var(--fs-body-lg);color:var(--ink-2);cursor:pointer;}
+.cmp-pick .cp-search{padding:0 var(--page-x);}
+.cmp-pick .cp-q{width:100%;height:48px;padding:0 var(--sp-4);border:1.5px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface);font-size:var(--fs-body);color:var(--ink);}
+.cmp-pick .cp-q:focus{border-color:var(--primary);background:#fff;}
+.cmp-pick .cp-sub{padding:var(--sp-4) var(--page-x) var(--sp-2);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);}
+.cmp-pick .cp-list{flex:1;overflow-y:auto;padding:0 var(--page-x) calc(var(--sp-6) + env(safe-area-inset-bottom));}
+.cmp-pick .cp-item{display:flex;align-items:center;gap:var(--sp-3);width:calc(100% + var(--sp-4));padding:var(--sp-3) var(--sp-2);margin:0 calc(var(--sp-2) * -1);border:0;border-radius:var(--radius-btn);background:none;text-align:left;cursor:pointer;}
+.cmp-pick .cp-item:hover{background:var(--surface);}
+.cmp-pick .cp-img{flex:none;width:56px;height:56px;overflow:hidden;border-radius:var(--radius-btn);background:var(--surface);}
+.cmp-pick .cp-img img{display:block;width:100%;height:100%;object-fit:cover;}
+.cmp-pick .cp-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.cmp-pick .cp-nm{overflow:hidden;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;text-overflow:ellipsis;}
+.cmp-pick .cp-meta{font-size:var(--fs-micro);color:var(--ink-3);}
+.cmp-pick .cp-p{flex:none;height:26px;padding:0 var(--sp-2);display:flex;align-items:center;border-radius:var(--radius-chip);font-size:var(--fs-micro);font-weight:var(--fw-bold);}
+.cmp-pick .cp-p.is-safe{background:var(--safe-soft);color:var(--safe-text);}
+.cmp-pick .cp-p.is-warning{background:var(--warning-soft);color:var(--warning-text);}
+.cmp-pick .cp-p.is-danger{background:var(--danger-soft);color:var(--danger-text);}
+.cmp-pick .cp-empty{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
+
+/* §13 결론 라벨 — 카테고리 타일: 숫자 대신 '이름 + 평균 대비 한 줄 | 결론'. 한 줄 목록(모바일 가독성), PC는 2열 */
+#detail .risk .radar-cats{grid-template-columns:1fr;gap:var(--sp-2);}
+#detail .risk .radar-cat{display:flex;align-items:center;gap:var(--sp-3);min-height:60px;padding:var(--sp-3) var(--sp-4);cursor:pointer;}
+#detail .risk .radar-cat .rc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+#detail .risk .radar-cat .rc-name{flex:none;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
+#detail .risk .radar-cat .rc-sub{font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-2);}
+#detail .risk .radar-cat .rc-verdict{flex:none;font-size:var(--fs-body);font-weight:var(--fw-display);}
+#detail .risk .radar-cat.is-danger .rc-verdict{color:var(--danger-text);}
+#detail .risk .radar-cat.is-warning .rc-verdict{color:var(--warning-text);}
+#detail .risk .radar-cat.is-safe .rc-verdict{color:var(--safe-text);}
+#detail .risk .radar-cat .rc-arrow{flex:none;width:7px;height:7px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(-45deg);}
+/* 리스크 상세 아코디언 헤드: 이름 · 결론 칩 · 도시 내 위치 문장 */
+#detail .analysis .risk-acc-head .cat-name{flex:0 0 auto;}
+#detail .analysis .risk-acc-head .cat-verdict{flex:none;display:inline-flex;align-items:center;height:26px;padding:0 var(--sp-2);border-radius:var(--radius-chip);font-size:var(--fs-caption);font-weight:var(--fw-bold);white-space:nowrap;}
+#detail .analysis .risk-acc-head .cat-verdict.is-safe{background:var(--safe-soft);color:var(--safe-text);}
+#detail .analysis .risk-acc-head .cat-verdict.is-warning{background:var(--warning-soft);color:var(--warning-text);}
+#detail .analysis .risk-acc-head .cat-verdict.is-danger{background:var(--danger-soft);color:var(--danger-text);}
+#detail .analysis .risk-acc-head .cat-rank{flex:1 1 auto;min-width:0;overflow:hidden;font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-3);text-align:right;white-space:nowrap;text-overflow:ellipsis;}
+@media (max-width:359px){
+    #detail .analysis .risk-acc-head .cat-rank{display:none;}
+}
+/* 비교 페이지 카테고리 칸: 결론 + 평균 대비 한 줄 */
+#cmp .cmp-cell .cmp-line{display:block;margin-top:2px;font-size:var(--fs-micro);color:var(--ink-3);}

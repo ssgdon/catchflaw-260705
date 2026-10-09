@@ -1,23 +1,36 @@
 /* P5 비교 페이지 렌더 — window.CF_CMP(data/compare.js) + ?ids= 또는 비교함(localStorage).
-   행마다 가장 좋은 값 강조, "차이 나는 항목만" 토글, 맨 위 한 줄 비교(실측 조립). */
+   행마다 가장 좋은 값 강조, "차이 나는 항목만" 토글, 맨 위 한 줄 비교(실측 조립).
+   3곳 미만이면 '호텔 추가' 칸 → 검색 팝업(별칭 인덱스 지연 로드)에서 바로 추가. */
 (function () {
   var D = window.CF_CMP || {}, FAQ = window.CF_CMP_FAQ || [];
   var CATS = ['위생', '냄새', '소음', '시설', '불친절', '위치·안전'];
+  var MAX = 3;
   var root = document.getElementById('cmp-root');
-  var diffOnly = false;
+  var diffOnly = false, pad = 0;   // pad: '호텔 추가' 칸 때문에 각 행 끝에 붙는 빈 칸 수
 
   function esc(s) { return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function josa(w, a, b) { var c = w.charCodeAt(w.length - 1) - 0xAC00; return (c >= 0 && c <= 11171) ? (c % 28 ? a : b) : a + '(' + b + ')'; }
   function band(v) { return v >= 70 ? 'danger' : v >= 45 ? 'warning' : 'safe'; }
+  // 위험도 → 결론 라벨·평균 대비 문장 (generate.py cat_verdict·ratio_text와 같은 구간)
+  function verdict(v) { return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }
+  function ratioText(v) {
+    var r = v <= 50 ? v / 50 : 1 + (v - 50) / 25;
+    if (r < 0.95) return '평균보다 ' + Math.round((1 - r) * 100) + '% 적어요';
+    if (r <= 1.05) return '평균과 비슷해요';
+    return '평균의 ' + r.toFixed(1) + '배';
+  }
+  function ev(n, p) { if (typeof gtag === 'function') gtag('event', n, p || {}); }
 
+  function saveIds(a) {   // 비교함(localStorage) + 주소(?ids=) 동기화 — 새로고침·공유해도 같은 구성
+    if (window.CFCompare) window.CFCompare.set(a.map(function (id) { return { id: id, n: D[id].n, img: D[id].img }; }));
+    history.replaceState(null, '', location.pathname + (a.length ? '?ids=' + a.join(',') : ''));
+  }
   function ids() {
     var m = location.search.match(/[?&]ids=([^&]+)/), a;
     if (m) {
-      a = decodeURIComponent(m[1]).split(',').filter(function (id) { return D[id]; }).slice(0, 3);
+      a = decodeURIComponent(m[1]).split(',').filter(function (id) { return D[id]; }).slice(0, MAX);
       // 공유 링크로 들어오면 비교함도 그 구성으로 맞춤(트레이·담기 버튼 상태 일치)
-      if (window.CFCompare) {
-        try { localStorage.setItem('cf_cmp', JSON.stringify(a.map(function (id) { return { id: id, n: D[id].n, img: D[id].img }; }))); } catch (e) {}
-      }
+      try { localStorage.setItem('cf_cmp', JSON.stringify(a.map(function (id) { return { id: id, n: D[id].n, img: D[id].img }; }))); } catch (e) {}
       return a;
     }
     return (window.CFCompare ? window.CFCompare.get() : []).map(function (x) { return x.id; }).filter(function (id) { return D[id]; });
@@ -27,20 +40,22 @@
     opt = opt || {};
     var nums = cells.map(function (c) { return c.v; });
     var best = null;
-    if (opt.best && nums.every(function (n) { return typeof n === 'number'; })) {
+    if (opt.best && cells.length > 1 && nums.every(function (n) { return typeof n === 'number'; })) {
       best = opt.best === 'min' ? Math.min.apply(null, nums) : Math.max.apply(null, nums);
       if (nums.every(function (n) { return n === best; })) best = null;
     }
-    var same = cells.every(function (c) { return c.k === cells[0].k; });
+    var same = cells.length > 1 && cells.every(function (c) { return c.k === cells[0].k; });
+    var blank = new Array(pad + 1).join('<div class="cmp-cell is-pad"></div>');
     return '<div class="cmp-tr' + (same ? ' is-same' : '') + '"><div class="cmp-k">' + label + '</div><div class="cmp-v">'
       + cells.map(function (c) {
           var on = best !== null && c.v === best;
           return '<div class="cmp-cell' + (on ? ' is-best' : '') + '">' + c.h + (on ? '<span class="cmp-best">' + (opt.lab || '가장 좋음') + '</span>' : '') + '</div>';
-        }).join('') + '</div></div>';
+        }).join('') + blank + '</div></div>';
   }
   function num(v, unit) { return { v: v, k: String(v), h: '<b>' + esc(v) + (unit || '') + '</b>' }; }
 
   function summary(H) {
+    if (H.length < 2) return '<em>' + esc(H[0].n) + '</em>의 실망 확률은 ' + H[0].p + '%예요. 호텔을 하나 더 추가하면 나란히 비교해 드려요.';
     var lo = H.slice().sort(function (a, b) { return a.p - b.p; })[0];
     var s = '실망 확률은 <em>' + esc(lo.n) + '</em>' + josa(lo.n, '이', '가') + ' 가장 낮아요(' + lo.p + '%).';
     var hi = H.filter(function (h) { return h !== lo && h.top && h.top.length; })
@@ -49,21 +64,29 @@
     return s;
   }
 
+  function addSlot() {
+    return '<button type="button" class="cmp-h cmp-add" data-add="1"><span class="ca-box"><span class="ca-plus"></span><span class="ca-t">호텔 추가</span>'
+      + '<span class="ca-s">최대 ' + MAX + '곳까지 비교</span></span></button>';
+  }
+
   function render() {
     var list = ids(), H = list.map(function (id) { var d = D[id]; d.id = id; return d; });
-    if (typeof gtag === 'function') gtag('event', 'compare_view', { count: H.length });
-    if (H.length < 2) {
-      root.innerHTML = '<div class="cmp-empty"><div class="ce-tit">비교할 호텔을 2곳 이상 담아주세요</div>'
-        + '<div class="ce-txt">호텔 상세나 검색 결과에서 <b>비교 담기</b>를 누르면 여기서 나란히 볼 수 있어요 (최대 3곳)</div>'
-        + (H.length ? '<div class="ce-one">담긴 호텔: ' + esc(H[0].n) + '</div>' : '')
-        + '<a class="ce-btn" href="./search">호텔 찾으러 가기</a></div>';
+    ev('compare_view', { count: H.length });
+    if (!H.length) {
+      pad = 0;
+      root.innerHTML = '<div class="cmp-empty"><div class="ce-tit">어떤 호텔을 비교할까요?</div>'
+        + '<div class="ce-txt">호텔을 검색해 바로 추가하거나, 상세·검색 결과에서 <b>비교 담기</b>를 눌러 주세요 (최대 ' + MAX + '곳)</div>'
+        + '<button type="button" class="ce-btn" data-add="1">호텔 검색해서 추가</button>'
+        + '<a class="ce-link" href="./search">검색 결과에서 고르기</a></div>';
       return;
     }
-    var cols = '--n:' + H.length;   // 칸 수는 CSS 변수로(모바일 n칸 · PC는 왼쪽 항목명 칸 + n칸)
+    var canAdd = H.length < MAX;
+    pad = canAdd ? 1 : 0;
+    var cols = '--n:' + (H.length + pad);   // 칸 수는 CSS 변수로(모바일 n칸 · PC는 왼쪽 항목명 칸 + n칸)
     var html = '<div class="cmp-hd" style="' + cols + '"><div class="cmp-h cmp-h-sp" aria-hidden="true"></div>' + H.map(function (h) {
         return '<div class="cmp-h"><a href="./hotels/' + h.id + '"><span class="cmp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</span>'
           + '<span class="cmp-nm">' + esc(h.n) + '</span></a><button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="비교에서 빼기">×</button></div>';
-      }).join('') + '</div>';
+      }).join('') + (canAdd ? addSlot() : '') + '</div>';
     html += '<div class="cmp-sum"><div class="cmp-sum-box"><div class="cmp-eyebrow">한 줄 비교</div><p class="cmp-lead">' + summary(H) + '</p></div>'
       + '<div class="cmp-tools"><span>보라색 = 이 항목에서 가장 좋은 곳</span>'
       + '<button type="button" class="cmp-switch' + (diffOnly ? ' is-on' : '') + '" id="cmp-diff"><i></i>차이 나는 항목만</button></div></div>';
@@ -75,10 +98,10 @@
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
       + row('분석한 리뷰', H.map(function (h) { return num(h.an, '건'); }), { best: 'max', lab: '근거 가장 많음' });
     var g2 = CATS.map(function (c) {
-      return row(c, H.map(function (h) {
+      return row(c + ' 불만', H.map(function (h) {
         var v = h.cs[c], b = band(v);
-        return { v: v, k: String(v), h: '<b class="is-' + b + '">' + v + '</b><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
-      }), { best: 'min', lab: '가장 낮음' });
+        return { v: v, k: verdict(v), h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioText(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
+      }), { best: 'min', lab: '불만 가장 적음' });
     }).join('');
     var g3 = row('최근 1년 리뷰 대비 비율', H.map(function (h) {
       return { v: null, k: JSON.stringify(h.top), h: (h.top && h.top.length) ? h.top.map(function (t) { return '<div class="cmp-top">' + esc(t[0]) + ' <b>' + t[1] + '%</b></div>'; }).join('') : '<span class="cmp-none">두드러진 불만 없음</span>' };
@@ -87,22 +110,99 @@
       return row(f[1], H.map(function (h) { var t = (h.fq || {})[f[0]]; return { v: null, k: t || '', h: t ? esc(t) : '<span class="cmp-none">리뷰 언급 없음</span>' }; }));
     }).join('');
     html += '<div class="cmp-grp"><div class="cmp-gt">핵심</div>' + g1 + '</div>'
-      + '<div class="cmp-grp"><div class="cmp-gt">카테고리 위험도 <span>낮을수록 좋음 · 평균 50</span></div>' + g2 + '</div>'
+      + '<div class="cmp-grp"><div class="cmp-gt">항목별 불만 <span>' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔 평균과 비교</span></div>' + g2 + '</div>'
       + '<div class="cmp-grp"><div class="cmp-gt">리뷰에서 자주 나온 불만</div>' + g3 + '</div>'
       + '<div class="cmp-grp"><div class="cmp-gt">리뷰로 확인한 실전 정보</div>' + g4 + '</div>'
       + '<p class="cmp-note">수치는 공개 리뷰를 분석한 참고용 통계예요 · <a href="./about">산출 방법</a></p>'
-      + '<div class="cmp-cta" style="' + cols + '"><span class="cmp-h-sp" aria-hidden="true"></span>' + H.map(function (h) { return '<a href="./hotels/' + h.id + '">분석 보기</a>'; }).join('') + '</div>';
+      + '<div class="cmp-cta" style="' + cols + '"><span class="cmp-h-sp" aria-hidden="true"></span>'
+      + H.map(function (h) { return '<a href="./hotels/' + h.id + '">분석 보기</a>'; }).join('')
+      + (canAdd ? '<button type="button" class="cmp-cta-add" data-add="1">+ 호텔 추가</button>' : '') + '</div>';
     root.innerHTML = html;
     root.classList.toggle('is-diff-only', diffOnly);
   }
 
+  /* ── 호텔 추가 팝업: 빈 검색 = 지금 비교 중인 호텔과 비슷한 가격대에서 실망 확률 낮은 순 추천,
+        입력 시 = 검색 별칭 인덱스(초성·영문·일본어 표기) 매칭. 인덱스는 처음 열 때만 지연 로드 ── */
+  var pick = null, idxP = null;
+  function loadScript(src) {
+    return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
+  }
+  function loadIdx() {
+    if (!idxP) idxP = loadScript('./data/search_index.js').then(function () { return loadScript('./js/search-key.js'); })
+      .then(function () { return loadScript('./js/search-ac.js'); }).catch(function () {});
+    return idxP;
+  }
+  function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ''); }
+  function candidates(q) {
+    var cur = ids(), pool = Object.keys(D).filter(function (id) { return cur.indexOf(id) < 0; });
+    if (q) {
+      var hit = (window.CFAutocomplete && window.CF_IDX) ? window.CFAutocomplete.matchIds(q) : [];
+      var res = hit.filter(function (id) { return pool.indexOf(id) >= 0; });
+      if (!res.length) res = pool.filter(function (id) { return norm(D[id].n).indexOf(norm(q)) >= 0; });
+      return { sub: '"' + esc(q) + '" 검색 결과', ids: res.slice(0, 12) };
+    }
+    var krws = cur.map(function (id) { return D[id].krw; }).filter(function (k) { return k; });
+    var avg = krws.length ? krws.reduce(function (a, b) { return a + b; }, 0) / krws.length : null;
+    var near = avg ? pool.filter(function (id) { var k = D[id].krw; return k && Math.abs(k - avg) / avg <= 0.35; }) : pool;
+    if (near.length < 6) near = pool;
+    near.sort(function (a, b) { return D[a].p - D[b].p || D[b].an - D[a].an; });
+    return { sub: avg ? '비교 중인 호텔과 비슷한 가격대에서 실망 확률이 낮은 곳' : '실망 확률이 낮은 곳', ids: near.slice(0, 8) };
+  }
+  function pickRow(id) {
+    var h = D[id], meta = ['1박 ' + (h.pt || '정보 없음')];
+    if (h.st) meta.push(h.st);
+    return '<li><button type="button" class="cp-item" data-pick="' + id + '">'
+      + '<span class="cp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="" loading="lazy">' : '') + '</span>'
+      + '<span class="cp-info"><span class="cp-nm">' + esc(h.n) + '</span><span class="cp-meta">' + esc(meta.join(' · ')) + '</span></span>'
+      + '<span class="cp-p is-' + (h.b || 'safe') + '">실망 ' + h.p + '%</span></button></li>';
+  }
+  function renderPick() {
+    var q = pick.querySelector('.cp-q').value.trim(), c = candidates(q);
+    pick.querySelector('.cp-sub').innerHTML = c.sub;
+    pick.querySelector('.cp-list').innerHTML = c.ids.length ? c.ids.map(pickRow).join('')
+      : '<li class="cp-empty">찾는 호텔이 없어요. 아직 분석되지 않은 호텔일 수 있어요.</li>';
+  }
+  function openPick() {
+    if (ids().length >= MAX) { if (window.CFCompare) window.CFCompare.toast('비교는 ' + MAX + '곳까지 담을 수 있어요'); return; }
+    if (!pick) {
+      pick = document.createElement('div'); pick.className = 'cmp-pick'; pick.hidden = true;
+      pick.setAttribute('role', 'dialog'); pick.setAttribute('aria-modal', 'true'); pick.setAttribute('aria-label', '비교할 호텔 추가');
+      pick.innerHTML = '<div class="cp-dim" data-close="1"></div><div class="cp-panel">'
+        + '<div class="cp-head"><b>비교할 호텔 추가</b><button type="button" class="cp-close" data-close="1" aria-label="닫기">✕</button></div>'
+        + '<div class="cp-search"><input type="search" class="cp-q" placeholder="' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔명 검색 (한글·영문·일본어)" autocomplete="off"></div>'
+        + '<div class="cp-sub"></div><ul class="cp-list"></ul></div>';
+      document.body.appendChild(pick);
+      pick.addEventListener('click', function (e) {
+        if (e.target.closest('[data-close]')) { closePick(); return; }
+        var it = e.target.closest('[data-pick]'); if (!it) return;
+        var a = ids(); if (a.length >= MAX) return;
+        a.push(it.getAttribute('data-pick')); saveIds(a);
+        ev('compare_add', { hotel_id: it.getAttribute('data-pick'), count: a.length, source: 'compare_page' });
+        closePick(); render();
+      });
+      var t = null;
+      pick.querySelector('.cp-q').addEventListener('input', function () { clearTimeout(t); t = setTimeout(renderPick, 120); });
+    }
+    pick.querySelector('.cp-q').value = '';
+    renderPick();
+    pick.hidden = false; void pick.offsetHeight; pick.classList.add('is-open');
+    document.body.style.overflow = 'hidden';
+    pick.querySelector('.cp-q').focus();
+    loadIdx().then(function () { if (pick.classList.contains('is-open') && pick.querySelector('.cp-q').value) renderPick(); });
+  }
+  function closePick() {
+    if (!pick) return;
+    pick.classList.remove('is-open'); document.body.style.overflow = '';
+    setTimeout(function () { pick.hidden = true; }, 200);
+  }
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pick && pick.classList.contains('is-open')) closePick(); });
+
   root.addEventListener('click', function (e) {
+    if (e.target.closest('[data-add]')) { openPick(); return; }
     var x = e.target.closest('[data-x]');
     if (x) {
       var id = x.getAttribute('data-x');
-      var a = (window.CFCompare ? window.CFCompare.get() : []).filter(function (it) { return it.id !== id; });
-      if (window.CFCompare) window.CFCompare.set(a);
-      history.replaceState(null, '', './compare' + (a.length ? '?ids=' + a.map(function (it) { return it.id; }).join(',') : ''));
+      saveIds(ids().filter(function (it) { return it !== id; }));
       render(); return;
     }
     if (e.target.closest('#cmp-diff')) { diffOnly = !diffOnly; render(); }

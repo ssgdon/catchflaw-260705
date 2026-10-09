@@ -11,7 +11,8 @@
 
 /* PC 전용 요소는 기본 숨김 */
 .det-header .dh-nav,.det-header .dh-search,
-#detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
+#detail .pc-gallery,#detail .pc-side,#detail .pc-crumb,
+.review-sheet .sheet-side{display:none;}
 
 /* ── 태블릿·작은 노트북(770~1099): 단일 칼럼을 600px로 넓힘 (기존 360 고정 해소) ── */
 @media (min-width:770px) and (max-width:1099px){
@@ -110,6 +111,7 @@
     #detail .det-tabs a{flex:0 0 auto;padding:0 var(--sp-5);}
     #detail .sect[id],#detail .sec-anchor{scroll-margin-top:124px;}
     #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
+    #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));}   /* 결론 타일 2열 */
     /* 대안 슬라이더 → 4열 그리드 */
     #detail .hotel .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}
     #detail .hotel .list .swiper-slide{width:auto !important;margin:0 !important;}
@@ -168,6 +170,68 @@
     #cmp .cmp-nm{font-size:var(--fs-body);}
     #cmp .cmp-note{padding-left:0;padding-right:0;}
     #cmp .cmp-empty{padding:96px 0;}
+
+    /* ════════ 팝업: 바텀시트 → 가운데 팝업 (리뷰 근거·블로그·공유·피드백·필터·호텔 추가) ════════ */
+    /* 리뷰 근거 팝업: 왼쪽 카테고리 목록 | 오른쪽 제목·소분류·리뷰 (Airbnb 리뷰 팝업 패턴). ←/→ 키로 카테고리 이동 */
+    .review-sheet .sheet-dim{background:rgb(25 27 31 / 55%);}
+    .review-sheet .sheet-panel{top:50%;bottom:auto;width:min(1040px, calc(100vw - 64px));height:min(86vh, 840px);max-height:none;overflow:hidden;border-radius:var(--radius-card);box-shadow:0 24px 64px rgb(0 0 0 / 25%);opacity:0;transform:translate(-50%,-48%) scale(.98);transition:transform .25s ease, opacity .2s ease;}
+    .review-sheet.is-open .sheet-panel{opacity:1;transform:translate(-50%,-50%);}
+    .review-sheet:not(.blog-sheet) .sheet-panel{display:grid;grid-template-columns:288px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);}
+    .review-sheet .sheet-side{display:flex;flex-direction:column;grid-column:1;grid-row:1 / 3;min-height:0;padding:var(--sp-8) var(--sp-4) var(--sp-6);overflow-y:auto;border-right:1px solid var(--line);background:var(--surface);}
+    .review-sheet .sheet-head{grid-column:2;padding:var(--sp-8) 80px var(--sp-4) var(--sp-8);}
+    .review-sheet .sheet-list{grid-column:2;min-height:0;padding:0 var(--sp-8) var(--sp-8);gap:0;}
+    .review-sheet .sheet-grab,.review-sheet:not(.blog-sheet) .sheet-nav{display:none;}
+    .review-sheet .sheet-title{font-size:var(--fs-h2);}
+    .review-sheet .sheet-close{top:var(--sp-5);right:var(--sp-5);width:40px;height:40px;border-radius:50%;font-size:var(--fs-body-lg);cursor:pointer;}
+    .review-sheet .sheet-close:hover{background:var(--surface);}
+    .review-sheet .sheet-chips{flex-wrap:wrap;overflow:visible;margin-top:var(--sp-4);}
+    .review-sheet .sheet-chip{height:36px;padding:0 var(--sp-4);cursor:pointer;}
+    .review-sheet .sheet-chip:not(.on):hover{background:var(--line-strong);}
+    .review-sheet .sheet-tools{margin-top:var(--sp-4);}
+    .review-sheet .sheet-kr{cursor:pointer;}
+    /* 리뷰는 카드 상자 대신 구분선 목록 — 넓은 화면에서 읽기 쉽게, 인용문 3줄까지 */
+    .review-sheet .sheet-list .item{padding:var(--sp-6) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;}
+    .review-sheet .sheet-list li:last-child .item{border-bottom:0;}
+    .review-sheet .sheet-list .item .item-bottom .text{font-size:var(--fs-body-lg);line-height:1.65;}
+    .review-sheet .sheet-list .item .item-bottom .text.clamp{-webkit-line-clamp:3;}
+    .review-sheet .sheet-list .item .item-foot{justify-content:flex-start;gap:var(--sp-6);margin-top:var(--sp-3);padding-top:0;border-top:0;}
+    .review-sheet .sheet-list .item .item-foot .expand-btn{cursor:pointer;}
+    .review-sheet .sheet-more{margin-top:var(--sp-6);}
+    .review-sheet .sheet-more-btn{cursor:pointer;}
+    .review-sheet .ss-tit{padding:0 var(--sp-2);font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
+    .review-sheet .ss-hotel{margin-top:var(--sp-1);padding:0 var(--sp-2);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
+    .review-sheet .ss-sub{margin-top:var(--sp-2);padding:0 var(--sp-2);font-size:var(--fs-micro);line-height:1.5;color:var(--ink-3);}
+    .review-sheet .ss-list{display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-5);}
+    .review-sheet .ss-cat{display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"dot name cnt" ". score cnt";column-gap:var(--sp-2);row-gap:2px;align-items:center;width:100%;padding:var(--sp-3);border:0;border-radius:var(--radius-btn);background:transparent;text-align:left;cursor:pointer;}
+    .review-sheet .ss-cat:hover{background:#fff;}
+    .review-sheet .ss-cat.is-on{background:#fff;box-shadow:inset 0 0 0 1.5px var(--ink);}
+    .review-sheet .ss-cat[disabled]{opacity:.4;cursor:default;}
+    .review-sheet .ss-dot{grid-area:dot;width:var(--sp-2);height:var(--sp-2);border-radius:50%;}
+    .review-sheet .ss-dot.is-safe{background:var(--safe);}
+    .review-sheet .ss-dot.is-warning{background:var(--warning);}
+    .review-sheet .ss-dot.is-danger{background:var(--danger);}
+    .review-sheet .ss-name{grid-area:name;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
+    .review-sheet .ss-score{grid-area:score;font-size:var(--fs-micro);font-weight:var(--fw-bold);}
+    .review-sheet .ss-score.is-safe{color:var(--safe-text);}
+    .review-sheet .ss-score.is-warning{color:var(--warning-text);}
+    .review-sheet .ss-score.is-danger{color:var(--danger-text);}
+    .review-sheet .ss-cnt{grid-area:cnt;font-size:var(--fs-caption);color:var(--ink-3);}
+    .review-sheet .ss-note{margin-top:auto;padding:var(--sp-5) var(--sp-2) 0;font-size:var(--fs-micro);line-height:1.5;color:var(--ink-3);}
+    /* 실전정보(FAQ) 근거 모드: 카테고리 목록 없이 좁은 팝업 */
+    .review-sheet.faq-mode .sheet-panel{grid-template-columns:minmax(0,1fr);width:min(760px, calc(100vw - 64px));}
+    .review-sheet.faq-mode .sheet-side{display:none;}
+    .review-sheet.faq-mode .sheet-head,.review-sheet.faq-mode .sheet-list{grid-column:1;}
+    /* 블로그 후기(iframe) 팝업 */
+    .blog-sheet .sheet-panel{width:min(960px, calc(100vw - 64px));height:90vh;}
+    /* 공유·피드백·항목별 필터 등 cf-modal 카드 */
+    .cf-modal .cf-modal-card{top:50%;bottom:auto;width:min(480px, calc(100vw - 64px));padding:var(--sp-8);border-radius:var(--radius-card);transform:translate(-50%,-50%);animation:cf-pop .2s ease;}
+    @keyframes cf-pop{from{opacity:0;transform:translate(-50%,-48%) scale(.98);}to{opacity:1;transform:translate(-50%,-50%);}}
+    /* 비교 페이지 호텔 추가 팝업 */
+    .cmp-pick .cp-panel{top:50%;bottom:auto;width:min(560px, calc(100vw - 64px));max-height:min(80vh, 720px);border-radius:var(--radius-card);box-shadow:0 24px 64px rgb(0 0 0 / 25%);opacity:0;transform:translate(-50%,-48%) scale(.98);transition:transform .2s ease, opacity .2s ease;}
+    .cmp-pick.is-open .cp-panel{opacity:1;transform:translate(-50%,-50%);}
+    .cmp-pick .cp-head{padding:var(--sp-6) var(--sp-6) var(--sp-3);}
+    .cmp-pick .cp-search,.cmp-pick .cp-sub{padding-left:var(--sp-6);padding-right:var(--sp-6);}
+    .cmp-pick .cp-list{padding:0 var(--sp-6) var(--sp-6);}
 
     /* ════════ 컬렉션 허브·소개·최근 본 ════════ */
     #hub{max-width:960px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}

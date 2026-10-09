@@ -32,6 +32,34 @@ WHO_GROUPS = [
 ]
 WHO_FAQ_LABEL = {'luggage': '짐 보관', 'access': '역까지', 'beds': '침대 구성', 'family': '아이 동반'}
 SUB_CAT = {s: c for c, v in SUBS.items() for s in v}
+
+# 카테고리 결론 라벨 (UI-STANDARDS §13): 위험도 숫자 대신 "평균보다 적은지 많은지"를 먼저 말한다.
+# 위험도 = 50·비율(비율≤1) / 50+25·(비율-1) → 비율로 되돌려 사람 말로. 밴드는 grade_band와 동일(양호<45·주의<70·위험).
+def cat_ratio(score):
+    return score / 50 if score <= 50 else 1 + (score - 50) / 25
+
+def cat_verdict(score):
+    """(짧은 라벨, 문장, 밴드). 예) 32 → ('적은 편', '평균보다 적어요', 'safe')."""
+    if score < 25: return '거의 없음', '불만이 거의 없어요', 'safe'
+    if score < 45: return '적은 편', '평균보다 적어요', 'safe'
+    if score < 55: return '평균 수준', '평균과 비슷해요', 'warning'
+    if score < 70: return '많은 편', '평균보다 많아요', 'warning'
+    return '많음', '평균보다 훨씬 많아요', 'danger'
+
+def ratio_text(score):
+    """후쿠오카 평균 대비 한 줄: '평균보다 36% 적어요' · '평균과 비슷해요' · '평균의 1.8배'."""
+    r = cat_ratio(score)
+    if r < 0.95: return f'평균보다 {round((1 - r) * 100)}% 적어요'
+    if r <= 1.05: return '평균과 비슷해요'
+    return f'평균의 {r:.1f}배'
+
+def rank_text(pctl_worse):
+    """도시 내 순위를 직관 문장으로 (pctl_worse = 위험도가 이 호텔 이상인 호텔 비율%)."""
+    if pctl_worse >= 90: return f'{CITY["ko"]}에서 가장 적은 편'
+    if 40 <= pctl_worse <= 60: return f'{CITY["ko"]} 호텔 중 중간쯤'      # 평균 수준과 '59%보다 많아요'가 엇갈려 보이는 구간
+    if pctl_worse > 50: return f'{CITY["ko"]} 호텔 {pctl_worse}%보다 나아요'
+    if pctl_worse > 10: return f'{CITY["ko"]} 호텔 {100 - pctl_worse}%보다 많아요'
+    return f'{CITY["ko"]}에서 가장 많은 편'
 CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
 
 def mask_name(s):
@@ -1061,10 +1089,11 @@ def build_search(city_avg_pct):
         }}
         function catChip(h){{  // 카테고리 정렬 시 해당 카테고리 등급을 카드에 표시
             if (!sortCat || !h.scored || !h.cb || h.cb[sortCat]==null) return '';
-            var band = h.cb[sortCat];
+            var band = h.cb[sortCat], v = h.cs[sortCat];
+            var lab = v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음';   // cat_verdict와 같은 구간
             return '<div class="cat-row is-'+band+'"><span class="ci">'+(CAT_ICON[sortCat]||'')+'</span>'
-                + '<span class="cn">'+sortCat+'</span>'
-                + '<span class="cbadge">'+BAND_KO[band]+' · 위험도 '+h.cs[sortCat]+'</span></div>';
+                + '<span class="cn">'+sortCat+' 불만</span>'
+                + '<span class="cbadge">'+lab+'</span></div>';
         }}
         function tagsHtml(h){{  // P6 리뷰 기반 태그(빌드 시 실측 산출)
             if (!h.tg || !h.tg.length) return '';
@@ -2155,9 +2184,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if len(_alt) >= 3:
                 sim = _alt
                 sim_title = f'{cat_ko(_wc)} 불만이 걱정된다면'
-                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 위험도가 더 낮은 곳이에요'
-                sim_extra = {p: (f'<div class="vs-line">{E(cat_ko(_wc))} 위험도 <b>{round(H[p]["cats"][_wc]["score"])}</b>'
-                                 f'<span> · 이 호텔 {_ws}</span></div>') for p in _alt}
+                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 불만이 확실히 적은 곳이에요'
+                _mine = cat_verdict(h['cats'][_wc]['score'])[0]
+                sim_extra = {p: (f'<div class="vs-line">{E(cat_ko(_wc))} 불만 <b>{E(cat_verdict(H[p]["cats"][_wc]["score"])[0])}</b>'
+                                 f'<span> · 이 호텔은 {E(_mine)}</span></div>') for p in _alt}
     similar_block = ''
     if sim:
         sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1, extra=sim_extra.get(p, '')) for p in sim)
@@ -2310,12 +2340,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                          SUB_PHRASE[_s]))
         if not _neg and ratio >= 1.15 and h['cats'][_worst]['band'] in ('warning', 'danger'):
             _neg.append((h['cats'][_worst]['band'], f'<em>{E(cat_ko(_worst))}</em> 불만이 평균보다 많아요',
-                         f'<b>{E(cat_ko(_worst))} 불만</b> · 위험도 {round(_worst_sc)} (평균 50)', _worst, None))
+                         f'<b>{E(cat_ko(_worst))} 불만</b> · {E(ratio_text(_worst_sc))}', _worst, None))
         _neg = _neg[:3]
         _negc = {n[3] for n in _neg}    # 걸리는 점과 같은 카테고리는 괜찮은 점에서 제외(모순 문장 방지)
         _safe = sorted((c for c in CATS if h['cats'][c]['band'] == 'safe' and c not in _negc),
                        key=lambda c: h['cats'][c]['score'])
-        _pos = [f'<b>{E(cat_ko(c))} 불만 적음</b> · 위험도 {round(h["cats"][c]["score"])} (평균 50)' for c in _safe[:2]]
+        _pos = [f'<b>{E(cat_ko(c))} 불만 적음</b> · {E(ratio_text(h["cats"][c]["score"]))}' for c in _safe[:2]]
         _st = nearest_station(meta.get('latitude'), meta.get('longitude'))
         if _st and _st[1] <= 5 and h['cats']['위치·안전']['band'] == 'safe' and '위치·안전' not in _negc:
             _pos.append(f'<b>역 가까움</b> · {E(_st[0])} 도보 {_st[1]}분')
@@ -2354,7 +2384,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         sheet_data = {}
         sheet_total = {}     # {cat: {'t': 전체 카드수, 's': {scat: 건수}}} — 팝업 실제 총건수(임베드 40 아님). REVIEW-LAZYLOAD §C
         trendc = {}          # {ci: {'m':[..'N월'], 'w':[..pw], 'c':[..pc]}} — 차트 있는 카테고리만 (CAT-TREND)
-        axis = '''<div class="stat-axis"><span class="ax safe">양호</span><span class="ax avg">평균 50</span><span class="ax danger">위험</span></div>'''
+        axis = '''<div class="stat-axis"><span class="ax safe">불만 적음</span><span class="ax avg">평균</span><span class="ax danger">불만 많음</span></div>'''
         cats_sorted = sorted(CATS, key=lambda c: -h['cats'][c]['score'])  # 나쁜 것부터
         # 카테고리 트렌드용 완전월 12개 + 월별 분석 리뷰 수 n(monthly 재사용 — 분모 정합)
         cmonths = _complete_months(CITY['asof'], 12) if (monthly_cat and CITY['asof']) else []
@@ -2404,7 +2434,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                           if n1y > 0 and h['analyzed'] else '최근 1년 없음')
                 rows.append(f'''<li class="stat-row is-{sub['band']}">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
-                    <div class="stat-track"><div class="stat-fill" style="width:{sc}%"><i class="bubble">{sc}</i></div></div>
+                    <div class="stat-track" title="{E(cat_verdict(sub['score'])[1])}"><div class="stat-fill" style="width:{sc}%"><i class="bubble" aria-hidden="true"></i></div></div>
                     {cnt_html}
                     <div class="sub-1y">{E(cap_1y)}</div>
                 </li>''')
@@ -2454,7 +2484,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-{band}"></span>
                     <span class="cat-name">{E(cat_ko(c))}</span>
-                    <span class="cat-score is-{band}">위험도 {cscore}<span class="pctl"> · {pctl_txt}</span></span>
+                    <span class="cat-verdict is-{band}">불만 {E(cat_verdict(cat['score'])[0])}</span>
+                    <span class="cat-rank">{E(rank_text(cat['pctl_worse']))}</span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
@@ -2465,10 +2496,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 </div>
             </div>''')
             # §3-b 레이더 카테고리 칩 (동일 순서)
+            _vl, _vs, _vb = cat_verdict(cat['score'])
             radar_chips.append(
-                f'<button type="button" class="radar-cat is-{band}" data-target="risk-{ci}">'
-                f'<span class="risk-dot is-{band}"></span><span class="rc-name">{E(cat_ko(c))}</span>'
-                f'<span class="rc-score">{cscore}</span></button>')
+                f'<button type="button" class="radar-cat is-{band}" data-target="risk-{ci}" aria-label="{E(cat_ko(c))} 불만 {_vl}, 자세히 보기">'
+                f'<span class="rc-main"><span class="rc-name">{E(cat_ko(c))}</span><span class="rc-sub">{E(ratio_text(cat["score"]))}</span></span>'
+                f'<span class="rc-verdict">{E(_vl)}</span><span class="rc-arrow" aria-hidden="true"></span></button>')
         radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
         # ── 전체 통합 월별 흐름 라인차트 (게이지 아래·인사이트 앞) ──
@@ -2511,8 +2543,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             </div>
         </div>
         <div class="sect risk">
-            <div class="head"><div class="title">카테고리별 위험도</div>
-            <div class="desc">{CITY['ko']} 평균 = 50</div></div>
+            <div class="head"><div class="title">항목별로 보면</div>
+            <div class="desc">{CITY['ko']} 호텔 평균과 비교한 불만 정도예요 · 누르면 근거 리뷰로 이동해요</div></div>
             <div class="chart">
                 <div class="radar-box"><canvas id="radar"></canvas></div>
                 <div class="custom-legend">
@@ -2555,11 +2587,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <div class="sect analysis" id="risk-detail">
             <div class="head"><div class="title">리스크 상세 분석</div>
-            <div class="desc">위험도 0~100 · {CITY['ko']} 평균이 50이에요<br>100에 가까울수록 같은 불만이 많다는 뜻 (100 = 평균의 3배 이상)</div></div>
+            <div class="desc">항목별로 {CITY['ko']} 호텔 평균보다 불만이 많은지 적은지 보여드려요<br>펼치면 어떤 불만이 몇 건 나왔는지와 실제 리뷰를 볼 수 있어요</div></div>
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">
-                <span class="lg is-danger">위험 70+</span><span class="lg is-warning">주의 45~70</span><span class="lg is-safe">양호 ~45</span>
+                <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
                 <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
@@ -2571,9 +2603,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         {social_section(social, name)}
         {stars_block}
         {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
-        <div class="review-sheet" id="review-sheet" hidden>
+        <div class="review-sheet" id="review-sheet" hidden role="dialog" aria-modal="true" aria-label="리뷰 근거">
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
+                <aside class="sheet-side" id="sheet-side" aria-label="카테고리"></aside>
                 <div class="sheet-head">
                     <div class="sheet-grab"></div>
                     <div class="sheet-title">
@@ -2596,6 +2629,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QDATA = {json.dumps(sheet_data, ensure_ascii=False)};
         window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
         window.QSUBS = {json.dumps({c: SUBS[c] for c in CATS}, ensure_ascii=False)};
+        window.QCAT = {json.dumps({c: [round(h['cats'][c]['score']), h['cats'][c]['band']] for c in CATS}, ensure_ascii=False)};
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
         window.CF_FAQR = {json.dumps(f'{R2_PUB}/faq_reviews/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
@@ -2856,6 +2890,26 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 $('#sheet-chips').html(chips.join(''));
                 $('#sheet-list').scrollTop(0);
                 $('#sheet-kr').toggleClass('is-on', krOnly);
+                renderSide();
+            }}
+            // PC 팝업 왼쪽: 6개 카테고리(위험도·리뷰 수) — 누르면 그 카테고리 근거 리뷰로 전환 (Airbnb 리뷰 팝업 패턴)
+            function renderSide(){{
+                var Q = window.QCAT || {{}};
+                function vlab(v){{ return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }}   // cat_verdict와 같은 구간
+                var rows = Object.keys(window.QSUBS).map(function(c){{
+                    var T = window.QTOTAL && window.QTOTAL[c], n = T ? T.t : (window.QDATA[c] || []).length;
+                    var sc = Q[c] || [0, 'safe'];
+                    return '<button type="button" class="ss-cat' + (c === curCat ? ' is-on' : '') + '" data-cat="' + esc(c) + '"' + (n ? '' : ' disabled') + '>'
+                        + '<span class="ss-dot is-' + sc[1] + '"></span>'
+                        + '<span class="ss-name">' + esc((window.CAT_KO && window.CAT_KO[c]) || c) + '</span>'
+                        + '<span class="ss-score is-' + sc[1] + '">불만 ' + vlab(sc[0]) + '</span>'
+                        + '<span class="ss-cnt">' + n + '건</span></button>';
+                }}).join('');
+                var hn = (window.CF_HOTEL && window.CF_HOTEL.name) || '';
+                $('#sheet-side').html('<div class="ss-tit">리뷰 근거</div>' + (hn ? '<div class="ss-hotel">' + esc(hn) + '</div>' : '')
+                    + '<div class="ss-sub">항목을 고르면 그 불만이 언급된 리뷰만 보여드려요</div>'
+                    + '<div class="ss-list">' + rows + '</div>'
+                    + '<div class="ss-note">불만 정도는 후쿠오카 호텔 평균과 비교한 결과예요 · 인용문은 리뷰 원문 발췌이며 작성자 이름은 가렸어요</div>');
             }}
 
             function closeVisual(){{
@@ -2935,7 +2989,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 curCat = cat; curSub = sub || null; krOnly = false;
                 render();
                 $sheet.prop('hidden', false);
-                requestAnimationFrame(function(){{ $sheet.addClass('is-open'); }});
+                void $sheet[0].offsetHeight;          // hidden 해제를 전환에 반영(백그라운드 탭에선 rAF가 안 불림)
+                $sheet.addClass('is-open');
+                $sheet.find('.sheet-close').trigger('focus');
                 $('body').css('overflow', 'hidden');
                 if (window.CFNav) CFNav.push(closeVisual);  // 뒤로가기로 시트만 닫힘
             }}
@@ -2961,6 +3017,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }}
             $('#sheet-prev').on('click', function(){{ shift(-1); }});
             $('#sheet-next').on('click', function(){{ shift(1); }});
+            $sheet.on('click', '.ss-cat', function(){{ curCat = $(this).data('cat'); curSub = null; render(); }});
+            $(document).on('keydown', function(e){{   // 팝업이 열려 있을 때 ←/→ 로 카테고리 이동(FAQ 모드 제외)
+                if (!$sheet.hasClass('is-open') || $sheet.hasClass('faq-mode')) return;
+                if (e.key === 'ArrowLeft') shift(-1); else if (e.key === 'ArrowRight') shift(1);
+            }});
             $sheet.on('click', '.expand-btn', function(){{
                 var $b = $(this), $full = $b.closest('.item').find('.full');
                 var opened = !$full.prop('hidden');
