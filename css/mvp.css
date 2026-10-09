@@ -1098,6 +1098,9 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-bar i.is-danger{background:var(--danger);}
 #cmp .cmp-tn{display:block;}
 #cmp .cmp-cell b.cmp-tv{display:block;font-size:var(--fs-caption);}
+/* 순위 행: 항목명이 한 칸만 2줄이 돼도 비율 숫자는 같은 높이(칸 아래)에 — 그리드 칸은 이미 같은 높이로 늘어남 */
+#cmp .cmp-cell:has(> .cmp-tn){display:flex;flex-direction:column;}
+#cmp .cmp-cell:has(> .cmp-tn) b.cmp-tv{margin-top:auto;}
 #cmp .cmp-kn{margin-left:var(--sp-1);font-weight:var(--fw-medium);}
 #cmp .cmp-none{color:var(--ink-3);}
 #cmp .cmp-sub{font-size:var(--fs-meta);color:var(--ink-3);}
