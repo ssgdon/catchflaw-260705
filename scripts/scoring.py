@@ -1,11 +1,26 @@
 # -*- coding: utf-8 -*-
 """캐치플로 점수 산식 v2 (UI-STANDARDS.md §5)
 도시평균=50, 3배=100 구간선형 · k=20 보정 · 가드(최근 1년 불만 5건 미만 상한 65) · 분석 30건 미만 미노출
+최신성 가중 = 반감기 180일 감쇠(1년 초과 ×0) · 별점만 리뷰는 같은 별점 분석 리뷰의 실망 비율로 대체 (2026-10 산식 개선)
 """
 import json, os
 from collections import defaultdict
 
-W = {'w10': 1.0, 'w07': 0.7, 'w04': 0.4, 'w015': 0.0}   # 결정 #5(2026-07-06): 12개월 초과 리뷰 점수 제외(×0)
+W = {'w10': 1.0, 'w07': 0.7, 'w04': 0.4, 'w015': 0.0}   # 구 내보내기(계단 라벨) 호환용 — 12개월 초과 ×0(결정 #5)
+HALF_LIFE = 180       # 최신성 가중: 180일마다 절반. 계단(1.0/0.7/0.4)은 리뷰가 90·180일 경계를 넘을 때
+                      # 새 리뷰 없이도 숫자가 튀어(주간 표시값 변동 39곳→21곳) 감쇠로 교체 (2026-10 산식 개선)
+
+def wt(bucket):
+    """기간 라벨 → 가중치. 신 형식은 나이(일) 문자열 '0'~'365' → 0.5^(나이/180), 'w015'(1년 초과) → 0.
+    구 형식(w10/w07/w04)은 예전 계단 가중치 그대로."""
+    b = str(bucket)
+    if b in W: return W[b]
+    return 0.5 ** (int(b) / HALF_LIFE)
+
+def in_3m(bucket):
+    """최근 3달(90일) 이내인가 — 희소 칩 '최근 3달 심각' 판정용."""
+    b = str(bucket)
+    return b == 'w10' or (b.isdigit() and int(b) <= 90)
 K = 20                # 소표본 보정 의사표본 (도시평균 리뷰 20건)
 GUARD_MIN = 5         # 소분류 불만 리뷰 최소 건수 (미만이면 상한 65)
 GUARD_CAP = 65
@@ -63,7 +78,7 @@ def compute(data_dir):
 
     den = defaultdict(float); den_n = defaultdict(int); den_1y = defaultdict(int)
     for d in denoms:
-        den[d['place_id']] += d['n'] * W[d['bucket']]
+        den[d['place_id']] += d['n'] * wt(d['bucket'])
         den_n[d['place_id']] += d['n']
         if d['bucket'] != 'w015':          # 최근 1년(365일 이내) 카운트 = 표시·게이트 모수 (w015=365일 초과)
             den_1y[d['place_id']] += d['n']
@@ -73,7 +88,7 @@ def compute(data_dir):
     m_num = defaultdict(float); m_cnt = defaultdict(int); m_cnt_1y = defaultdict(int); m_crit_1y = defaultdict(int)
     for f in findings_main:
         k = (f['place_id'], f['cat'])
-        m_num[k] += f['n'] * W[f['bucket']] * f['s']
+        m_num[k] += f['n'] * wt(f['bucket']) * f['s']
         m_cnt[k] += f['n']
         if f['bucket'] != 'w015':
             m_cnt_1y[k] += f['n']
@@ -83,30 +98,46 @@ def compute(data_dir):
     s_crit_1y = defaultdict(int); s_crit_3m = defaultdict(int)
     for f in findings_sub:
         k = (f['place_id'], f['mcat'], f['scat'])
-        s_num[k] += f['n'] * W[f['bucket']] * f['s']
+        s_num[k] += f['n'] * wt(f['bucket']) * f['s']
         s_cnt[k] += f['n']
         if f['bucket'] != 'w015':          # F34: 최근 1년(365일 이내) finding 수
             s_cnt_1y[k] += f['n']
             if f['s'] == 2:
                 s_crit_1y[k] += f['n']
-                if f['bucket'] == 'w10': s_crit_3m[k] += f['n']   # w10 = 최근 90일
+                if in_3m(f['bucket']): s_crit_3m[k] += f['n']
 
     crit_w = defaultdict(float)
     text_1y = defaultdict(int); crit_1y = defaultdict(int); any_1y = defaultdict(int)
     for r in reviewlevel:
         # 실망 리뷰 수: v5 내보내기의 has_disappoint(심각 OR 거부+불만), 없으면(구 데이터) has_crit
         dis = r.get('has_disappoint', r['has_crit']) if DISAPPOINT_INCLUDES_REFUSAL else r['has_crit']
-        crit_w[r['place_id']] += dis * W[r['bucket']]
+        crit_w[r['place_id']] += dis * wt(r['bucket'])
         if r['bucket'] != 'w015':          # 글이 있어 LLM이 읽은 리뷰(별점만 리뷰 제외)와 그중 실망·불만 리뷰 수
             text_1y[r['place_id']] += r['analyzed']
             crit_1y[r['place_id']] += dis
             any_1y[r['place_id']] += r.get('has_any', 0)
+
+    # 별점만 리뷰 보정 (2026-10 산식 개선): 미분석 & 별점 있는 리뷰(대부분 글 없는 구글 리뷰)는 분모에만 들어가고
+    # 분자는 0이었다 — 1점짜리도 '실망 아님'. 별점만 리뷰가 많은 호텔일수록 낮게 나와 출처 구성에 따라 불공정.
+    # → 같은 별점 분석 리뷰의 실망 비율(도시 단위, star_crit.json)을 기대값으로 더한다. 파일이 없으면(구 데이터) 보정 없음.
+    star_p = {}
+    if os.path.exists(os.path.join(data_dir, 'star_crit.json')):
+        for r in J('star_crit.json'):
+            num = r.get('n_disappoint', r['n_crit']) if DISAPPOINT_INCLUDES_REFUSAL else r['n_crit']
+            if r['n']: star_p[int(r['stars'])] = num / r['n']
+    imp_1y = defaultdict(float)
+    if star_p and os.path.exists(os.path.join(data_dir, 'agg_staronly.json')):
+        for r in J('agg_staronly.json'):
+            e = r['n'] * star_p.get(int(r['stars']), 0.0)
+            crit_w[r['place_id']] += e * wt(r['bucket'])
+            if r['bucket'] != 'w015': imp_1y[r['place_id']] += e   # 표시용: 최근 1년 별점만 리뷰의 추정 실망 건수
 
     scored = [p for p in den if den_1y[p] >= MIN_REVIEWS]   # 노출 게이트 = 최근 1년 리뷰 ≥30 (전체기간 아님)
     tot_den = sum(den[p] for p in scored)
 
     city = {
         'crit': sum(crit_w[p] for p in scored) / tot_den,
+        'star_p': star_p,                  # 별점 → 실망 비율 (보정 근거, 없으면 빈 dict)
         'cat': {c: sum(m_num[(p, c)] for p in scored) / tot_den for c in CATS},
         'sub': {(c, s): max(sum(s_num[(p, c, s)] for p in scored) / tot_den, 1e-6)
                 for c in CATS for s in SUBS[c]},
@@ -117,7 +148,7 @@ def compute(data_dir):
         # analyzed = 최근 1년 평가 리뷰(글 리뷰 + 별점만 리뷰) = 실망확률·비율의 분모. text_1y = 그중 글 리뷰(LLM 분석분)
         h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS,
              'text_1y': text_1y[p], 'star_only_1y': max(den_1y[p] - text_1y[p], 0),
-             'crit_1y': crit_1y[p], 'any_1y': any_1y[p]}
+             'crit_1y': crit_1y[p], 'any_1y': any_1y[p], 'imp_1y': imp_1y[p]}
         if h['scored']:
             pc = (crit_w[p] + K * city['crit']) / (den[p] + K)
             h['p_crit'] = pc

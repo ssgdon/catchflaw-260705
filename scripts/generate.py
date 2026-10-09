@@ -2587,6 +2587,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
 
+        # 산출 기준: 글 리뷰는 AI 판단, 별점만 리뷰는 같은 별점 리뷰의 실망 비율로 추정 (2026-10 산식 개선 — scoring.star_p)
+        _so = h['star_only_1y']
+        if _so and city.get('star_p'):
+            _so_txt = (f"글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 판단했고, 별점만 남긴 {_so:,}건은 "
+                       f"같은 별점 리뷰의 실망 비율로 추정해 약 {h.get('imp_1y', 0):.1f}건으로 반영했어요")
+        elif _so:
+            _so_txt = f"글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 판단했고, 별점만 남긴 {_so:,}건은 '문제 언급 없음'으로 셌어요"
+        else:
+            _so_txt = f"리뷰 {h['text_1y']:,}건 모두 AI가 내용을 읽어 판단했어요"
         body_scored = f'''
         <div class="sect disappear" id="sec-prob">
             <div class="head">
@@ -2599,9 +2608,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {overall_trend}
             <div class="basis-fold">
                 <div class="basis">
-                    <p>최근 리뷰일수록 높은 가중치로 반영됩니다</p>
+                    <p>최근 리뷰일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</p>
                     <p>{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} (구글·트립닷컴 등 여러 사이트 합산)</p>
-                    <p>글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 문제를 찾았고, 별점만 남긴 {h['star_only_1y']:,}건은 '문제 언급 없음'으로 함께 셌어요</p>
+                    <p>{_so_txt}</p>
                     <p class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></p>
                 </div>
             </div>
@@ -3668,7 +3677,8 @@ def build_about(hotels_meta, H, city):
         '별점에 묻힌 치명적인 단점을 예약 전에 미리 확인하실 수 있어요.')
     s2 = sect('실망 확률은 이렇게 계산해요',
         '<ul class="about-list">'
-        '<li>최근 12개월 이내 리뷰에 더 높은 가중치를 둬요</li>'
+        '<li>최근 12개월 리뷰를 쓰고, 최근일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</li>'
+        '<li>별점만 남긴 리뷰는 같은 별점 리뷰에서 실망이 나온 비율로 추정해 반영해요</li>'
         f'<li>{CITY["ko"]} 평균을 50으로 두고 상대적인 위험도로 환산해요</li>'
         '<li>분석된 리뷰가 30건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
         '<li>불만 표본이 5건 미만인 소분류에는 위험 등급을 붙이지 않아요</li>'
