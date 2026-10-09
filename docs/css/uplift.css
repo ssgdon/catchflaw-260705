@@ -116,7 +116,7 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 #detail .analysis .summary .table table tr th{background:var(--surface);font-weight:700;color:var(--ink-2);}
 #detail .analysis .summary .table table tr td a{font-size:var(--fs-caption);}
 #detail .analysis .summary .table table tr:last-of-type td{border-bottom:0;}
-#detail .analysis .summary .table table .status-item{height:26px;padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
+#detail .analysis .summary .table table .status-item{height:var(--h-badge);padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
 
 /* ---------- 상세: 핵심 요약 — Savant 스타일 스탯 바
    [deprecated] 루트 목업 detail*.html 전용. 생성 페이지(docs/hotels)는 mvp.css의
@@ -158,7 +158,7 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 #detail .analysis .review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
 #detail .analysis .review .list .item .item-bottom .text{line-height:24px;font-size:var(--fs-body-sm);}
 #detail .analysis .review .list .item .item-bottom .date{font-size:var(--fs-meta);}
-#detail .analysis .review .more a{height:54px;border-radius:var(--radius-btn);font-size:var(--fs-body-sm);background:var(--surface);}
+#detail .analysis .review .more a{height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body-sm);background:var(--surface);}
 
 /* ---------- 상세: 최근 본/공유 ---------- */
 #detail .recent .list{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
@@ -169,7 +169,7 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 
 /* ---------- 상세: 하단 CTA ---------- */
 #detail .button{padding:12px 16px 16px;}
-#detail .button .btn-reservate{height:56px;border-radius:var(--radius-img);font-size:var(--fs-h3);}
+#detail .button .btn-reservate{height:var(--h-btn-lg);border-radius:var(--radius-img);font-size:var(--fs-h3);}
 #detail ~ #float{bottom:84px;}
 
 /* ---------- 검색/위시/최근 리스트 ---------- */
@@ -195,7 +195,7 @@ body{letter-spacing:-0.02em;color:var(--ink);}
 #review .list > ul{gap:16px;}
 #review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
 #review .list .item .item-top{margin:0 0 14px;}
-#review .list .item .item-top .status .status-item{height:26px;padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
+#review .list .item .item-top .status .status-item{height:var(--h-badge);padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
 #review .list .item .item-info .cont .name{line-height:22px;font-size:var(--fs-body);}
 #review .list .item .item-info .cont .date{font-size:var(--fs-meta);}
 #review .list .item .item-info .cont .link a{font-size:var(--fs-meta);}
