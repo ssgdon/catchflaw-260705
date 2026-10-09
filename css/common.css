@@ -4,7 +4,7 @@
 *{margin:0;padding:0;list-style-type:none;box-sizing:border-box;font-style: normal;border:0;outline:0;font-family:'Pretendard Variable','Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic','dotum','돋움','gulim','굴림','Tahoma';}
 
 html{font-size:62.5%;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;scroll-behavior: smooth;overflow-y: scroll;background:#ffffff;}
-body{line-height: 150%;font-size:16px;color:#232323;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;background: #eee;}
+body{line-height: 150%;font-size:var(--fs-body);color:#232323;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;background: #eee;}
 article, aside, canvas, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section, summary{display:block}
 blockquote, q{quotes:none}
@@ -19,7 +19,7 @@ button{cursor:pointer;background:transparent}
 button:disabled{background:#A8A8A8 !important;}
 pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%}
 legend {position:absolute;margin:0;padding:0;font-size:0;line-height:0;text-indent:-9999em;overflow:hidden}
-select{font-size:14px;font-size:1.4rem;border:1px solid #ccc;border-radius:0px}
+select{font-size:var(--fs-caption);border:1px solid #ccc;border-radius:0px}
 label, input, button, select, img{vertical-align:middle}
 table {border-collapse: collapse;border-spacing: 0;}
 input:-webkit-autofill,

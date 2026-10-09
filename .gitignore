@@ -1,6 +1,8 @@
 Thumbs.db
 .DS_Store
-.claude/
+.claude/*
+# UI 규칙 훅(lint_ui)은 워크트리에서도 돌도록 추적 — 개인 권한(settings.local.json)은 계속 제외
+!.claude/settings.json
 .env
 .venv/
 __pycache__/

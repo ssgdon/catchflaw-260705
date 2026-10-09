@@ -40,14 +40,25 @@
     --safe: #5EA5E7;
     --safe-text: #3D87CC;
     --safe-soft: #E9F2FB;
+    /* 막대 그라데이션 시작색(tint → 진한 색) */
+    --danger-tint: #FF9D9D;  --warning-tint: #FFD9A0;  --safe-tint: #A9CFF2;
+
+    /* ---------- 외부 브랜드 (해당 버튼 전용) ---------- */
+    --kakao: #FEE500;
 
     /* ---------- 타이포 스케일 (모바일 기준 · PC는 pc.css에서 한 단계 키움) ----------
-       display 28 · h1 26(페이지 제목) · h2 20(섹션 제목) · h3 17(카드·목록 제목)
-       body-lg 17 · body 16(본문) · caption 14(메타·보조) · micro 12(배지 전용)       */
+       ★ font-size는 이 변수만 쓴다(px 직접 기입 금지 — scripts/lint_ui.py가 빌드 때 막음)
+       num-lg 48 · num 40 · pc-h1 32 · display 28 · h1 26(페이지 제목) · h2 20(섹션 제목)
+       lead 18(요약 첫 줄) · h3 17(카드·목록 제목) · body 16(본문) · body-sm 15(목록·버튼·탭)
+       caption 14(메타·보조) · meta 13(읽는 글자 최소) · micro 12(배지·알약·범례 전용)        */
     --fs-display: 28px;  --fs-h1: 26px;  --fs-h2: 20px;  --fs-h3: 17px;
     --fs-body-lg: 17px;  --fs-body: 16px;  --fs-caption: 14px;  --fs-micro: 12px;
     --fs-meta: 13px;              /* 읽는 글자의 최소 크기(작은 메타·설명). 12px(micro)는 배지·알약 라벨 전용 */
+    --fs-body-sm: 15px;           /* 목록 본문·탭·보조 버튼 */
+    --fs-lead: 18px;              /* 요약 첫 문장 등 리드 */
     --fs-num: 40px;               /* 실망 확률 등 히어로 숫자 */
+    --fs-num-lg: 48px;            /* 상세 실망 확률 대형 숫자 */
+    --fs-pc-h1: 32px;             /* PC(≥1100) 페이지 제목 — pc.css 전용 */
     --lh-tight: 1.3;     --lh-head: 1.4;   --lh-body: 1.6;
     --fw-display: 700;   --fw-bold: 600;   --fw-medium: 500;  --fw-regular: 400;
     --ls-global: -0.02em;         /* 제목 */

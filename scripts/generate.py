@@ -620,11 +620,11 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         var pts = [];
         HOTELS.forEach(function(h){{
             if (h.lat == null) return;
-            var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
+            var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
             var mk = L.circleMarker([h.lat, h.lng], {{radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95}}).addTo(map);
             var chip = h.p != null
                 ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
-                : '<span class="pop-p" style="background:#9CA3AF">리뷰 수집중</span>';
+                : '<span class="pop-p" style="background:var(--ink-3)">리뷰 수집중</span>';
             mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
                 + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
                 + (h.pt ? ' · 1박 ' + h.pt : '') + '</div>' + chip
@@ -1035,9 +1035,9 @@ def build_search(city_avg_pct):
         $(window).on('load', function(){{ map.invalidateSize(); }});
 
         function popupHtml(h){{
-            var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
+            var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
             var chip = h.p != null ? '<span class="pop-p" style="background:'+col+'">실망 확률 '+h.p+'%</span>'
-                                   : '<span class="pop-p" style="background:#9CA3AF">리뷰 수집중</span>';
+                                   : '<span class="pop-p" style="background:var(--ink-3)">리뷰 수집중</span>';
             return '<div class="map-pop"><b>'+h.name+'</b>'
                 + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'
                 + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
@@ -1058,7 +1058,7 @@ def build_search(city_avg_pct):
             var pts = [];
             list.forEach(function(h){{
                 if (h.lat == null) return;
-                var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
+                var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
                 var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95}});
                 mk.bindPopup(popupHtml(h));
                 markers.addLayer(mk); markerById[h.id] = mk;
@@ -1682,7 +1682,7 @@ def kr_pyramid(top_pct):
         '<svg class="kp-svg" viewBox="0 0 160 120" xmlns="http://www.w3.org/2000/svg" '
         'role="img" aria-label="한국인 비중 순위 피라미드">'
         f'<polygon points="{cx},{ay} 146,{by} 14,{by}" '
-        'style="fill:none;stroke:#D3D7DE;stroke-width:2.5;stroke-linejoin:round"/>'
+        'style="fill:none;stroke:var(--line-strong);stroke-width:2.5;stroke-linejoin:round"/>'
         f'<line x1="{lx - 2:.1f}" y1="{cy:.1f}" x2="{rx + 2:.1f}" y2="{cy:.1f}" '
         'style="stroke:var(--primary);stroke-width:2.5;stroke-linecap:round"/>'
         f'<circle cx="{cx}" cy="{cy:.1f}" r="3.5" style="fill:var(--primary)"/>'
@@ -2577,7 +2577,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               pointBackgroundColor: '#fff', pointBorderColor: '#8D5BFD', pointBorderWidth: 2,
                               pointRadius: 3.5, pointHoverRadius: 4, tension: 0}},
                             {{label: '{CITY['ko']} 평균', data: [50,50,50,50,50,50], fill: false,
-                              borderColor: '#B0B4BB', borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
+                              borderColor: '#B0B8C1', borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
                         ]
                     }},
                     options: {{
@@ -2586,10 +2586,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         plugins: {{legend: {{display: false}}, tooltip: {{enabled: false}}}},
                         scales: {{r: {{
                             min: 0, max: {radar_max},
-                            angleLines: {{color: '#F1F2F4'}},
-                            grid: {{color: '#EEEFF3', circular: false}},
-                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: '#B0B4BB', font: {{size: 10}}}},
-                            pointLabels: {{font: {{size: 12.5, weight: '700'}}, color: '#4B5057', padding: 12}}
+                            angleLines: {{color: '#F2F4F6'}},
+                            grid: {{color: '#E5E8EB', circular: false}},
+                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: '#B0B8C1', font: {{size: 12}}}},
+                            pointLabels: {{font: {{size: 13, weight: '600'}}, color: '#4E5968', padding: 12}}
                         }}}}
                     }}
                 }});
@@ -3114,15 +3114,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 new Chart(ctx, {{type:'line', data:{{labels:d.m, datasets:[
                     {{label:'심각', data:d.c, borderColor:'#FA5252', backgroundColor:gC, fill:'origin', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252', stack:'risk'}},
                     {{label:'주의', data:d.w, borderColor:'#F0A028', backgroundColor:gW, fill:'-1', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028', stack:'risk'}},
-                    {{label:'후쿠오카 평균', data:d.a, borderColor:'#B0B4BB', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false, tension:.35, stack:'avg'}}]}},
+                    {{label:'후쿠오카 평균', data:d.a, borderColor:'#B0B8C1', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false, tension:.35, stack:'avg'}}]}},
                   options:{{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-                    plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#232323', bodyColor:'#555B63',
-                        borderColor:'#E8E9ED', borderWidth:1, cornerRadius:10, padding:10, footerColor:'#232323', footerFont:{{weight:'bold'}},
+                    plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#191F28', bodyColor:'#4E5968',
+                        borderColor:'#E5E8EB', borderWidth:1, cornerRadius:10, padding:10, footerColor:'#191F28', footerFont:{{weight:'bold'}},
                         callbacks:{{label:function(t){{return t.dataset.label+' '+t.parsed.y.toFixed(1)+'%';}},
                             footer:function(items){{var s=0; items.forEach(function(it){{if(it.dataset.stack==='risk') s+=it.parsed.y;}}); return '합계 '+s.toFixed(1)+'%';}}}}}}}},
-                    scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:10}}, color:'#8B9097', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
-                            y:{{beginAtZero:true, stacked:true, grid:{{color:'#efefef'}}, border:{{display:false}},
-                               ticks:{{font:{{size:10}}, color:'#8B9097', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
+                    scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:12}}, color:'#8B95A1', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
+                            y:{{beginAtZero:true, stacked:true, grid:{{color:'#F2F4F6'}}, border:{{display:false}},
+                               ticks:{{font:{{size:12}}, color:'#8B95A1', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
 
@@ -3686,6 +3686,9 @@ def build_sitemap(detail_pids, collection_slugs=()):
 
 
 def main():
+    # UI 규칙 v2 게이트 (UI-STANDARDS §14): 토큰 밖 글자 크기·색, 배지 외 12px, PC 규칙 위치 등 위반 시 빌드 중단
+    import lint_ui
+    lint_ui.run(strict=True)
     city, H = compute(SRC)
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data, social_data = load()
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
