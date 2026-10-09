@@ -629,16 +629,21 @@ def vs_card(pa, pb, hotels_meta, H, depth=0):
     verdict, win = vs_verdict(pa, pb, hotels_meta, H)
     def cell(p, kind):
         h, m = H[p], hotels_meta[p]
-        if kind == 'name': return f'<span class="vs-n{" is-win" if p == win else ""}">{E(short_name(m["title"]))}</span>'
-        if kind == 'p': return f'<b class="{"is-win" if p == win else ""}">{pct(h["p_crit"])}%</b>'
-        if kind == 'kr': return f'<span>{KRN.get(p, 0)}건</span>' if KRN.get(p, 0) >= 10 else '<span class="vs-none">10건 미만</span>'
-        return f'<span>{E(m["price_txt"])}</span>' if m.get('price_txt') else '<span class="vs-none">정보 없음</span>'
+        w = ' is-win' if p == win else ''
+        if kind == 'name': return f'<span class="vs-n{w}">{E(short_name(m["title"]))}</span>'
+        if kind == 'p': return f'<b class="vs-v vs-p{w}">{pct(h["p_crit"])}%</b>'
+        if kind == 'kr': return (f'<span class="vs-v{w}">{KRN.get(p, 0)}건</span>' if KRN.get(p, 0) >= 10
+                                 else f'<span class="vs-v vs-none{w}">10건 미만</span>')
+        return f'<span class="vs-v{w}">{E(m["price_txt"])}</span>' if m.get('price_txt') else f'<span class="vs-v vs-none{w}">정보 없음</span>'
+    # 3열 표(라벨 · A · B): 이름과 값이 같은 열에 정렬되고, 실망 확률이 낮은 쪽 열은 색 면으로 묶인다
     return f'''<a class="vs-card" href="{root}compare?ids={pa},{pb}">
         <div class="vs-topic">{E(vs_topic(pa, pb, hotels_meta))}</div>
-        <div class="vs-names">{cell(pa, 'name')}<span class="vs-vs">vs</span>{cell(pb, 'name')}</div>
-        <div class="vs-row"><span class="vs-k">실망 확률</span>{cell(pa, 'p')}{cell(pb, 'p')}</div>
-        <div class="vs-row"><span class="vs-k">한국인 리뷰</span>{cell(pa, 'kr')}{cell(pb, 'kr')}</div>
-        <div class="vs-row"><span class="vs-k">1박</span>{cell(pa, 'pr')}{cell(pb, 'pr')}</div>
+        <div class="vs-grid">
+            <span class="vs-k vs-h">vs</span>{cell(pa, 'name')}{cell(pb, 'name')}
+            <span class="vs-k">실망 확률</span>{cell(pa, 'p')}{cell(pb, 'p')}
+            <span class="vs-k">한국인 리뷰</span>{cell(pa, 'kr')}{cell(pb, 'kr')}
+            <span class="vs-k">1박</span>{cell(pa, 'pr')}{cell(pb, 'pr')}
+        </div>
         <div class="vs-foot"><span class="vs-verdict">{verdict}</span><span class="vs-more">비교 →</span></div>
     </a>'''
 
