@@ -105,13 +105,13 @@
 
     /* 본문(왼쪽 칼럼): 섹션 구분은 얇은 선 + 넉넉한 위 여백 */
     #detail .content > .sect{padding:var(--sp-10) 0;}
-    #detail .content > .sect + .sect{border-top:1px solid var(--line-strong);}
+    #detail .content > .sect::before{left:0 !important;right:0 !important;}   /* ds.css 구분선: PC 본문 칼럼은 좌우 여백이 없으므로 끝까지 */
     #detail .content > .sect.glance{padding:var(--sp-6) 0;}
     #detail .det-tabs{top:64px;padding:0;}
     #detail .det-tabs a{flex:0 0 auto;padding:0 var(--sp-5);}
     #detail .sect[id],#detail .sec-anchor{scroll-margin-top:124px;}
     #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
-    #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));}   /* 결론 타일 2열 */
+    #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--sp-10);}   /* 결론 목록 2열 */
     /* 대안 슬라이더 → 4열 그리드 */
     #detail .hotel .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}
     #detail .hotel .list .swiper-slide{width:auto !important;margin:0 !important;}

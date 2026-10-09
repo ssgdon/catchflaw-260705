@@ -374,6 +374,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="stylesheet" href="{p}css/swiper.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/uplift.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/mvp.css?v={BUILD}">
+    <link rel="stylesheet" href="{p}css/ds.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}">
     <script src="{p}js/backnav.js?v={BUILD}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
@@ -3320,7 +3321,7 @@ def collection_stats(pids, hotels_meta, H, city):
     reviews = sum(H[p]['analyzed'] for p in pids)
     avg_p = pct(sum(H[p]['p_crit'] for p in pids) / n) if n else 0
     city_p = pct(city['crit'])
-    # 카테고리 프로파일: 컬렉션 평균 카테고리 점수 vs 도시평균(=50). 편차 상위 2~3개.
+    # 항목별로 보면: 컬렉션 평균 카테고리 점수 vs 도시평균(=50). 편차 상위 2~3개.
     cat_avg = {c: sum(H[p]['cats'][c]['score'] for p in pids) / n for c in CATS} if n else {c: 50 for c in CATS}
     devs = sorted(((c, cat_avg[c] - 50.0) for c in CATS), key=lambda kv: -abs(kv[1]))
     top_dev = [(c, d) for c, d in devs if abs(d) >= 3.0][:3]   # 의미 있는 편차만
@@ -3396,9 +3397,9 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     dev_rows = []
     for c, d in stats['top_dev']:
         word = c.split(' ')[0]
-        sign = '높아요' if d > 0 else '낮아요'
-        dev_rows.append(f'<li class="hub-dev is-{"up" if d>0 else "down"}"><span class="hd-cat">{E(word)}</span>'
-                        f'<span class="hd-val">도시 평균 대비 {abs(round(d))}점 {sign}</span></li>')
+        # §13 결론 먼저: 점수 차(…점 낮아요) 대신 평균 대비 문장 (d = 컬렉션 평균 위험도 - 50)
+        dev_rows.append(f'<li class="hub-dev is-{"up" if d>0 else "down"}"><span class="hd-cat">{E(word)} 불만</span>'
+                        f'<span class="hd-val">{E(ratio_text(50 + d))}</span></li>')
     dev_html = f'<ul class="hub-devs">{"".join(dev_rows)}</ul>' if dev_rows else \
                '<div class="hub-dev-none">카테고리별로 도시 평균과 큰 차이가 없어요</div>'
     p_cmp_cls = 'is-good' if avg_p <= city_p else 'is-bad'
@@ -3408,7 +3409,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
             <div class="hr-block"><span class="hr-label">{CITY['ko']} 평균</span><span class="hr-num">{city_p}%</span></div>
         </div>
         <div class="hub-risk-prof">
-            <div class="hr-prof-tit">카테고리 프로파일</div>
+            <div class="hr-prof-tit">항목별로 보면</div>
             {dev_html}
         </div>
     </div>'''

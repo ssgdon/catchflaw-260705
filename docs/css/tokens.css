@@ -1,28 +1,33 @@
 @charset "utf-8";
 /* ============================================================
-   CATCHFLAW DESIGN TOKENS  (v1 · 2026-07)
-   - 모든 색/타이포/간격/라운드의 단일 기준.
-   - 신규 스타일은 반드시 이 변수만 사용한다. 하드코딩 금지.
-   - 로드 순서: tokens.css → common.css → layout.css → swiper.css → uplift.css
-   - 상세 규정: /UI-STANDARDS.md
+   CATCHFLAW DESIGN TOKENS  (v2 · 2026-10)
+   - 모든 색/타이포/간격/라운드의 단일 기준. 신규 스타일은 이 변수만 사용한다.
+   - 로드 순서: tokens → common → layout → swiper → uplift → mvp → ds → pc
+   - v2 근거: Mobbin Airbnb·토스·카카오뱅크 iOS 실측 (UI-STANDARDS §0)
+     · 본문 16px·줄간 1.6 (기존 15px·1.5) — 작은 굵은 글씨가 빽빽해 보이던 문제 해소
+     · 글자 위계는 크기보다 '굵기+색'으로: 제목 700 / 강조 600 / 본문 400~500, 회색 3단계
+     · 페이지 여백 24px · 섹션 위아래 40px · 섹션 사이는 얇은 선(상자·띠 최소화)
+   - 상세 규정: /UI-STANDARDS.md §0
    ============================================================ */
 :root {
     /* ---------- 브랜드 ---------- */
     --primary: #8D5BFD;
-    --primary-deep: #4D2F91;      /* 그라데이션 종점 */
+    --primary-deep: #4D2F91;      /* 그라데이션 종점·hover */
     --primary-soft: #F3EEFF;      /* 연보라 배경 */
 
-    /* ---------- 잉크(텍스트) ---------- */
-    --ink: #191B1F;               /* 제목·본문 강조 */
-    --ink-2: #4B5057;             /* 본문 보조 */
-    --ink-3: #8B9097;             /* 캡션·메타 */
+    /* ---------- 잉크(텍스트) — 토스 계열 회색 3단계 + 비활성 ---------- */
+    --ink: #191F28;               /* 제목·핵심 값 */
+    --ink-2: #4E5968;             /* 본문·보조 */
+    --ink-3: #8B95A1;             /* 캡션·메타 */
+    --ink-4: #B0B8C1;             /* 비활성·placeholder */
     --ink-inverse: #FFFFFF;
 
     /* ---------- 서피스 ---------- */
-    --surface: #F7F7FA;           /* 섹션 구분·카드 배경 */
+    --surface: #F2F4F6;           /* 칩·입력·띠 배경 */
+    --surface-2: #F9FAFB;         /* 요약 카드 등 은은한 면 */
     --surface-card: #FFFFFF;
-    --line: #F1F2F4;              /* 헤어라인 */
-    --line-strong: #E4E6EA;
+    --line: #F2F4F6;              /* 아주 옅은 구분 */
+    --line-strong: #E5E8EB;       /* 섹션·목록 구분선 */
 
     /* ---------- 시맨틱 (등급/태그 — 전 화면 공통, 이 3색 외 사용 금지) ----------
        위험/심각 = danger · 주의 = warning · 양호/정상 = safe                    */
@@ -36,26 +41,32 @@
     --safe-text: #3D87CC;
     --safe-soft: #E9F2FB;
 
-    /* ---------- 타이포 스케일 (px, line-height 배수) ----------
-       display 30/1.35 · h1 24/1.35 · h2 22/1.35 · h3 18/1.35
-       body-lg 17/1.5 · body 15/1.5 · caption 13/1.4 · micro 12/1.3   */
-    --fs-display: 30px;  --fs-h1: 24px;  --fs-h2: 22px;  --fs-h3: 18px;
-    --fs-body-lg: 17px;  --fs-body: 15px;  --fs-caption: 13px;  --fs-micro: 12px;
-    --lh-head: 1.35;     --lh-body: 1.5;
-    --fw-display: 800;   --fw-bold: 700;   --fw-medium: 500;
-    --ls-global: -0.02em;
+    /* ---------- 타이포 스케일 (모바일 기준 · PC는 pc.css에서 한 단계 키움) ----------
+       display 28 · h1 26(페이지 제목) · h2 20(섹션 제목) · h3 17(카드·목록 제목)
+       body-lg 17 · body 16(본문) · caption 14(메타·보조) · micro 12(배지 전용)       */
+    --fs-display: 28px;  --fs-h1: 26px;  --fs-h2: 20px;  --fs-h3: 17px;
+    --fs-body-lg: 17px;  --fs-body: 16px;  --fs-caption: 14px;  --fs-micro: 12px;
+    --fs-meta: 13px;              /* 읽는 글자의 최소 크기(작은 메타·설명). 12px(micro)는 배지·알약 라벨 전용 */
+    --fs-num: 40px;               /* 실망 확률 등 히어로 숫자 */
+    --lh-tight: 1.3;     --lh-head: 1.4;   --lh-body: 1.6;
+    --fw-display: 700;   --fw-bold: 600;   --fw-medium: 500;  --fw-regular: 400;
+    --ls-global: -0.02em;         /* 제목 */
+    --ls-body: -0.01em;           /* 본문 */
 
     /* ---------- 간격 (4px 그리드) ---------- */
     --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;  --sp-4: 16px;
     --sp-5: 20px; --sp-6: 24px; --sp-8: 32px;  --sp-10: 40px; --sp-12: 48px;
-    --page-x: 20px;               /* 페이지 좌우 여백 */
-    --section-gap: 48px;          /* 섹션 상단 리듬 */
+    --page-x: 24px;               /* 페이지 좌우 여백 (360px 미만은 20) */
+    --section-y: 40px;            /* 섹션 위아래 */
+    --section-gap: 40px;          /* (구) 섹션 리듬 — 하위호환 */
+    --head-gap: 20px;             /* 섹션 제목 묶음 → 내용 */
 
     /* ---------- 라운드 ---------- */
     --radius-card: 20px;          /* 큰 카드 */
     --radius-img: 16px;           /* 썸네일 */
     --radius-btn: 14px;           /* 버튼·입력 */
-    --radius-chip: 8px;           /* 뱃지·태그 */
+    --radius-chip: 8px;           /* 배지·태그 */
+    --radius-pill: 999px;         /* 칩·토글 */
 
     /* ---------- 그림자 ---------- */
     --shadow-float: 0 4px 10px rgb(0 0 0 / 20%);
@@ -63,4 +74,7 @@
 
     /* ---------- 하위호환 별칭 (기존 layout.css/uplift.css 참조 유지) ---------- */
     --primary-color: var(--primary);
+}
+@media (max-width:359px){
+    :root{--page-x:20px;}
 }

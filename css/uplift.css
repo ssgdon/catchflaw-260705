@@ -6,17 +6,7 @@
            큰 라운드 카드, 명확한 위계 — 기존 보라 아이덴티티 유지
    ============================================================ */
 
-:root {
-    --primary-color: #8D5BFD;
-    --primary-soft: #F3EEFF;
-    --ink: #191B1F;
-    --ink-2: #4B5057;
-    --ink-3: #8B9097;
-    --line: #F1F2F4;
-    --surface: #F7F7FA;
-    --radius-card: 20px;
-    --radius-img: 16px;
-}
+/* (색·라운드 변수는 tokens.css v2가 단일 기준 — 여기서 재정의하지 않는다) */
 
 /* ---------- 글로벌 타이포 ---------- */
 body{letter-spacing:-0.02em;color:var(--ink);}
