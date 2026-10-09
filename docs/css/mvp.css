@@ -179,6 +179,10 @@
 #detail .disappear .gauge .bar .g-rank.is-warning{color:var(--warning-text);}
 #detail .disappear .gauge .bar .g-rank.is-danger{color:var(--danger-text);}
 #detail .disappear .gauge .bar .g-rank.is-low{color:var(--ink-2);}
+#detail .disappear .gauge .bar .pointer.is-safe .dot{background:var(--safe);}
+#detail .disappear .gauge .bar .pointer.is-warning .dot{background:var(--warning);}
+#detail .disappear .gauge .bar .pointer.is-danger .dot{background:var(--danger);}
+#detail .disappear .gauge .bar .pointer.is-low .dot{background:var(--ink-2);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l{transform:translateX(-14px);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l:after{left:14px;}
 #detail .disappear .gauge .bar .g-rank.is-clamp-r{transform:translateX(calc(-100% + 14px));}
@@ -886,6 +890,28 @@
 #detail .disappear .head .vh.is-warning{color:var(--warning-text);}
 #detail .disappear .head .vh.is-danger{color:var(--danger-text);}
 #detail .disappear .head .vh.is-low{color:var(--ink-2);}
+#detail .disappear .head .pct.is-safe{color:var(--safe-text);}
+#detail .disappear .head .pct.is-warning{color:var(--warning-text);}
+#detail .disappear .head .pct.is-danger{color:var(--danger-text);}
+#detail .disappear .head .pct.is-low{color:var(--ink);}
+/* 기준 줄: 도시 평균 + (확실할 때만) 순위 구간 배지 */
+#detail .disappear .head .v-sub{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-2);text-align:center;}
+.tier-badge{display:inline-flex;align-items:center;height:var(--h-badge);margin-left:var(--sp-2);padding:0 var(--sp-2);border-radius:var(--radius-chip);font-size:var(--fs-micro);font-weight:var(--fw-bold);vertical-align:middle;white-space:nowrap;}
+.tier-badge.is-safe{background:var(--safe-soft);color:var(--safe-text);}
+.tier-badge.is-warning{background:var(--warning-soft);color:var(--warning-text);}
+.tier-badge.is-danger{background:var(--danger-soft);color:var(--danger-text);}
+.tier-badge.is-low{background:var(--surface);color:var(--ink-2);}
+/* 근거 2줄: 글 리뷰 중 실망 리뷰 N건(→ 리스크 상세) · 예약을 접을 만한 심각 리뷰 */
+#detail .disappear .ev{margin-top:var(--sp-4);border-top:1px solid var(--line);}
+#detail .disappear .ev-row{display:flex;align-items:center;gap:var(--sp-3);width:100%;padding:var(--sp-3) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body-sm);line-height:var(--lh-body);color:var(--ink-2);text-align:left;text-decoration:none;word-break:keep-all;}
+#detail .disappear .ev-row b{font-weight:var(--fw-bold);color:var(--ink);}
+#detail .disappear .ev-txt{flex:1 1 auto;min-width:0;}
+#detail .disappear .ev-dot{flex:none;width:var(--sp-2);height:var(--sp-2);border-radius:50%;background:var(--ink-3);}
+#detail .disappear .ev-dot.is-safe{background:var(--safe);}
+#detail .disappear .ev-dot.is-warning{background:var(--warning);}
+#detail .disappear .ev-dot.is-danger{background:var(--danger);}
+#detail .disappear .ev-dot.is-ink{background:var(--ink-2);}
+#detail .disappear .ev-arrow{flex:none;width:7px;height:7px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(-45deg);}
 #detail .disappear .verdict-why{margin:14px 0 0;}
 
 /* F37: 게이지 = 백분위 축 — 말풍선 클리어런스(위 여백) + 평균 마커 실위치(style left) */

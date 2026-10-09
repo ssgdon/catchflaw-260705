@@ -91,6 +91,8 @@
     .pc-side .ps-verdict.is-warning{color:var(--warning-text);}
     .pc-side .ps-verdict.is-danger{color:var(--danger-text);}
     .pc-side .ps-verdict.is-low{color:var(--ink-2);}
+    .pc-side .ps-avg .tier-badge{margin-left:var(--sp-2);}
+    #detail .disappear .ev-row{font-size:var(--fs-body);}
     .pc-side .ps-collect{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink-2);}
     .pc-side .ps-avg{margin-top:var(--sp-1);font-size:var(--fs-caption);color:var(--ink-3);}
     .pc-side .ps-rows{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:1px solid var(--line);}

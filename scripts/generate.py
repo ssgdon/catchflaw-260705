@@ -52,11 +52,12 @@ def cat_verdict(score):
     return '많음', '평균보다 훨씬 많아요', 'danger'
 
 def ratio_text(score):
-    """후쿠오카 평균 대비 한 줄: '평균보다 36% 적어요' · '평균과 비슷해요' · '평균의 1.8배'."""
+    """후쿠오카 평균 대비 한 줄: '평균보다 36% 적어요' · '평균과 비슷해요' · '평균의 1.8배'.
+    경계는 cat_verdict와 같다(45·55) — 예전엔 비율 기준(0.95·1.05)이라 '1.2배'인데 '평균 수준'처럼 어긋났다."""
     r = cat_ratio(score)
-    if r < 0.95: return f'평균보다 {round((1 - r) * 100)}% 적어요'
-    if r <= 1.05: return '평균과 비슷해요'
-    return f'평균의 {r:.1f}배'
+    if score < 45: return f'평균보다 {round((1 - r) * 100)}% 적어요'
+    if score < 55: return '평균과 비슷해요'
+    return f'평균의 {max(r, 1.2):.1f}배'
 
 def ratio_html(score):
     """ratio_text의 HTML판 — 핵심 수치('36% 적어요'·'1.1배'·'비슷해요')만 굵게."""
@@ -1728,25 +1729,15 @@ def gauge_html(p, city_crit, tone='safe', tier=None):
     말풍선 = 순위 구간('상위 25% 안', 확실할 때만) 또는 평균 대비 문장."""
     r = (p / city_crit) if city_crit else 1.0
     pos = min(max(50.0 * r if r <= 1 else 50.0 + 25.0 * (r - 1), 0.0), 100.0)
-    if tier:
-        txt = f'{CITY["ko"]} {tier[1]}'
-    elif r < 0.95:
-        txt = f'평균보다 {round((1 - r) * 100)}% 낮아요'
-    elif r <= 1.05:
-        txt = '평균과 비슷해요'
-    else:
-        txt = f'평균의 {r:.1f}배'
-    clamp = ' is-clamp-l' if pos <= 18 else (' is-clamp-r' if pos >= 82 else '')
-    rank_html = f'<span class="g-rank is-{tone}{clamp}" style="left:{pos:.1f}%">{E(txt)}</span>'
+    # 말풍선(순위·평균 대비)은 헤더의 기준 줄(v-sub)로 옮겨 게이지는 점 하나 + 평균 선만 (2026-10 카피 개편)
     return f'''<div class="gauge">
         <div class="bar">
-            {rank_html}
-            <div class="pointer" style="left:calc({pos:.1f}% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
+            <div class="pointer is-{tone}" style="left:calc({pos:.1f}% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
         </div>
         <div class="label">
-            <span>우수</span>
-            <span class="analysis" style="left:50%">평균 {pct(city_crit)}%</span>
-            <span>위험</span>
+            <span>실망 적음</span>
+            <span class="analysis" style="left:50%">평균</span>
+            <span>실망 많음</span>
         </div>
     </div>'''
 
@@ -1908,7 +1899,7 @@ def _complete_months(asof, k=12):
 
 
 def overall_trend_html(pid, monthly, monthly_cat, asof, city_avg=None):
-    """전체 통합 월별 위험 리뷰 흐름 (누적 스택 트렌드). 카테고리 차트와 동일 형태·데이터 가공.
+    """전체 통합 월별 불만 리뷰 비율 (누적 스택 트렌드). 카테고리 차트와 동일 형태·데이터 가공.
     .sect.disappear 안 게이지 아래·인사이트 카드 위에 배치. 데이터 부족 시(합<10) 미노출.
     반환: (html, trendc_all_or_None). trendc_all은 window.TRENDC['all'] 주입용."""
     cmonths = _complete_months(asof, 12) if (monthly and asof) else []
@@ -1928,18 +1919,18 @@ def overall_trend_html(pid, monthly, monthly_cat, asof, city_avg=None):
     labels = [lbl for _ym, lbl in cmonths]
     trendc_all = {'m': labels, 'w': pw, 'c': pc, 'a': pa}
     tot = round(pw[-1] + pc[-1], 1)          # 합계 = 주의+심각 (배타이므로 합집합 비율)
-    now_txt = f'{labels[-1]} {tot}% · 평균 {pa[-1]}%'
+    now_txt = f'{labels[-1]} {tot}% · {CITY["ko"]} 평균 {pa[-1]}%'
     dt = round((pw[-1] + pc[-1]) - (pw[-2] + pc[-2]), 1)
     if abs(dt) < 0.05:
-        delta_txt = '지난 달과 비슷한 수준이에요'
+        delta_txt = '지난달과 비슷해요'
     else:
-        delta_txt = f'지난 달 대비 {dt:+.1f}p {"증가했어요" if dt > 0 else "줄었어요"}'
+        delta_txt = f'지난달보다 {abs(dt):.1f}%p {"올랐어요" if dt > 0 else "내렸어요"}'
     # 기본 접힘(F7): 토글 버튼만 노출, 탭 시 차트 펼침(Chart.js는 펼칠 때 지연 초기화 — 0폭 canvas 함정 회피)
     html = (f'<div class="trend-fold">'
-        f'<button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span><span class="tf-arrow"></span></button>'
+        f'<button type="button" class="trend-fold-btn"><span class="tf-tit">월별 불만 리뷰 비율 보기</span><span class="tf-arrow"></span></button>'
         f'<div class="trend-fold-body">'
         f'<div class="cat-trend cat-trend-all">'
-        f'<div class="ct-head"><span class="ct-tit">월별 위험 리뷰 흐름</span>'
+        f'<div class="ct-head"><span class="ct-tit">월별 불만 리뷰 비율</span>'
         f'<span class="ct-now">{E(now_txt)}</span></div>'
         f'<div class="ct-canvas"><canvas id="cat-trend-all"></canvas></div>'
         f'<div class="ct-delta">{E(delta_txt)}</div></div>'
@@ -2046,9 +2037,9 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
         except (TypeError, ValueError): return None
     n_serious = round((num1(kr.get('kr_disappoint')) or 0) * 100)
     if n_serious == 0:
-        serious_txt = f'{per} 한국인 리뷰에선 심각한 문제나 재방문 거부 언급이 없었어요'
+        serious_txt = f'{per} 한국인 리뷰 중 실망 리뷰는 없었어요'
     else:
-        serious_txt = f'{per} 기준, 한국인 리뷰의 <span class="nw"><b>{n_serious}%</b>가</span> 심각한 문제를 겪었거나 다시 안 가겠다고 했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
+        serious_txt = f'{per} 한국인 리뷰 중 <b>{n_serious}%</b>가 실망 리뷰였어요'   # 실망 리뷰 정의는 실망 확률 ?·산출 방법과 동일
     serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
     # §2-b 비교 — 지표당 세로 막대 2개(한국인 primary vs 전체 회색), 값은 막대 위(목업①② 스타일).
@@ -2070,10 +2061,10 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
     if has_risk:
         # 스케일: 둘 다 작아도 막대가 보이게 max(kr,all,10%)로 정규화(상한 100%).
         norm = max(kr_rk_pct, all_rk_pct, 10.0)
-        vbars += vgroup('심각·주의 리뷰 비율', kr_rk_pct / norm, all_rk_pct / norm,
+        vbars += vgroup('불만 리뷰 비율', kr_rk_pct / norm, all_rk_pct / norm,
                         f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
-        footnote = (f'<div class="kr-foot">{per} 글 리뷰 기준{DSEP}<span class="seg">비율 = 심각·주의 언급 리뷰 ÷ 글을 남긴 리뷰</span>'
-                    '<br>별점만 남긴 리뷰는 국적을 알 수 없어 양쪽 모두 뺐어요</div>')
+        footnote = (f'<div class="kr-foot">{per} 글 리뷰 기준{DSEP}<span class="seg">불만 리뷰 = 심각·주의 불만이 적힌 리뷰</span>'
+                    '<br>별점만 남긴 리뷰는 국적을 알 수 없어 양쪽 다 뺐어요</div>')
 
     # §2-a 한국인 비중 순위 — 분포 막대 차트(전체 호텔 중 이 호텔 위치 강조) + 평이한 부연설명.
     # 50% 초과는 '하위 M%'로 뒤집어 직관화. 부연: 상위 33% 이내=많은 편 / 하위 33%=적은 편 / 그 외=보통.
@@ -2093,7 +2084,7 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
                       f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} {rank_txt}</b></div>'
                       f'<div class="kp-sub">{sub}</div></div>')
 
-    count_txt = f'{per} <b>{kr_n:,}</b>건 · 글 리뷰의 {ratio}%{" · 참고용" if small else ""}'
+    count_txt = f'{per} 글 리뷰 중 한국어 <b>{kr_n:,}</b>건 ({ratio}%){" · 참고용" if small else ""}'
     return f'''
         <div class="sect kr-card">
             <div class="head kr-head">
@@ -2431,7 +2422,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if h['scored']:
         for _cat, _scat, _slabel, _clabel in (('청결', '벌레', '벌레', '벌레 리뷰'),   # F43: 신고→리뷰 · 분류 v5 칩 4종
                                               ('청결', '곰팡이', '곰팡이', '곰팡이 리뷰'),
-                                              ('위치', '동네 분위기', '동네 분위기', '동네 분위기 리뷰'),
+                                              ('위치', '동네 분위기', '밤길·동네 분위기', '밤길·동네 분위기 리뷰'),
                                               ('안전', '객실 보안', '객실 보안', '객실 보안 리뷰')):
             _sb = h['cats'][_cat]['subs'][_scat]
             _n, _n3 = _sb.get('crit_1y', 0), _sb.get('crit_3m', 0)   # 최근 1년 / 최근 3달(90일) 심각
@@ -2539,45 +2530,46 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _worst = max(CATS, key=lambda c: h['cats'][c]['score'])
         _worst_sc = h['cats'][_worst]['score']
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
-        if not h['ranked'] and h['badge'][0] != 'danger':   # 리뷰 적음(위험 신호가 뚜렷하지 않음) — 판정 대신 참고 안내
+        # ── 판정(1줄, 배지와 같은 색) → 기준(평균 + 확실할 때만 순위 구간) → 근거 2줄. 비유·시험 말투 없이 한 말투 (2026-10 카피 개편) ──
+        _band = h['badge'][0]
+        if _band == 'low':
             v_head, v_tone = '리뷰가 적어 참고용이에요', 'low'
-            v_why = (f'{per} 리뷰가 <b>{h["analyzed"]:,}개</b>뿐이라 몇 건만 달라져도 숫자가 크게 바뀌어요,<br>'
-                     f'{CITY["ko"]} 평균은 <b>{avg}%</b>예요')
-        elif ratio <= 0.8:                            # A
-            v_head, v_tone = '까다롭게 봐도 통과', 'safe'
-            if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중<br>벌레·곰팡이·동네 분위기·객실 보안 심각 리뷰는 <b>0건</b>이었어요'
-            elif _all_safe:
-                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 기준,<br>6개 항목 모두 평균보다 불만이 적었어요'
-            else:
-                v_why = f'실망 확률 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 낮아요'
-        elif ratio < 1.15:                            # B
-            v_head, v_tone = '무난하게 통과', 'safe'
-            if h['cats'][_worst]['band'] in ('warning', 'danger'):
-                v_why = (f'다만 <b>{E(cat_ko(_worst))}</b>({round(_worst_sc)}){josa_eun(cat_ko(_worst))} '
-                         f'평균보다 높아요,<br>아래 상세에서 확인하세요')
-            else:
-                v_why = '튀는 위험 항목 없이 고른 수준이에요'
-        elif ratio < 1.5:                             # C
-            v_head, v_tone = '예약 전 확인이 필요해요', 'warning'
-            _warns = sorted((c for c in CATS if h['cats'][c]['band'] in ('warning', 'danger')),
-                            key=lambda c: -h['cats'][c]['score'])[:2] or [_worst]
-            _names = '·'.join(cat_ko(c) for c in _warns)
-            _k = sum(sev_by_cat.get(c, 0) for c in _warns)
-            if _k:
-                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>{per} 심각 <b>{_k}건</b>이 확인됐어요'
-            else:
-                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요'
-        else:                                         # D — F25: 실측 카운트(고유 리뷰 수 + 최다 카테고리)
-            v_head, v_tone = '실망 위험이 높은 호텔이에요', 'danger'
-            _top_sev = max(sev_by_cat, key=sev_by_cat.get) if sev_by_cat else None
-            if crit_reviews_1y and _top_sev:
-                v_why = (f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>이 실망 리뷰였어요,<br>'
-                         f'특히 <b>{E(cat_ko(_top_sev))}</b> 심각 불만이 <b>{sev_by_cat[_top_sev]}건</b>으로 가장 많았어요')
-            elif crit_reviews_1y:
-                v_why = f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>이 실망 리뷰였어요'
-            else:   # 가드(빈값): 실측 비율만
-                v_why = f'실망 확률 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
+        elif _band == 'safe':
+            v_head, v_tone = '실망한 투숙객이 적어요', 'safe'
+        elif _band == 'danger':
+            v_head, v_tone = '실망한 투숙객이 많아요', 'danger'
+        elif ratio < 1.15:
+            v_head, v_tone = f'{CITY["ko"]} 평균 수준이에요', 'warning'
+        else:
+            v_head, v_tone = '평균보다 실망이 잦아요', 'warning'
+        # 순위 구간: '상위 25% 안' → '실망 적은 호텔 25% 안' (낮을수록 좋다는 방향을 말에 넣는다)
+        _tier = h.get('rank_tier')
+        tier_txt = ''
+        if _tier:
+            tier_txt = ('실망 적은 호텔 ' if _tier[0] == 'top' else '실망 많은 호텔 ') + _tier[1].replace('상위 ', '').replace('하위 ', '')
+        tier_html = f'<span class="tier-badge is-{v_tone}">{E(tier_txt)}</span>' if tier_txt else ''
+        v_sub_html = f'<div class="v-sub">{CITY["ko"]} 평균 {avg}%{tier_html}</div>'
+        # 근거 1: 글 리뷰 N건 중 실망 리뷰 M건 (분모 = 글 리뷰: 실망 리뷰는 글에서만 셀 수 있음) → 리스크 상세로
+        _rows = []
+        if h['text_1y']:
+            _rows.append(('ink', f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>실망 리뷰 {crit_reviews_1y}건</b>', '#risk-detail'))
+        # 근거 2: 예약을 접을 만한 문제(희소·고위험 4종) 심각 리뷰 → 있으면 건수, 없으면 '없음'. 평균 이상 호텔은 대신 가장 잦은 불만
+        _RARE_KO = {'벌레': '벌레', '곰팡이': '곰팡이', '동네 분위기': '밤길·동네 분위기', '객실 보안': '객실 보안'}
+        _rare_hit = [(_RARE_KO.get(_sc, _sc), _n) for _sc, _n in rare_crit.items() if _n]
+        _worst6 = max(SCORED_CATS, key=lambda c: h['cats'][c]['score'])
+        if _rare_hit:
+            _txt = ' · '.join(f'<b>{E(k)} {n}건</b>' for k, n in _rare_hit)
+            _call = '예약 전 꼭 확인하세요' if sum(n for _, n in _rare_hit) >= 3 else '리뷰를 확인해 보세요'   # 3건 미만은 경고 톤을 낮춤
+            _rows.append(('danger', f'{per} 심각 리뷰 {_txt}{DSEP}{_call}', '#risk-detail'))
+        elif v_tone in ('warning', 'danger') and h['cats'][_worst6]['count_1y']:
+            _rows.append(('warning', f'불만이 가장 많은 항목은 <b>{E(cat_ko(_worst6))}</b>{NB}({h["cats"][_worst6]["count_1y"]}건)',
+                          f'#risk-{CATS.index(_worst6)}'))
+        else:
+            _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
+        v_why = ''.join(
+            (f'<a class="ev-row" href="{href}"><span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span><span class="ev-arrow"></span></a>'
+             if href else f'<div class="ev-row"><span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span></div>')
+            for tone, txt, href in _rows)
         # ── P3 누구와 가세요(1단계): 구성별 관련 소분류(최근 1년 비율·희소는 심각 건수) + FAQ + 대표 인용 1건 ──
         _faq_by = {it.get('t'): it for it in (faq or [])}
         _panels, _chips = [], []
@@ -2603,7 +2595,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     _rows.append(('faq', E(WHO_FAQ_LABEL[_k]), E(', '.join(_it['c'][:3]))))
             if _risk:
                 _sc, _top, _tb = max(_risk)
-                _head = (f'<em>{E(SUB_PHRASE[_top])}</em> 확인이 필요해요' if _tb == 'danger'      # 위험(평균 2배+)·희소 심각
+                _head = (f'<em>{E(SUB_PHRASE[_top])}</em> 심각 리뷰가 있어요' if _top in RARE_SUBS         # 희소·고위험
+                         else f'<em>{E(SUB_PHRASE[_top])}</em> 불만이 잦아요' if _tb == 'danger'       # 위험(평균 2배+)
                          else f'<em>{E(SUB_PHRASE[_top])}</em> 불만이 평균보다 많은 편이에요')
                 _qs = sorted((q for q in quotes.get((pid, SUB_CAT[_top]), [])
                               if (q.get('scat') or '') == _top and q.get('grade') in ('심각', '주의')),
@@ -2629,7 +2622,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>''' + WHO_JS
 
         # F41: 히어로 줄 = %+판정 같은 줄·같은 케이스색(verdict 별도 줄 흡수). 근거(why)는 게이지 아래 유지
-        verdict_why_html = f'<div class="verdict-why">{v_why}</div>'
+        verdict_why_html = f'<div class="ev">{v_why}</div>'
 
         # ── P1 한눈에 보기: 걸리는 점 = 딜브레이커 발동분(희소 심각 최근 1년 ≥3, db_data와 동일 캘리브레이션) 우선
         #    + 주의·위험 소분류 중 최근 1년 3건+ & 비율 2%+ (위험도순). 없는데 판정이 C·D면 최고 위험 카테고리로 폴백.
@@ -2685,7 +2678,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
                         {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
                     </div>
-                    <div class="gl-foot"><span><span class="seg">{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</span>{DSEP}<span class="seg">수치에서 자동 생성</span></span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
+                    <div class="gl-foot"><span><span class="seg">{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</span>{DSEP}<span class="seg">리뷰 숫자로 자동 작성</span></span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
                 </div>
             </div>'''
 
@@ -2737,7 +2730,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     chip = f'<div class="rare-chip is-{_ctone}">{E(_clabel)}</div>'
                     rare_btn = cnt_html if cnt > 0 else ''      # 우측 "N건" 전체보기 링크 현행 유지
                     rows.append(f'''<li class="stat-row is-rare">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{rdot}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{rdot}"></span>{E(SUB_PHRASE.get(s, s))}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
                     {chip}
                     {rare_btn}
                 </li>''')
@@ -2760,7 +2753,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
             is_open = ' is-open' if order == 0 else ''      # 1위만 초기 펼침(§4-c)
 
-            # ── 카테고리별 월별 위험 리뷰 흐름 (CAT-TREND). 최상단(axis 앞) 삽입 ──
+            # ── 카테고리별 월별 불만 리뷰 비율 (CAT-TREND). 최상단(axis 앞) 삽입 ──
             cat_trend = ''
             if cmonths:
                 pw, pc, pa = [], [], []      # 주의%, 심각%, 도시 카테고리 평균% (완전월 12개)
@@ -2775,16 +2768,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 if sum_flag >= 8:                            # 가드(C-5): 저표본 차트 생략
                     labels = [lbl for _ym, lbl in cmonths]
                     tot = round(pw[-1] + pc[-1], 1)          # 합계 = 주의+심각 (배타)
-                    now_txt = f'{labels[-1]} {tot}% · 평균 {pa[-1]}%'
+                    now_txt = f'{labels[-1]} {tot}% · {CITY["ko"]} 평균 {pa[-1]}%'
                     dt = round((pw[-1] + pc[-1]) - (pw[-2] + pc[-2]), 1)
                     # 델타 문구(C-8): ±0.05p 미만은 "비슷", 그 외 합계 기준 증감
                     if abs(dt) < 0.05:
-                        delta_txt = '지난 달과 비슷한 수준이에요'
+                        delta_txt = '지난달과 비슷해요'
                     else:
-                        delta_txt = f'지난 달 대비 {dt:+.1f}p {"증가했어요" if dt > 0 else "줄었어요"}'
+                        delta_txt = f'지난달보다 {abs(dt):.1f}%p {"올랐어요" if dt > 0 else "내렸어요"}'
                     # F24: 기본 접힘 — 토글 줄에 현재값 요약 유지(정보 손실 방지), 차트는 펼칠 때 지연 렌더
                     cat_trend = (f'<div class="trend-fold ct-fold" data-ci="{ci}">'
-                        f'<button type="button" class="trend-fold-btn"><span class="tf-tit">월별 위험 흐름 보기</span>'
+                        f'<button type="button" class="trend-fold-btn"><span class="tf-tit">월별 불만 리뷰 비율 보기</span>'
                         f'<span class="tf-now">{E(now_txt)}</span><span class="tf-arrow"></span></button>'
                         f'<div class="trend-fold-body">'
                         f'<div class="cat-trend" data-ci="{ci}">'
@@ -2797,7 +2790,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <span class="risk-dot is-{band}"></span>
                     <span class="cat-name">{E(cat_ko(c))}</span>
                     <span class="cat-verdict is-{band}">불만 {E(cat_verdict(cat['score'])[0])}</span>
-                    <span class="cat-rank">{E(rank_text(cat['pctl_worse']))}</span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
@@ -2849,7 +2841,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <span class="risk-dot is-{band}"></span>
                     <span class="cat-name">{E(cat_ko(c))}</span>
                     <span class="cat-verdict is-{band}">{E(head_txt)}</span>
-                    <span class="cat-rank">점수 대신 실제 신고 건수로 보여드려요</span>
+                    <span class="cat-rank">점수 대신 실제 리뷰 건수로 보여드려요</span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
@@ -2874,37 +2866,44 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             low_share = round(st['low_1y'] / st['total_1y'] * 100)
             stars_block = f'''<div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
-                <div class="desc">{per} <b>2점 이하 리뷰 비율은 {low_share}%</b> 입니다.<br>별점은 구글 리뷰만 있어요 (트립닷컴 등은 별점 미제공)</div>
+                <div class="desc">{per} 구글 리뷰 중 <b>2점 이하가 {low_share}%</b>예요.<br>별점은 구글 리뷰만 있어요 (트립닷컴 등은 별점 미제공)</div>
                 <div class="count">{per} {st['total_1y']:,}건</div></div>
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
 
-        # 산출 기준: 글 리뷰는 AI 판단, 별점만 리뷰는 같은 별점 리뷰의 실망 비율로 추정 (2026-10 산식 개선 — scoring.star_p)
+        # 산출 기준(?): ① 단순 비율과 다른 이유(암산한 고객용) ② 실망 리뷰 정의 ③ 리뷰 구성 ④ 출처·기준일 (2026-10 카피 개편)
         _so = h['star_only_1y']
-        if _so and city.get('star_p'):
-            _so_txt = (f"글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 판단했고, 별점만 남긴 {_so:,}건은 "
-                       f"같은 별점 리뷰의 실망 비율로 추정해 약 {h.get('imp_1y', 0):.1f}건으로 반영했어요")
-        elif _so:
-            _so_txt = f"글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 판단했고, 별점만 남긴 {_so:,}건은 '문제 언급 없음'으로 셌어요"
+        _raw = (crit_reviews_1y / h['text_1y'] * 100) if h['text_1y'] else None
+        if _raw is not None and abs(_raw - h['p_crit'] * 100) >= 0.5:
+            _why1 = (f"<b>{v}%는 글 리뷰 {h['text_1y']:,}건 중 {crit_reviews_1y}건을 그대로 나눈 값({_raw:.1f}%)이 아니에요.</b> "
+                     f"최근 리뷰일수록 크게 보고(6개월 지나면 절반), 리뷰가 적은 호텔은 {CITY['ko']} 평균 쪽으로 보정해서 조금 달라요")
         else:
-            _so_txt = f"리뷰 {h['text_1y']:,}건 모두 AI가 내용을 읽어 판단했어요"
+            _why1 = (f"최근 리뷰일수록 크게 보고(6개월 지나면 절반), 리뷰가 적은 호텔은 {CITY['ko']} 평균 쪽으로 보정해요. "
+                     f"이 호텔은 글 리뷰 {h['text_1y']:,}건 중 {crit_reviews_1y}건을 나눈 값과 거의 같아요")
+        if _so and city.get('star_p'):
+            _so_txt = (f"{per} 리뷰 {h['analyzed']:,}건 = 글 리뷰 {h['text_1y']:,}건 + 별점만 남긴 {_so:,}건. "
+                       f"별점만 남긴 리뷰는 같은 별점 리뷰의 실망 비율로 추정해 약 {h.get('imp_1y', 0):.1f}건으로 반영했어요")
+        elif _so:
+            _so_txt = f"{per} 리뷰 {h['analyzed']:,}건 = 글 리뷰 {h['text_1y']:,}건 + 별점만 남긴 {_so:,}건('문제 언급 없음'으로 셈)"
+        else:
+            _so_txt = f"{per} 리뷰 {h['text_1y']:,}건 모두 글 리뷰라 AI가 전부 읽었어요"
         body_scored = f'''
         <div class="sect disappear" id="sec-prob">
             <div class="head">
                 <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
-                <div class="pct">{v}%</div>
+                <div class="pct is-{v_tone}">{v}%</div>
                 <div class="vh is-{v_tone}">{E(v_head)}</div>
+                {v_sub_html}
             </div>
             {gauge_html(h['p_crit'], city['crit'], v_tone, h.get('rank_tier'))}
             {verdict_why_html}
             {overall_trend}
             <div class="basis-fold">
                 <div class="basis">
-                    <p>심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰를 실망 리뷰로 세요</p>
-                    <p>최근 리뷰일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</p>
-                    <p>{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} (구글·트립닷컴 등 여러 사이트 합산)</p>
+                    <p>{_why1}</p>
+                    <p>실망 리뷰 = 심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰</p>
                     <p>{_so_txt}</p>
-                    <p class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></p>
+                    <p class="basis-note">구글·트립닷컴 등 공개 리뷰 기준 · {CITY['data_asof']} · 참고용 의견이라 실제 경험과 다를 수 있어요 · <a href="../about">계산 방법 자세히</a></p>
                 </div>
             </div>
         </div>
@@ -2960,7 +2959,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레·곰팡이·동네 분위기·객실 보안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
+                <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         {similar_block}
@@ -3033,10 +3032,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
     if h['scored']:
         _pv = pct(h['p_crit'])
-        _rank = f'{CITY["ko"]} {h["rank_tier"][1]}' if h.get('rank_tier') else ''   # 순위는 확실할 때만 구간으로
         _top_html = (f'<div class="ps-eyebrow">이 호텔에서 실망할 확률</div>'
                      f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}">{E(v_head)}</div>'
-                     f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{(" · " + _rank) if _rank else ""}</div>')
+                     f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{tier_html}</div>')
     else:
         _top_html = (f'<div class="ps-eyebrow">실망 확률</div><div class="ps-collect">리뷰 수집중</div>'
                      f'<div class="ps-avg">분석 리뷰가 {MIN_REVIEWS}건 이상 쌓이면 공개해요</div>')
@@ -3462,7 +3460,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             var $sect = $('#risk-detail');
             if (!$sect.length) return;
 
-            // ── 월별 위험 흐름 라인차트 공통 생성 헬퍼 (카테고리·전체 공용) ──
+            // ── 월별 불만 리뷰 비율 라인차트 공통 생성 헬퍼 (카테고리·전체 공용) ──
             function makeTrendChart(canvasId, d){{
                 var el = document.getElementById(canvasId); if (!el || !window.Chart || !d) return;
                 var ctx = el.getContext('2d');
@@ -3999,7 +3997,7 @@ def build_about(hotels_meta, H, city):
         '<li>청결·냄새·소음·객실·직원·위치 6개 항목을 불만의 양과 심각도로 점수화해요</li>'
         f'<li>{CITY["ko"]} 평균을 50으로 두고, 평균의 3배 이상이면 100이에요</li>'
         '<li>불만 리뷰가 5건 미만인 항목·소분류에는 위험 등급을 붙이지 않아요</li>'
-        '<li>벌레·곰팡이·동네 분위기·객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
+        '<li>벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
         '</ul>')
     s3 = sect('데이터 출처와 한계',
         '<ul class="about-list">'
