@@ -33,18 +33,18 @@
     <link rel="apple-touch-icon" href="img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="css/tokens.css?v=1791519735">
-    <link rel="stylesheet" href="css/common.css?v=1791519735">
-    <link rel="stylesheet" href="css/layout.css?v=1791519735">
-    <link rel="stylesheet" href="css/swiper.css?v=1791519735">
-    <link rel="stylesheet" href="css/uplift.css?v=1791519735">
-    <link rel="stylesheet" href="css/mvp.css?v=1791519735">
-    <script src="js/backnav.js?v=1791519735"></script>
+    <link rel="stylesheet" href="css/tokens.css?v=1791521225">
+    <link rel="stylesheet" href="css/common.css?v=1791521225">
+    <link rel="stylesheet" href="css/layout.css?v=1791521225">
+    <link rel="stylesheet" href="css/swiper.css?v=1791521225">
+    <link rel="stylesheet" href="css/uplift.css?v=1791521225">
+    <link rel="stylesheet" href="css/mvp.css?v=1791521225">
+    <script src="js/backnav.js?v=1791521225"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="js/engage.js?v=1791519735" defer></script>
-    <script src="js/recommend.js?v=1791519735"></script>
+    <script src="js/engage.js?v=1791521225" defer></script>
+    <script src="js/recommend.js?v=1791521225"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -114,12 +114,12 @@
                     <button type="button" class="f-more" id="open-catfilter">항목별 필터</button>
                 </div>
             </div>
-            <div class="map-wrap"><div id="map"></div>
+            <div class="map-wrap is-collapsed" id="map-wrap"><div id="map"></div>
                 <div class="map-legend">
                     <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
                 </div>
             </div>
-            <div class="map-hint" id="map-hint"></div>
+            <div class="map-hint is-collapsed" id="map-hint"></div>
             <div class="total" id="total"></div>
             <div class="notice" id="notice" style="display:none"></div>
             <div class="list-head" id="list-head" style="display:none">
@@ -142,8 +142,10 @@
                 </div>
             </div>
             <div class="list"><ul id="results"></ul></div>
+            <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="mt-t">지도로 보기</span></button>
         </section>
     </main>
+    <script src="./js/compare.js?v=1791521225" data-root="./"></script>
 
     <div class="cf-modal" id="cf-catfilter">
         <div class="cf-modal-dim"></div>
@@ -158,10 +160,10 @@
         </div>
     </div>
 
-    <script src="./data/index.js?v=1791519735"></script>
-    <script defer src="./data/search_index.js?v=1791519735"></script>
-    <script src="./js/search-key.js?v=1791519735"></script>
-    <script src="./js/search-ac.js?v=1791519735"></script>
+    <script src="./data/index.js?v=1791521225"></script>
+    <script defer src="./data/search_index.js?v=1791521225"></script>
+    <script src="./js/search-key.js?v=1791521225"></script>
+    <script src="./js/search-ac.js?v=1791521225"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     (function(){
@@ -175,6 +177,8 @@
         var CAT_ICON = {'위생':'','냄새':'','소음':'','시설':'','불친절':'','위치·안전':''};
         var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
         var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
+        var mapOpen = false;     // P6: 지도 기본 접힘 — 열렸을 때만 '지도 영역 내' 연동
+        var lastQ = '';          // 검색어 측정 중복 방지
 
         function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
         function km(a1,o1,a2,o2){ var R=6371,p1=a1*Math.PI/180,p2=a2*Math.PI/180,dp=(a2-a1)*Math.PI/180,dl=(o2-o1)*Math.PI/180;
@@ -190,6 +194,7 @@
         // 컨테이너 레이아웃 완료 후 크기 재계산 (초기 0폭 방지) + 리스트 재동기화
         // §6: 지역(fArea) 선택 진입 시엔 fitBounds(전체 뷰)로 되돌아가지 않고 지역 중심 줌 15 유지
         setTimeout(function(){
+            if (!mapOpen) return;             // P6: 접힌 상태면 지도 그리기는 열 때(openMap)
             map.invalidateSize();
             if (recMode) return;              // rec 모드는 drawRecMap이 별도 처리
             if (!baseList.length) return;
@@ -252,10 +257,18 @@
                 + '<span class="cn">'+sortCat+'</span>'
                 + '<span class="cbadge">'+BAND_KO[band]+' · 위험도 '+h.cs[sortCat]+'</span></div>';
         }
+        function tagsHtml(h){  // P6 리뷰 기반 태그(빌드 시 실측 산출)
+            if (!h.tg || !h.tg.length) return '';
+            return '<div class="r-tags">'+h.tg.map(function(t){ return '<span class="r-tag is-'+t[0]+'">'+t[1]+'</span>'; }).join('')+'</div>';
+        }
+        function cmpBtn(h){   // P5 비교 담기 (채점 호텔만)
+            if (!h.scored) return '';
+            return '<button type="button" class="r-cmp" data-cmp-id="'+h.id+'" data-cmp-name="'+String(h.name).replace(/"/g,'&quot;')+'" data-cmp-img="'+(h.ai||'')+'" data-off="비교" data-on="비교"><i></i><span class="cmp-t">비교</span></button>';
+        }
         function row(h){
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
-            return '<li><div class="item">'
+            return '<li><div class="item'+(h.scored?' with-cmp':'')+'">'
                 + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
@@ -266,15 +279,24 @@
                 + '<div class="num">'+(h.g?h.g.toFixed(1):'-')+'</div><div class="txt">('+h.rc.toLocaleString()+')</div></div>'
                 + '<div class="badge">'+bandChip(h)+'</div></div>'
                 + catChip(h)
-                + '</div></div></li>';
+                + tagsHtml(h)
+                + '</div>'+cmpBtn(h)+'</div></li>';
         }
         function renderRows(list){
             if (!list.length) { $res.html('<li class="sub-head">이 조건에 맞는 호텔이 없어요. 필터를 조정해 보세요.</li>'); return; }
             $res.html(sortList(list).map(row).join(''));
+            if (window.CFCompare) window.CFCompare.render();   // 새로 그린 카드의 담김 상태 반영
         }
 
         // 지도 뷰포트 안의 호텔만 리스트에 (C-3)
         function renderVisible(){
+            if (!mapOpen) {
+                $lcount.text('전체 ' + baseList.length + '곳');
+                $lhead.toggle(baseList.length > 0);
+                renderRows(baseList);
+                $hint.html('');
+                return;
+            }
             var b = map.getBounds();
             var vis = baseList.filter(function(h){ return h.lat != null && b.contains([h.lat, h.lng]); });
             $lcount.text('지도 영역 내 ' + vis.length + '곳');
@@ -334,7 +356,12 @@
                     matched = pool.filter(function(h){ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; });
                 }
                 // 2) 매칭 0건일 때만 타도시 안내 발동 (§7-d)
-                if (!matched.length) { unsupported(q); drawMap(HOTELS.filter(passFilters), true); return; }
+                if (q !== lastQ && typeof gtag === 'function') {
+                    gtag('event', 'search', {search_term: q, results: matched.length});
+                    if (!matched.length) gtag('event', 'search_no_result', {search_term: q});
+                }
+                lastQ = q;
+                if (!matched.length) { unsupported(q); if (mapOpen) drawMap(HOTELS.filter(passFilters), true); return; }
                 pool = matched;
                 $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
             } else {
@@ -343,7 +370,9 @@
             baseList = pool;
             // 지역이 선택돼 있으면 지역 중심으로 고정 줌 (fitBounds는 가장자리 호텔로 뷰가 넓어짐)
             var area = fArea ? AREAS.filter(function(x){ return x.code === fArea; })[0] : null;
-            if (area) {
+            if (!mapOpen) {
+                // P6: 지도 접힘 — 지도는 열 때(setMap) 그린다
+            } else if (area) {
                 map.setView([area.lat, area.lng], 15, {animate:false});  // 애니메이션 setView는 프로그래밍 호출 시 무시됨
                 drawMap(pool, false);
             } else {
@@ -353,7 +382,32 @@
         }
 
         // ───── 이벤트 ─────
-        map.on('moveend', function(){ if (syncMap && !recMode) renderVisible(); });
+        map.on('moveend', function(){ if (mapOpen && syncMap && !recMode) renderVisible(); });
+
+        // P6 지도 토글: 열면 지도 위로 스크롤 + 크기 재계산 + 목록을 보이는 영역으로 연동, 닫으면 전체 목록
+        function setMap(open){
+            mapOpen = open;
+            $('#map-wrap, #map-hint').toggleClass('is-collapsed', !open);
+            $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록만 보기' : '지도로 보기');
+            $('html').toggleClass('map-open', open);
+            if (open) {
+                map.invalidateSize();   // 숨김 상태(0px)에서 초기화된 지도 크기 재계산
+                var a = fArea ? AREAS.filter(function(x){ return x.code === fArea; })[0] : null;
+                if (a) map.setView([a.lat, a.lng], 15, {animate:false});
+                else {
+                    var pts = baseList.filter(function(h){ return h.lat != null; }).map(function(h){ return [h.lat, h.lng]; });
+                    if (pts.length) map.fitBounds(pts, {padding:[28,28], maxZoom:15, animate:false});  // 즉시 맞춤 → 아래 renderVisible이 바로 정확
+                }
+                drawMap(baseList, false);
+                var top = $('#map-wrap').offset().top - 64;
+                window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+            }
+            renderVisible();
+        }
+        $('#map-toggle').on('click', function(){
+            setMap(!mapOpen);
+            if (typeof gtag === 'function') gtag('event', 'map_toggle', {open: mapOpen});
+        });
 
         $('#f-area').on('click', '.f-chip', function(){
             var $c = $(this); $('#f-area .f-chip').removeClass('on'); $c.addClass('on');
@@ -494,6 +548,7 @@
         }
         function initRec(){
             recMode = true;
+            mapOpen = true; $('#map-wrap, #map-hint').removeClass('is-collapsed'); $('#map-toggle').hide();
             recPr = (sp.get('pr')||'').split(',').filter(function(c){ return RC[c]; });
             recBud = sp.get('bud')||''; recArea = sp.get('area')||'';
             window.CF_REC_PRESET = {pr:recPr, bud:recBud, area:recArea};
