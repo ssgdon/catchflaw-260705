@@ -1257,7 +1257,7 @@ def build_search(city_avg_pct):
                 <div class="lh-sort" id="lh-sort">
                     <button type="button" class="lh-sort-btn" id="lh-sort-btn">추천순</button>
                     <div class="lh-sort-box">
-                        <button type="button" class="on" data-sort="rs" data-label="추천순">추천순<span class="ls-sub">실망 확률 낮고 한국인이 많이 가는 곳부터</span></button>
+                        <button type="button" class="on" data-sort="rs" data-label="추천순">추천순<span class="ls-sub">{REC_SORT_DESC}</span></button>
                         <button type="button" data-sort="p" data-label="실망 확률 낮은 순">실망 확률 낮은 순<span class="ls-sub">최근 1년 실망한 리뷰 비율이 낮은 곳부터</span></button>
                         <button type="button" data-sort="krn" data-label="한국인이 많이 가는 순">한국인이 많이 가는 순<span class="ls-sub">최근 1년 한국인 리뷰가 많은 곳부터</span></button>
                         <button type="button" data-sort="g" data-label="구글 평점 높은 순">구글 평점 높은 순<span class="ls-sub">별점만 보고 싶을 때</span></button>
