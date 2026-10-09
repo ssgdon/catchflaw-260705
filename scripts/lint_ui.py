@@ -4,16 +4,18 @@
 사용:
   python scripts/lint_ui.py                   # 전체 검사 (위반 시 exit 1)
   python scripts/lint_ui.py --update-baseline # 레거시 래칫 기준을 현재값으로 갱신(줄어든 경우에만 쓰기)
+                                              # (+ --allow-new: 규칙을 새로 만들 때만, 기준선에 없던 항목 등록)
   python scripts/lint_ui.py --hook            # Claude Code PostToolUse 훅 (stdin JSON, 위반 시 exit 2)
 generate.py가 빌드 시작 때 run()을 호출한다 → 위반이 있으면 빌드 실패(긴급 시 CF_UI_LINT=warn).
 
 규칙
   E1 font-size는 var(--fs-*)만. px 직접 기입 금지 (::before/::after 장식 글리프·아이콘 컨테이너 면제)
-  E2 var(--fs-micro)(12px)는 배지·알약·범례·축 라벨 전용. 읽는 글자는 --fs-meta(13px) 이상
+  E2 var(--fs-micro)(13px)는 배지·알약·범례·축 라벨 전용. 읽는 글자는 --fs-meta(14px) 이상
   E3 색은 tokens.css 변수만. hex 직접 기입 금지 (mvp·ds·pc·신규 CSS, generate.py/js 인라인 style)
   E4 PC 전용 규칙(min-width:1100px)은 pc.css에만, pc.css의 규칙은 전부 @media 안에
   E5 css/에 새 파일 → 로드 순서(KNOWN_CSS)·CLAUDE.md·UI-STANDARDS 등록 후 사용
-  R* 레거시 래칫(줄일 수만 있음): hex 색(layout·uplift·common), px line-height, 단계 밖 border-radius
+  R* 래칫(줄일 수만 있음): hex 색(layout·uplift·common), px line-height, 단계 밖 border-radius,
+     버튼·칩·탭 높이 px(R-ctrlh → var(--h-*) 토큰으로)
 예외가 꼭 필요하면 해당 줄 끝에 /* ui-lint: allow 사유 */ 를 단다(사유 필수).
 """
 import json, os, re, sys
@@ -33,6 +35,7 @@ BADGE_SUFFIX = ('badge', 'badge-item', 'chip', 'pill', 'tag', 'lg', 'ax', 'pop-p
                 'flag', 'dot', 'bubble', 'status-item', 'tags-item', 'legend-item', 'hotel-text', 'marker',
                 'count', 'lang', 'hub-rank')
 DECOR_RE = re.compile(r':(:)?(before|after)\b|emoji|\bico|\s i$|bt-q$')
+CTRL_RE = re.compile(r'(btn|button|chip|tab|cta|toggle|more|sort|switch|-go|-add)$')  # 버튼류 마지막 클래스
 RADIUS_OK = re.compile(r'^(0|50%|var\(--radius-[a-z]+\)|inherit)$')
 HEX_RE = re.compile(r'#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?(?:[0-9a-fA-F]{2})?\b')
 ALLOW = 'ui-lint: allow'
@@ -101,7 +104,7 @@ def lint_css(name, src, errs, counts):
                 if re.search(r'\d(px|rem)\b', val) and not DECOR_RE.search(sel1):
                     errs.append(f'E1 {where} → font-size:{val} — var(--fs-*) 토큰만 사용')
                 if 'var(--fs-micro)' in val and not is_badge(sel1):
-                    errs.append(f'E2 {where} → 12px(--fs-micro)는 배지·범례 전용. 읽는 글자는 var(--fs-meta) 이상')
+                    errs.append(f'E2 {where} → --fs-micro(13px)는 배지·범례 전용. 읽는 글자는 var(--fs-meta)(14px) 이상')
             if HEX_RE.search(val):
                 if name in LEGACY_CSS:
                     counts[f'R-hex:{rel}'] = counts.get(f'R-hex:{rel}', 0) + 1
@@ -109,6 +112,8 @@ def lint_css(name, src, errs, counts):
                     errs.append(f'E3 {where} → {prop}:{val} — 색은 tokens.css 변수만')
             if prop == 'line-height' and re.fullmatch(r'[\d.]+px', val):
                 counts[f'R-lhpx:{rel}'] = counts.get(f'R-lhpx:{rel}', 0) + 1
+            if prop == 'height' and re.fullmatch(r'\d+px', val) and CTRL_RE.search(_last_cls(sel1.split(',')[-1])) and not DECOR_RE.search(sel1):
+                counts[f'R-ctrlh:{rel}'] = counts.get(f'R-ctrlh:{rel}', 0) + 1
             if prop == 'border-radius' and not all(RADIUS_OK.match(v) for v in val.split()):
                 counts[f'R-radius:{rel}'] = counts.get(f'R-radius:{rel}', 0) + 1
         is_pc_media = any(re.search(r'min-width\s*:\s*1100px', h) for h in medias)
@@ -154,8 +159,8 @@ def collect():
     for k, n in sorted(counts.items()):
         if n > base.get(k, 0):
             rule, rel = k.split(':', 1)
-            what = {'R-hex': 'hex 색', 'R-lhpx': 'px 줄간격', 'R-radius': '단계 밖 라운드'}[rule]
-            errs.append(f'{rule} {rel} → {what} {base.get(k, 0)}→{n}개로 늘어남. 늘리지 말고 토큰(var(--*))으로')
+            what = {'R-hex': 'hex 색', 'R-lhpx': 'px 줄간격', 'R-radius': '단계 밖 라운드', 'R-ctrlh': '버튼·칩 px 높이'}[rule]
+            errs.append(f'{rule} {rel} → {what} {base.get(k, 0)}→{n}개로 늘어남. 늘리지 말고 토큰(var(--*), 높이는 --h-*)으로')
     return errs, counts, base
 
 
@@ -200,7 +205,10 @@ def main():
         sys.exit(hook())
     if '--update-baseline' in sys.argv:
         errs, counts, base = collect()
-        grew = {k: (base.get(k, 0), n) for k, n in counts.items() if n > base.get(k, 0)}
+        # 기존 항목은 늘릴 수 없음. 새 항목(규칙 신설)은 --allow-new 를 명시할 때만 등록
+        allow_new = '--allow-new' in sys.argv
+        grew = {k: (base.get(k, 0), n) for k, n in counts.items()
+                if n > base.get(k, 0) and not (allow_new and k not in base)}
         if base and grew:
             print('기준선을 늘릴 수 없습니다(래칫):', grew)
             sys.exit(1)

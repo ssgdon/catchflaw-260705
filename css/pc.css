@@ -60,7 +60,8 @@
     #detail .information .info-cont .name .name-ko{font-size:var(--fs-pc-h1);line-height:1.3;}   /* PC 제목 전용(uplift 24px 덮어씀) */
     #detail .information .info-cont .cmp-btn{display:none;}          /* 결정 카드에 있음 */
     #detail .information .info-bottom{grid-area:acts;align-self:end;display:flex;gap:var(--sp-2);margin:0;}
-    #detail .information .info-bottom .btn-link{min-width:200px;}
+    #detail .information .info-bottom .btn-link{min-width:200px;height:auto;min-height:64px;padding-top:var(--sp-3);padding-bottom:var(--sp-3);}
+    #detail .information .info-bottom .btn-link .txt .count{white-space:nowrap;}
     #detail .information .fj-title{grid-area:fjt;margin-top:var(--sp-5);}
     #detail .information .faq-jump-wrap{grid-area:fj;}
 
@@ -94,10 +95,10 @@
     .pc-side .ps-rows li{display:flex;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) 0;font-size:var(--fs-caption);color:var(--ink-3);}
     .pc-side .ps-rows li span:last-child{color:var(--ink-2);text-align:right;}
     .pc-side .ps-rows b{font-weight:var(--fw-bold);color:var(--ink);}
-    .pc-side .ps-cta{display:flex;align-items:center;justify-content:center;height:52px;margin-top:var(--sp-5);border-radius:var(--radius-btn);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);}
+    .pc-side .ps-cta{display:flex;align-items:center;justify-content:center;height:var(--h-btn);margin-top:var(--sp-5);border-radius:var(--radius-btn);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);}
     .pc-side .ps-cta:hover{background:var(--primary-deep);}
     .pc-side .ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);margin-top:var(--sp-2);}
-    .pc-side .ps-actions .cmp-btn,.pc-side .ps-actions .ps-share{display:flex;align-items:center;justify-content:center;gap:var(--sp-1);height:44px;margin:0;padding:0;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);cursor:pointer;}
+    .pc-side .ps-actions .cmp-btn,.pc-side .ps-actions .ps-share{white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:var(--sp-1);height:44px;margin:0;padding:0;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);cursor:pointer;}
     .pc-side .ps-actions .ps-share:only-child{grid-column:1 / -1;}
     .pc-side .ps-actions .cmp-btn.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
     .pc-side .ps-note{margin-top:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);text-align:center;}
@@ -185,7 +186,7 @@
     .review-sheet .sheet-close{top:var(--sp-5);right:var(--sp-5);width:40px;height:40px;border-radius:50%;font-size:var(--fs-body-lg);cursor:pointer;}
     .review-sheet .sheet-close:hover{background:var(--surface);}
     .review-sheet .sheet-chips{flex-wrap:wrap;overflow:visible;margin-top:var(--sp-4);}
-    .review-sheet .sheet-chip{height:36px;padding:0 var(--sp-4);cursor:pointer;}
+    .review-sheet .sheet-chip{height:var(--h-chip);padding:0 var(--sp-4);cursor:pointer;}
     .review-sheet .sheet-chip:not(.on):hover{background:var(--line-strong);}
     .review-sheet .sheet-tools{margin-top:var(--sp-4);}
     .review-sheet .sheet-kr{cursor:pointer;}
