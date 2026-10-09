@@ -1,12 +1,12 @@
-# HANDOFF 2026-10-09 — 클라우드 인수 세션 (라이브 QA · 가격 브랜치 리뷰)
+# HANDOFF 2026-10-09 — 클라우드 인수 세션 (라이브 QA)
 
-- 기준: origin/main `6ae7a7e` (라이브 catchflaw.com = 이 커밋의 docs)
+- 기준: 1절 표는 origin/main `6ae7a7e` 라이브, 1-b절(가격)은 최신 origin/main `11add30`(533ca79 '평일 중앙값' 배포본) 라이브.
 - 이 세션의 결과는 **브랜치로만** 올렸다. main push 없음, force push 없음.
-  - `cloud/qa-2610` — 라이브 QA에서 찾은 소스 수정 10커밋 + 이 문서
-  - `wip/price-overhaul` — 가격 개편 리뷰 수정 2커밋 추가(f445a1a → b2cb957, fast-forward)
+  - `cloud/qa-2610` — 라이브 QA 소스 수정 14커밋 + 이 문서. **origin/main 11add30을 병합해 둠(충돌 없음)** → 로컬은 그대로 main에 병합·빌드하면 된다.
+  - `wip/price-overhaul` — **폐기 대상(533ca79로 대체됨).** 작업 B는 취소(4절).
 - data-src·VM 접근 없음 → `generate.py` 빌드·docs 갱신은 하지 않았다. **docs 재빌드·배포는 로컬이 한다.**
 - 검사: `python -m py_compile scripts/generate.py`, `node --check js/*.js`, `python scripts/lint_ui.py` 모두 통과.
-- 근거 자료(스크린샷 139장, 점검 스크립트, 원시 결과 jsonl): `C:\Users\do931\dev\catchflaw_2607\archive\qa-2610\` (gitignore 폴더)
+- 근거 자료(스크린샷 150여 장, 점검 스크립트, 원시 결과 jsonl): `C:\Users\do931\dev\catchflaw_2607\archive\qa-2610\` (gitignore 폴더)
   - 스크린샷 `archive\qa-2610\shots\*.png` / 전 호텔 팝업 대조 `archive\qa-2610\popup_all.jsonl`
   - 재실행: `python archive/qa-2610/popup_all.py ids.txt out.jsonl`, `python archive/qa-2610/page_qa.py <tag> <url> 360,375,1280`
 
@@ -41,70 +41,74 @@
 | ds.css `p{word-break:keep-all}` | OK | OK | OK | 소스 css/ds.css 16행·라이브 /css/ds.css 모두 존재 | — |
 | 단어 중간 끊김 전반 | OK | OK | OK | 전 텍스트 노드 검사: 비교표 2곳만(아래 보고 1·2, 데이터·긴 고유명사) | `pages.jsonl` |
 
-한계: 수정 검증은 라이브 페이지에 로컬 js/css를 주입(Playwright route·add_script_tag)해서 했다. generate.py 쪽 수정(일행 칩·소분류 표기·줄바꿈 묶음·문구)은 data-src가 없어 py_compile + 정규식 단위 확인까지만 했으므로 **로컬 빌드 후 360·1280에서 한 번 더 확인**할 것.
+
+### 1-b. 가격 표기 일관성 (QA 기준 origin/main 11add30 = 533ca79 '평일 중앙값' 배포본)
+
+표본 유형별 4곳으로 전 화면 대조: 평일+주말 ChIJcVWby5aR…(The BREAKFAST HOTEL 텐진) / 평일만 ChIJ-xGcCSaR…(도큐스테이 텐진) / 주말만 ChIJGx1HCEKR…(몬토레 후쿠오카) / 표본 없음 ChIJoT192L-R…(웰비 후쿠오카). 라이브 compare.js 분포: 평일 158곳 · 주말만 2곳 · 없음 10곳.
+
+| 화면 | 평일+주말 | 평일만 | 주말만 | 표본 없음 | 판정 |
+|---|---|---|---|---|---|
+| 상세 가격 줄(`.meta .price`) | 1박 평일 약 9만원 | 1박 평일 약 15만원 | 1박 주말 약 38만원 | (줄 없음) | OK |
+| 상세 각주(`.price-note`) | 주말은 약 30만원 · 2인 1박 · 10월 9일 확인 | 2인 1박 · 10월 9일 확인 | 2인 1박 · 10월 9일 확인 | (없음) | OK, 360에서 한 줄(약 260px) |
+| 상세 PC 카드 '1박 가격' | 평일 약 9만원 · 주말 약 30만원 | 평일 약 15만원 | 주말 약 38만원 | (행 없음) | OK |
+| 검색 카드 | 1박 평일 약 9만원 | 1박 평일 약 15만원 | 1박 주말 약 38만원 | (가격 생략) | OK. 정렬 설명 '2인 1박 평일 가격 기준', 가격순은 평일 없는 곳을 맨 뒤로 |
+| 비교표 '1박 가격' | 평일 약 9만원 | 평일 약 15만원 | 주말 약 38만원 | 정보 없음 | **문제** → `1ce6af2`: 주말만·없음 칸이 하나라도 섞이면 '가장 저렴' 강조가 통째로 사라짐 |
+| 홈 가격 슬라이더 | 설명 '추천순 · 2인 1박 평일 가격(10월 9일 확인)', 카드 '1박 평일 약 N만원' | | (가격대 밖 → 미노출) | (미노출) | OK |
+| 홈 추천·비교 카드 | 1박 평일 약 N만원 | | '1박 주말 약 38만원'이 평일 카드들 사이에 섞임 | 비교 카드 '정보 없음' | 보고(라벨이 붙어 오해는 적음) |
+| 허브 가격대별 설명 | '가격대마다 … · 2인 1박 평일 가격 기준(10월 9일 확인)' | | | | **문제** → `dc57215`: 360에서 '2인 1박 / 평일 가격'으로 갈림 |
+| 허브 가성비 FAQ | '10만원 이하에서 실망 확률이 가장 낮은 곳' 답 = 도큐스테이 텐진(**평일 약 15만원**) | | | | **문제** → `5325877`: 조건(10만원·최저 실망 확률)과 다른 호텔. 예상 정답 언플랜 후쿠오카(평일 약 9만원, 2%) |
+| 좁은 칸 줄바꿈 | 홈 비교 카드 '평일 / 약 16만원', 비교표 '평일 약 / 15만원' 2줄 | | | | 보고(띄어쓰기 자리, 뜻 유지) |
+
+표본 없는 호텔(10곳)의 대체 표시: **숫자 없음**. 상세 가격 줄·각주·PC 카드 행이 통째로 빠지고, 검색 카드는 가격 생략, 비교표·홈 비교 카드는 '정보 없음', 가격대 필터·가격 슬라이더에서 제외. 옛 price_raw '약 N만원' 폴백은 prices.json이 있으면 쓰이지 않는다(코드 주석이 반대로 적혀 있어 `0933850`에서 주석만 고침).
+
+한계: 수정 검증은 라이브 페이지에 로컬 js/css를 주입(Playwright route·add_script_tag)해서 했다. generate.py 쪽 수정(일행 칩·소분류 표기·줄바꿈 묶음·문구·가성비 FAQ)은 data-src가 없어 py_compile + 정규식/함수 단위 확인까지만 했으므로 **로컬 빌드 후 360·1280에서 한 번 더 확인**할 것.
 
 ---
 
-## 2. 고친 것 — 브랜치 `cloud/qa-2610` (origin/main 6ae7a7e 위, 심각도순)
+## 2. 고친 것 — 브랜치 `cloud/qa-2610` (origin/main 6ae7a7e에서 시작, 11add30 병합 완료)
 
 | 커밋 | 내용 | 원인 |
 |---|---|---|
 | `fbf180a` | 상세 '누구와 가세요' 일행 칩 복구 | 6ae7a7e가 루프 안에서 FAQ 칩 목록을 바깥 변수 `_chips`(일행 버튼 목록)에 대입 → 변수명 `_fc`로 분리 |
 | `e1c7683` | 떠 있는 버튼 스크롤 숨김 실제 동작 | `head()`가 `js/common.js`를 로드하지 않음 → defer로 추가. 상세 `#detail ~ #float{opacity:1}`(id 2개)가 숨김 규칙을 이김 → `html.is-scroll-down #detail ~ #float` 추가 |
 | `432ba28` | 리뷰 카드·근거 팝업 소분류 표기 = SUB_PHRASE | 서버 카드 `q.scat`, JS 카드 `q.s`·칩 라벨이 내부 키 그대로 → `window.QSUBKO` + `subKo()` (필터 키는 그대로) |
+| `5325877` | 가성비 FAQ 답 = b1(평일 10만원 미만) 중 실망 확률 최저 | 추천순 1위를 20만원 미만 전체에서 골라 '평일 약 15만원' 호텔이 답으로 나감 |
+| `1ce6af2` | 비교표 1박 가격: 평일 가격 없는 칸만 순위 제외 | 주말만·정보 없음 칸이 섞이면 '가장 저렴' 강조 전체가 꺼짐 |
 | `d902b85` | `_GLUE`에 '한글 단어 + N건' 묶음 | '실망 리뷰 / 27건' 갈림 (UI-STANDARDS §15) |
+| `dc57215` | 허브 '가격대별 안심 숙소' 설명 DSEP | `.hub-sub`는 polish_breaks가 ' · '를 안 바꿈 → 360 갈림 |
 | `dff811b` | 비교: '리뷰&nbsp;적음', 자주 나온 불만 `toFixed(1)` | 좁은 3열 갈림, '1%' vs '12.5%' |
 | `4fb37cc` | 비교: 순위 행 비율 숫자 높이 맞춤 + `glue()` 가운뎃점 결합자 | 항목명 2줄 칸만 숫자가 내려감, JS 문구는 polish_breaks 밖 |
 | `16daa7b` | 홈 PC 비교 카드 4장 높이·결론 줄 통일(pc.css) | 모바일 flex의 `align-items:flex-start`를 PC 그리드가 물려받음 |
 | `3c9f377` | 검색 요약 '실망확률' → '실망 확률' | UI-STANDARDS §1 용어 |
 | `bc8f659` | 상세 상단 '분석 리뷰 N개' → 'N건' | 같은 화면 결정 카드·근거 줄과 단위 불일치 |
 | `f350639` | 검색 정렬 '추천순' 설명 = `REC_SORT_DESC` | §16 정본과 다른 문구(구글 평점 축 누락) |
-
-`cloud/qa-2610`과 `wip/price-overhaul`은 `git merge-tree`로 충돌 없음 확인.
+| `0933850` | 가격 폴백 주석 정정 | 주석과 실제 동작(표본 없으면 비표시) 불일치 |
+| `b7969fe` | origin/main 11add30 병합 | 충돌 없음 |
 
 ---
 
 ## 3. 로컬에서만 할 수 있는 남은 일
 
-### 인계받은 목록 (그대로)
-- 가격: VM에서 `price_sample.py --budget 6` 실행 중(2026-10-09 18시대 누적 $3.66, 숙박일 10/21·10/24·11/4·11/7·11/18 완료). 끝나면 VM에서 `export_pg.py --out /home/opc/catchflaw/data-src`(기본 출력 경로는 배포가 안 읽는 /home/opc/data-src이니 반드시 --out) → 로컬에서 data-src scp → `wip/price-overhaul`을 origin/main에 rebase·병합 → generate.py 빌드 → push. 원래 세션이 말한 '확인 조건 두 가지'는 기록에 내용이 없음 → 로컬 세션이 RECOMMEND-PRICE-DESIGN.md §7·§9에서 확인.
-- 메인 폴더(catchflaw_2607)는 아직 HEAD 24e5915에 가격 개편 미커밋 변경이 남아 있다(이제 wip/price-overhaul에 보존됨). 병합 후 메인 폴더 정리는 사용자 결정.
+### 인계받은 목록 (코디네이터 갱신 반영)
+- 가격: **배포 완료(11add30).** price_sample.py는 수동 실행, 1회 약 $5. Apify 이번 사이클 $29 중 약 $7.4 사용.
 - 분류 신고 기능('캐치플로 커뮤니티 피벗 검토' 세션): 사용자가 Supabase SQL(`pipeline/sql/classification_reports.sql`, 로컬 전용)과 VM `./venv/bin/python setup_report_overrides.py`(review_findings 뷰를 finding_overrides 조인으로 교체, --rollback 있음)를 실행해야 함 → 그 뒤 피벗 세션이 cron(*/15 report_review.py, 정본 pipeline/crontab.new) 등록. 프론트 신고 버튼(js/report.js)은 사용자 진행 승인 대기.
-- 정리할 로컬 worktree: catchflaw_rec(rec-home2), scratchpad wt4(evidence-popup), .claude/worktrees/friendly-curie-288145, cf_price(wip/price-overhaul).
+- 정리 대상: 브랜치 `wip/price-overhaul`(**폐기 — 533ca79로 대체됨**), worktree catchflaw_rec(rec-home2) · scratchpad wt4(evidence-popup) · .claude/worktrees/friendly-curie-288145. (메인 폴더 catchflaw_2607은 11add30, 미커밋 변경 없음 — 정리 완료)
 
 ### 이 세션이 추가하는 것
-1. **`cloud/qa-2610` 배포** — 최신 origin/main 위로 rebase(또는 병합) → `python scripts/generate.py` → 상세 1곳에서 일행 칩 4개·스크롤 숨김·팝업 칩 '밤길·동네 분위기' 확인(360·1280) → push. 일행 칩 회귀는 채점 170곳 전부라 가격 개편보다 먼저 배포 권장.
-2. **cf_price 워크트리의 로컬 `wip/price-overhaul`이 origin보다 2커밋 뒤** (origin b2cb957). 작업 전 `git pull --ff-only`.
-3. **'확인 조건 두 가지' 후보**: wip 브랜치의 RECOMMEND-PRICE-DESIGN.md §5.5 "남은 일" ① 날짜 8개 수집 완료 후 채점 호텔 80% 이상이 숙박일 ≥3 ② 시트5 18곳 재대조로 배율 1.0±0.15. (§7 P1 마지막 항목과 같은 내용) — 원래 세션 의도인지 로컬이 최종 확인.
-4. 데이터 문제 (수정 안 함, 보고만):
+1. **`cloud/qa-2610` 배포(가장 먼저)** — origin/main 11add30은 이미 병합해 둠. main이 또 움직였으면 `git merge origin/main`(충돌 확인) → `python scripts/generate.py` → 확인(360·1280): 상세 일행 칩 4개, 아래 스크롤 시 떠 있는 버튼 숨김, 근거 팝업 칩 '밤길·동네 분위기', 근거 줄 '실망 리뷰 N건' 한 줄, 허브 가격 설명 2줄, best/value FAQ 답이 평일 10만원 미만 호텔 → main 병합·push. 일행 칩 회귀는 채점 170곳 전부에 걸려 있다.
+2. 데이터 문제 (수정 안 함, 보고만):
    - FAQ 칩 띄어쓰기 소실: 미야코 호텔 하카타 `fq.family` "곁들여자는무료 · 유아용온수풀", `fq.luggage` "체크인전 O · 체크아웃후O" → 비교표에서 단어 중간 강제 줄바꿈. `faq_extract.py` 칩 정규화 확인.
-   - 호텔 마리노아 리조트 후쿠오카(ChIJn1TykzuTQTURdHnTUOXWZI0) 가까운 역 "텐진역 도보 105분" — 가장 가까운 역 산출이 시내 역 목록에 한정된 듯. 도보 30분 초과면 '역에서 멂' 등으로 바꾸거나 역 목록 확장 검토.
-   - 호텔 수 표기 3가지: 홈 히어로 "후쿠오카 호텔 170곳 분석 완료"(채점), 검색 "후쿠오카 호텔 184곳"(수집중 포함), CLAUDE.md "173곳". 의도된 구분이면 검색 쪽에 '(분석 170곳)' 병기 검토.
-   - 허브 요약 "최근 1년 리뷰 19,546건을 분석했어요"는 `H[p]['analyzed']`(별점만 리뷰 포함) 합. 같은 페이지 하단 "글 리뷰 3만 건 AI 분석"과 대상이 다름 — '분석' 대신 '최근 1년 리뷰 N건 기준' 등 문구 결정 필요.
-   - 홈 히어로 "리뷰 3만 개를 분석해" — 사이트 다른 곳은 '건'. '글 리뷰 3만 건' 통일 여부 결정.
-5. 경미한 UI 메모 (결정 필요, 수정 안 함): 검색 카드 360에서 '· 1박 약 11만원'이 줄 첫머리에 '·'를 달고 시작(구분점을 뒤 항목에 붙이는 현행 설계의 부작용). 근거 팝업 안내문 '…다시 안 가겠다고 한 / 리뷰예요' 마지막 단어 매달림(`.sheet-note`에 `text-wrap:pretty` 후보). 360 상세 '+ 비교' 플로팅이 근거 줄 화살표를 가림(스크롤 숨김 배포 후 재확인).
+   - 호텔 마리노아 리조트 후쿠오카(ChIJn1TykzuTQTURdHnTUOXWZI0) 가까운 역 "텐진역 도보 105분" — 역 목록이 시내에 한정된 듯. 도보 30분 초과면 표기 방식 검토.
+   - 호텔 수 표기 3가지: 홈 히어로 "170곳 분석 완료"(채점), 검색 "184곳"(수집중 포함), CLAUDE.md "173곳".
+   - 허브 요약 "최근 1년 리뷰 19,546건을 분석했어요"는 별점만 리뷰 포함(`analyzed`) 합, 같은 페이지 "글 리뷰 3만 건 AI 분석"과 대상이 다름 — 문구 결정 필요.
+   - 홈 히어로 "리뷰 3만 개를 분석해" — 사이트 다른 곳은 '건'.
+   - 가격: 주말/평일 배율이 큰 호텔(BREAKFAST 텐진 평일 9만 / 주말 30만, 3.3배) — 표본 수 확인 권장. 주말만 있는 2곳(몬토레 후쿠오카·블라섬 하카타 주오)은 평일 수집 보강 대상.
+3. 경미한 UI 메모 (결정 필요, 수정 안 함): 검색 카드 360에서 '· 1박 …'이 줄 첫머리에 '·'를 달고 시작(구분점을 뒤 항목에 붙이는 현행 설계의 부작용). 근거 팝업 안내문 '…다시 안 가겠다고 한 / 리뷰예요' 마지막 단어 매달림(`.sheet-note`에 `text-wrap:pretty` 후보). 홈 추천 카드에 '1박 주말 약 38만원'이 평일 카드들과 섞임.
 
 ---
 
-## 4. 작업 B — `wip/price-overhaul` 리뷰 (f445a1a → b2cb957)
+## 4. 작업 B — 취소됨 (wip/price-overhaul 폐기)
 
-리뷰 대상: `git diff origin/main...origin/wip/price-overhaul` (generate.py price_stats·md_ko·CITY['price_seen']·상세 .price-note·홈/허브/FAQ 문구, compare-page.js '1박 가격', ds.css .price-note, CLAUDE.md 가격 줄).
+코디네이터 지시로 취소. 가격 개편은 원래 세션이 다른 설계(평일 중앙값 + 상세 주말 병기)로 main에 직접 배포했다(533ca79 + 11add30). `wip/price-overhaul`은 **폐기 대상(533ca79로 대체됨)** — 병합하지 말 것.
 
-### 추가한 커밋 (wip/price-overhaul에 fast-forward push)
-- `4634a3c` 가격 기준 문구 정본 `PRICE_BASIS = '2인 1박 날짜별 보통 가격'` — 홈 슬라이더·허브·상세 각주·FAQ가 세 가지 다른 말을 쓰던 것 통일. 검색 정렬 '1박 가격 낮은 순' 설명이 옛 "구글 최저가 기준 · 날짜 따라 달라요"로 남아 있던 것 갱신. 상세 `.price-note`·허브 `.hub-sub`는 `.desc`가 아니라 polish_breaks가 ' · '를 DSEP로 안 바꿈 → `{DSEP}`+`.seg` 직접. 표본 없는 호텔(price_raw 폴백 '약 N만원')은 "날짜별 보통 가격"이 아니므로 각주를 "2인 1박 기준 · 날짜에 따라 달라요"로 분리, 표본 있는 호텔만 "{PRICE_BASIS} · M월 D일 확인".
-- `b2cb957` `'보통 9~12만원'`에 NBSP — 검색 카드·비교표·홈 비교 카드는 JS/데이터 경로라 polish_breaks 밖.
-
-### 확인한 것 (문제 없음)
-- UI-STANDARDS: 새 CSS는 ds.css 한 줄(토큰만, `--fs-meta` 14px, `--ink-3`), lint 통과. 이모지·hex·px 글자 없음.
-- `price_stats` 단독 실행: 빈 표본 → None, 1일 → '약 10만원', 4일 → '보통 9~12만원'(중앙값 107,500), 같은 숙박일 gmaps(US$)·ghotels(KRW) 동시 → ghotels 우선, 지난 숙박일 제외, 좁은 범위(9.9~10.1만) → '약 10만원', 미지원 통화 → None.
-- `price_band`를 표시 만원 기준으로 바꾼 것: '약 10만원'이 '10만원 미만'에 들던 어긋남 해소.
-- 비교표 라벨 '1박 가격', 상세 PC 카드 '1박 가격 · 2인', 홈 비교 카드 '1박', 검색 카드 '1박' — 라벨 계열 일관.
-- `CITY['price_seen']` 폴백 = `CITY['data_asof']`('2026년 10월') → "(2026년 10월 확인)"으로 자연스럽게 읽힘.
-- `cloud/qa-2610`과 병합 충돌 없음.
-
-### 남은 지적 (병합 전 로컬 판단)
-1. **병합 시점**: 지금 데이터(§5.5: ghotels는 10/21 하루분)로 빌드하면 대부분 호텔이 숙박일 1~2개 → '약 N만원'인데 홈·허브 설명은 "날짜별 보통 가격"이라 말이 앞선다. 수집 완료 + 커버리지 조건(위 3-3) 충족 뒤 병합.
-2. 가격대 필터·슬라이더는 중앙값 기준이라 "보통 9~12만원" 호텔이 '10만원 미만'(중앙값 9.4만 → 9만)에 들어갈 수 있다. 의도라면 그대로, 아니면 밴드 판정을 25%값(lo)으로 하는 안 검토.
-3. JSON-LD `priceRange`에 '보통 9~12만원'(한글)이 들어간다. 구글 권장 형식은 '₩90,000-₩120,000' — SEO 세션에서 결정.
-4. 검색 '1박 가격 낮은 순' 정렬 노출 여부는 §5.5 ④(커버리지 80% 뒤 복구)와 §9-4 결정을 따를 것. 현재는 그대로 노출.
-5. `price_stats`의 `observed_on`/`stay_date`는 ISO 문자열 비교에 의존 — `export_pg.py`가 날짜를 'YYYY-MM-DD' 문자열로 내보내는지 재추출 후 한 번 확인.
+참고: 취소 지시가 오기 전에 이 세션이 `wip/price-overhaul`에 리뷰 커밋 2개(`4634a3c`, `b2cb957`, fast-forward)를 이미 push했다. 브랜치를 폐기하면 함께 사라지며, 그 안의 지적 중 main에도 해당하던 것(허브 `.hub-sub` DSEP, 검색 정렬 가격 설명 갱신)은 위 2절 `dc57215`와 533ca79 자체에 이미 반영돼 있다.
