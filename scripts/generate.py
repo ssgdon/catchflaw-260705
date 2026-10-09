@@ -2557,7 +2557,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         # 근거 1: 글 리뷰 N건 중 실망 리뷰 M건 (분모 = 글 리뷰: 실망 리뷰는 글에서만 셀 수 있음) → 리스크 상세로
         _rows = []
         if h['text_1y']:
-            _rows.append(('ink', f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>실망 리뷰 {crit_reviews_1y}건</b>', '#risk-detail'))
+            _rows.append(('ink', f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>실망 리뷰 {crit_reviews_1y}건</b>',
+                          '__dis__' if crit_reviews_1y else None))   # 누르면 그 M건만 팝업으로 (openDis)
         # 근거 2: 예약을 접을 만한 문제(희소·고위험 4종) 심각 리뷰 → 있으면 건수, 없으면 '없음'. 평균 이상 호텔은 대신 가장 잦은 불만
         _RARE_KO = {'벌레': '벌레', '곰팡이': '곰팡이', '동네 분위기': '밤길·동네 분위기', '객실 보안': '객실 보안'}
         _rare_hit = [(_RARE_KO.get(_sc, _sc), _n) for _sc, _n in rare_crit.items() if _n]
@@ -2571,10 +2572,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                           f'#risk-{CATS.index(_worst6)}'))
         else:
             _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
-        v_why = ''.join(
-            (f'<a class="ev-row" href="{href}"><span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span><span class="ev-arrow"></span></a>'
-             if href else f'<div class="ev-row"><span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span></div>')
-            for tone, txt, href in _rows)
+        def _ev(tone, txt, href):
+            inner = f'<span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span>'
+            if href == '__dis__':
+                return f'<button type="button" class="ev-row" data-dis="1">{inner}<span class="ev-arrow"></span></button>'
+            if href:
+                return f'<a class="ev-row" href="{href}">{inner}<span class="ev-arrow"></span></a>'
+            return f'<div class="ev-row">{inner}</div>'
+        v_why = ''.join(_ev(*row) for row in _rows)
         # ── P3 누구와 가세요(1단계): 구성별 관련 소분류(최근 1년 비율·희소는 심각 건수) + FAQ + 대표 인용 1건 ──
         _faq_by = {it.get('t'): it for it in (faq or [])}
         _panels, _chips = [], []
@@ -2597,7 +2602,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             for _k in _gfaq:
                 _it = _faq_by.get(_k)
                 if _it and _it.get('c'):
-                    _rows.append(('faq', E(WHO_FAQ_LABEL[_k]), E(', '.join(_it['c'][:3]))))
+                    _chips = [str(x) for x in (_it.get('c') or [])[:3]]
+                    if _k == 'access' and not any('역' in x for x in _chips):   # '도보 6분, 도보 10분'처럼 어느 역인지 없는 칩 → 답변 첫 문장
+                        _ans = re.sub(r'\*\*', '', _it.get('a') or '').strip()
+                        _ans = re.split(r'(?<=[.요다])\s', _ans)[0]
+                        _txt = (_ans[:46] + '…') if len(_ans) > 47 else _ans
+                    else:
+                        _txt = ', '.join(_chips)
+                    _rows.append(('faq', E(WHO_FAQ_LABEL[_k]), E(_txt)))
             if _risk:
                 _sc, _top, _tb = max(_risk)
                 _head = (f'<em>{E(SUB_PHRASE[_top])}</em> 심각 리뷰가 있어요' if _top in RARE_SUBS         # 희소·고위험
@@ -2713,7 +2725,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
-                              'l': (q.get('lang') or '').lower()} for q in qlist]
+                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'),
+                              **({'rf': 1} if q.get('rf') else {})} for q in qlist]
             # 실제 총건수(소분류 건수 = 아코디언 표기와 동일 출처, 최근 1년). R2 전체 파일을 같은 기간으로 거른 카드 수와 일치.
             sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
             sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
@@ -2818,7 +2831,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
-                              'l': (q.get('lang') or '').lower()} for q in qlist]
+                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'),
+                              **({'rf': 1} if q.get('rf') else {})} for q in qlist]
             sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
             sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
             rows, tones = [], []
@@ -3005,6 +3019,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
         window.QCUT = {json.dumps(cut_1y or '')};   // 근거 리뷰 기간 시작일 — R2 전체 파일도 이 날짜 이후만 표시
         window.QPER = {json.dumps(per)};
+        window.QDIS = {json.dumps({'n': crit_reviews_1y})};   // 근거 줄의 실망 리뷰 M건 — 팝업 건수와 대조
         window.CF_FAQR = {json.dumps(f'{R2_PUB}/faq_reviews/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
@@ -3232,7 +3247,34 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
             function relSpan(d){{ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }}
 
+            // 실망 리뷰만(근거 줄): 전 카테고리 카드 중 심각 또는 재방문·추천 거부(rf) 리뷰를 리뷰 단위(r)로 묶는다 — 근거 줄 M건과 같은 집합
+            function disList(){{
+                var seen = {{}}, out = [];
+                Object.keys(window.QDATA).forEach(function(c){{
+                    (window.QDATA[c] || []).forEach(function(q){{
+                        if (!(q.g === '심각' || q.rf)) return;
+                        var k = q.r || (q.n + '|' + q.d + '|' + q.o);
+                        if (seen[k]) {{ if (q.g === '심각' && seen[k].g !== '심각') {{ out[out.indexOf(seen[k])] = q; seen[k] = q; }} return; }}
+                        seen[k] = q; out.push(q);
+                    }});
+                }});
+                out.sort(function(a, b){{ return ((b.g === '심각') - (a.g === '심각')) || (b.d > a.d ? 1 : b.d < a.d ? -1 : 0); }});
+                return out;
+            }}
+            function renderDis(){{
+                var list = disList();
+                if (krOnly) list = list.filter(function(q){{ return q.l === 'ko'; }});
+                var M = (window.QDIS && window.QDIS.n) || 0;
+                $('#sheet-cat').text('실망');
+                $('#sheet-cnt').text(qloading ? '불러오는 중…' : (!krOnly && qfull && M && M !== list.length) ? M + '건 중 ' + list.length + '건' : list.length + '건');
+                $('#sheet-list').html(list.map(card).join('') || '<li class="sheet-empty">' + (qloading ? '리뷰를 불러오는 중…' : '실망 리뷰가 없어요') + '</li>');
+                $('#sheet-chips').html('<div class="sheet-note">심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰예요</div>');
+                $('#sheet-list').scrollTop(0);
+                $('#sheet-kr').toggleClass('is-on', krOnly);
+                renderSide();
+            }}
             function render(){{
+                if (curCat === '__dis__') return renderDis();
                 var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
                 var base = (window.QDATA[curCat] || []);
                 var list = krOnly ? base.filter(function(q){{ return q.l === 'ko'; }}) : base;
@@ -3372,6 +3414,17 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 $('body').css('overflow', 'hidden');
                 if (window.CFNav) CFNav.push(closeVisual);  // 뒤로가기로 시트만 닫힘
             }}
+            function openDis(){{
+                curCat = '__dis__'; curSub = null; krOnly = false;
+                if (!qfull) loadFull(render); else render();   // 임베드는 카테고리당 40건 상한 → 전체 파일 먼저
+                $sheet.prop('hidden', false);
+                void $sheet[0].offsetHeight;
+                $sheet.addClass('is-open');
+                $sheet.find('.sheet-close').trigger('focus');
+                $('body').css('overflow', 'hidden');
+                if (window.CFNav) CFNav.push(closeVisual);
+            }}
+            $(document).on('click', '.ev-row[data-dis]', function(){{ openDis(); }});
             function close(){{ if (window.CFNav) CFNav.pop(); else closeVisual(); }}
 
             $(document).on('click', '.stat-count.has-reviews', function(){{

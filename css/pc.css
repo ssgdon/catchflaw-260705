@@ -42,6 +42,7 @@
     #float{left:auto;right:var(--pc-x);width:auto;transform:none;}
     .cf-toast{bottom:var(--sp-10);}
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
+    html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
     #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}

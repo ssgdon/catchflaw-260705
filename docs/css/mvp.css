@@ -1265,3 +1265,9 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 홈 섹션 제목의 키워드 강조 (문구 압축 규칙: 제목 짧게 + 핵심어 1~2개 색) */
 #main .head .title em{font-style:normal;color:var(--primary);}
 
+/* 떠 있는 버튼: 아래로 스크롤 중 숨김 (common.js가 html.is-scroll-down 토글). 모바일은 가운데 정렬 translateX(-50%) 유지 */
+#float,.cmp-tray{transition:transform .25s ease,opacity .25s ease;}
+html.is-scroll-down #float,html.is-scroll-down .cmp-tray{transform:translate(-50%,130%);opacity:0;pointer-events:none;}
+/* 근거 1줄(실망 리뷰 M건)은 버튼 — 링크 행과 같은 모양 */
+#detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink-2);cursor:pointer;}
+.review-sheet .sheet-chips .sheet-note{padding:var(--sp-1) 0;font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);white-space:normal;}
