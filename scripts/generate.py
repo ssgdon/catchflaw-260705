@@ -3944,7 +3944,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         if parts:
             price_block = f'''<div class="hub-sect">
                 <div class="hub-h2">가격대별 안심 숙소</div>
-                <div class="hub-sub">가격대마다 실망 확률이 가장 낮은 곳이에요 · 2인 1박 평일 가격 기준({CITY["price_seen"]} 확인)</div>
+                <div class="hub-sub">가격대마다 실망 확률이 가장 낮은 곳이에요{DSEP}<span class="seg">2인 1박 평일 가격 기준({CITY["price_seen"]} 확인)</span></div>
                 <div class="hub-pb">{''.join(parts)}</div>
             </div>'''
 
