@@ -25,9 +25,10 @@
 
 ## 데이터
 
-- **현행 DB = Oracle VM PostgreSQL `catchflaw`** (158.179.173.211, localhost 전용). 후쿠오카 173곳(active 159 / watch 14 / closed 1, 사이트엔 active+watch만) · 리뷰 6만+ · 분석 3.8만+. Supabase는 `mvp_feedbacks`(피드백)·`analysis_requests`(온디맨드 요청)만 사용.
-- 점수체계 v2 (검증 완료): 도시평균=50, 3배=100 구간선형, k=20 보정, 카테고리 불만 5건 미만 상한 65, 분석 30건 미만 미노출. 실망확률 = 심각 태그 리뷰의 최신성 가중 비율(실측, 도시평균 ~9%). 기준일(asof)은 최신 리뷰일로 매주 이동(`data-src/meta.json` → generate.py 동적 표기).
-- 카테고리(A층): 대분류 6 (위생/냄새/소음/시설/불친절/위치·안전) × **소분류 17** (v4). **정본 = `pipeline/prompt.py` SUBS = `scripts/scoring.py` SUBS = `pipeline/score.py` CATS (동기화 완료).** v3→v4 전환은 `pipeline/migrate_v4.py`(1회성). 희소·고위험 소분류(해충/곰팡이·치안·안심)는 점수 대신 "신고 N건" 칩으로 렌더.
+- **현행 DB = Oracle VM PostgreSQL `catchflaw`** (158.179.173.211, localhost 전용). 후쿠오카 189곳(active 173 / watch 14 / closed 2, 사이트엔 active+watch만, 상세 184·점수 노출 172) · 리뷰 7.2만(사이트 평가 리뷰 5.9만) · v5 분석 2.9만(최근 1년 글 리뷰). Supabase는 `mvp_feedbacks`(피드백)·`analysis_requests`(온디맨드 요청)만 사용.
+- 점수체계 v2 (검증 완료): 도시평균=50, 3배=100 구간선형, k=20 보정, 카테고리·소분류 불만 5건 미만 상한 65, 최근 1년 평가 리뷰(별점만 포함) 30건 미만 미노출.
+- 실망 확률 = 실망 리뷰의 최신성 가중 비율(k=20 보정, 도시평균 4.9%). 실망 리뷰 = 심각 OR (재방문 거부 AND 불만). 가중 = 0.5^(나이/180일), 1년 초과 0. 별점만 리뷰는 같은 별점 글 리뷰의 실망 비율로 기대값 반영(`agg_staronly.json`·`star_crit.json`). 정본 `scripts/scoring.py` = `pipeline/score.py` prod. 기준일(asof)은 최신 리뷰일로 매주 이동(`data-src/meta.json` → generate.py 동적 표기).
+- 카테고리(A층, 분류 v5.7): 대분류 7 = 점수 6(청결/냄새/소음/객실/직원/위치) + 안전(칩 전용) × **소분류 21**. **정본 = `pipeline/prompt_v5.py` SUBS = `scripts/scoring.py` SUBS = `pipeline/score.py` CATS_V5.** 분석기 `pipeline/analyze_v5.py`(v4 `analyze.py` 사용 금지, 전환·롤백은 RUNBOOK §5-1). 희소·고위험 소분류 4종(벌레·곰팡이·동네 분위기·객실 보안)은 점수 대신 리뷰 건수 칩으로 렌더.
 - FAQ(B층): 리뷰에서 사전 추출한 실전 정보 카드(짐보관·조식·주차 등). `pipeline/faq_topics.py`(토픽 정본)+`pipeline/faq_extract.py`(gemini 종합, `hotel_faq` 테이블) → `export_pg.py`가 `data-src/faq.json` 생성 → generate.py 상세 FAQ 섹션(근거 없으면 미노출).
 - 추천 제외(`hotels.rec_excluded`): 러브호텔·넷카페 등은 검색·상세엔 노출되나 홈 추천·검색 기본목록·지도에선 숨김(호텔명 직접 검색 시에만 노출).
 

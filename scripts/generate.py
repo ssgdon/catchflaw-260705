@@ -560,10 +560,15 @@ def hotel_card(pid, meta, h, depth=0, extra=''):
     </li>'''
 
 # ───────────────────────── index ─────────────────────────
+def ai_reviews_total():
+    """AI가 실제로 읽은 글 리뷰 수(agg_reviewlevel.analyzed 합) — 'AI가 N건 분석' 문구용. 별점만 리뷰는 제외."""
+    return sum(r['analyzed'] for r in json.load(open(os.path.join(SRC, 'agg_reviewlevel.json'), encoding='utf-8')))
+
 def build_index(hotels_meta, H, quotes, col_index=()):
     scored = [p for p in H if H[p]['scored'] and p in hotels_meta]  # hotels_meta가 rec_excluded 제외 → scored도 자동 제외
     _total = sum(r['n'] for r in json.load(open(os.path.join(SRC, 'agg_denom.json'), encoding='utf-8')))
-    total_reviews_txt = f"{round(_total/10000)}만"   # 동적: 분석 대상 리뷰 총수 (예: 6만)
+    total_reviews_txt = f"{round(_total/10000)}만"   # 동적: 수집 리뷰 총수 (별점만 리뷰 포함, 예: 6만)
+    ai_reviews_txt = f"{round(ai_reviews_total()/10000)}만"   # AI가 읽은 글 리뷰 수 (예: 3만) — 'AI가 분석' 문구는 이 값
 
     def worst_by_sub(mcat, scat, k=8):
         cand = [p for p in scored if H[p]['cats'][mcat]['subs'][scat]['count_1y'] >= 5]   # 점수와 같은 최근 1년 기준
@@ -624,7 +629,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     </ul></div>
                     <div class="title">
                         <h1 class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
-                        <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {total_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
+                        <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {ai_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
                         <input type="text" name="q" id="hero-q" placeholder="{CITY['ko']} 호텔명 또는 구글맵 링크 붙여넣기">
@@ -1831,9 +1836,9 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
         except (TypeError, ValueError): return None
     n_serious = round((num1(kr.get('kr_disappoint')) or 0) * 100)
     if n_serious == 0:
-        serious_txt = f'{per} 한국인 리뷰에선 심각한 문제 언급이 없었어요'
+        serious_txt = f'{per} 한국인 리뷰에선 심각한 문제나 재방문 거부 언급이 없었어요'
     else:
-        serious_txt = f'{per} 기준, 한국인 리뷰의 <span class="nw"><b>{n_serious}%</b>가</span> 심각한 문제를 언급했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
+        serious_txt = f'{per} 기준, 한국인 리뷰의 <span class="nw"><b>{n_serious}%</b>가</span> 심각한 문제를 겪었거나 다시 안 가겠다고 했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
     serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
     # §2-b 비교 — 지표당 세로 막대 2개(한국인 primary vs 전체 회색), 값은 막대 위(목업①② 스타일).
@@ -2309,7 +2314,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         if ratio <= 0.8:                              # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중<br>벌레·곰팡이·객실 보안 심각 리뷰는 <b>0건</b>이었어요'
+                v_why = f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중<br>벌레·곰팡이·동네 분위기·객실 보안 심각 리뷰는 <b>0건</b>이었어요'
             elif _all_safe:
                 v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 기준,<br>6개 항목 모두 평균보다 불만이 적었어요'
             else:
@@ -2335,10 +2340,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             v_head, v_tone = '실망 위험이 높은 호텔이에요', 'danger'
             _top_sev = max(sev_by_cat, key=sev_by_cat.get) if sev_by_cat else None
             if crit_reviews_1y and _top_sev:
-                v_why = (f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요,<br>'
-                         f'특히 <b>{E(cat_ko(_top_sev))}</b> 불만이 <b>{sev_by_cat[_top_sev]}건</b>으로 가장 많았어요')
+                v_why = (f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>이 실망 리뷰였어요,<br>'
+                         f'특히 <b>{E(cat_ko(_top_sev))}</b> 심각 불만이 <b>{sev_by_cat[_top_sev]}건</b>으로 가장 많았어요')
             elif crit_reviews_1y:
-                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
+                v_why = f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>이 실망 리뷰였어요'
             else:   # 가드(빈값): 실측 비율만
                 v_why = f'실망 확률 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
         # ── P3 누구와 가세요(1단계): 구성별 관련 소분류(최근 1년 비율·희소는 심각 건수) + FAQ + 대표 인용 1건 ──
@@ -2664,6 +2669,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {overall_trend}
             <div class="basis-fold">
                 <div class="basis">
+                    <p>심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰를 실망 리뷰로 세요</p>
                     <p>최근 리뷰일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</p>
                     <p>{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} (구글·트립닷컴 등 여러 사이트 합산)</p>
                     <p>{_so_txt}</p>
@@ -3521,9 +3527,9 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     cmp_word = '낮아요' if avg_p <= city_p else '높아요'
 
     # ── 1. breadcrumb + H1 + 요약 2문장 ──
-    summary = (f'{CITY["ko"]} {col["name"]} 지역 호텔 {n}곳의 리뷰 {reviews:,}건을 AI로 분석했어요. '
+    summary = (f'{CITY["ko"]} {col["name"]} 지역 호텔 {n}곳의 최근 1년 리뷰 {reviews:,}건을 분석했어요. '
                if col['kind'] == 'area' else
-               f'{col["h1"].split(" — ")[0]}, 총 {n}곳의 리뷰 {reviews:,}건을 AI로 분석했어요. ')
+               f'{col["h1"].split(" — ")[0]}, 총 {n}곳의 최근 1년 리뷰 {reviews:,}건을 분석했어요. ')
     summary2 = (f'평균 실망 확률은 {avg_p}%로 {CITY["ko"]} 평균({city_p}%)보다 {cmp_word}. '
                 f'가장 많이 지적된 항목은 {worst_first}이에요.')
     summary_full = summary + summary2
@@ -3609,7 +3615,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     xlink_block = f'''<div class="hub-sect">
         <div class="hub-h2">다른 컬렉션도 보기</div>
         <div class="hub-xlinks">{link_cards}</div>
-        <div class="hub-method"><span class="seg">실망 확률 = 심각 태그 리뷰의 최신성 가중 비율</span>{DSEP}<span class="seg">리뷰 {round(sum(r['n'] for r in json.load(open(os.path.join(SRC, 'agg_denom.json'), encoding='utf-8'))) / 10000)}만 건 분석 · 기준 {CITY['data_asof']}</span></div>
+        <div class="hub-method"><span class="seg">실망 확률 = 실망 리뷰(심각한 문제·재방문 거부)의 최신성 가중 비율</span>{DSEP}<span class="seg">글 리뷰 {round(ai_reviews_total() / 10000)}만 건 AI 분석 · 기준 {CITY['data_asof']}</span></div>
     </div>'''
 
     # ── 메타·JSON-LD ──
@@ -3660,7 +3666,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
 
     # (1) 분석 규모
     q1 = f'{name} 호텔은 몇 곳을 분석했나요?'
-    a1p = f'{CITY["ko"]} {name} 관련 호텔 {n}곳, 리뷰 {reviews:,}건을 AI로 분석했어요. 평균 실망 확률은 {avg_p}%예요.'
+    a1p = f'{CITY["ko"]} {name} 관련 호텔 {n}곳, 최근 1년 리뷰 {reviews:,}건을 분석했어요. 평균 실망 확률은 {avg_p}%예요.'
     faqs.append((q1, E(a1p), a1p))
 
     # (2) 컬렉션 고유 질문
@@ -3731,16 +3737,23 @@ def build_about(hotels_meta, H, city):
                 f'<div class="about-body">{body}</div></div>')
 
     s1 = sect('무엇을 하는 서비스인가요',
-        f'캐치플로는 {CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt}을 AI로 분석해, '
-        '심각한 불만이 언급된 비율을 <b>실망 확률</b>로 보여드립니다. '
+        f'캐치플로는 {CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt}을 모으고 그중 글 리뷰 {ai_reviews_total():,}건을 AI로 분석해, '
+        '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드립니다. '
         '별점에 묻힌 치명적인 단점을 예약 전에 미리 확인하실 수 있어요.')
     s2 = sect('실망 확률은 이렇게 계산해요',
         '<ul class="about-list">'
+        '<li>심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰를 <b>실망 리뷰</b>로 세요</li>'
         '<li>최근 12개월 리뷰를 쓰고, 최근일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</li>'
         '<li>별점만 남긴 리뷰는 같은 별점 리뷰에서 실망이 나온 비율로 추정해 반영해요</li>'
-        f'<li>{CITY["ko"]} 평균을 50으로 두고 상대적인 위험도로 환산해요</li>'
-        '<li>분석된 리뷰가 30건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
-        '<li>불만 표본이 5건 미만인 소분류에는 위험 등급을 붙이지 않아요</li>'
+        f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않도록 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
+        f'<li>최근 1년 리뷰(별점만 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
+        '</ul>')
+    s2b = sect('항목별 점수는 이렇게 매겨요',
+        '<ul class="about-list">'
+        '<li>청결·냄새·소음·객실·직원·위치 6개 항목을 불만의 양과 심각도로 점수화해요</li>'
+        f'<li>{CITY["ko"]} 평균을 50으로 두고, 평균의 3배 이상이면 100이에요</li>'
+        '<li>불만 리뷰가 5건 미만인 항목·소분류에는 위험 등급을 붙이지 않아요</li>'
+        '<li>벌레·곰팡이·동네 분위기·객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
         '</ul>')
     s3 = sect('데이터 출처와 한계',
         '<ul class="about-list">'
@@ -3762,7 +3775,7 @@ def build_about(hotels_meta, H, city):
         <section id="about">
             <h1 class="about-h1">캐치플로 소개</h1>
             <p class="about-lead">공개된 투숙객 리뷰를 AI로 분석해, 예약 전에 알아야 할 위험을 알려드려요.</p>
-            {s1}{s2}{s3}{s4}{s5}
+            {s1}{s2}{s2b}{s3}{s4}{s5}
         </section>
     </main>''' + build_footer(0) + FOOT
 
