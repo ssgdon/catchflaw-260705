@@ -1540,7 +1540,7 @@ def build_search(city_avg_pct):
                 pool = matched;
                 $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
             }} else {{
-                $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망확률 '+CITY_AVG+'%');
+                $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망&nbsp;확률 '+CITY_AVG+'%');
             }}
             baseList = pool;
             // 지역이 선택돼 있으면 지역 중심으로 고정 줌 (fitBounds는 가장자리 호텔로 뷰가 넓어짐)
