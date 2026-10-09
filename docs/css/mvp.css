@@ -1277,3 +1277,9 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 /* 근거 1줄(실망 리뷰 M건)은 버튼 — 링크 행과 같은 모양 */
 #detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink-2);cursor:pointer;}
 .review-sheet .sheet-chips .sheet-note{padding:var(--sp-1) 0;font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);white-space:normal;}
+
+/* 홈 신뢰 띠 (HOME-CONCEPT §4-3): 히어로 아래 한 줄 — 분석 규모·중립성·기준일 */
+#main .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:4px var(--sp-3);padding:var(--sp-3) var(--page-x);border-bottom:1px solid var(--line);font-size:var(--fs-meta);font-weight:var(--fw-medium);line-height:1.5;color:var(--ink-3);text-align:center;}
+#main .trust-band .tb-i{white-space:nowrap;}
+#main .trust-band .tb-i + .tb-i::before{content:"·";margin-right:var(--sp-3);color:var(--ink-4);}
+

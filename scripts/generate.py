@@ -708,6 +708,11 @@ def vs_card(pa, pb, hotels_meta, H, depth=0):
         <div class="vs-foot"><span class="vs-verdict">{verdict}</span><span class="vs-more">비교 →</span></div>
     </a>'''
 
+def stars_label(meta):
+    """카드용 성급 표기: '3성급 호텔'·'캡슐 호텔'만. 구글이 그냥 '호텔'로 준 12곳은 빈 값(카드에 '· 호텔'이 떠서 어색)."""
+    st = str(meta.get('hotel_stars') or '')
+    return st if (any(ch.isdigit() for ch in st) or '캡슐' in st) else ''
+
 def badge_html(h):
     if not h['scored']:
         return '<div class="badge-item badge-collect">리뷰 수집중</div>'
@@ -768,7 +773,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     # 추천순(rec_score) — 실망 확률 단독 정렬은 한국인이 안 가는 조용한 호텔을 1위에 올렸다(RECOMMEND-PRICE-DESIGN §2.4).
     rec_pool = sorted((p for p in ranked if p in REC), key=lambda p: -REC[p])
     best = [p for p in rec_pool if H[p]['badge'][0] != 'danger'][:8]              # 홈 추천은 위험 배지 제외
-    gems = [p for p in rec_pool if KRN.get(p, 0) < 30 and H[p]['p_crit'] <= SAFE_MULT * (CITY.get('crit') or 0)
+    gems = [p for p in rec_pool if KRN.get(p, 0) < 50 and H[p]['p_crit'] <= SAFE_MULT * (CITY.get('crit') or 0)
             and bayes_rating(hotels_meta[p].get('total_score'), hotels_meta[p].get('reviews_count')) >= 4.2][:8]   # 조용히 좋은 곳(인기 가중 상쇄)
     hot = sorted((p for p in scored), key=lambda p: -KRN.get(p, 0))[:6]           # 히어로 칩: 판정 진입이라 위험도 포함
     cur1 = worst_by_sub('청결', '벌레')
@@ -853,6 +858,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     <div class="scope-note">현재 <b>{CITY['ko']}</b> 호텔 {len(scored)}곳 분석 완료{DSEP}다른 도시는 준비 중이에요{DSEP}<a class="hero-cmp" href="./compare">두 곳 비교하기 →</a></div>
                 </div>
             </article>
+            <div class="trust-band"><span class="tb-i">리뷰 {total_reviews_txt} 건 분석</span><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
             {vs_block}
             <article class="section sec-2 sec-rec">
                 {slider('<em>한국인</em>이 찾고 <em>실망</em>은 적은 숙소', '한국인 리뷰 많고 평점 높고 실망 확률 낮은 순', best)}
@@ -1147,7 +1153,7 @@ def build_search_index(hotels_meta, H):
                 cs[c] = round(h['cats'][c]['score'])
         items.append({
             'id': pid, 'name': meta['title'], 'en': meta.get('sub_title') or '',
-            'stars': meta.get('hotel_stars') or '', 'g': float(meta.get('total_score') or 0),
+            'stars': stars_label(meta), 'g': float(meta.get('total_score') or 0),
             'rc': meta.get('reviews_count') or 0,
             'img': meta.get('r2_img') or (f'img/hotels/{pid}.jpg' if meta.get('local_img') else ''),
             'scored': h['scored'],
@@ -3856,7 +3862,7 @@ def hub_card(pid, meta, h, rank, depth=1):
                         <div class="badge-item badge-{band}">{label}</div>
                         <div class="badge-item badge-down">실망 확률 {pct(h['p_crit'])}%</div>
                     </div>
-                    <div class="stat"><span class="grade"><span class="ico"><img src="{p_root}img/star.svg" alt=""></span><span class="num">{fmt_score(meta.get('total_score'))}</span><span class="txt">({meta.get('reviews_count') or 0:,})</span></span>{('<span class="si"><span class="dot"></span><span>' + E(meta.get('hotel_stars')) + '</span></span>') if meta.get('hotel_stars') else ''}</div>
+                    <div class="stat"><span class="grade"><span class="ico"><img src="{p_root}img/star.svg" alt=""></span><span class="num">{fmt_score(meta.get('total_score'))}</span><span class="txt">({meta.get('reviews_count') or 0:,})</span></span>{('<span class="si"><span class="dot"></span><span>' + E(stars_label(meta)) + '</span></span>') if stars_label(meta) else ''}</div>
                     {st_html}
                 </div>
                 {why_line(pid, h)}
