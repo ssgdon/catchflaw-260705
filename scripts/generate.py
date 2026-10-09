@@ -4055,8 +4055,11 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
                + (f' (최근 1년 리뷰 {RANK_MIN}개 미만 {_nlow}곳은 순위 없이 참고용).' if _nlow else '.'))
         faqs.append((q2, E(a2p), a2p))
     elif kind == 'value':
-        best_pid = next((p for p in pids if H[p]['ranked']), None)   # '가장 낮은 곳'은 순위 모수 안에서
-        q2 = '10만원 이하에서 실망 확률이 가장 낮은 곳은?'
+        # 질문이 '10만원 미만 + 실망 확률 최저'이므로 그 조건 그대로: 순위 모수(ranked) 안, 가격대 b1(평일 10만원 미만), p_crit 최소.
+        # (예전: 추천순 1위를 b1·b2(20만원 미만) 통틀어 골라 '평일 약 15만원' 호텔이 답으로 나갔다)
+        _b1 = [p for p in pids if H[p]['ranked'] and (hotels_meta[p].get('band') or ('',))[0] == 'b1']
+        best_pid = min(_b1, key=lambda p: H[p]['p_crit']) if _b1 else None
+        q2 = '10만원 미만에서 실망 확률이 가장 낮은 곳은?'
         if best_pid:
             a2p = f'현재 기준 {E(hotels_meta[best_pid]["title"])}가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 2인 1박 평일 기준이라 주말·성수기엔 더 비싸요.'
             faqs.append((q2, f'현재 기준 <b>{E(hotels_meta[best_pid]["title"])}</b>가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 2인 1박 평일 기준이라 주말·성수기엔 더 비싸요.', a2p))
