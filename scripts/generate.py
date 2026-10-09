@@ -200,7 +200,8 @@ SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 #        price_sample.py 날짜 지정 수집(앞으로 8주의 수·토, 2인 1박 원화). 둘 다 2인 기준(같은 날 대조 확인).
 # 10/9 수집 실측: 주말(금·토 밤)은 평일의 중앙 2.65배라 둘을 한 범위로 묶으면 '11~42만원'처럼 쓸모없이 넓다.
 # 평일 중앙값은 사용자가 직접 찾은 실제 가격 17곳과 배율 0.99(평균 1.04)로 일치 → 대표값·가격대·정렬 = 평일.
-# 표본이 없는 호텔만 기존 price_raw 한 개로 '약 N만원'.
+# prices.json이 아예 없을 때만 기존 price_raw 한 개로 '약 N만원'. prices.json이 있으면 근거 없는 호텔은 가격 비표시
+# (10/9 빌드: 10곳 — 상세·검색 카드는 가격 줄 생략, 비교표·홈 비교 카드는 '정보 없음').
 FX = {'US$': 1400, '£': 1750, '€': 1500, 'SCR': 100, '₩': 1, 'KRW': 1, '¥': 9.5}
 PRICE_WINDOW_DAYS = 56          # 최근 8주 수집분만 사용
 WEEKEND_NIGHTS = (4, 5)         # 금·토 밤 (date.weekday)
