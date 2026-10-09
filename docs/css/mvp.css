@@ -959,14 +959,23 @@
 .cmp-ico::before{width:var(--sp-3);height:2px;}
 .cmp-ico::after{width:2px;height:var(--sp-3);}
 .is-on > .cmp-ico{display:none;}
-.cmp-tray{position:fixed;z-index:85;left:50%;bottom:var(--sp-5);transform:translateX(-50%);display:flex;align-items:center;gap:var(--sp-2);height:40px;padding:0 var(--sp-1) 0 var(--sp-2);border-radius:var(--radius-card);background:var(--ink);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:var(--fs-caption);font-weight:var(--fw-bold);white-space:nowrap;}
+.cmp-tray{position:fixed;z-index:85;left:50%;bottom:var(--sp-5);transform:translateX(-50%);display:flex;align-items:center;height:40px;padding:0 0 0 var(--sp-2);border-radius:var(--radius-card);background:var(--ink);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:var(--fs-caption);font-weight:var(--fw-bold);white-space:nowrap;}
 .cmp-tray[hidden]{display:none;}
 .cmp-tray.on-detail{bottom:88px;}
+.cmp-tray .ct-link{display:flex;align-items:center;gap:var(--sp-2);height:100%;color:inherit;}
+/* 닫기(×) = 비교함 비우기 — 터치 영역 36px, 구분선으로 '비교하기'와 분리 */
+.cmp-tray .ct-x{position:relative;flex:none;width:36px;height:100%;margin-left:var(--sp-1);padding:0;border:0;background:none;color:var(--ink-3);font-size:var(--fs-body-lg);line-height:1;cursor:pointer;}
+.cmp-tray .ct-x::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:1px;background:var(--ink-2);}
+.cmp-tray .ct-x:hover{color:var(--ink-inverse);}
+/* 실행 버튼이 있는 토스트(되돌리기) — 기본 토스트는 클릭 통과라 이 변형만 눌리게 */
+.cf-toast.has-act{display:flex;align-items:center;gap:var(--sp-3);pointer-events:auto;white-space:nowrap;}
+.cf-toast .cf-toast-act{flex:none;padding:0;border:0;background:none;color:var(--primary-soft);font-size:inherit;font-weight:var(--fw-bold);text-decoration:underline;cursor:pointer;}
 .cmp-tray .ct-th{display:flex;}
 .cmp-tray .ct-th img,.cmp-tray .ct-th i{display:block;width:28px;height:28px;margin-left:calc(var(--sp-2) * -1);border:2px solid var(--ink);border-radius:50%;object-fit:cover;background:var(--ink-2);}
 .cmp-tray .ct-th :first-child{margin-left:0;}
 .cmp-tray .ct-go{display:flex;align-items:center;height:32px;padding:0 var(--sp-3);border-radius:var(--radius-img);background:var(--primary);}
 .cmp-tray .ct-go.is-off{background:var(--ink-2);}
+.cmp-tray .ct-link:hover .ct-go:not(.is-off){background:var(--primary-deep);}
 
 /* P6 검색 — 지도 기본 접힘 + 플로팅 토글, 카드 리뷰 태그·비교 체크 */
 #search .map-wrap.is-collapsed,#search .map-hint.is-collapsed{display:none;}

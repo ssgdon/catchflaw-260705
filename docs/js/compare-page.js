@@ -96,14 +96,14 @@
       + row('1박 평균', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
       + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? esc(h.st) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
-      + row('분석한 리뷰', H.map(function (h) { return num(h.an, '건'); }), { best: 'max', lab: '근거 가장 많음' });
+      + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + esc(h.pd || '최근 1년') + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
     var g2 = CATS.map(function (c) {
       return row(c + ' 불만', H.map(function (h) {
         var v = h.cs[c], b = band(v);
         return { v: v, k: verdict(v), h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioText(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
       }), { best: 'min', lab: '불만 가장 적음' });
     }).join('');
-    var g3 = row('최근 1년 리뷰 대비 비율', H.map(function (h) {
+    var g3 = row('분석 리뷰 대비 비율', H.map(function (h) {
       return { v: null, k: JSON.stringify(h.top), h: (h.top && h.top.length) ? h.top.map(function (t) { return '<div class="cmp-top">' + esc(t[0]) + ' <b>' + t[1] + '%</b></div>'; }).join('') : '<span class="cmp-none">두드러진 불만 없음</span>' };
     }));
     var g4 = FAQ.map(function (f) {
