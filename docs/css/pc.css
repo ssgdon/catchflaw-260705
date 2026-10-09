@@ -143,7 +143,7 @@
     /* 히어로: 둥근 배너 · 왼쪽 카피+검색 / 오른쪽 리뷰 말풍선. 배경은 PC용 가로 사진이 준비될 때까지 브랜드 그라데이션
        (현행 search_bg.jpg는 720×828 세로라 PC 폭에서 흐려지고 잘림) */
     #main .sec-1{margin:var(--sp-6) var(--pc-x) 0;}
-    #main .search-box{display:grid;grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"title text" "input text" "note text";column-gap:var(--sp-12);align-items:center;padding:64px 72px;border-radius:var(--radius-card);background:radial-gradient(120% 140% at 85% 20%, rgb(141 91 253 / 55%) 0%, rgb(77 47 145 / 0%) 55%), linear-gradient(135deg, var(--primary-deep) 0%, var(--ink) 75%);}
+    #main .search-box{display:grid;grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"title text" "input text" "chips text" "note text";column-gap:var(--sp-12);align-items:center;padding:64px 72px;border-radius:var(--radius-card);background:radial-gradient(120% 140% at 85% 20%, rgb(141 91 253 / 55%) 0%, rgb(77 47 145 / 0%) 55%), linear-gradient(135deg, var(--primary-deep) 0%, var(--ink) 75%);}
     #main .search-box .text{grid-area:text;margin:0;}
     #main .search-box .title{grid-area:title;align-self:end;}
     #main .search-box .title .tit{font-size:var(--fs-num);line-height:1.3;}   /* PC 히어로 전용(상세 .pct 40px와 같은 단계) */
@@ -241,4 +241,10 @@
     #hub{max-width:960px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     #about{max-width:800px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     #main .hotel-list.recent-list .list ul{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
+
+    /* 홈 재구성(HOME-CONCEPT §2.3): 히어로 칩 행 · 비교 카드 4열 */
+    #main .search-box .hero-chips{grid-area:chips;max-width:560px;}
+    #main .sec-vs .home-vs{padding-left:var(--pc-x);padding-right:var(--pc-x);}
+    #main .home-vs .vs-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-5);overflow:visible;}
+    #main .vs-card{flex:auto;}
 }

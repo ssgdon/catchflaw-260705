@@ -1169,3 +1169,35 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 상세 상단 '리뷰 적음' 주의 문구 (최근 1년 리뷰 100개 미만) — 2026-10 표본 공정성 */
 #detail .information .lowrev-note{display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);border-radius:var(--radius-btn);background:var(--warning-soft);color:var(--ink-2);font-size:var(--fs-meta);line-height:var(--lh-body);word-break:keep-all;}
 #detail .information .lowrev-note b{color:var(--ink);font-weight:var(--fw-bold);}
+
+
+/* ════════ 홈 재구성 (2026-10 · HOME-CONCEPT-DESIGN §2) ════════ */
+/* 블록 1 히어로: '지금 많이 찾는 호텔' 칩(한국인 리뷰 수 상위) + 두 곳 비교 링크 */
+#main .search-box .hero-chips{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-4) 0 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+#main .search-box .hero-chips::-webkit-scrollbar{display:none;}
+#main .search-box .hero-chips .hc-label{flex:none;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:rgb(255 255 255 / 80%);white-space:nowrap;}
+#main .search-box .hero-chip{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-3);border-radius:var(--radius-pill);border:1px solid rgb(255 255 255 / 35%);background:rgb(255 255 255 / 14%);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-semi);white-space:nowrap;}
+#main .search-box .scope-note .hero-cmp{color:var(--ink-inverse);font-weight:var(--fw-bold);text-decoration:underline;text-underline-offset:3px;}
+/* 블록 2 비교 카드: 가로 스냅 스크롤, 카드는 선 하나(상자 안 상자 금지) · 행은 선 구분 */
+#main .home-vs{padding:var(--section-y) var(--page-x) var(--sp-2);}
+#main .home-vs .vs-list{display:flex;gap:var(--sp-3);margin-top:var(--head-gap);padding-bottom:var(--sp-2);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
+#main .home-vs .vs-list::-webkit-scrollbar{display:none;}
+#main .vs-card{flex:0 0 292px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);color:var(--ink);}
+#main .vs-card .vs-names{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;column-gap:var(--sp-2);}
+#main .vs-card .vs-n{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);line-height:1.35;word-break:keep-all;}
+#main .vs-card .vs-n.is-win{color:var(--primary);}
+#main .vs-card .vs-vs{padding-top:2px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-4);}
+#main .vs-card .vs-row{display:grid;grid-template-columns:76px minmax(0,1fr) minmax(0,1fr);column-gap:var(--sp-2);padding:var(--sp-2) 0;border-top:1px solid var(--line);font-size:var(--fs-caption);line-height:1.4;color:var(--ink-2);}
+#main .vs-card .vs-names + .vs-row{margin-top:var(--sp-3);}
+#main .vs-card .vs-row .vs-k{color:var(--ink-3);font-weight:var(--fw-medium);}
+#main .vs-card .vs-row b{font-weight:var(--fw-bold);color:var(--ink);}
+#main .vs-card .vs-row b.is-win{color:var(--primary);}
+#main .vs-card .vs-row .vs-none{color:var(--ink-4);}
+#main .vs-card .vs-foot{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--sp-2);margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line);font-size:var(--fs-caption);line-height:1.4;}
+#main .vs-card .vs-verdict{font-weight:var(--fw-bold);color:var(--ink);}
+#main .vs-card .vs-more{flex:none;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
+/* 카드 사유줄 — '한국인 리뷰 N건 · 평균의 절반 이하' (홈·상세 슬라이더·검색·허브 공통, 실망 확률 숫자는 배지에만) */
+#main .hotel-list .list .item .info .why,#detail .hotel .list .item .info .why{margin-top:4px;font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-medium);color:var(--ink-2);}
+#search .list .cont .why,#hub .hub-list .cont .why{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-medium);color:var(--ink-2);}
+/* 상세 '함께 고민하는 호텔' 나란히 비교 링크 */
+#detail .hotel .vs-more-link{display:inline-block;margin-top:var(--sp-4);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--primary);}

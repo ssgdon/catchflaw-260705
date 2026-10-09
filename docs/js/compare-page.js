@@ -168,12 +168,22 @@
       if (!res.length) res = pool.filter(function (id) { return norm(D[id].n).indexOf(norm(q)) >= 0; });
       return { sub: '"' + esc(q) + '" 검색 결과', ids: res.slice(0, 12) };
     }
+    // 빈 검색 추천 = 비교 중인 호텔과 비슷한 위치(중심에서 2km) + 비슷한 가격대(±35%) → 추천순(실망 확률·한국인 리뷰·평점)
+    // 조건을 만족하는 곳이 6곳 미만이면 위치만 → 가격만 → 전체 순으로 넓힌다 (2026-10, 사용자 요청)
     var krws = cur.map(function (id) { return D[id].krw; }).filter(function (k) { return k; });
     var avg = krws.length ? krws.reduce(function (a, b) { return a + b; }, 0) / krws.length : null;
-    var near = avg ? pool.filter(function (id) { var k = D[id].krw; return k && Math.abs(k - avg) / avg <= 0.35; }) : pool;
-    if (near.length < 6) near = pool;
-    near.sort(function (a, b) { return D[a].p - D[b].p || D[b].an - D[a].an; });
-    return { sub: avg ? '비교 중인 호텔과 비슷한 가격대에서 실망 확률이 낮은 곳' : '실망 확률이 낮은 곳', ids: near.slice(0, 8) };
+    var pts = cur.map(function (id) { return D[id]; }).filter(function (h) { return h.la != null && h.lo != null; });
+    var cLa = pts.length ? pts.reduce(function (a, h) { return a + h.la; }, 0) / pts.length : null;
+    var cLo = pts.length ? pts.reduce(function (a, h) { return a + h.lo; }, 0) / pts.length : null;
+    function kmTo(h) { if (cLa == null || h.la == null) return null; var dy = (h.la - cLa) * 111, dx = (h.lo - cLo) * 93; return Math.sqrt(dx * dx + dy * dy); }
+    function nearLoc(id) { var d = kmTo(D[id]); return d != null && d <= 2; }
+    function nearPrice(id) { var k = D[id].krw; return !!(avg && k && Math.abs(k - avg) / avg <= 0.35); }
+    var near = pool.filter(function (id) { return nearLoc(id) && nearPrice(id); }), sub = '비교 중인 호텔과 비슷한 위치·가격대에서 추천순';
+    if (near.length < 6 && cLa != null) { near = pool.filter(nearLoc); sub = '비교 중인 호텔과 가까운 위치에서 추천순'; }
+    if (near.length < 6 && avg) { near = pool.filter(nearPrice); sub = '비교 중인 호텔과 비슷한 가격대에서 추천순'; }
+    if (near.length < 6) { near = pool; sub = '추천순'; }
+    near.sort(function (a, b) { return (D[b].rs || 0) - (D[a].rs || 0) || D[a].p - D[b].p || D[b].an - D[a].an; });
+    return { sub: sub + ' · 실망 확률이 낮고 한국인 리뷰가 많은 순', ids: near.slice(0, 8) };
   }
   function pickRow(id) {
     var h = D[id], meta = ['1박 ' + (h.pt || '정보 없음')];
