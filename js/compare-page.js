@@ -3,7 +3,7 @@
    3곳 미만이면 '호텔 추가' 칸 → 검색 팝업(별칭 인덱스 지연 로드)에서 바로 추가. */
 (function () {
   var D = window.CF_CMP || {}, FAQ = window.CF_CMP_FAQ || [];
-  var CATS = ['위생', '냄새', '소음', '시설', '불친절', '위치·안전'];
+  var CATS = ['청결', '냄새', '소음', '객실', '직원', '위치'];   // 분류 v5 점수 대분류 (안전은 칩 전용이라 비교표 제외)
   var MAX = 3;
   var root = document.getElementById('cmp-root');
   var diffOnly = false, pad = 0;   // pad: '호텔 추가' 칸 때문에 각 행 끝에 붙는 빈 칸 수

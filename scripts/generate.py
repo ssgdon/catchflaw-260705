@@ -9,26 +9,31 @@ from urllib.parse import quote as urlquote
 BUILD = str(int(time.time()))  # 에셋 캐시버스터
 
 sys.path.insert(0, os.path.dirname(__file__))
-from scoring import compute, CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS
+from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS
+# 분류 v5: 점수로 보여주는 대분류(6)만 CATS로 쓴다. 칩 전용 대분류(안전)는 위험 칩·별도 펼침 항목으로만 표시
+CATS = SCORED_CATS
+CAT_INDEX = {c: i for i, c in enumerate(ALL_CATS)}   # 펼침 항목 id="risk-{i}" — 점수 대분류는 CATS.index와 같고 안전이 마지막
 
 # ── 카테고리 표시명 (TAXONOMY v4: 명칭이 이미 중립적이라 순화층 불요). cat_ko는 identity로 유지해 호출부 보존. ──
 def cat_ko(c): return c
-# P1 한눈에 보기 문장 재료: 소분류 → 고객 언어 명사구 (SUBS 17개와 키 동일해야 함 — scoring.py SUBS 변경 시 동기화)
+# P1 한눈에 보기 문장 재료: 소분류 → 고객 언어 명사구 (SUBS 21개와 키 동일해야 함 — scoring.py SUBS 변경 시 동기화)
 SUB_PHRASE = {
-    '침구/바닥 청결': '침구·바닥 청결', '청소 상태': '청소 상태', '해충/곰팡이': '벌레·곰팡이',
-    '담배 냄새': '담배 냄새', '화장실·곰팡 악취': '화장실·곰팡 악취',
-    '내부 소음': '옆방·복도 소음', '외부 소음': '도로·유흥가 소음',
-    '공간 협소': '좁은 객실·욕실', '노후/고장': '낡은 시설·고장', '냉난방/수압': '냉난방·수압', '네트워크/TV': '와이파이·TV',
-    '응대 태도': '직원 응대', '체크인/처리 지연': '체크인 지연', '사후 대처': '문제 발생 시 대처',
-    '접근성': '역 접근성', '주변 편의': '주변 편의시설', '치안·안심': '치안',
+    '벌레': '벌레', '곰팡이': '곰팡이', '머리카락·얼룩': '머리카락·얼룩', '청소 안 됨': '청소 상태',
+    '담배 냄새': '담배 냄새', '악취': '방 냄새',
+    '실내 소음': '옆방·복도 소음', '바깥 소음': '도로·유흥가 소음',
+    '좁은 방': '좁은 객실', '침대·베개': '침대·베개', '낡음·고장': '낡은 시설·고장', '실내 온도': '실내 온도',
+    '온수·수압': '온수·수압', '와이파이·TV': '와이파이·TV',
+    '불친절': '직원 응대', '대기·지연': '체크인·요청 대기', '대응 미흡': '문제 발생 시 대처',
+    '역 거리': '역까지 거리', '주변 편의': '주변 편의시설', '동네 분위기': '밤길·동네 분위기',
+    '객실 보안': '객실 보안',
 }
 assert set(SUB_PHRASE) == {s for v in SUBS.values() for s in v}, 'SUB_PHRASE ↔ scoring.SUBS 불일치'
 # P3 누구와 가세요(1단계): 일행 구성별로 관련 깊은 소분류·FAQ 토픽만 모아 보여줌. 구성별 실망 확률은 동행 추출(파이프라인) 후.
 WHO_GROUPS = [
-    ('solo', '혼자', ['체크인/처리 지연', '치안·안심', '접근성'], ['luggage', 'access']),
-    ('two', '2인·커플', ['공간 협소', '냉난방/수압', '내부 소음'], ['beds']),
-    ('group', '친구 3인 이상', ['공간 협소', '내부 소음', '노후/고장'], ['beds', 'family']),
-    ('kids', '아이 동반', ['침구/바닥 청결', '해충/곰팡이', '공간 협소'], ['family', 'beds']),
+    ('solo', '혼자', ['대기·지연', '동네 분위기', '역 거리'], ['luggage', 'access']),
+    ('two', '2인·커플', ['좁은 방', '실내 온도', '실내 소음'], ['beds']),
+    ('group', '친구 3인 이상', ['좁은 방', '실내 소음', '낡음·고장'], ['beds', 'family']),
+    ('kids', '아이 동반', ['머리카락·얼룩', '벌레', '좁은 방'], ['family', 'beds']),
 ]
 WHO_FAQ_LABEL = {'luggage': '짐 보관', 'access': '역까지', 'beds': '침대 구성', 'family': '아이 동반'}
 SUB_CAT = {s: c for c, v in SUBS.items() for s in v}
@@ -68,7 +73,7 @@ def mask_name(s):
     return (s[0] + '**') if s else '투숙객'
 
 # 클라이언트 JS 표시용 매핑 주입값 (내부키 → 표시명). head()에서 window.CAT_KO 로 주입.
-CAT_KO_JSON = json.dumps({c: cat_ko(c) for c in CATS}, ensure_ascii=False)
+CAT_KO_JSON = json.dumps({c: cat_ko(c) for c in ALL_CATS}, ensure_ascii=False)
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SRC = os.path.join(ROOT, 'data-src')
@@ -103,7 +108,7 @@ UNSUPPORTED_KEYWORDS = ['도쿄', 'tokyo', '오사카', 'osaka', '교토', 'kyot
     '방콕', 'bangkok', '다낭', 'danang', '나트랑', '타이베이', 'taipei', '싱가포르', 'singapore',
     '홍콩', 'hongkong', 'hong kong', '괌', 'guam', '세부', 'cebu', '파리', 'paris', '런던', 'london']
 
-CAT_ICON = {'위생': '', '냄새': '', '소음': '', '시설': '', '불친절': '', '위치·안전': ''}
+CAT_ICON = {c: '' for c in ALL_CATS}
 BAND_KO = {'danger': '위험', 'warning': '주의', 'safe': '양호'}
 GAUGE_MAX = 40.0  # 실망확률 게이지 상한(%)
 
@@ -507,8 +512,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         return sorted(cand, key=lambda p: -H[p]['cats'][mcat]['subs'][scat]['score'])[:k]
 
     best = sorted(scored, key=lambda p: H[p]['p_crit'])[:8]
-    cur1 = worst_by_sub('위생', '해충/곰팡이')
-    cur2 = worst_by_sub('냄새', '화장실·곰팡 악취')
+    cur1 = worst_by_sub('청결', '벌레')
+    cur2 = worst_by_sub('냄새', '악취')
 
     def slider(title, desc, pids):
         cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
@@ -546,7 +551,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         'query-input':'required name=search_term_string'}})
     html_out = head('캐치플로 — 후쿠오카 호텔 리뷰 위험도·실망 확률 분석',
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드립니다. '
-                    '위생·소음·시설·동선·서비스·안전 6개 항목의 위험도를 예약 전에 확인하세요.',
+                    '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
     <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False) + f'''
@@ -587,8 +592,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-2">
                 {price_sliders}
                 {slider(f'{CITY["ko"]} 추천 숙소', f'{CITY["ko"]}에서 실망 확률이 가장 낮은 숙소 순이에요', best)}
-                {slider('벌레·곰팡이 언급 숙소', f'리뷰에 해충·곰팡이 언급이 많은 {CITY["ko"]} 숙소입니다', cur1)}
-                {slider('악취 언급 숙소', f'리뷰에 냄새 관련 언급이 많은 {CITY["ko"]} 숙소입니다', cur2)}
+                {slider('벌레 언급 숙소', f'리뷰에 벌레 언급이 많은 {CITY["ko"]} 숙소입니다', cur1)}
+                {slider('방 냄새 언급 숙소', f'리뷰에 하수구·곰팡내 같은 방 냄새 언급이 많은 {CITY["ko"]} 숙소입니다', cur2)}
                 <script>
                     $(function(){{
                         $('.hotel-slider').each(function(i, el){{
@@ -962,12 +967,12 @@ def build_search(city_avg_pct):
                         <button type="button" data-sort="rc">구글 리뷰 많은 순</button>
                         <button type="button" data-sort="g">구글 평점 높은 순</button>
                         <div class="lh-sort-sep">카테고리 안심순</div>
-                        <button type="button" data-sort="cat:위생">위생 안심순</button>
+                        <button type="button" data-sort="cat:청결">청결 안심순</button>
                         <button type="button" data-sort="cat:냄새">냄새 안심순</button>
                         <button type="button" data-sort="cat:소음">소음 안심순</button>
-                        <button type="button" data-sort="cat:시설">시설 안심순</button>
-                        <button type="button" data-sort="cat:불친절">불친절 안심순</button>
-                        <button type="button" data-sort="cat:위치·안전">위치·안전 안심순</button>
+                        <button type="button" data-sort="cat:객실">객실 안심순</button>
+                        <button type="button" data-sort="cat:직원">직원 안심순</button>
+                        <button type="button" data-sort="cat:위치">위치 안심순</button>
                     </div>
                 </div>
             </div>
@@ -1004,7 +1009,7 @@ def build_search(city_avg_pct):
         var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
         var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
         var fPrice = '', fBand = '', fArea = '', fCats = [], sortBy = 'p', sortCat = '';
-        var CAT_ICON = {{'위생':'','냄새':'','소음':'','시설':'','불친절':'','위치·안전':''}};
+        var CAT_ICON = {{'청결':'','냄새':'','소음':'','객실':'','직원':'','위치':'','안전':''}};
         var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
         var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
         var mapOpen = false;     // P6: 지도 기본 접힘 — 열렸을 때만 '지도 영역 내' 연동
@@ -2146,8 +2151,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _y, _m, _d = map(int, CITY['asof'].split('-'))
         cut_1y = str(_date(_y, _m, _d) - _td(days=365))
     if h['scored']:
-        for _cat, _scat, _slabel, _clabel in (('위생', '해충/곰팡이', '벌레·곰팡이', '벌레 리뷰'),   # F43: 신고→리뷰
-                                              ('위치·안전', '치안·안심', '치안·안심', '치안 리뷰')):
+        for _cat, _scat, _slabel, _clabel in (('청결', '벌레', '벌레', '벌레 리뷰'),   # F43: 신고→리뷰 · 분류 v5 칩 4종
+                                              ('청결', '곰팡이', '곰팡이', '곰팡이 리뷰'),
+                                              ('위치', '동네 분위기', '동네 분위기', '동네 분위기 리뷰'),
+                                              ('안전', '객실 보안', '객실 보안', '객실 보안 리뷰')):
             _sb = h['cats'][_cat]['subs'][_scat]
             _n, _n3 = _sb.get('crit_1y', 0), _sb.get('crit_3m', 0)   # 최근 1년 / 최근 3달(90일) 심각
             rare_crit[_scat] = _n
@@ -2168,7 +2175,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if h['scored'] and (faq or db_data):
         _chips = []
         for _cat, _sl, _cl, _n in db_data:
-            _chips.append(f'<button type="button" class="fj-btn fj-risk" data-target="risk-{CATS.index(_cat)}">{_cl} {_n}건</button>')
+            _chips.append(f'<button type="button" class="fj-btn fj-risk" data-target="risk-{CAT_INDEX[_cat]}">{_cl} {_n}건</button>')
         if faq:
             _tset = {it.get('t') for it in faq}
             _slots = max(0, 3 - len(db_data))      # 위험 칩 1개면 질문 칩 2개, 없으면 3개 (총 4칩 상한: 위험+질문+전체)
@@ -2244,7 +2251,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         if ratio <= 0.8:                              # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중<br>벌레·치안 심각 리뷰는 <b>0건</b>이었어요'
+                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중<br>벌레·곰팡이·객실 보안 심각 리뷰는 <b>0건</b>이었어요'
             elif _all_safe:
                 v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 기준,<br>6개 항목 모두 평균보다 불만이 적었어요'
             else:
@@ -2331,10 +2338,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
         # ── P1 한눈에 보기: 걸리는 점 = 딜브레이커 발동분(희소 심각 최근 1년 ≥3, db_data와 동일 캘리브레이션) 우선
         #    + 주의·위험 소분류 중 최근 1년 3건+ & 비율 2%+ (위험도순). 없는데 판정이 C·D면 최고 위험 카테고리로 폴백.
-        #    괜찮은 점 = 양호 카테고리(위험도 낮은 순 2) + 역 도보 5분 이내(위치·안전 양호일 때만). 전부 실측 조립.
+        #    괜찮은 점 = 양호 카테고리(위험도 낮은 순 2) + 역 도보 5분 이내(위치 양호일 때만). 전부 실측 조립.
         _neg = []    # (dot, lead용 구문, 상세 html, 카테고리)
         for _rc, _rl, _rcl, _rn in db_data:
-            _scat = '해충/곰팡이' if _rc == '위생' else '치안·안심'
+            _scat = _rl                  # 칩 라벨 = 소분류명 (벌레·곰팡이·동네 분위기·객실 보안)
             _neg.append(('danger', f'<em>{E(SUB_PHRASE[_scat])} 심각 리뷰</em>가 반복돼요',
                          f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · {per} {_rn}건', _rc, None))
         _cand = []
@@ -2358,7 +2365,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                        key=lambda c: h['cats'][c]['score'])
         _pos = [f'<b>{E(cat_ko(c))} 불만 적음</b> · {E(ratio_text(h["cats"][c]["score"]))}' for c in _safe[:2]]
         _st = nearest_station(meta.get('latitude'), meta.get('longitude'))
-        if _st and _st[1] <= 5 and h['cats']['위치·안전']['band'] == 'safe' and '위치·안전' not in _negc:
+        if _st and _st[1] <= 5 and h['cats']['위치']['band'] == 'safe' and '위치' not in _negc:
             _pos.append(f'<b>역 가까움</b> · {E(_st[0])} 도보 {_st[1]}분')
         if _neg or _pos:
             _ok = ratio < 1.15          # verdict A·B(통과) — 어조를 "무난 + 굳이 꼽자면"으로
@@ -2513,6 +2520,51 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 f'<button type="button" class="radar-cat is-{band}" data-target="risk-{ci}" aria-label="{E(cat_ko(c))} 불만 {_vl}, 자세히 보기">'
                 f'<span class="rc-main"><span class="rc-name">{E(cat_ko(c))}</span><span class="rc-sub">{E(ratio_text(cat["score"]))}</span></span>'
                 f'<span class="rc-verdict">{E(_vl)}</span><span class="rc-arrow" aria-hidden="true"></span></button>')
+        # ── 분류 v5: 칩 전용 대분류(안전) — 점수·순위 없이 최근 1년 심각 칩 + 근거 리뷰만. 점수 대분류 뒤에 고정 ──
+        for c in ALL_CATS:
+            if c not in CHIP_ONLY_CATS: continue
+            ci = CAT_INDEX[c]; cat = h['cats'][c]
+            qlist = [q for q in quotes.get((pid, c), []) if not cut_1y or str(q.get('pub') or '')[:10] >= cut_1y]
+            sheet_data[c] = [{'s': q.get('scat') or '', 'g': q['grade'], 'q': q.get('quote') or q.get('summary') or '',
+                              'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
+                              'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
+                              'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
+                              'l': (q.get('lang') or '').lower()} for q in qlist]
+            sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
+            sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
+            rows, tones = [], []
+            for s in SUBS[c]:
+                cnt = cat['subs'][s]['count_1y']
+                _clabel, _ctone = rare_cascade.get(s, (f'{per} 심각 리뷰 없음', 'clear'))
+                tones.append(_ctone)
+                cnt_html = (f'<button type="button" class="stat-count has-reviews" data-cat="{E(c)}" data-sub="{E(s)}">{cnt}건</button>'
+                            if cnt > 0 else '')
+                rows.append(f'''<li class="stat-row is-rare">
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{'danger' if _ctone == 'alert' else 'safe'}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
+                    <div class="rare-chip is-{_ctone}">{E(_clabel)}</div>
+                    {cnt_html}
+                </li>''')
+            alert = 'alert' in tones
+            band = 'danger' if alert else 'safe'
+            head_txt = rare_cascade.get(SUBS[c][0], (f'{per} 심각 리뷰 없음', 'clear'))[0]
+            qc = quote_cards(qlist)
+            more_btn = (f'''<div class="more"><button type="button" class="more-btn" data-cat="{E(c)}"><strong>{E(cat_ko(c))}</strong> 리뷰 전체보기 ({sheet_total[c]['t']}건)</button></div>'''
+                        if qlist else '')
+            quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div></div>{more_btn}'''
+                            if qc else '<div class="no-quote">무단 입실·잠금 문제를 말한 리뷰가 거의 없어요</div>')
+            groups.append(f'''<div class="risk-acc-item" id="risk-{ci}" data-order="{len(CATS)}">
+                <button type="button" class="risk-acc-head">
+                    <span class="risk-dot is-{band}"></span>
+                    <span class="cat-name">{E(cat_ko(c))}</span>
+                    <span class="cat-verdict is-{band}">{E(head_txt)}</span>
+                    <span class="cat-rank">점수 대신 실제 신고 건수로 보여드려요</span>
+                    <span class="risk-arrow"></span>
+                </button>
+                <div class="risk-acc-body">
+                    <ul class="stat-list">{''.join(rows)}</ul>
+                    {quotes_block}
+                </div>
+            </div>''')
         radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
         # ── 전체 통합 월별 흐름 라인차트 (게이지 아래·인사이트 앞) ──
@@ -2606,7 +2658,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
+                <span class="note">벌레·곰팡이·동네 분위기·객실 보안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         {similar_block}
@@ -2640,8 +2692,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         <script>
         window.QDATA = {json.dumps(sheet_data, ensure_ascii=False)};
         window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
-        window.QSUBS = {json.dumps({c: SUBS[c] for c in CATS}, ensure_ascii=False)};
+        window.QSUBS = {json.dumps({c: SUBS[c] for c in ALL_CATS}, ensure_ascii=False)};
         window.QCAT = {json.dumps({c: [round(h['cats'][c]['score']), h['cats'][c]['band']] for c in CATS}, ensure_ascii=False)};
+        window.QCHIP = {json.dumps({c: rare_cascade.get(SUBS[c][0], (f'{per} 심각 리뷰 없음', 'clear')) for c in CHIP_ONLY_CATS}, ensure_ascii=False)};
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
         window.QCUT = {json.dumps(cut_1y or '')};   // 근거 리뷰 기간 시작일 — R2 전체 파일도 이 날짜 이후만 표시
         window.QPER = {json.dumps(per)};
@@ -2700,7 +2753,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     if crit_rank_pct and crit_rank_pct <= 50 else '')
         seo_title = f'{name} 리뷰 위험도 · 실망확률 {_v}% | 캐치플로'
         seo_desc = (f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%).{rank_txt} '
-                    '위생·냄새·소음·시설·불친절·위치안전 6개 항목의 리뷰 위험도를 예약 전에 확인하세요.')
+                    '청결·냄새·소음·객실·직원·위치 6개 항목의 리뷰 위험도와 안전 신호를 예약 전에 확인하세요.')
     else:
         seo_title = f'{name} 리뷰 위험도 분석 | 캐치플로'
         seo_desc = (f'{name}의 리뷰를 수집·분석하고 있습니다. 위치·가격·구글 평점과 '
@@ -2915,10 +2968,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var rows = Object.keys(window.QSUBS).map(function(c){{
                     var T = window.QTOTAL && window.QTOTAL[c], n = T ? T.t : (window.QDATA[c] || []).length;
                     var sc = Q[c] || [0, 'safe'];
+                    var chip = window.QCHIP && window.QCHIP[c];          // 칩 전용 대분류(안전): 점수 대신 심각 건수 문구
+                    if (chip) sc = [0, chip[1] === 'alert' ? 'danger' : 'safe'];
                     return '<button type="button" class="ss-cat' + (c === curCat ? ' is-on' : '') + '" data-cat="' + esc(c) + '"' + (n ? '' : ' disabled') + '>'
                         + '<span class="ss-dot is-' + sc[1] + '"></span>'
                         + '<span class="ss-name">' + esc((window.CAT_KO && window.CAT_KO[c]) || c) + '</span>'
-                        + '<span class="ss-score is-' + sc[1] + '">불만 ' + vlab(sc[0]) + '</span>'
+                        + '<span class="ss-score is-' + sc[1] + '">' + (chip ? esc(chip[0]) : '불만 ' + vlab(sc[0])) + '</span>'
                         + '<span class="ss-cnt">' + n + '건</span></button>';
                 }}).join('');
                 var hn = (window.CF_HOTEL && window.CF_HOTEL.name) || '';
@@ -3240,14 +3295,14 @@ COLLECTIONS = [
      'name': '수영장', 'h1': '후쿠오카 수영장 호텔 전부 비교 — 리뷰 위험도 순',
      'title': '후쿠오카 수영장 호텔 비교 | 캐치플로'},
     {'slug': 'best/family', 'kind': 'family', 'min': 8,
-     'name': '가족여행', 'h1': '후쿠오카 가족여행 안심 호텔 — 방음·위생·안전 기준',
+     'name': '가족여행', 'h1': '후쿠오카 가족여행 안심 호텔 — 방음·청결·위치 기준',
      'title': '후쿠오카 가족 호텔 TOP | 캐치플로'},
     {'slug': 'best/luxury', 'kind': 'luxury', 'min': 8,
      'name': '4·5성급', 'h1': '후쿠오카 4·5성급 호텔 — 고급 호텔 위험도 비교',
      'title': '후쿠오카 고급 호텔 TOP | 캐치플로'},
 ]
-# 가족 안심 기준 카테고리 (위생, 방음=소음, 위치·안전) — TAXONOMY v4
-FAMILY_CATS = ['위생', '소음', '위치·안전']
+# 가족 안심 기준 카테고리 (청결, 방음=소음, 위치) — 분류 v5. 안전(칩 전용)은 점수가 없어 평균에서 제외
+FAMILY_CATS = ['청결', '소음', '위치']
 
 def _area_by_code(code):
     for a in AREAS:
@@ -3316,7 +3371,7 @@ def collection_members(col, hotels_meta, H):
         return cand
 
     if kind == 'family':
-        # 방음·위생·안전 3개 카테고리 band != danger & scored, 그 3개 평균점수 낮은순
+        # 방음·청결·위치 3개 카테고리 band != danger & scored, 그 3개 평균점수 낮은순
         cand = [p for p in scored
                 if all(H[p]['cats'][c]['band'] != 'danger' for c in FAMILY_CATS)]
         cand.sort(key=lambda p: sum(H[p]['cats'][c]['score'] for c in FAMILY_CATS) / len(FAMILY_CATS))
@@ -3574,7 +3629,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
             faqs.append((q2, E(a2p), a2p))
     elif kind == 'family':
         q2 = '가족여행 호텔은 뭘 봐야 하나요?'
-        a2p = '아이와 함께라면 방음(옆방·복도 소음), 위생(침구·해충), 안전(보안·프라이버시) 3가지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만 골라 평균 점수가 낮은 순으로 보여드려요.'
+        a2p = '아이와 함께라면 방음(옆방·복도 소음), 청결(머리카락·벌레·곰팡이), 위치(밤길·동네 분위기) 3가지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만 골라 평균 점수가 낮은 순으로 보여드려요.'
         faqs.append((q2, E(a2p), a2p))
     elif kind == 'luxury':
         # 비싼 호텔이 실망확률도 낮은가 — 럭셔리 평균 vs 도시평균
