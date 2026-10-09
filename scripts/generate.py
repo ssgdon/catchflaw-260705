@@ -34,10 +34,10 @@ assert set(SUB_PHRASE) == {s for v in SUBS.values() for s in v}, 'SUB_PHRASE ↔
 WHO_GROUPS = [
     ('solo', '혼자', ['객실 보안', '동네 분위기', '역 거리'], ['luggage', 'access']),
     ('two', '2인·커플', ['좁은 방', '침대·베개', '실내 소음'], ['beds']),
-    ('group', '친구 3인 이상', ['좁은 방', '침대·베개', '온수·수압'], ['beds', 'family']),
-    ('kids', '아이 동반', ['머리카락·얼룩', '벌레', '좁은 방'], ['family', 'beds']),
+    ('group', '친구 3인 이상', ['좁은 방', '침대·베개', '온수·수압'], ['beds', 'luggage']),     # 친구: 침대 구성·짐 보관(§11)
+    ('kids', '아이 동반', ['머리카락·얼룩', '벌레', '좁은 방'], ['family', 'beds', 'breakfast']),   # 아이: 조식 추가(§11)
 ]
-WHO_FAQ_LABEL = {'luggage': '짐 보관', 'access': '역까지', 'beds': '침대 구성', 'family': '아이 동반'}
+WHO_FAQ_LABEL = {'luggage': '짐 보관', 'access': '역까지', 'beds': '침대 구성', 'family': '아이 동반', 'breakfast': '조식'}
 SUB_CAT = {s: c for c, v in SUBS.items() for s in v}
 
 # 카테고리 결론 라벨 (UI-STANDARDS §13): 위험도 숫자 대신 "평균보다 적은지 많은지"를 먼저 말한다.
@@ -2028,6 +2028,8 @@ def quote_cards(qlist, limit=6):
         lang = (q.get('lang') or '').lower()
         llabel = lang_label(lang)
         lang_chip = f'<span class="q-lang">{E(llabel)}</span>' if llabel else ''
+        rep = (f'<div class="q-foot"><button type="button" class="rep-btn" data-fid="{E(q["fid"])}" data-cat="{E(q.get("mcat"))}" '
+               f'data-sub="{E(q.get("scat"))}" data-grade="{E(q["grade"])}">분류가 이상해요</button></div>') if q.get('fid') else ''   # 오분류 신고(FEEDBACK-2610 §13)
         out.append(f'''<li class="swiper-slide"><div class="item">
             <div class="item-top">
                 <div class="name">{E(mask_name(q.get('reviewer_name')))}</div>
@@ -2038,6 +2040,7 @@ def quote_cards(qlist, limit=6):
                 <div class="text">{emph(q.get('quote') or q.get('summary'))}</div>
                 <div class="date">{E((q.get('pub') or '')[:10].replace('-', '. '))} · {E(SUB_PHRASE.get(q.get('scat') or '', q.get('scat') or ''))}</div>
             </div>
+            {rep}
         </div></li>''')
     return '\n'.join(out)
 
@@ -2981,7 +2984,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
-                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'),
+                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'), 'f': q.get('fid'),   # f = 판정 ID(오분류 신고, R2 전체 JSON과 같은 키)
                               **({'rf': 1} if q.get('rf') else {})} for q in qlist]
             # 실제 총건수(소분류 건수 = 아코디언 표기와 동일 출처, 최근 1년). R2 전체 파일을 같은 기간으로 거른 카드 수와 일치.
             sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
@@ -3087,7 +3090,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                               'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
-                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'),
+                              'l': (q.get('lang') or '').lower(), 'r': q.get('rid'), 'f': q.get('fid'),   # f = 판정 ID(오분류 신고, R2 전체 JSON과 같은 키)
                               **({'rf': 1} if q.get('rf') else {})} for q in qlist]
             sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
             sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
@@ -3279,6 +3282,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QDIS = {json.dumps({'n': crit_reviews_1y})};   // 근거 줄의 실망 리뷰 M건 — 팝업 건수와 대조
         window.CF_FAQR = {json.dumps(f'{R2_PUB}/faq_reviews/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
+        window.QSUBCAT = {json.dumps(SUB_CAT, ensure_ascii=False)};   // 소분류 → 대분류 (실망 리뷰 모아보기에서 신고 버튼의 현재 분류)
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
         </script>'''
 
@@ -3340,6 +3344,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
                 og_image=og_img, extra_head=_extra_head) + f'''
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
+    <script src="../js/report.js?v={BUILD}" defer></script>
     <main id="container">
         <section id="detail">
             {site_header(1, back='../search')}
@@ -3487,6 +3492,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 }}
                 var foot = '<div class="item-foot">'
                     + origLink(q.o, q.u)
+                    + (q.f ? repBtn(q) : '')
                     + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
                     + '</div>';
                 return '<li><div class="item">'
@@ -3497,6 +3503,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(subKo(q.s)) : '') + relSpan(q.d) + '</div></div>'
                     + foot + full
                     + '</div></li>';
+            }}
+            // 오분류 신고 버튼 (FEEDBACK-2610 §13, js/report.js) — 대분류는 소분류에서(실망 모아보기는 여러 항목이 섞임)
+            function repBtn(q){{
+                var c = (window.QSUBCAT && window.QSUBCAT[q.s]) || (curCat !== '__dis__' ? curCat : '');
+                return '<button type="button" class="rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
             }}
             // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
             function origLink(o, u){{
