@@ -1593,10 +1593,8 @@ def jsonld_detail(pid, meta):
     m = re.match(r'(\d)성급', meta.get('hotel_stars') or '')
     if m:
         hotel['starRating'] = {'@type': 'Rating', 'ratingValue': int(m.group(1))}
-    g, rc = num(meta.get('total_score')), meta.get('reviews_count') or 0
-    if g and rc > 0:   # 구글 정책: 페이지에 실제 노출되는 평점만. 없으면 통째로 생략(허위 별점 금지)
-        hotel['aggregateRating'] = {'@type': 'AggregateRating', 'ratingValue': g,
-                                    'reviewCount': int(rc), 'bestRating': 5, 'worstRating': 1}
+    # aggregateRating 의도적 미포함: 평점 출처가 구글 지도라 리뷰 스니펫 정책(타 사이트 평점 집계 마크업 금지) 위반.
+    # 자체 사용자 평점이 생기기 전까지 넣지 말 것.
     crumbs = {
         '@context': 'https://schema.org', '@type': 'BreadcrumbList',
         'itemListElement': [
