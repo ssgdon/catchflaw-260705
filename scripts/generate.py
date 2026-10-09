@@ -507,6 +507,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="stylesheet" href="{p}css/ds.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}">
     <script src="{p}js/backnav.js?v={BUILD}"></script>
+    <script src="{p}js/common.js?v={BUILD}" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{p}js/swiper.js"></script>
     <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>

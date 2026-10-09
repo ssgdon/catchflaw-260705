@@ -1268,6 +1268,9 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 떠 있는 버튼: 아래로 스크롤 중 숨김 (common.js가 html.is-scroll-down 토글). 모바일은 가운데 정렬 translateX(-50%) 유지 */
 #float,.cmp-tray{transition:transform .25s ease,opacity .25s ease;}
 html.is-scroll-down #float,html.is-scroll-down .cmp-tray{transform:translate(-50%,130%);opacity:0;pointer-events:none;}
+/* 상세는 '#detail ~ #float{opacity:1;visibility:visible}'(id 2개)가 위 규칙을 이겨 버튼 윗부분이 화면 아래에 걸려 보였다 → 같은 무게로 덮어씀 */
+#detail ~ #float{transition:transform .25s ease,opacity .25s ease,visibility .25s;}
+html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 /* 근거 1줄(실망 리뷰 M건)은 버튼 — 링크 행과 같은 모양 */
 #detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink-2);cursor:pointer;}
 .review-sheet .sheet-chips .sheet-note{padding:var(--sp-1) 0;font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);white-space:normal;}
