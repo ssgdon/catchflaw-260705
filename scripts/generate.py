@@ -1864,7 +1864,7 @@ def quote_cards(qlist, limit=6):
             <div class="item-info">{star}<div class="web">{origin}</div>{lang_chip}</div>
             <div class="item-bottom">
                 <div class="text">{emph(q.get('quote') or q.get('summary'))}</div>
-                <div class="date">{E((q.get('pub') or '')[:10].replace('-', '. '))} · {E(q.get('scat') or '')}</div>
+                <div class="date">{E((q.get('pub') or '')[:10].replace('-', '. '))} · {E(SUB_PHRASE.get(q.get('scat') or '', q.get('scat') or ''))}</div>
             </div>
         </div></li>''')
     return '\n'.join(out)
@@ -3072,6 +3072,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QDATA = {json.dumps(sheet_data, ensure_ascii=False)};
         window.QTOTAL = {json.dumps(sheet_total, ensure_ascii=False)};
         window.QSUBS = {json.dumps({c: SUBS[c] for c in ALL_CATS}, ensure_ascii=False)};
+        window.QSUBKO = {json.dumps(SUB_PHRASE, ensure_ascii=False)};   // 소분류 화면 표기(아코디언·근거 줄과 같은 말) — 내부키는 QSUBS 그대로
         window.QCAT = {json.dumps({c: [round(h['cats'][c]['score']), h['cats'][c]['band']] for c in CATS}, ensure_ascii=False)};
         window.QCHIP = {json.dumps({c: rare_cascade.get(SUBS[c][0], (f'{per} 심각 리뷰 없음', 'clear')) for c in CHIP_ONLY_CATS}, ensure_ascii=False)};
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
@@ -3265,6 +3266,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }}
 
             function esc(s){{ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }}
+            function subKo(s){{ return (window.QSUBKO && window.QSUBKO[s]) || s; }}   // '동네 분위기' → '밤길·동네 분위기' 등 화면 표기
             function emph(s){{ return esc(s).replace(/\\*\\*(.+?)\\*\\*/g, '<span>$1</span>').replace(/\\*\\*/g, ''); }}
             function langLabel(l){{
                 if (!l) return '';
@@ -3294,7 +3296,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
                     + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div>' + (langLabel(q.l) ? '<span class="q-lang">' + langLabel(q.l) + '</span>' : '') + '</div>'
                     + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
-                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(q.s) : '') + relSpan(q.d) + '</div></div>'
+                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(subKo(q.s)) : '') + relSpan(q.d) + '</div></div>'
                     + foot + full
                     + '</div></li>';
             }}
@@ -3361,7 +3363,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 subs.forEach(function(s){{
                     var n = cnt(s);
                     if (!n) return;
-                    chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(s) + ' ' + n + '</button>');
+                    chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(subKo(s)) + ' ' + n + '</button>');
                 }});
                 $('#sheet-chips').html(chips.join(''));
                 $('#sheet-list').scrollTop(0);
