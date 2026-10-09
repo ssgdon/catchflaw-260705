@@ -19,6 +19,14 @@
     if (r <= 1.05) return '평균과 비슷해요';
     return '평균의 ' + r.toFixed(1) + '배';
   }
+  function ratioHtml(v) { var m = /^(평균보다 |평균의 |평균과 )(.+)$/.exec(ratioText(v)); return m ? m[1] + '<b>' + m[2] + '</b>' : ratioText(v); }
+  var NB = '\u00a0';
+  function glue(t) {   // generate.py polish_breaks와 같은 묶음: "가장 낮음" "도보 23분" "최근 1년" "좋은 곳"
+    return String(t).replace(/가장 /g, '가장' + NB).replace(/도보 (\d)/g, '도보' + NB + '$1')
+      .replace(/최근 (\d)/g, '최근' + NB + '$1').replace(/(많은|적은|낮은|높은|좋은) (편|곳)/g, '$1' + NB + '$2');
+  }
+  // 칸 안 여러 값("무료 · 체크인 전후")은 값마다 한 줄 — 줄 끝에 '·'가 매달리지 않게
+  function lines(t) { return String(t).split(' · ').map(function (x) { return '<span class="cmp-li">' + esc(x) + '</span>'; }).join(''); }
   function ev(n, p) { if (typeof gtag === 'function') gtag('event', n, p || {}); }
 
   function saveIds(a) {   // 비교함(localStorage) + 주소(?ids=) 동기화 — 새로고침·공유해도 같은 구성
@@ -49,7 +57,7 @@
     return '<div class="cmp-tr' + (same ? ' is-same' : '') + '"><div class="cmp-k">' + label + '</div><div class="cmp-v">'
       + cells.map(function (c) {
           var on = best !== null && c.v === best;
-          return '<div class="cmp-cell' + (on ? ' is-best' : '') + '">' + c.h + (on ? '<span class="cmp-best">' + (opt.lab || '가장 좋음') + '</span>' : '') + '</div>';
+          return '<div class="cmp-cell' + (on ? ' is-best' : '') + '">' + c.h + (on ? '<span class="cmp-best">' + glue(opt.lab || '가장 좋음') + '</span>' : '') + '</div>';
         }).join('') + blank + '</div></div>';
   }
   function num(v, unit) { return { v: v, k: String(v), h: '<b>' + esc(v) + (unit || '') + '</b>' }; }
@@ -88,26 +96,26 @@
           + '<span class="cmp-nm">' + esc(h.n) + '</span></a><button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="비교에서 빼기">×</button></div>';
       }).join('') + (canAdd ? addSlot() : '') + '</div>';
     html += '<div class="cmp-sum"><div class="cmp-sum-box"><div class="cmp-eyebrow">한 줄 비교</div><p class="cmp-lead">' + summary(H) + '</p></div>'
-      + '<div class="cmp-tools"><span>보라색 = 이 항목에서 가장 좋은 곳</span>'
+      + '<div class="cmp-tools"><span>보라색 = 가장 좋은' + NB + '곳</span>'
       + '<button type="button" class="cmp-switch' + (diffOnly ? ' is-on' : '') + '" id="cmp-diff"><i></i>차이 나는 항목만</button></div></div>';
 
     var g1 = row('실망 확률', H.map(function (h) { return num(h.p, '%'); }), { best: 'min', lab: '가장 낮음' })
       // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지
       + row('1박 평균', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
-      + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? esc(h.st) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
+      + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? glue(esc(h.st)) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
-      + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + esc(h.pd || '최근 1년') + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
+      + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + glue(esc(h.pd || '최근 1년')) + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
     var g2 = CATS.map(function (c) {
       return row(c + ' 불만', H.map(function (h) {
         var v = h.cs[c], b = band(v);
-        return { v: v, k: verdict(v), h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioText(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
+        return { v: v, k: verdict(v), h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioHtml(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
       }), { best: 'min', lab: '불만 가장 적음' });
     }).join('');
     var g3 = row('분석 리뷰 대비 비율', H.map(function (h) {
       return { v: null, k: JSON.stringify(h.top), h: (h.top && h.top.length) ? h.top.map(function (t) { return '<div class="cmp-top">' + esc(t[0]) + ' <b>' + t[1] + '%</b></div>'; }).join('') : '<span class="cmp-none">두드러진 불만 없음</span>' };
     }));
     var g4 = FAQ.map(function (f) {
-      return row(f[1], H.map(function (h) { var t = (h.fq || {})[f[0]]; return { v: null, k: t || '', h: t ? esc(t) : '<span class="cmp-none">리뷰 언급 없음</span>' }; }));
+      return row(f[1], H.map(function (h) { var t = (h.fq || {})[f[0]]; return { v: null, k: t || '', h: t ? lines(t) : '<span class="cmp-none">리뷰 언급 없음</span>' }; }));
     }).join('');
     html += '<div class="cmp-grp"><div class="cmp-gt">핵심</div>' + g1 + '</div>'
       + '<div class="cmp-grp"><div class="cmp-gt">항목별 불만 <span>' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔 평균과 비교</span></div>' + g2 + '</div>'

@@ -53,11 +53,13 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .glance .gl-box{padding:var(--sp-6);background:var(--surface-2);border:1px solid var(--line);}
 #detail .glance .gl-eyebrow{font-size:var(--fs-meta);}
 #detail .glance .gl-lead{font-size:var(--fs-lead);line-height:1.5;font-weight:var(--fw-display);}
+#detail .glance .gl-lead em{white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리로 */
 #detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-5);}
 #detail .glance .gl-h{margin-bottom:var(--sp-2);font-size:var(--fs-meta);}
 #detail .glance li{padding:6px 0;font-size:var(--fs-body-sm);line-height:1.55;}
 #detail .glance .gl-dot{margin-top:9px;}
-#detail .glance .gl-foot{font-size:var(--fs-meta);}
+#detail .glance .gl-foot{flex-wrap:wrap;row-gap:var(--sp-2);font-size:var(--fs-meta);}
+#detail .glance .gl-foot > span{flex:1 1 100%;}   /* 안내문은 한 줄 전체, '근거 보기'는 아래 오른쪽 */
 
 /* 누구와 가세요 */
 #detail .who .who-chips{gap:var(--sp-2);}
@@ -85,6 +87,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .risk .radar-cat:last-child{border-bottom:0;}
 #detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-bold);}
 #detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-caption);color:var(--ink-3);}
+#detail .risk .radar-cat .rc-sub b{font-weight:var(--fw-bold);color:var(--ink-2);}   /* 핵심 수치(1.1배·60% 적어요) */
 #detail .risk .radar-cat .rc-verdict{font-size:var(--fs-body);font-weight:var(--fw-display);}
 
 /* 리스크 상세: 테두리 카드 묶음 → 구분선 목록 */
@@ -94,7 +97,10 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
 #detail .analysis .risk-acc-head .cat-verdict{height:var(--h-badge);font-size:var(--fs-meta);}
 #detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-caption);}
-#detail .analysis .risk-acc-body{padding:0 0 var(--sp-6);}
+/* 펼친 소분류 = 하위 단계: 대분류 점(●) 중심에서 내려오는 세로 안내선 + 대분류 이름 위치(20)까지 들여쓰기.
+   점 10px 중심 5 = 선 4~6px, 내용 시작 4+2+14 = 20 = .cat-rank 들여쓰기. 열린 머리는 아래 여백을 줄여 하위와 붙임 */
+#detail .analysis .risk-acc-item.is-open > .risk-acc-head{padding-bottom:var(--sp-3);}
+#detail .analysis .risk-acc-body{margin:0 0 var(--sp-6) var(--sp-1);padding:0 0 0 calc(var(--sp-4) - 2px);border-left:2px solid var(--line-strong);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
@@ -103,6 +109,9 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .analysis .more-btn,#detail .analysis .more a{height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body-sm);}
 #detail .stat-legend{gap:var(--sp-2) var(--sp-3);}
 #detail .stat-legend .lg,#detail .stat-legend .note{font-size:var(--fs-meta);}
+/* 주석 문장: 한 문장 안의 줄바꿈은 붙이고(1.4), 문장 사이는 넓게(12) — mvp.css의 1.6·6px 덮어씀 */
+#detail .analysis .stat-legend{row-gap:var(--sp-3);}
+#detail .analysis .stat-legend .note{line-height:var(--lh-head);}
 
 /* 대안·추천 슬라이더 카드 (홈·상세 공통 hotel_card) */
 #main .hotel-list .list li,#detail .hotel .list li{width:240px;}
@@ -113,9 +122,18 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #main .hotel-list .list .item .info .price-line,#detail .hotel .list .item .info .price-line{font-size:var(--fs-caption);}
 #main .hotel-list .list .item .thumb .badge .badge-item,#detail .hotel .list .item .thumb .badge .badge-item{padding:4px 8px;font-size:var(--fs-micro);font-weight:var(--fw-bold);}
 
-/* 실전정보 FAQ: 테두리 카드 → 구분선 목록 */
-#detail .faq .faq-card{margin:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;background:transparent;}
-#detail .faq .faq-card:last-child{border-bottom:0;}
+/* 실전정보 FAQ: 질문마다 간격을 둔 개별 카드(선 하나) — 펼친 근거 리뷰는 카드 안에서 선으로만 구분(상자 안 상자 금지) */
+#detail .faq .faq-cards{display:flex;flex-direction:column;gap:var(--sp-3);}
+#detail .faq .faq-card{margin:0;padding:var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);}
+#detail .faq .faq-q{gap:var(--sp-2);}
+#detail .faq .faq-chips{gap:var(--sp-2);margin-top:var(--sp-3);}
+#detail .faq .faq-chip{padding:0 var(--sp-3);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);}
+#detail .faq .faq-a{margin-top:var(--sp-4);}
+#detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding-top:var(--sp-4);border-top:1px solid var(--line-strong);}
+#detail .faq .faq-ev{gap:0;}
+#detail .faq .faq-ev .fe-item{padding:var(--sp-4) 0;border-radius:0;background:transparent;}
+#detail .faq .faq-ev .fe-item + .fe-item{border-top:1px solid var(--line);}
+#detail .faq .faq-more-btn{margin-top:var(--sp-4);}
 
 /* 블로그 후기 카드 */
 .social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;}
@@ -184,3 +202,38 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 
 /* ════════ ⑥ 차트 축 라벨 ════════ */
 #detail .analysis .risk-acc-body .stat-axis .ax{font-size:var(--fs-micro);}
+
+/* ════════ ⑦ 줄바꿈 — 의미 단위로 끊기 (v2.1) ════════
+   - 제목·짧은 설명은 줄 길이를 고르게(balance), 문단은 마지막 줄 한 단어 방지(pretty)
+   - .seg : 의미 묶음 — 들어가면 한 줄, 넘치면 그 안에서만 줄바꿈 (예: "최근 1년 리뷰의 4.2% (3건)")
+   - .nw  : 절대 안 끊김 — 짧은 라벨 전용 (예: "많은 편이에요")
+   - .dsep: 문장 사이 구분점 ' · ' — 모바일에선 줄바꿈으로 바뀌어 줄 끝에 '·'가 매달리지 않음, PC는 그대로 */
+h1,h2,h3,.title,.tit,.hub-h1,.hub-h2,.name-ko,.head .desc,.gl-lead,.who-h,.vh,.verdict-why,.cmp-lead,.hc-txt,.about-lead,.kp-sub,.kr-serious,.factor,.keywords,.scope-note,.hr-label,.rc-sub,.cat-rank{text-wrap:balance;}
+p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-method{text-wrap:pretty;}
+.seg{display:inline-block;}
+.nw{white-space:nowrap;}
+@media (max-width:1099px){
+    .dsep{display:block;height:0;overflow:hidden;}
+}
+/* 제목 옆 보조 정보가 제목을 두 줄로 밀어내지 않게: 공간이 모자라면 보조 정보가 아랫줄로 */
+.kr-card .kr-head{flex-wrap:wrap;row-gap:var(--sp-1);}
+.kr-card .kr-head .title{flex:none;}
+/* 차트 범례: 항목 단위로만 줄바꿈, 긴 호텔명은 말줄임 */
+#detail .risk .chart .custom-legend{display:grid;grid-template-columns:minmax(0,max-content) max-content;justify-content:center;column-gap:var(--sp-4);}   /* [호텔명(넘치면 …) | 후쿠오카 평균] 한 줄 */
+#detail .risk .chart .custom-legend .legend-item{min-width:0;max-width:100%;white-space:nowrap;}
+#detail .risk .chart .custom-legend .legend-item .hotel-text{overflow:hidden;text-overflow:ellipsis;}
+/* 상단 두 버튼: 좁은 화면에서 라벨이 '분석 리뷰 / 212개'로 쪼개지지 않게 — 여백 축소 + 장식 아이콘(≡)은 좁은 폭에서 숨김 */
+#detail .information .info-bottom .btn-link{padding:0 var(--sp-3);gap:6px;}
+#detail .information .info-bottom .btn-link .txt .label{white-space:nowrap;}
+@media (max-width:400px){#detail .information .info-bottom .btn-audit .ico{display:none;}}
+
+/* 구글 별점 분포: 바깥 테두리 상자 제거, 1·2점(불만 구간)은 연한 빨강 띠로 묶어 한눈에 구분 */
+#detail .recent .list{padding:0;border:0;border-radius:0;background:transparent;}
+#detail .recent .list ul{gap:0;}
+#detail .recent .list li{padding:var(--sp-3) var(--sp-4);}
+#detail .recent .list li:nth-child(-n+2){background:var(--danger-soft);}
+#detail .recent .list li:nth-child(1){padding-top:var(--sp-4);border-radius:var(--radius-btn) var(--radius-btn) 0 0;}
+#detail .recent .list li:nth-child(2){padding-bottom:var(--sp-4);margin-bottom:var(--sp-2);border-radius:0 0 var(--radius-btn) var(--radius-btn);}
+#detail .recent .list li:nth-child(-n+2) .num,#detail .recent .list li:nth-child(-n+2) .per{color:var(--danger-text);font-weight:var(--fw-bold);}
+#detail .recent .list li:nth-child(-n+2) .bar{background:var(--surface-card);}
+#detail .recent .list li:nth-child(-n+2) .bar i{background:var(--danger);}
