@@ -241,10 +241,12 @@ def load():
     quotes = defaultdict(list)
     for q in J('quotes.json'):
         quotes[(q['place_id'], q['mcat'])].append(q)
-    stars = defaultdict(lambda: {'dist': {i: 0 for i in range(1, 6)}, 'total': 0, 'low_1y': 0, 'total_1y': 0})
+    stars = defaultdict(lambda: {'dist': {i: 0 for i in range(1, 6)}, 'dist_1y': {i: 0 for i in range(1, 6)},
+                                 'total': 0, 'low_1y': 0, 'total_1y': 0})
     for s in J('stars.json'):
         st = stars[s['place_id']]
         st['dist'][int(s['stars'])] = s['n']
+        st['dist_1y'][int(s['stars'])] = s['n_1y']   # 화면 분포는 최근 1년 (다른 숫자와 같은 기간)
         st['total'] += s['n']
         st['total_1y'] += s['n_1y']
         if int(s['stars']) <= 2: st['low_1y'] += s['n_1y']
@@ -501,7 +503,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     total_reviews_txt = f"{round(_total/10000)}만"   # 동적: 분석 대상 리뷰 총수 (예: 6만)
 
     def worst_by_sub(mcat, scat, k=8):
-        cand = [p for p in scored if H[p]['cats'][mcat]['subs'][scat]['count'] >= 5]
+        cand = [p for p in scored if H[p]['cats'][mcat]['subs'][scat]['count_1y'] >= 5]   # 점수와 같은 최근 1년 기준
         return sorted(cand, key=lambda p: -H[p]['cats'][mcat]['subs'][scat]['score'])[:k]
 
     best = sorted(scored, key=lambda p: H[p]['p_crit'])[:8]
@@ -789,7 +791,7 @@ def card_tags(h):
 # ───────────────────────── compare (P5) ─────────────────────────
 CMP_FAQ = [('luggage', '짐 보관'), ('breakfast', '조식'), ('bath', '대욕장·온천'), ('family', '아이 동반')]
 
-def build_compare_data(hotels_meta, H, faq_data):
+def build_compare_data(hotels_meta, H, faq_data, monthly=None):
     """비교 페이지 전용 데이터(window.CF_CMP = {pid: {...}}). 채점 호텔만. 숫자는 전부 실측."""
     out = {}
     for pid, meta in hotels_meta.items():
@@ -810,6 +812,7 @@ def build_compare_data(hotels_meta, H, faq_data):
             'p': pct(h['p_crit']), 'b': h['badge'][0], 'l': h['badge'][1],
             'pt': meta.get('price_txt') or '', 'krw': meta.get('krw'),
             'g': float(meta.get('total_score') or 0), 'rc': meta.get('reviews_count') or 0, 'an': h['analyzed'],
+            'pd': period_label(h, (monthly or {}).get(pid)),   # 수치 기간 ('최근 1년' 또는 수집이 짧으면 '최근 N개월')
             'st': f'{st[0]} 도보 {st[1]}분' if st else '', 'sm': st[1] if st else None,
             'cs': {c: round(h['cats'][c]['score']) for c in CATS},
             'top': top,
@@ -1488,7 +1491,7 @@ def insight_card(h):
         subs = []
         for c in top:
             subs += sorted(h['cats'][c]['subs'].items(), key=lambda kv: -kv[1]['score'])
-        tags = ''.join(f'<div class="tags-item">#{E(s)}</div>' for s, d in subs[:4] if d['count'] >= 3)
+        tags = ''.join(f'<div class="tags-item">#{E(s)}</div>' for s, d in subs[:4] if d['count_1y'] >= 3)
         return f'''<div class="result">
             <div class="text">이 호텔은 <span>{E(names)}</span> 관련 불만이 <br>{CITY['ko']} 평균보다 <span>{ratio:.1f}배</span> 많아요!</div>
             <div class="tags">{tags}</div>
@@ -1559,34 +1562,50 @@ def similar_hotels(pid, hotels_meta, H, k=8):
         cands.append((rank, p))
     return [p for _, p in sorted(cands)[:k]]
 
-def kr_rank_map(kr_stats):
-    """kr_n≥10인 호텔들의 kr_ratio('all') 백분위 순위 계산 (§2-a). {pid: pct_top} 반환.
-       pct_top = round(100 * (해당보다 kr_ratio 큰 호텔 수 + 1) / 대상수) — 작을수록 상위."""
-    def num(x):
-        try: return float(x)
-        except (TypeError, ValueError): return None
-    pool = []
+def kr_share_map(kr_stats, H):
+    """호텔별 한국인 리뷰 비중(최근 1년) = 한국어 리뷰 ÷ 글이 있는 리뷰(text_1y). kr_n≥10만.
+       별점만 남긴 리뷰는 언어(국적)를 알 수 없어 분모에서 뺀다 — 넣으면 한국인 비중이 낮게 나옴 (2026-10 검토)."""
+    out = {}
     for (pid, period), r in kr_stats.items():
-        if period != 'all': continue
-        if int(num(r.get('kr_n')) or 0) < 10: continue
-        pool.append((pid, num(r.get('kr_ratio')) or 0.0))
-    n = len(pool)
+        if period != '1y' or pid not in H: continue
+        try: kr_n = int(float(r.get('kr_n') or 0))
+        except (TypeError, ValueError): continue
+        tn = H[pid].get('text_1y') or 0
+        if kr_n >= 10 and tn > 0:
+            out[pid] = min(kr_n / tn, 1.0)
+    return out
+
+
+def kr_rank_map(share):
+    """한국인 비중 백분위 순위 (§2-a). {pid: pct_top} — 작을수록 상위.
+       pct_top = round(100 * (해당보다 비중 큰 호텔 수 + 1) / 대상수)."""
+    n = len(share)
     rank = {}
-    for pid, ratio in pool:
-        bigger = sum(1 for _, o in pool if o > ratio)
+    for pid, ratio in share.items():
+        bigger = sum(1 for o in share.values() if o > ratio)
         rank[pid] = max(1, round(100 * (bigger + 1) / n)) if n else None
     return rank
 
 
-def kr_ratio_dist(kr_stats):
-    """kr_n≥10 호텔들의 kr_ratio('all') 오름차순 리스트 — 분포 막대 차트(§2-a)용."""
-    def num(x):
-        try: return float(x)
-        except (TypeError, ValueError): return None
-    vals = [num(r.get('kr_ratio')) or 0.0
-            for (pid, period), r in kr_stats.items()
-            if period == 'all' and int(num(r.get('kr_n')) or 0) >= 10]
-    return sorted(vals)
+def kr_ratio_dist(share):
+    """한국인 비중 오름차순 리스트 — 분포 막대 차트(§2-a)용."""
+    return sorted(share.values())
+
+
+def period_label(h, mdata):
+    """이 호텔 수치의 실제 기간 표기. 기본 '최근 1년'. 단 1년 넘은 리뷰가 하나도 없고(수집이 1년을 못 거슬러 감 —
+    리뷰 많은 호텔의 수집 상한·신규 편입 등) 첫 리뷰가 1년 컷보다 늦으면 실제 개월 수('최근 6개월')로 표기.
+    mdata = monthly[pid] {ym: (n, n_crit, n_warn)} — 13개월 창이라 첫 달은 월 단위 근사."""
+    if not CITY['asof'] or h.get('analyzed_all', 0) > h.get('analyzed', 0):
+        return '최근 1년'
+    months = sorted(ym for ym, v in (mdata or {}).items() if v and v[0] > 0)
+    if not months:
+        return '최근 1년'
+    from datetime import date as _date
+    fy, fm = (int(x) for x in months[0].split('-'))
+    ay, am, ad = (int(x) for x in CITY['asof'].split('-'))
+    n = round((_date(ay, am, ad) - _date(fy, fm, 1)).days / 30.44)
+    return '최근 1년' if n >= 12 else f'최근 {max(n, 1)}개월'
 
 
 def _complete_months(asof, k=12):
@@ -1694,31 +1713,33 @@ def kr_dist_bars(this_ratio, dist):
             f'aria-label="후쿠오카 호텔 한국인 비중 분포에서 이 호텔 위치">{"".join(bars)}</div>')
 
 
-def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
-    """한국인 리뷰 현황 카드 (LLM-ANALYSIS §7.3 + DETAIL-UI-REVAMP §2). 표본 10건 미만이면 미노출."""
+def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
+    """한국인 리뷰 현황 카드 (LLM-ANALYSIS §7.3 + DETAIL-UI-REVAMP §2). kr = kr_stats 1y 행, 표본 10건 미만이면 미노출.
+    2026-10 검토 반영: ① 기간을 페이지 다른 숫자와 같은 최근 1년(전체기간 X) ② 한국인·전체 비교의 분모를 둘 다
+    '글을 남긴 리뷰'로 — 별점만 리뷰는 언어를 몰라 한국인 쪽엔 못 들어가는데 전체 쪽에만 들어가면
+    전체 비율이 희석돼 한국인이 평균 +7%p 더 부정적으로 보이는 착시(142곳 중 88곳 결론 뒤집힘)가 있었다."""
     def num(x):
         try: return float(x)
         except (TypeError, ValueError): return None
-    if not kr or int(num(kr.get('kr_n')) or 0) < 10:
+    if not kr or int(num(kr.get('kr_n')) or 0) < 10 or not h.get('text_1y'):
         return ''
-    kr_n, all_n = int(num(kr['kr_n'])), int(num(kr['all_n']))
-    ratio = round((num(kr.get('kr_ratio')) or 0) * 100)
+    kr_n, text_n = int(num(kr['kr_n'])), int(h['text_1y'])
+    ratio = round(min(kr_n / text_n, 1.0) * 100)
     kr_st, all_st = num(kr.get('kr_stars')), num(kr.get('all_stars'))
-    # §2-a 신규 지표: 심각·주의 리뷰 비율(kr_risk/all_risk). 구 kr_stats.json엔 부재 → None 가드.
+    # 심각·주의 리뷰 비율: 한국인(kr_risk, 한국어 글 리뷰 기준) vs 전체 글 리뷰(any_1y ÷ text_1y)
     kr_rk_raw = num(kr.get('kr_risk'))
-    all_rk_raw = num(kr.get('all_risk'))
-    has_risk = kr_rk_raw is not None and all_rk_raw is not None
-    kr_rk_pct = (kr_rk_raw * 100) if kr_rk_raw is not None else None
-    all_rk_pct = (all_rk_raw * 100) if all_rk_raw is not None else None
+    has_risk = kr_rk_raw is not None
+    kr_rk_pct = kr_rk_raw * 100 if has_risk else None
+    all_rk_pct = h.get('any_1y', 0) / text_n * 100
     small = kr_n < 30
 
     # 임계 (§2-c): 별점차 ±0.15, 위험비율차 ±1.5%p
     d_st = (kr_st - all_st) if (kr_st and all_st) else None
-    # 인사이트 d_dp = 심각·주의 비율차(%p). risk 부재 시 실망확률(심각-only)로 폴백해 카드가 깨지지 않게.
+    # 인사이트 d_dp = 심각·주의 비율차(%p). risk 부재 시 실망확률(심각-only, 글 리뷰 기준)로 폴백.
     if has_risk:
         d_dp = kr_rk_pct - all_rk_pct
     else:
-        d_dp = ((num(kr.get('kr_disappoint')) or 0) - (num(kr.get('all_disappoint')) or 0)) * 100
+        d_dp = ((num(kr.get('kr_disappoint')) or 0) - h.get('crit_1y', 0) / text_n) * 100
     ST_TH, DP_TH = 0.15, 1.5
     # §2-c 인사이트 4케이스 (별점+위험비율 조합), 별점 없으면 위험비율축만 2케이스
     if d_st is not None:
@@ -1745,22 +1766,20 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
     def num1(x):
         try: return float(x)
         except (TypeError, ValueError): return None
-    serious_block = ''
-    if kr_1y and int(num1(kr_1y.get('kr_n')) or 0) >= 10:
-        n_serious = round((num1(kr_1y.get('kr_disappoint')) or 0) * 100)
-        if n_serious == 0:
-            serious_txt = '최근 1년 한국인 리뷰에선 심각한 문제 언급이 없었어요'
-        else:
-            serious_txt = f'최근 1년 기준, 한국인 리뷰의 <b>{n_serious}%</b>가 심각한 문제를 언급했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
-        serious_block = f'<div class="kr-serious">{serious_txt}</div>'
+    n_serious = round((num1(kr.get('kr_disappoint')) or 0) * 100)
+    if n_serious == 0:
+        serious_txt = f'{per} 한국인 리뷰에선 심각한 문제 언급이 없었어요'
+    else:
+        serious_txt = f'{per} 기준, 한국인 리뷰의 <b>{n_serious}%</b>가 심각한 문제를 언급했어요'   # F25: "100명 중 N명" 비유 제거(사이트 전역)
+    serious_block = f'<div class="kr-serious">{serious_txt}</div>'
 
     # §2-b 비교 — 지표당 세로 막대 2개(한국인 primary vs 전체 회색), 값은 막대 위(목업①② 스타일).
     def vcol(role, frac, val_txt, is_ko):
         vcls = ' kv-val-ko' if is_ko else ''
         fcls = ' kv-fill-ko' if is_ko else ''
-        h = max(min(frac, 1.0), 0.04) * 100        # 막대 높이(%), 0값도 최소 4% 보이게
+        ht = max(min(frac, 1.0), 0.04) * 100       # 막대 높이(%), 0값도 최소 4% 보이게
         return (f'<div class="kv-col"><div class="kv-val{vcls}">{val_txt}</div>'
-                f'<div class="kv-track"><span class="kv-fill{fcls}" style="height:{h:.0f}%"></span></div>'
+                f'<div class="kv-track"><span class="kv-fill{fcls}" style="height:{ht:.0f}%"></span></div>'
                 f'<div class="kv-lab">{role}</div></div>')
     def vgroup(tit, ko_frac, all_frac, ko_txt, all_txt):
         return (f'<div class="kv-group"><div class="kv-tit">{tit}</div>'
@@ -1775,8 +1794,8 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
         norm = max(kr_rk_pct, all_rk_pct, 10.0)
         vbars += vgroup('심각·주의 리뷰 비율', kr_rk_pct / norm, all_rk_pct / norm,
                         f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
-        footnote = ('<div class="kr-foot">비율 = 심각·주의 언급 리뷰 ÷ 전체 리뷰'
-                    '(별점만 남긴 리뷰 포함)</div>')
+        footnote = (f'<div class="kr-foot">{per} 글 리뷰 기준 · 비율 = 심각·주의 언급 리뷰 ÷ 글을 남긴 리뷰'
+                    '<br>별점만 남긴 리뷰는 국적을 알 수 없어 양쪽 모두 뺐어요</div>')
 
     # §2-a 한국인 비중 순위 — 분포 막대 차트(전체 호텔 중 이 호텔 위치 강조) + 평이한 부연설명.
     # 50% 초과는 '하위 M%'로 뒤집어 직관화. 부연: 상위 33% 이내=많은 편 / 하위 33%=적은 편 / 그 외=보통.
@@ -1790,13 +1809,13 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
         else:
             level = '<b>보통</b> 수준이에요'
         sub = f'{CITY["ko"]} 호텔 중 한국인 투숙객이 {level}'
-        this_ratio = num(kr.get('kr_ratio')) or 0.0
+        this_ratio = min(kr_n / text_n, 1.0)
         chart = kr_dist_bars(this_ratio, kr_dist) if kr_dist else kr_pyramid(kr_rank_pct)
         dist_block = (f'<div class="kr-dist">{chart}'
                       f'<div class="kp-cap">한국인 비중 <b>{CITY["ko"]} {rank_txt}</b></div>'
                       f'<div class="kp-sub">{sub}</div></div>')
 
-    count_txt = f'<b>{kr_n:,}</b>건 · 전체 {ratio}%{" · 참고용" if small else ""}'
+    count_txt = f'{per} <b>{kr_n:,}</b>건 · 글 리뷰의 {ratio}%{" · 참고용" if small else ""}'
     return f'''
         <div class="sect kr-card">
             <div class="head kr-head">
@@ -2114,22 +2133,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{E(name)} 지도"></iframe></div>
         </div>'''
 
+    # 이 호텔 수치의 실제 기간 — 수집이 1년을 못 채운 호텔은 '최근 N개월' (2026-10 검토 case 1)
+    per = period_label(h, (monthly or {}).get(pid))
     # ── 딜브레이커 발동 계산 (경고 스트립·점프칩·verdict 공용): 희소·고위험 최근 1년 심각 ≥3건 — 캘리브레이션 고정 ──
+    # 건수는 집계(findings_sub)의 정확한 값 — 예전엔 인용문 목록(카테고리당 40건 상한·이름+날짜 중복제거)에서 세서 일부 과소집계
     db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만 (점프칩 fj-risk·verdict 공용, F35로 스트립은 삭제)
     rare_crit = {}        # {scat: 최근1년 심각 건수} — 발동 여부 무관 원시 카운트 (F8 verdict A① 판정용)
     rare_cascade = {}     # F33: {scat: (label, tone)} — 희소 칩 최신성 캐스케이드(최근 3달 → 최근 1년 → 심각 리뷰 없음)
-    cut_1y = None         # 최근 1년 컷 날짜 문자열 (F8 case C 재사용)
+    cut_1y = None         # 분석 기간 시작일(asof-365) — 근거 리뷰 목록도 이 날짜 이후만
     if CITY['asof']:
         from datetime import date as _date, timedelta as _td
         _y, _m, _d = map(int, CITY['asof'].split('-'))
         cut_1y = str(_date(_y, _m, _d) - _td(days=365))
-        cut_3m = str(_date(_y, _m, _d) - _td(days=90))
+    if h['scored']:
         for _cat, _scat, _slabel, _clabel in (('위생', '해충/곰팡이', '벌레·곰팡이', '벌레 리뷰'),   # F43: 신고→리뷰
                                               ('위치·안전', '치안·안심', '치안·안심', '치안 리뷰')):
-            _sev = [str(q.get('pub') or '')[:10] for q in quotes.get((pid, _cat), [])
-                    if (q.get('scat') or '') == _scat and q.get('grade') == '심각']
-            _n = sum(1 for p in _sev if p >= cut_1y)          # 최근 1년 심각
-            _n3 = sum(1 for p in _sev if p >= cut_3m)          # 최근 3달 심각
+            _sb = h['cats'][_cat]['subs'][_scat]
+            _n, _n3 = _sb.get('crit_1y', 0), _sb.get('crit_3m', 0)   # 최근 1년 / 최근 3달(90일) 심각
             rare_crit[_scat] = _n
             if _n >= 3:
                 db_data.append((_cat, _slabel, _clabel, _n))
@@ -2137,9 +2157,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if _n3 >= 1:
                 rare_cascade[_scat] = (f'최근 3달 심각 {_n3}건', 'alert')
             elif _n >= 1:
-                rare_cascade[_scat] = (f'최근 1년 심각 {_n}건', 'alert')
+                rare_cascade[_scat] = (f'{per} 심각 {_n}건', 'alert')
             else:
-                rare_cascade[_scat] = ('최근 1년 심각 리뷰 없음', 'clear')
+                rare_cascade[_scat] = (f'{per} 심각 리뷰 없음', 'clear')
 
     # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩(primary) + 전체 (최대 4칩) ──
     FAQ_CHIP_Q = [('bath', '대욕장 있나요?'), ('luggage', '짐 맡아주나요?'), ('breakfast', '조식 어때요?'),
@@ -2214,31 +2234,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         radar_max = max(65, min(100, (max(radar_vals) // 10 + 2) * 10))  # 동적 상한(폴리곤이 안 눌리게, 50은 항상 노출)
 
         # ── F8+F15+F25: 4-CASE verdict 헤드라인 + 근거 2줄(핵심 숫자 <b>) — 숫자는 전부 실측, 비유("100명 중") 금지 ──
-        # F25: 최근 1년 심각 실측 카운트 — sev_by_cat(카테고리별 심각 finding 수) · crit_reviews_1y(고유 리뷰 union)
-        sev_by_cat = {}
-        crit_reviews_1y = 0
-        if cut_1y:
-            _seen = set()
-            for _c in CATS:
-                _k = 0
-                for q in quotes.get((pid, _c), []):
-                    if q.get('grade') == '심각' and str(q.get('pub') or '')[:10] >= cut_1y:
-                        _k += 1
-                        _seen.add((q.get('reviewer_name'), str(q.get('pub'))[:10], q.get('review_origin')))
-                if _k:
-                    sev_by_cat[_c] = _k
-            crit_reviews_1y = len(_seen)
+        # F25: 최근 1년 심각 실측 카운트 — sev_by_cat(카테고리별 심각 리뷰 수) · crit_reviews_1y(심각 리뷰 수, 고유)
+        # 집계값 그대로(정확) — 예전 인용문 기반 근사(이름+날짜 중복제거)는 28곳에서 1~6건 과소집계였음
+        sev_by_cat = {c: h['cats'][c]['crit_1y'] for c in CATS if h['cats'][c].get('crit_1y')}
+        crit_reviews_1y = h.get('crit_1y', 0)
         _worst = max(CATS, key=lambda c: h['cats'][c]['score'])
         _worst_sc = h['cats'][_worst]['score']
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
         if ratio <= 0.8:                              # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
-                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석했지만,<br>벌레·치안 심각 리뷰는 <b>0건</b>이었어요'
+                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중<br>벌레·치안 심각 리뷰는 <b>0건</b>이었어요'
             elif _all_safe:
-                v_why = f'최근 1년 내 <b>{h["analyzed"]:,}건</b>을 분석한 결과,<br>6개 항목 모두 평균보다 안전했어요'
+                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 기준,<br>6개 항목 모두 평균보다 불만이 적었어요'
             else:
-                v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 낮아요'
+                v_why = f'실망 확률 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 낮아요'
         elif ratio < 1.15:                            # B
             v_head, v_tone = '무난하게 통과', 'safe'
             if h['cats'][_worst]['band'] in ('warning', 'danger'):
@@ -2253,19 +2263,19 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _names = '·'.join(cat_ko(c) for c in _warns)
             _k = sum(sev_by_cat.get(c, 0) for c in _warns)
             if _k:
-                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>최근 1년 심각 <b>{_k}건</b>이 확인됐어요'
+                v_why = f'<b>{E(_names)}</b> 불만이 집중돼요,<br>{per} 심각 <b>{_k}건</b>이 확인됐어요'
             else:
                 v_why = f'<b>{E(_names)}</b> 불만이 집중돼요'
         else:                                         # D — F25: 실측 카운트(고유 리뷰 수 + 최다 카테고리)
             v_head, v_tone = '실망 위험이 높은 호텔이에요', 'danger'
             _top_sev = max(sev_by_cat, key=sev_by_cat.get) if sev_by_cat else None
             if crit_reviews_1y and _top_sev:
-                v_why = (f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요,<br>'
+                v_why = (f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요,<br>'
                          f'특히 <b>{E(cat_ko(_top_sev))}</b> 불만이 <b>{sev_by_cat[_top_sev]}건</b>으로 가장 많았어요')
             elif crit_reviews_1y:
-                v_why = f'최근 1년 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
+                v_why = f'{per} 리뷰 <b>{h["analyzed"]:,}건</b> 중 <b>{crit_reviews_1y}건</b>에서 심각한 문제가 확인됐어요'
             else:   # 가드(빈값): 실측 비율만
-                v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
+                v_why = f'실망 확률 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
         # ── P3 누구와 가세요(1단계): 구성별 관련 소분류(최근 1년 비율·희소는 심각 건수) + FAQ + 대표 인용 1건 ──
         _faq_by = {it.get('t'): it for it in (faq or [])}
         _panels, _chips = [], []
@@ -2275,16 +2285,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 _sb = h['cats'][SUB_CAT[_s]]['subs'][_s]
                 _n1 = _sb.get('count_1y', 0)
                 if _s in RARE_SUBS:
-                    _lbl, _tone = rare_cascade.get(_s, ('최근 1년 심각 리뷰 없음', 'clear'))
+                    _lbl, _tone = rare_cascade.get(_s, (f'{per} 심각 리뷰 없음', 'clear'))
                     _t = 'danger' if _tone == 'alert' else 'safe'
                     _rows.append((_t, E(SUB_PHRASE[_s]), E(_lbl)))
                     if _tone == 'alert': _risk.append((100, _s, 'danger'))
                 elif _n1 > 0:
                     _t = _sb['band'] if _sb['band'] in ('warning', 'danger') else 'safe'
-                    _rows.append((_t, E(SUB_PHRASE[_s]), f'최근 1년 리뷰의 <b>{round(_n1 / h["analyzed"] * 100, 1)}%</b> ({_n1}건)'))
+                    _rows.append((_t, E(SUB_PHRASE[_s]), f'{per} 리뷰의 <b>{round(_n1 / h["analyzed"] * 100, 1)}%</b> ({_n1}건)'))
                     if _t != 'safe' and _n1 >= 3 and _n1 / h['analyzed'] >= 0.02: _risk.append((_sb['score'], _s, _t))   # P1과 같은 기준
                 else:
-                    _rows.append(('safe', E(SUB_PHRASE[_s]), '최근 1년 불만 없음'))
+                    _rows.append(('safe', E(SUB_PHRASE[_s]), f'{per} 불만 없음'))
             for _k in _gfaq:
                 _it = _faq_by.get(_k)
                 if _it and _it.get('c'):
@@ -2326,7 +2336,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         for _rc, _rl, _rcl, _rn in db_data:
             _scat = '해충/곰팡이' if _rc == '위생' else '치안·안심'
             _neg.append(('danger', f'<em>{E(SUB_PHRASE[_scat])} 심각 리뷰</em>가 반복돼요',
-                         f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · 최근 1년 {_rn}건', _rc, None))
+                         f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · {per} {_rn}건', _rc, None))
         _cand = []
         for _c in CATS:
             for _s in SUBS[_c]:
@@ -2337,7 +2347,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     _cand.append((-_sb['score'], _s, _sb['band'], _n1, _c))
         for _x, _s, _bd, _n1, _c in sorted(_cand):
             _neg.append((_bd, f'<em>{E(SUB_PHRASE[_s])}</em> 불만이 반복돼요',
-                         f'<b>{E(SUB_PHRASE[_s])} 불만</b> · 최근 1년 리뷰의 {round(_n1 / h["analyzed"] * 100, 1)}% ({_n1}건)', _c,
+                         f'<b>{E(SUB_PHRASE[_s])} 불만</b> · {per} 리뷰의 {round(_n1 / h["analyzed"] * 100, 1)}% ({_n1}건)', _c,
                          SUB_PHRASE[_s]))
         if not _neg and ratio >= 1.15 and h['cats'][_worst]['band'] in ('warning', 'danger'):
             _neg.append((h['cats'][_worst]['band'], f'<em>{E(cat_ko(_worst))}</em> 불만이 평균보다 많아요',
@@ -2367,13 +2377,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                        + '</ul></div>')
             glance_html = f'''<div class="sect glance" id="sec-sum">
                 <div class="gl-box">
-                    <div class="gl-eyebrow">리뷰 {h['analyzed']:,}건으로 본 한 줄 결론</div>
+                    <div class="gl-eyebrow">{per} 리뷰 {h['analyzed']:,}건으로 본 한 줄 결론</div>
                     <p class="gl-lead">{_lead}</p>
                     <div class="gl-cols">
                         {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
                         {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
                     </div>
-                    <div class="gl-foot"><span>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} · 수치에서 자동 생성</span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
+                    <div class="gl-foot"><span>{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} · 수치에서 자동 생성</span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
                 </div>
             </div>'''
 
@@ -2397,14 +2407,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             cat = h['cats'][c]
             band = cat['band']
             cscore = round(cat['score'])
-            qlist = quotes.get((pid, c), [])
+            # 근거 리뷰도 점수와 같은 기간(최근 1년)만 — 1년 넘은 리뷰는 점수에 ×0이라 근거로 보여주면 숫자와 안 맞음
+            qlist = [q for q in quotes.get((pid, c), []) if not cut_1y or str(q.get('pub') or '')[:10] >= cut_1y]
             sheet_data[c] = [{'s': q.get('scat') or '', 'g': q['grade'], 'q': q.get('quote') or q.get('summary') or '',
                               'd': (q.get('pub') or '')[:10], 'n': mask_name(q.get('reviewer_name')),
                               'st': q.get('stars'), 'o': q.get('review_origin') or 'Google',
                               'u': q.get('review_url') or '', 'tf': q.get('tfull') or '', 'of': q.get('ofull') or '',
                               'l': (q.get('lang') or '').lower()} for q in qlist]
-            # 실제 총건수(소분류 건수 = 아코디언 표기와 동일 출처). R2 전체 파일의 카드 수와 일치.
-            sub_cnt = {s: cat['subs'][s]['count'] for s in SUBS[c] if cat['subs'][s]['count'] > 0}
+            # 실제 총건수(소분류 건수 = 아코디언 표기와 동일 출처, 최근 1년). R2 전체 파일을 같은 기간으로 거른 카드 수와 일치.
+            sub_cnt = {s: cat['subs'][s]['count_1y'] for s in SUBS[c] if cat['subs'][s]['count_1y'] > 0}
             sheet_total[c] = {'t': sum(sub_cnt.values()), 's': sub_cnt}
             rows = []
             # 소분류 정렬: 점수 내림차순, 단 RARE_SUBS(칩 렌더·점수 아님)는 항상 마지막 고정
@@ -2414,12 +2425,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             for s in sub_order:
                 sub = cat['subs'][s]
                 sc = round(sub['score'])
-                cnt = sub['count']
+                cnt = sub['count_1y']   # 옆 비율 캡션과 같은 기간
                 cnt_html = (f'<button type="button" class="stat-count has-reviews" data-cat="{E(c)}" data-sub="{E(s)}">{cnt}건</button>'
                             if cnt > 0 else '<span class="stat-count zero">0건</span>')
                 if s in RARE_SUBS:
                     # §3-c 희소·고위험: 점수 막대 대신 칩 (점수는 내부 계산 유지, 화면만 미노출) — F33 최신성 캐스케이드
-                    _clabel, _ctone = rare_cascade.get(s, ('최근 1년 심각 리뷰 없음', 'clear'))
+                    _clabel, _ctone = rare_cascade.get(s, (f'{per} 심각 리뷰 없음', 'clear'))
                     rdot = 'danger' if _ctone == 'alert' else 'safe'
                     chip = f'<div class="rare-chip is-{_ctone}">{E(_clabel)}</div>'
                     rare_btn = cnt_html if cnt > 0 else ''      # 우측 "N건" 전체보기 링크 현행 유지
@@ -2431,8 +2442,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     continue
                 # F34+F38: 소분류 행 최근 1년 비율 캡션 — "최근 1년 리뷰의 P%"(P=1y finding/analyzed·소수1자리), 우측 건수 링크 아래 우측정렬. 희소 칩 행은 F33이 대체.
                 n1y = sub.get('count_1y', 0)
-                cap_1y = (f'최근 1년 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
-                          if n1y > 0 and h['analyzed'] else '최근 1년 없음')
+                cap_1y = (f'{per} 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
+                          if n1y > 0 and h['analyzed'] else f'{per} 없음')
                 rows.append(f'''<li class="stat-row is-{sub['band']}">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, ''))}</div></div>
                     <div class="stat-track" title="{E(cat_verdict(sub['score'])[1])}"><div class="stat-fill" style="width:{sc}%"><i class="bubble" aria-hidden="true"></i></div></div>
@@ -2511,16 +2522,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
         st = stars.get(pid)
         stars_block = ''
-        if st and st['total'] > 0:
+        if st and st['total_1y'] > 0:      # 최근 1년 분포 (예전엔 분포는 전체기간·비율 문장만 1년이라 기간이 섞여 있었음)
             bars = []
             for i in range(1, 6):
-                w = round(st['dist'][i] / st['total'] * 100)
+                w = round(st['dist_1y'][i] / st['total_1y'] * 100)
                 bars.append(f'''<li><div class="num">{i}점</div><div class="bar"><i style="width:{w}%"></i></div><div class="per">{w}%</div></li>''')
-            low_share = round(st['low_1y'] / st['total_1y'] * 100) if st['total_1y'] else 0
+            low_share = round(st['low_1y'] / st['total_1y'] * 100)
             stars_block = f'''<div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
-                <div class="desc">최근 1년 <b>2점 이하 리뷰 비율은 {low_share}%</b> 입니다.</div>
-                <div class="count">총 {st['total']:,}건</div></div>
+                <div class="desc">{per} <b>2점 이하 리뷰 비율은 {low_share}%</b> 입니다.<br>별점은 구글 리뷰만 있어요 (트립닷컴 등은 별점 미제공)</div>
+                <div class="count">{per} {st['total_1y']:,}건</div></div>
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
 
@@ -2537,8 +2548,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <div class="basis-fold">
                 <div class="basis">
                     <p>최근 리뷰일수록 높은 가중치로 반영됩니다</p>
-                    <p>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</p>
-                    <p>분석 리뷰는 구글·트립닷컴 등 여러 예약 사이트의 최근 1년 리뷰를 합산한 수예요</p>
+                    <p>{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} (구글·트립닷컴 등 여러 사이트 합산)</p>
+                    <p>글이 있는 {h['text_1y']:,}건은 AI가 내용을 읽어 문제를 찾았고, 별점만 남긴 {h['star_only_1y']:,}건은 '문제 언급 없음'으로 함께 셌어요</p>
                     <p class="basis-note">공개 리뷰 기반의 참고용 의견으로, 실제 경험과 다를 수 있습니다 · <a href="../about">산출 방법</a></p>
                 </div>
             </div>
@@ -2603,7 +2614,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
         {social_section(social, name)}
         {stars_block}
-        {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
+        {korean_card(kr_1y, h, kr_rank_pct, kr_dist, per)}
         <div class="review-sheet" id="review-sheet" hidden role="dialog" aria-modal="true" aria-label="리뷰 근거">
             <div class="sheet-dim"></div>
             <div class="sheet-panel">
@@ -2632,6 +2643,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.QSUBS = {json.dumps({c: SUBS[c] for c in CATS}, ensure_ascii=False)};
         window.QCAT = {json.dumps({c: [round(h['cats'][c]['score']), h['cats'][c]['band']] for c in CATS}, ensure_ascii=False)};
         window.QFULL = {json.dumps(f'{R2_PUB}/quotes/{pid}.json')};
+        window.QCUT = {json.dumps(cut_1y or '')};   // 근거 리뷰 기간 시작일 — R2 전체 파일도 이 날짜 이후만 표시
+        window.QPER = {json.dumps(per)};
         window.CF_FAQR = {json.dumps(f'{R2_PUB}/faq_reviews/{pid}.json')};
         window.CF_PID = {json.dumps(pid)};
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
@@ -2658,7 +2671,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 + f'<span>›</span><b>{E(name)}</b></nav>')
     _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
     _rows = [('구글 평점', f'<b>{fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}개)'),
-             ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · 구글·트립닷컴 등')]
+             ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}')]
     if meta.get('price_txt'): _rows.append(('1박 평균', f'<b>{E(meta["price_txt"])}</b>'))
     if _st2: _rows.append(('가까운 역', f'{E(_st2[0])} 도보 <b>{_st2[1]}분</b>'))
     _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
@@ -2721,7 +2734,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         </a>
                         <a class="btn-link btn-audit" href="#risk-detail">
                             <span class="ico"><img src="../img/audit.svg" alt=""></span>
-                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}개</span><span class="count">구글·트립닷컴 등 리뷰 분석</span></span>
+                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}개</span><span class="count">{per} · 구글·트립닷컴 등</span></span>
                         </a>
                     </div>
                     {faq_jump_html}
@@ -2812,7 +2825,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 qloading = true; render();
                 fetch(window.QFULL, {{cache: 'force-cache'}})
                     .then(function(r){{ return r.ok ? r.json() : Promise.reject(r.status); }})
-                    .then(function(j){{ window.QDATA = j; qfull = true; qloading = false; cb && cb(); }})
+                    .then(function(j){{
+                        if (window.QCUT) Object.keys(j).forEach(function(c){{ j[c] = (j[c] || []).filter(function(q){{ return (q.d || '') >= window.QCUT; }}); }});
+                        window.QDATA = j; qfull = true; qloading = false; cb && cb(); }})
                     .catch(function(){{ qloading = false; render(); toast('전체 리뷰를 불러오지 못했어요'); }});
             }}
 
@@ -2908,7 +2923,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 }}).join('');
                 var hn = (window.CF_HOTEL && window.CF_HOTEL.name) || '';
                 $('#sheet-side').html('<div class="ss-tit">리뷰 근거</div>' + (hn ? '<div class="ss-hotel">' + esc(hn) + '</div>' : '')
-                    + '<div class="ss-sub">항목을 고르면 그 불만이 언급된 리뷰만 보여드려요</div>'
+                    + '<div class="ss-sub">항목을 고르면 ' + esc(window.QPER || '최근 1년') + ' 리뷰 중 그 불만이 언급된 리뷰만 보여드려요</div>'
                     + '<div class="ss-list">' + rows + '</div>'
                     + '<div class="ss-note">불만 정도는 후쿠오카 호텔 평균과 비교한 결과예요 · 인용문은 리뷰 원문 발췌이며 작성자 이름은 가렸어요</div>');
             }}
@@ -3711,7 +3726,7 @@ def main():
     idx = build_search_index(hotels_meta, H)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
-    W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data),
+    W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data, monthly),
                                                        ensure_ascii=False, separators=(',', ':')) + ';')
     W('compare.html', build_compare())   # P5: 개인화 페이지 — sitemap 제외·noindex
     open(os.path.join(OUT, '.nojekyll'), 'w').close()
@@ -3722,8 +3737,9 @@ def main():
         for p in pids:
             detail_col_map[p].append((col['slug'], col['name']))
 
-    krrank = kr_rank_map(kr_stats)
-    kr_dist = kr_ratio_dist(kr_stats)
+    kr_share = kr_share_map(kr_stats, H)
+    krrank = kr_rank_map(kr_share)
+    kr_dist = kr_ratio_dist(kr_share)
     critrank = crit_rank_map(H)
     written = []
     for pid, meta in hotels_meta.items():

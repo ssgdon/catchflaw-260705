@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """캐치플로 점수 산식 v2 (UI-STANDARDS.md §5)
-도시평균=50, 3배=100 구간선형 · k=20 보정 · 소분류 가드(불만 5건 미만 상한 65) · 분석 30건 미만 미노출
+도시평균=50, 3배=100 구간선형 · k=20 보정 · 가드(최근 1년 불만 5건 미만 상한 65) · 분석 30건 미만 미노출
 """
 import json, os
 from collections import defaultdict
@@ -60,23 +60,37 @@ def compute(data_dir):
         if d['bucket'] != 'w015':          # 최근 1년(365일 이내) 카운트 = 표시·게이트 모수 (w015=365일 초과)
             den_1y[d['place_id']] += d['n']
 
-    m_num = defaultdict(float); m_cnt = defaultdict(int)
+    # 건수는 전부 '최근 1년'(w015 제외) 기준 — 점수가 1년 넘은 리뷰를 ×0으로 버리므로(결정 #5),
+    # 화면 건수·5건 가드도 같은 기간이어야 숫자끼리 맞는다 (2026-10 검토: 전체기간 건수 표기·가드 불일치 수정)
+    m_num = defaultdict(float); m_cnt = defaultdict(int); m_cnt_1y = defaultdict(int); m_crit_1y = defaultdict(int)
     for f in findings_main:
         k = (f['place_id'], f['cat'])
         m_num[k] += f['n'] * W[f['bucket']] * f['s']
         m_cnt[k] += f['n']
+        if f['bucket'] != 'w015':
+            m_cnt_1y[k] += f['n']
+            if f['s'] == 2: m_crit_1y[k] += f['n']        # 이 카테고리에서 심각 판정된 리뷰 수
 
     s_num = defaultdict(float); s_cnt = defaultdict(int); s_cnt_1y = defaultdict(int)
+    s_crit_1y = defaultdict(int); s_crit_3m = defaultdict(int)
     for f in findings_sub:
         k = (f['place_id'], f['mcat'], f['scat'])
         s_num[k] += f['n'] * W[f['bucket']] * f['s']
         s_cnt[k] += f['n']
-        if f['bucket'] != 'w015':          # F34: 최근 1년(365일 이내) finding 수 — 표시 전용(산식 불변)
+        if f['bucket'] != 'w015':          # F34: 최근 1년(365일 이내) finding 수
             s_cnt_1y[k] += f['n']
+            if f['s'] == 2:
+                s_crit_1y[k] += f['n']
+                if f['bucket'] == 'w10': s_crit_3m[k] += f['n']   # w10 = 최근 90일
 
     crit_w = defaultdict(float)
+    text_1y = defaultdict(int); crit_1y = defaultdict(int); any_1y = defaultdict(int)
     for r in reviewlevel:
         crit_w[r['place_id']] += r['has_crit'] * W[r['bucket']]
+        if r['bucket'] != 'w015':          # 글이 있어 LLM이 읽은 리뷰(별점만 리뷰 제외)와 그중 심각·불만 리뷰 수
+            text_1y[r['place_id']] += r['analyzed']
+            crit_1y[r['place_id']] += r['has_crit']
+            any_1y[r['place_id']] += r.get('has_any', 0)
 
     scored = [p for p in den if den_1y[p] >= MIN_REVIEWS]   # 노출 게이트 = 최근 1년 리뷰 ≥30 (전체기간 아님)
     tot_den = sum(den[p] for p in scored)
@@ -90,7 +104,10 @@ def compute(data_dir):
 
     hotels = {}
     for p in den:
-        h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS}
+        # analyzed = 최근 1년 평가 리뷰(글 리뷰 + 별점만 리뷰) = 실망확률·비율의 분모. text_1y = 그중 글 리뷰(LLM 분석분)
+        h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS,
+             'text_1y': text_1y[p], 'star_only_1y': max(den_1y[p] - text_1y[p], 0),
+             'crit_1y': crit_1y[p], 'any_1y': any_1y[p]}
         if h['scored']:
             pc = (crit_w[p] + K * city['crit']) / (den[p] + K)
             h['p_crit'] = pc
@@ -99,14 +116,16 @@ def compute(data_dir):
             for c in CATS:
                 radj = (m_num[(p, c)] + K * city['cat'][c]) / (den[p] + K)
                 sc = _score_from_ratio(radj / (city['cat'][c] or 1e-9))   # 0분모 방어(score.py와 동기화). 산식 불변(정상데이터 시 영향 없음)
-                if m_cnt[(p, c)] < GUARD_MIN: sc = min(sc, GUARD_CAP)
-                h['cats'][c] = {'score': sc, 'band': grade_band(sc), 'count': m_cnt[(p, c)], 'subs': {}}
+                if m_cnt_1y[(p, c)] < GUARD_MIN: sc = min(sc, GUARD_CAP)   # 가드 = 최근 1년 불만 건수(점수에 반영되는 리뷰만)
+                h['cats'][c] = {'score': sc, 'band': grade_band(sc), 'count': m_cnt[(p, c)],
+                                'count_1y': m_cnt_1y[(p, c)], 'crit_1y': m_crit_1y[(p, c)], 'subs': {}}
                 for s in SUBS[c]:
                     radj_s = (s_num[(p, c, s)] + K * city['sub'][(c, s)]) / (den[p] + K)
                     ss = _score_from_ratio(radj_s / city['sub'][(c, s)])
-                    if s_cnt[(p, c, s)] < GUARD_MIN: ss = min(ss, GUARD_CAP)
+                    if s_cnt_1y[(p, c, s)] < GUARD_MIN: ss = min(ss, GUARD_CAP)
                     h['cats'][c]['subs'][s] = {'score': ss, 'band': grade_band(ss),
-                                               'count': s_cnt[(p, c, s)], 'count_1y': s_cnt_1y[(p, c, s)]}
+                                               'count': s_cnt[(p, c, s)], 'count_1y': s_cnt_1y[(p, c, s)],
+                                               'crit_1y': s_crit_1y[(p, c, s)], 'crit_3m': s_crit_3m[(p, c, s)]}
         hotels[p] = h
 
     # 백분위 (같은 도시 내, 카테고리 점수 기준)

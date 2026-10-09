@@ -1,8 +1,8 @@
 /* P5 호텔 비교함 — 로그인 없이 localStorage('cf_cmp')에 최대 3곳 [{id,n,img}].
    - 담기 버튼: [data-cmp-id] (+ data-cmp-name, data-cmp-img). 상세·검색 카드 공용, 동적 렌더 카드도 위임 처리.
-   - 플로팅 비교함: .cmp-tray(자동 생성) → compare?ids=a,b,c (공유 가능한 URL)
+   - 플로팅 비교함: .cmp-tray(자동 생성) = 링크(→ compare?ids=a,b,c, 공유 가능한 URL) + 닫기(×, 비교함 비우기·되돌리기 토스트)
    - html.has-cmp: 비교함이 있을 때(검색의 지도 버튼 등 겹침 회피용)
-   - GA4: compare_add / compare_remove / compare_open */
+   - GA4: compare_add / compare_remove / compare_open / compare_clear / compare_undo */
 (function () {
   var KEY = 'cf_cmp', MAX = 3;
   var root = (document.currentScript && document.currentScript.getAttribute('data-root')) || './';
@@ -16,11 +16,25 @@
   function ev(name, p) { if (typeof gtag === 'function') gtag('event', name, p || {}); }
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 
-  function toast(msg) {
-    var t = document.createElement('div'); t.className = 'cf-toast'; t.textContent = msg;
+  // act = {label, fn}: 토스트 안 실행 버튼(되돌리기 등). 있으면 눌러볼 시간을 주려고 4초 유지
+  function toast(msg, act) {
+    var old = document.querySelector('.cf-toast.has-act'); if (old) old.remove();
+    var t = document.createElement('div'); t.className = 'cf-toast' + (act ? ' has-act' : ''); t.textContent = msg;
+    if (act) {
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'cf-toast-act'; b.textContent = act.label;
+      b.addEventListener('click', function () { act.fn(); t.remove(); });
+      t.appendChild(b);
+    }
     document.body.appendChild(t);
     requestAnimationFrame(function () { t.classList.add('show'); });
-    setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 300); }, 1800);
+    setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 300); }, act ? 4000 : 1800);
+  }
+
+  function clearAll() {   // 트레이 × — 비교함을 비우고, 실수였을 때를 위해 되돌리기 제공
+    var prev = get();
+    set([]);
+    ev('compare_clear', { count: prev.length });
+    toast('비교함을 비웠어요', { label: '되돌리기', fn: function () { set(prev); ev('compare_undo', { count: prev.length }); } });
   }
 
   function toggle(btn) {
@@ -51,17 +65,20 @@
     var tray = document.querySelector('.cmp-tray');
     if (!a.length) { if (tray) tray.hidden = true; return; }
     if (!tray) {
-      tray = document.createElement('a'); tray.className = 'cmp-tray' + (document.getElementById('detail') ? ' on-detail' : '');   // 상세는 하단 CTA 위로
-      tray.addEventListener('click', function (e) {
+      tray = document.createElement('div'); tray.className = 'cmp-tray' + (document.getElementById('detail') ? ' on-detail' : '');   // 상세는 하단 CTA 위로
+      tray.innerHTML = '<a class="ct-link"></a><button type="button" class="ct-x" aria-label="비교함 비우기">×</button>';
+      tray.querySelector('.ct-link').addEventListener('click', function (e) {
         var n = get().length;
         if (n < 2) { e.preventDefault(); toast('1곳 더 담으면 비교할 수 있어요'); return; }
         ev('compare_open', { count: n });
       });
+      tray.querySelector('.ct-x').addEventListener('click', clearAll);
       document.body.appendChild(tray);
     }
     tray.hidden = false;
-    tray.href = url(a);
-    tray.innerHTML = '<span class="ct-th">' + a.map(function (x) {
+    var link = tray.querySelector('.ct-link');
+    link.href = url(a);
+    link.innerHTML = '<span class="ct-th">' + a.map(function (x) {
         return x.img ? '<img src="' + esc(x.img) + '" alt="">' : '<i></i>';
       }).join('') + '</span><span class="ct-n">비교함 ' + a.length + '</span>'
       + '<span class="ct-go' + (a.length < 2 ? ' is-off' : '') + '">' + (a.length < 2 ? '1곳 더' : '비교하기') + '</span>';
