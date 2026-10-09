@@ -37,6 +37,8 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .information .info-cont .meta{margin-top:var(--sp-2);}
 #detail .information .info-cont .meta span{line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
 #detail .information .info-cont .meta span b{color:var(--primary);font-weight:var(--fw-bold);}
+/* 가격 기준(2인 1박·확인일) — .info-cont 간격 16 중 12를 당겨 가격 줄에 붙임(4px) */
+#detail .information .info-cont .price-note{margin-top:calc(var(--sp-3) * -1);font-size:var(--fs-meta);line-height:var(--lh-head);color:var(--ink-3);}
 #detail .information .info-bottom{margin-top:var(--sp-5);gap:var(--sp-2);}
 #detail .information .info-bottom .btn-link{height:72px;padding:0 var(--sp-4);border-radius:var(--radius-btn);}
 #detail .information .info-bottom .btn-link .txt .label{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);line-height:1.35;}

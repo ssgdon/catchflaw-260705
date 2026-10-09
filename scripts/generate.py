@@ -2,8 +2,9 @@
 """캐치플로 정적 사이트 생성기 — data-src/*.json → docs/
 사용: python scripts/generate.py
 """
-import json, os, shutil, sys, html, re, time, math
+import json, os, shutil, sys, html, re, time, math, statistics
 from collections import defaultdict
+from datetime import date, timedelta
 from urllib.parse import quote as urlquote
 
 BUILD = str(int(time.time()))  # 에셋 캐시버스터
@@ -194,8 +195,15 @@ def amenity_chips(meta, k=3):
 SUPABASE_URL = 'https://iixztaazwpjvxnpgegod.supabase.co'
 SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'
 
-# ── 가격 (스크랩 시점 1박 요금, 통화 혼재 → 원화 환산 후 밴드) ──
-FX = {'US$': 1400, '£': 1750, '€': 1500, 'SCR': 100, '₩': 1, '¥': 9.5}
+# ── 가격 (2026-10 개편: 날짜별 표본 → 평일 중앙값이 대표, 주말은 따로. 통화 혼재 → 원화 환산 후 밴드) ──
+# 표본 = data-src/prices.json (pipeline hotel_prices): 주간 구글 지도 가격(구글이 고른 숙박일 1개) +
+#        price_sample.py 날짜 지정 수집(앞으로 8주의 수·토, 2인 1박 원화). 둘 다 2인 기준(같은 날 대조 확인).
+# 10/9 수집 실측: 주말(금·토 밤)은 평일의 중앙 2.65배라 둘을 한 범위로 묶으면 '11~42만원'처럼 쓸모없이 넓다.
+# 평일 중앙값은 사용자가 직접 찾은 실제 가격 17곳과 배율 0.99(평균 1.04)로 일치 → 대표값·가격대·정렬 = 평일.
+# 표본이 없는 호텔만 기존 price_raw 한 개로 '약 N만원'.
+FX = {'US$': 1400, '£': 1750, '€': 1500, 'SCR': 100, '₩': 1, 'KRW': 1, '¥': 9.5}
+PRICE_WINDOW_DAYS = 56          # 최근 8주 수집분만 사용
+WEEKEND_NIGHTS = (4, 5)         # 금·토 밤 (date.weekday)
 PRICE_BANDS = [
     ('b1', '10만원 미만', 0, 100_000),
     ('b2', '10~20만원', 100_000, 200_000),
@@ -217,10 +225,43 @@ def parse_price(price_str):
     return krw, f'약 {man}만원'
 
 def price_band(krw):
+    """가격대는 화면에 보이는 만원 단위(반올림)로 정한다 — '약 10만원'이 '10만원 미만'에 들어가는 어긋남 방지."""
     if krw is None: return None
+    shown = max(1, round(krw / 10_000)) * 10_000
     for code, label, lo, hi in PRICE_BANDS:
-        if lo <= krw < hi: return code, label
+        if lo <= shown < hi: return code, label
     return None
+
+def price_stats(rows):
+    """한 호텔의 가격 표본(prices.json 행들) → (평일 원화|None, 표시 문구, 확인일 'YYYY-MM-DD', 주말 원화|None) / 근거 없으면 None.
+    같은 숙박일은 가장 최근 수집 1건만(같은 날이면 날짜 지정 수집 우선). 대표 = 평일 밤 중앙값('평일 약 13만원').
+    평일 근거 = 날짜 지정 수집 1건 이상 또는 평일 표본 2건 이상 — 구글 지도가 고른 연초 비수기 하루뿐인 호텔은
+    실제보다 반값으로 보여 제외(몬토레 9만 vs 실측 17만). 평일 근거가 없고 주말만 있으면 '주말 약 N만원'(가격대·정렬 제외)."""
+    by_day = {}
+    for r in rows:
+        rate = FX.get(r['currency'])
+        if rate is None or r['stay_date'] < r['observed_on']:
+            continue
+        rank = (r['observed_on'], r['source'] == 'ghotels')
+        if r['stay_date'] not in by_day or rank > by_day[r['stay_date']][0]:
+            by_day[r['stay_date']] = (rank, float(r['amount']) * rate)
+    if not by_day:
+        return None
+    seen = max(rank[0] for rank, _ in by_day.values())
+    wd = [(rank[1], v) for d, (rank, v) in by_day.items() if date.fromisoformat(d).weekday() not in WEEKEND_NIGHTS]
+    we = [v for d, (_, v) in by_day.items() if date.fromisoformat(d).weekday() in WEEKEND_NIGHTS]
+    we_mid = int(statistics.median(we)) if we else None
+    if wd and (len(wd) >= 2 or any(g for g, _ in wd)):
+        mid = statistics.median(v for _, v in wd)
+        return int(mid), f'평일 약 {max(1, round(mid / 10_000))}만원', seen, we_mid
+    if we_mid:
+        return None, f'주말 약 {max(1, round(we_mid / 10_000))}만원', seen, None
+    return None
+
+def md_ko(iso):
+    """'2026-10-09' → '10월 9일'"""
+    d = date.fromisoformat(str(iso)[:10])
+    return f'{d.month}월 {d.day}일'
 
 E = lambda s: html.escape(str(s or ''), quote=True)
 
@@ -308,7 +349,23 @@ def load():
         m['r2_img'] = m['r2_imgs'][0] if m['r2_imgs'] else None
         m['local_img'] = os.path.exists(os.path.join(ROOT, 'assets', 'hotels', f'{pid}.jpg'))
         m['krw'], m['price_txt'] = parse_price(m.get('price'))
+        m['price_seen'] = m['price_we'] = None
+    # 가격 표본(최근 8주) → 대표값·범위·확인일. 기준 = 표본 중 가장 최근 수집일(빌드가 늦어도 창이 비지 않게)
+    psamples = defaultdict(list)
+    if os.path.exists(os.path.join(SRC, 'prices.json')):
+        prows = J('prices.json')
+        if prows:
+            cut = str(date.fromisoformat(max(r['observed_on'] for r in prows)) - timedelta(days=PRICE_WINDOW_DAYS))
+            for r in prows:
+                if r['observed_on'] >= cut:
+                    psamples[r['place_id']].append(r)
+    for pid, m in hotels_meta.items():
+        if psamples:                 # 표본이 있으면 근거 없는 호텔은 숫자 비표시 (옛 단일가로 채우지 않음)
+            ps = price_stats(psamples.get(pid, []))
+            m['krw'], m['price_txt'], m['price_seen'], m['price_we'] = ps or (None, '', None, None)
         m['band'] = price_band(m['krw'])
+    seen = [m['price_seen'] for m in hotels_meta.values() if m['price_seen']]
+    CITY['price_seen'] = md_ko(max(seen)) if seen else CITY['data_asof']
     quotes = defaultdict(list)
     for q in J('quotes.json'):
         quotes[(q['place_id'], q['mcat'])].append(q)
@@ -727,7 +784,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                       key=lambda p: -REC.get(p, 0))[:8]
         if len(pids) >= 3:
             price_parts.append(slider(f'<em>{label}</em> 추천',
-                f'추천순 · 구글 최저가 기준, 날짜 따라 달라요', pids))
+                f'추천순 · 2인 1박 평일 가격({CITY["price_seen"]} 확인)', pids))
     price_sliders = ''.join(price_parts)
 
     # 지역·테마별 컬렉션 칩 그리드 (생성된 컬렉션만 노출 — HUB §3-d)
@@ -1202,7 +1259,7 @@ def build_search(city_avg_pct):
                         <button type="button" data-sort="krn" data-label="한국인이 많이 가는 순">한국인이 많이 가는 순<span class="ls-sub">최근 1년 한국인 리뷰가 많은 곳부터</span></button>
                         <button type="button" data-sort="g" data-label="구글 평점 높은 순">구글 평점 높은 순<span class="ls-sub">별점만 보고 싶을 때</span></button>
                         <button type="button" data-sort="rc" data-label="구글 리뷰 많은 순">구글 리뷰 많은 순<span class="ls-sub">크고 유명한 호텔부터</span></button>
-                        <button type="button" data-sort="price" data-label="1박 가격 낮은 순">1박 가격 낮은 순<span class="ls-sub">구글 최저가 기준 · 날짜 따라 달라요</span></button>
+                        <button type="button" data-sort="price" data-label="1박 가격 낮은 순">1박 가격 낮은 순<span class="ls-sub">2인 1박 평일 가격 기준</span></button>
                         <div class="lh-sort-sep">걱정되는 항목이 적은 곳부터</div>
                         <button type="button" data-sort="cat:청결" data-label="청결 불만 적은 순">청결 불만 적은 순<span class="ls-sub">머리카락·벌레·곰팡이</span></button>
                         <button type="button" data-sort="cat:냄새" data-label="냄새 불만 적은 순">냄새 불만 적은 순<span class="ls-sub">담배·하수구·곰팡내</span></button>
@@ -3047,7 +3104,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
     _rows = [('구글 평점', f'<b>{fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}개)'),
              ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}')]
-    if meta.get('price_txt'): _rows.append(('1박 평균', f'<b>{E(meta["price_txt"])}</b>'))
+    if meta.get('price_txt'): _rows.append(('1박 가격', f'<b>{E(meta["price_txt"])}</b>' + (f' · 주말 약 {round(meta["price_we"] / 10_000)}만원' if meta.get('price_we') else '')))
     if _st2: _rows.append(('가까운 역', f'{E(_st2[0])} 도보 <b>{_st2[1]}분</b>'))
     _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
     if h['scored']:
@@ -3098,6 +3155,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                             <p class="name-en">{E(meta.get('sub_title') or '')}</p>
                         </div>
                         <div class="meta"><span>{CITY['ko']}, JP</span>{f'<span>{hstars}</span>' if hstars else ''}{f"<span class='price'>1박 <b>{meta['price_txt']}</b></span>" if meta.get('price_txt') else ''}</div>
+                        {(f'<p class="price-note">' + (f'주말은 약 {round(meta["price_we"] / 10_000)}만원 · ' if meta.get('price_we') else '') + '2인 1박' + (f' · {md_ko(meta["price_seen"])} 확인' if meta.get('price_seen') else '') + '</p>') if meta.get('price_txt') else ''}
                         <button type="button" class="btn-share info-share"><img src="../img/b_share.svg" alt="">공유하기</button>
                     </div>
                     {lowrev_html}
@@ -3881,7 +3939,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         if parts:
             price_block = f'''<div class="hub-sect">
                 <div class="hub-h2">가격대별 안심 숙소</div>
-                <div class="hub-sub">가격대마다 실망 확률이 가장 낮은 곳이에요</div>
+                <div class="hub-sub">가격대마다 실망 확률이 가장 낮은 곳이에요 · 2인 1박 평일 가격 기준({CITY["price_seen"]} 확인)</div>
                 <div class="hub-pb">{''.join(parts)}</div>
             </div>'''
 
@@ -3995,8 +4053,8 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
         best_pid = next((p for p in pids if H[p]['ranked']), None)   # '가장 낮은 곳'은 순위 모수 안에서
         q2 = '10만원 이하에서 실망 확률이 가장 낮은 곳은?'
         if best_pid:
-            a2p = f'현재 기준 {E(hotels_meta[best_pid]["title"])}가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 스크랩 시점 기준이라 실제 예약가는 확인이 필요해요.'
-            faqs.append((q2, f'현재 기준 <b>{E(hotels_meta[best_pid]["title"])}</b>가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 스크랩 시점 기준이라 실제 예약가는 확인이 필요해요.', a2p))
+            a2p = f'현재 기준 {E(hotels_meta[best_pid]["title"])}가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 2인 1박 평일 기준이라 주말·성수기엔 더 비싸요.'
+            faqs.append((q2, f'현재 기준 <b>{E(hotels_meta[best_pid]["title"])}</b>가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 2인 1박 평일 기준이라 주말·성수기엔 더 비싸요.', a2p))
         else:
             a2p = '가격대별 실망 확률이 가장 낮은 곳을 위 랭킹에서 확인하세요.'
             faqs.append((q2, E(a2p), a2p))
