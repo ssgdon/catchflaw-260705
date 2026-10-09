@@ -2659,13 +2659,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             for _k in _gfaq:
                 _it = _faq_by.get(_k)
                 if _it and _it.get('c'):
-                    _chips = [str(x) for x in (_it.get('c') or [])[:3]]
-                    if _k == 'access' and not any('역' in x for x in _chips):   # '도보 6분, 도보 10분'처럼 어느 역인지 없는 칩 → 답변 첫 문장
+                    _fc = [str(x) for x in (_it.get('c') or [])[:3]]   # FAQ 칩 — 바깥 _chips(일행 버튼 목록)와 이름 분리
+                    if _k == 'access' and not any('역' in x for x in _fc):   # '도보 6분, 도보 10분'처럼 어느 역인지 없는 칩 → 답변 첫 문장
                         _ans = re.sub(r'\*\*', '', _it.get('a') or '').strip()
                         _ans = re.split(r'(?<=[.요다])\s', _ans)[0]
                         _txt = (_ans[:46] + '…') if len(_ans) > 47 else _ans
                     else:
-                        _txt = ', '.join(_chips)
+                        _txt = ', '.join(_fc)
                     _rows.append(('faq', E(WHO_FAQ_LABEL[_k]), E(_txt)))
             if _risk:
                 _sc, _top, _tb = max(_risk)
