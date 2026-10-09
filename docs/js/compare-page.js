@@ -24,7 +24,8 @@
   var NB = '\u00a0';
   function glue(t) {   // generate.py polish_breaks와 같은 묶음: "가장 낮음" "도보 23분" "최근 1년" "좋은 곳"
     return String(t).replace(/가장 /g, '가장' + NB).replace(/도보 (\d)/g, '도보' + NB + '$1')
-      .replace(/최근 (\d)/g, '최근' + NB + '$1').replace(/(많은|적은|낮은|높은|좋은) (편|곳)/g, '$1' + NB + '$2');
+      .replace(/최근 (\d)/g, '최근' + NB + '$1').replace(/(많은|적은|낮은|높은|좋은) (편|곳)/g, '$1' + NB + '$2')
+      .replace(/([^\s·])·(?=[^\s·])/g, '$1⁠·⁠');   // 띄어쓰기 없는 가운뎃점(시설·고장)은 점 뒤에서 끊지 않음 — polish_breaks와 같은 결합자
   }
   // 칸 안 여러 값("무료 · 체크인 전후")은 값마다 한 줄 — 줄 끝에 '·'가 매달리지 않게
   function lines(t) { return String(t).split(' · ').map(function (x) { return '<span class="cmp-li">' + esc(x) + '</span>'; }).join(''); }
@@ -117,11 +118,12 @@
 
     var g1 = row('실망 확률', H.map(function (h) {
         var c = num(h.p, '%');
-        if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰 적음</span>'; }   // 리뷰 적은 호텔은 순위 강조 제외
+        if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰&nbsp;적음</span>'; }   // '리뷰 / 적음'으로 갈라지지 않게 (360 실측)   // 리뷰 적은 호텔은 순위 강조 제외
         return c;
       }), { best: 'min', lab: '가장 낮음' })
       // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지. krw = 날짜별 표본의 중앙값
-      + row('1박 가격', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
+      // 평일 가격이 없는 칸(주말만·정보 없음)은 '가장 저렴' 후보에서만 뺀다 — 한 곳이라도 없으면 강조가 통째로 사라지던 문제
+      + row('1박 가격', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, nb: h.krw == null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
       + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? glue(esc(h.st)) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
       + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + glue(esc(h.pd || '최근 1년')) + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
@@ -136,7 +138,7 @@
     var g3 = nTop ? [0, 1, 2].slice(0, nTop).map(function (i) {
       return row(['가장 많은 불만', '두 번째', '세 번째'][i] + (i ? '' : ' <span class="cmp-kn">분석 리뷰 대비 비율</span>'), H.map(function (h) {
         var t = (h.top || [])[i];
-        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + esc(t[0]) + '</span><b class="cmp-tv">' + t[1] + '%</b>'
+        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + glue(esc(t[0])) + '</span><b class="cmp-tv">' + (+t[1]).toFixed(1) + '%</b>'
           : '<span class="cmp-none">' + (i ? '–' : '두드러진 불만 없음') + '</span>' };
       }));
     }).join('') : row('분석 리뷰 대비 비율', H.map(function () { return { v: null, k: '', h: '<span class="cmp-none">두드러진 불만 없음</span>' }; }));
