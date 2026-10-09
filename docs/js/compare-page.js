@@ -19,7 +19,8 @@
     if (r <= 1.05) return '평균과 비슷해요';
     return '평균의 ' + r.toFixed(1) + '배';
   }
-  function ratioHtml(v) { var m = /^(평균보다 |평균의 |평균과 )(.+)$/.exec(ratioText(v)); return m ? m[1] + '<b>' + m[2] + '</b>' : ratioText(v); }
+  // 항상 2줄('평균의' / '1.2배') — 짧은 값만 1줄이 되면 칸마다 막대 높이가 어긋남
+  function ratioHtml(v) { var m = /^(평균보다|평균의|평균과) (.+)$/.exec(ratioText(v)); return m ? '<span class="cmp-rk">' + m[1] + '</span><b>' + m[2] + '</b>' : ratioText(v); }
   var NB = '\u00a0';
   function glue(t) {   // generate.py polish_breaks와 같은 묶음: "가장 낮음" "도보 23분" "최근 1년" "좋은 곳"
     return String(t).replace(/가장 /g, '가장' + NB).replace(/도보 (\d)/g, '도보' + NB + '$1')
@@ -130,9 +131,15 @@
         return { v: v, k: verdict(v), nb: !!h.lr, h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioHtml(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
       }), { best: 'min', lab: '불만 가장 적음' });
     }).join('');
-    var g3 = row('분석 리뷰 대비 비율', H.map(function (h) {
-      return { v: null, k: JSON.stringify(h.top), h: (h.top && h.top.length) ? h.top.map(function (t) { return '<div class="cmp-top">' + esc(t[0]) + ' <b>' + t[1] + '%</b></div>'; }).join('') : '<span class="cmp-none">두드러진 불만 없음</span>' };
-    }));
+    // 순위별 한 행(1·2·3위) — 호텔마다 항목명 길이가 달라도 같은 순위끼리 가로로 줄이 맞음. 이름/비율은 항상 2줄
+    var nTop = Math.max.apply(null, H.map(function (h) { return (h.top || []).length; }));
+    var g3 = nTop ? [0, 1, 2].slice(0, nTop).map(function (i) {
+      return row(['가장 많은 불만', '두 번째', '세 번째'][i] + (i ? '' : ' <span class="cmp-kn">분석 리뷰 대비 비율</span>'), H.map(function (h) {
+        var t = (h.top || [])[i];
+        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + esc(t[0]) + '</span><b class="cmp-tv">' + t[1] + '%</b>'
+          : '<span class="cmp-none">' + (i ? '–' : '두드러진 불만 없음') + '</span>' };
+      }));
+    }).join('') : row('분석 리뷰 대비 비율', H.map(function () { return { v: null, k: '', h: '<span class="cmp-none">두드러진 불만 없음</span>' }; }));
     var g4 = FAQ.map(function (f) {
       return row(f[1], H.map(function (h) { var t = (h.fq || {})[f[0]]; return { v: null, k: t || '', h: t ? lines(t) : '<span class="cmp-none">리뷰 언급 없음</span>' }; }));
     }).join('');

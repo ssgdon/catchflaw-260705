@@ -82,7 +82,7 @@
 #search .list li .item, #hub .hub-list li .item{align-items:flex-start;}
 #search .list li .thumb, #hub .hub-list li .thumb{background:var(--surface);}
 #search .list .cont, #hub .hub-list .cont{min-width:0;}                    /* flex 자식 넘침 방지 핵심 */
-#search .list .cont .info .name, #hub .hub-list .cont .info .name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;word-break:break-word;line-height:1.35;}
+#search .list .cont .info .name, #hub .hub-list .cont .info .name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;word-break:keep-all;overflow-wrap:break-word;line-height:1.35;}
 #search .list .cont .info .meta, #hub .hub-list .cont .info .meta{flex-wrap:wrap;row-gap:2px;}
 #search .list .cont .info .meta span.price{color:var(--ink-2);}
 #search .list .cont .info .meta span.price b{color:var(--ink);font-weight:var(--fw-bold);}
@@ -1002,8 +1002,10 @@ html.has-cmp #detail ~ #float{bottom:calc(148px + env(safe-area-inset-bottom));}
 #search .map-toggle{position:fixed;z-index:85;left:50%;bottom:var(--sp-5);transform:translateX(-50%);display:flex;align-items:center;gap:var(--sp-2);height:var(--h-chip);padding:0 var(--sp-4);border:0;border-radius:var(--radius-card);background:var(--ink);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:var(--fs-caption);font-weight:var(--fw-bold);cursor:pointer;}
 html.has-cmp #search .map-toggle{bottom:76px;}
 #search .list .item.with-cmp{position:relative;}
-#search .list .item.with-cmp .name{padding-right:60px;}
-#search .r-cmp{position:absolute;top:0;right:0;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-chip-sm);padding:0 var(--sp-2);border:1px solid var(--line-strong);border-radius:var(--radius-chip);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
+/* 비교 토글 = 카드 오른쪽 아래(행동 자리) — 위에 두면 호텔명 폭을 60px 빼앗아 이름이 쪼개짐. 마지막 줄만 버튼 폭만큼 비움 */
+#search .list .item.with-cmp .cont{padding-bottom:var(--sp-1);}
+#search .list .item.with-cmp .cont > :last-child{padding-right:72px;}
+#search .r-cmp{position:absolute;bottom:0;right:0;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-chip-sm);padding:0 var(--sp-2);border:1px solid var(--line-strong);border-radius:var(--radius-chip);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
 #search .r-cmp i{display:block;width:var(--sp-3);height:var(--sp-3);border:1.5px solid var(--ink-3);border-radius:var(--sp-1);}
 #search .r-cmp.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
 #search .r-cmp.is-on i{border-color:var(--primary);background:var(--primary);}
@@ -1069,7 +1071,9 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-bar i.is-safe{background:var(--safe);}
 #cmp .cmp-bar i.is-warning{background:var(--warning);}
 #cmp .cmp-bar i.is-danger{background:var(--danger);}
-#cmp .cmp-top b{font-size:var(--fs-caption);}
+#cmp .cmp-tn{display:block;}
+#cmp .cmp-cell b.cmp-tv{display:block;font-size:var(--fs-caption);}
+#cmp .cmp-kn{margin-left:var(--sp-1);font-weight:var(--fw-medium);}
 #cmp .cmp-none{color:var(--ink-3);}
 #cmp .cmp-sub{font-size:var(--fs-meta);color:var(--ink-3);}
 #cmp .cmp-note{padding:var(--sp-6) var(--page-x) var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
@@ -1165,6 +1169,8 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 비교 페이지 카테고리 칸: 결론 + 평균 대비 한 줄 */
 #cmp .cmp-cell .cmp-line{display:block;margin-top:2px;font-size:var(--fs-caption);color:var(--ink-3);}
 #cmp .cmp-cell .cmp-line b{font-weight:var(--fw-bold);color:var(--ink-2);}
+#cmp .cmp-cell .cmp-rk{display:block;}   /* '평균의'·'평균보다' 윗줄 고정 → 값은 항상 둘째 줄, 막대 높이 정렬 */
+#cmp .cmp-cell .cmp-line b{display:block;white-space:nowrap;}
 /* 실전정보 칸: 값마다 한 줄(좁은 3열에서 '무료 · / 체크인 전' 같은 매달림 방지) */
 #cmp .cmp-cell .cmp-li{display:block;}
 #cmp .cmp-cell .cmp-li + .cmp-li{margin-top:2px;}
