@@ -4445,6 +4445,8 @@ def city_averages(monthly, monthly_cat):
     return city_n, city_avg, city_cat_avg
 
 
+REDIRECTS = [('/best/pool', '/best/luxury'), ('/best/pool.html', '/best/luxury')]
+
 ROBOTS_TXT = f'''User-agent: *
 Allow: /
 
@@ -4563,6 +4565,9 @@ def main():
             monthly, monthly_cat, city_avg, col_index))
 
     W('robots.txt', ROBOTS_TXT)
+    # 없어진 허브 → 가장 가까운 허브로 301 (Cloudflare 정적 자산 _redirects: 파일 조회보다 먼저 적용 —
+    #  배포가 삭제된 파일을 남겨 둬도 옛 페이지가 뜨지 않게). best/pool(수영장)은 2026-10 허브 재구성(ecaf414)에서 제거 → 고급 숙소
+    W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS))
     col_slugs = [c['slug'] for c, _ in built_cols]
     W('sitemap.xml', build_sitemap(written, col_slugs))
     scored = sum(1 for p in H if H[p]['scored'])
