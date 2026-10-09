@@ -82,7 +82,7 @@
 #search .list li .item, #hub .hub-list li .item{align-items:flex-start;}
 #search .list li .thumb, #hub .hub-list li .thumb{background:var(--surface);}
 #search .list .cont, #hub .hub-list .cont{min-width:0;}                    /* flex 자식 넘침 방지 핵심 */
-#search .list .cont .info .name, #hub .hub-list .cont .info .name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;word-break:keep-all;overflow-wrap:break-word;line-height:1.35;}
+#search .list .cont .info .name, #hub .hub-list .cont .info .name{display:block;overflow:visible;word-break:keep-all;overflow-wrap:break-word;line-height:1.35;}   /* 호텔명은 자르지 않는다(판정 모드의 열쇠) */
 #search .list .cont .info .meta, #hub .hub-list .cont .info .meta{flex-wrap:wrap;row-gap:2px;}
 #search .list .cont .info .meta span.price{color:var(--ink-2);}
 #search .list .cont .info .meta span.price b{color:var(--ink);font-weight:var(--fw-bold);}
@@ -179,10 +179,6 @@
 #detail .disappear .gauge .bar .g-rank.is-warning{color:var(--warning-text);}
 #detail .disappear .gauge .bar .g-rank.is-danger{color:var(--danger-text);}
 #detail .disappear .gauge .bar .g-rank.is-low{color:var(--ink-2);}
-#detail .disappear .gauge .bar .pointer.is-safe .dot{background:var(--safe);}
-#detail .disappear .gauge .bar .pointer.is-warning .dot{background:var(--warning);}
-#detail .disappear .gauge .bar .pointer.is-danger .dot{background:var(--danger);}
-#detail .disappear .gauge .bar .pointer.is-low .dot{background:var(--ink-2);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l{transform:translateX(-14px);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l:after{left:14px;}
 #detail .disappear .gauge .bar .g-rank.is-clamp-r{transform:translateX(calc(-100% + 14px));}
@@ -890,28 +886,6 @@
 #detail .disappear .head .vh.is-warning{color:var(--warning-text);}
 #detail .disappear .head .vh.is-danger{color:var(--danger-text);}
 #detail .disappear .head .vh.is-low{color:var(--ink-2);}
-#detail .disappear .head .pct.is-safe{color:var(--safe-text);}
-#detail .disappear .head .pct.is-warning{color:var(--warning-text);}
-#detail .disappear .head .pct.is-danger{color:var(--danger-text);}
-#detail .disappear .head .pct.is-low{color:var(--ink);}
-/* 기준 줄: 도시 평균 + (확실할 때만) 순위 구간 배지 */
-#detail .disappear .head .v-sub{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-2);text-align:center;}
-.tier-badge{display:inline-flex;align-items:center;height:var(--h-badge);margin-left:var(--sp-2);padding:0 var(--sp-2);border-radius:var(--radius-chip);font-size:var(--fs-micro);font-weight:var(--fw-bold);vertical-align:middle;white-space:nowrap;}
-.tier-badge.is-safe{background:var(--safe-soft);color:var(--safe-text);}
-.tier-badge.is-warning{background:var(--warning-soft);color:var(--warning-text);}
-.tier-badge.is-danger{background:var(--danger-soft);color:var(--danger-text);}
-.tier-badge.is-low{background:var(--surface);color:var(--ink-2);}
-/* 근거 2줄: 글 리뷰 중 실망 리뷰 N건(→ 리스크 상세) · 예약을 접을 만한 심각 리뷰 */
-#detail .disappear .ev{margin-top:var(--sp-4);border-top:1px solid var(--line);}
-#detail .disappear .ev-row{display:flex;align-items:center;gap:var(--sp-3);width:100%;padding:var(--sp-3) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body-sm);line-height:var(--lh-body);color:var(--ink-2);text-align:left;text-decoration:none;word-break:keep-all;}
-#detail .disappear .ev-row b{font-weight:var(--fw-bold);color:var(--ink);}
-#detail .disappear .ev-txt{flex:1 1 auto;min-width:0;}
-#detail .disappear .ev-dot{flex:none;width:var(--sp-2);height:var(--sp-2);border-radius:50%;background:var(--ink-3);}
-#detail .disappear .ev-dot.is-safe{background:var(--safe);}
-#detail .disappear .ev-dot.is-warning{background:var(--warning);}
-#detail .disappear .ev-dot.is-danger{background:var(--danger);}
-#detail .disappear .ev-dot.is-ink{background:var(--ink-2);}
-#detail .disappear .ev-arrow{flex:none;width:7px;height:7px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(-45deg);}
 #detail .disappear .verdict-why{margin:14px 0 0;}
 
 /* F37: 게이지 = 백분위 축 — 말풍선 클리어런스(위 여백) + 평균 마커 실위치(style left) */
@@ -1217,18 +1191,20 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #main .home-vs{padding:var(--section-y) var(--page-x) var(--sp-2);}
 #main .home-vs .vs-list{display:flex;gap:var(--sp-3);margin-top:var(--head-gap);padding-bottom:var(--sp-2);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
 #main .home-vs .vs-list::-webkit-scrollbar{display:none;}
-#main .vs-card{flex:0 0 292px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);color:var(--ink);}
+#main .home-vs .vs-list{align-items:flex-start;}   /* 카드 높이를 맞추지 않아 빈 공간이 안 생기게 */
+#main .vs-card{flex:0 0 292px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:0;border-radius:var(--radius-img);background:var(--surface-2);color:var(--ink);}   /* 면으로 구분(선 카드는 경계가 안 보였음) */
+#main .vs-card .vs-topic{display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);margin-bottom:var(--sp-3);border-radius:var(--radius-chip);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);}
 #main .vs-card .vs-names{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:start;column-gap:var(--sp-2);}
 #main .vs-card .vs-n{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);line-height:1.35;word-break:keep-all;}
 #main .vs-card .vs-n.is-win{color:var(--primary);}
 #main .vs-card .vs-vs{padding-top:2px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-4);}
-#main .vs-card .vs-row{display:grid;grid-template-columns:76px minmax(0,1fr) minmax(0,1fr);column-gap:var(--sp-2);padding:var(--sp-2) 0;border-top:1px solid var(--line);font-size:var(--fs-caption);line-height:1.4;color:var(--ink-2);}
+#main .vs-card .vs-row{display:grid;grid-template-columns:76px minmax(0,1fr) minmax(0,1fr);column-gap:var(--sp-2);padding:var(--sp-2) 0;border-top:1px solid var(--line-strong);font-size:var(--fs-caption);line-height:1.4;color:var(--ink-2);}
 #main .vs-card .vs-names + .vs-row{margin-top:var(--sp-3);}
 #main .vs-card .vs-row .vs-k{color:var(--ink-3);font-weight:var(--fw-medium);}
 #main .vs-card .vs-row b{font-weight:var(--fw-bold);color:var(--ink);}
 #main .vs-card .vs-row b.is-win{color:var(--primary);}
 #main .vs-card .vs-row .vs-none{color:var(--ink-4);}
-#main .vs-card .vs-foot{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--sp-2);margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line);font-size:var(--fs-caption);line-height:1.4;}
+#main .vs-card .vs-foot{display:flex;justify-content:space-between;align-items:flex-start;gap:var(--sp-2);margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line-strong);font-size:var(--fs-caption);line-height:1.4;}
 #main .vs-card .vs-verdict{font-weight:var(--fw-bold);color:var(--ink);}
 #main .vs-card .vs-more{flex:none;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
 /* 카드 사유줄 — '한국인 리뷰 N건 · 평균의 절반 이하' (홈·상세 슬라이더·검색·허브 공통, 실망 확률 숫자는 배지에만) */
@@ -1236,3 +1212,27 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #search .list .cont .why,#hub .hub-list .cont .why{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-medium);color:var(--ink-2);}
 /* 상세 '함께 고민하는 호텔' 나란히 비교 링크 */
 #detail .hotel .vs-more-link{display:inline-block;margin-top:var(--sp-4);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--primary);}
+
+/* ════════ 검색·허브·AI 추천 카드 재구성 (2026-10) — 이름 → 배지 → 평점·성급·가격 한 줄 → 사유줄, 태그·비교는 아래 전체 폭 ════════ */
+#search .list li .item, #hub .hub-list li .item{flex-wrap:wrap;}
+#search .list .cont .info .badge, #hub .hub-list .cont .info .badge{display:flex;flex-wrap:wrap;justify-content:flex-start;gap:4px;margin-top:var(--sp-2);}
+#search .list .cont .stat, #hub .hub-list .cont .stat{display:flex;flex-wrap:wrap;align-items:center;gap:4px var(--sp-2);margin-top:var(--sp-2);font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
+#search .list .cont .stat .grade, #hub .hub-list .cont .stat .grade{display:inline-flex;align-items:center;gap:4px;}
+#search .list .cont .stat .grade .ico, #hub .hub-list .cont .stat .grade .ico{display:inline-flex;width:15px;height:15px;}
+#search .list .cont .stat .grade .ico img, #hub .hub-list .cont .stat .grade .ico img{width:100%;height:100%;object-fit:contain;}
+#search .list .cont .stat .grade .num, #hub .hub-list .cont .stat .grade .num{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#search .list .cont .stat .grade .txt, #hub .hub-list .cont .stat .grade .txt{font-size:var(--fs-caption);color:var(--ink-3);white-space:nowrap;}
+#search .list .cont .stat .si, #hub .hub-list .cont .stat .si{display:inline-flex;align-items:center;gap:var(--sp-2);}
+#search .list .cont .stat .dot, #hub .hub-list .cont .stat .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-4);}
+#search .list .cont .stat .price, #hub .hub-list .cont .stat .price{white-space:nowrap;}
+#search .list .cont .stat .price b, #hub .hub-list .cont .stat .price b{font-weight:var(--fw-bold);color:var(--ink-2);}   /* 구글 최저가는 참고치라 강조하지 않는다 */
+#search .list .r-foot, #hub .hub-list .r-foot{flex-basis:100%;display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-3);}
+#search .list .r-foot .r-tags{margin:0;flex:1 1 auto;}
+#search .list .r-foot .r-cmp{position:static;margin-left:auto;flex:none;}
+#search .list .thumb{position:relative;}
+#search .list .thumb .rec-rank{position:absolute;z-index:2;top:6px;left:6px;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:var(--radius-chip);background:var(--ink);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-display);}
+#search .list .thumb .rec-rank.is-top{background:var(--primary);}
+#search .list .cont .rec-reason{margin-top:var(--sp-2);}
+/* 홈 섹션 제목의 키워드 강조 (문구 압축 규칙: 제목 짧게 + 핵심어 1~2개 색) */
+#main .head .title em{font-style:normal;color:var(--primary);}
+

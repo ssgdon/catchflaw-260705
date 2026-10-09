@@ -13,7 +13,6 @@
 
 /* ── ① 기본 글자 ── */
 body{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);letter-spacing:var(--ls-body);word-break:keep-all;overflow-wrap:break-word;}
-p{word-break:keep-all;overflow-wrap:break-word;}   /* common.css p{break-all}이 한글을 단어 중간에서 끊음('텐/진') — 전역 복원 */
 h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 
 /* ════════ ② 섹션 틀 — 상세 ════════ */
@@ -117,7 +116,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 /* 대안·추천 슬라이더 카드 (홈·상세 공통 hotel_card) */
 #main .hotel-list .list li,#detail .hotel .list li{width:240px;}
 #main .hotel-list .list .item .info,#detail .hotel .list .item .info{padding:var(--sp-3) 0 0;}
-#main .hotel-list .list .item .info .name,#detail .hotel .list .item .info .name{margin:0 0 2px;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);}
+#main .hotel-list .list .item .info .name,#detail .hotel .list .item .info .name{display:block;overflow:visible;-webkit-line-clamp:unset;margin:0 0 2px;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);word-break:keep-all;}   /* 레거시 1줄 말줄임 해제 — 호텔명은 끝까지 보여준다 */
 #main .hotel-list .list .item .info .eng,#detail .hotel .list .item .info .eng{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-3);}
 #main .hotel-list .list .item .info .text,#detail .hotel .list .item .info .text{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
 #main .hotel-list .list .item .info .price-line,#detail .hotel .list .item .info .price-line{font-size:var(--fs-caption);}
@@ -170,7 +169,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #search .list li,#hub .hub-list li{padding:var(--sp-5) 0;}
 #search .list li + li,#hub .hub-list li + li{border-top:1px solid var(--line-strong);}
 #search .list li .item,#hub .hub-list li .item{gap:var(--sp-4);}
-#search .list li .thumb,#hub .hub-list li .thumb{width:104px;height:104px;border-radius:var(--radius-btn);}
+#search .list li .thumb,#hub .hub-list li .thumb{width:88px;height:88px;border-radius:var(--radius-btn);}   /* 104→88: 오른쪽 정보 칸을 넓힌다(375px에서 207→223px) */
 #search .list .cont .info .name,#hub .hub-list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
 #search .list .cont .info .meta span,#hub .hub-list .cont .info .meta span{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
 #search .list .cont .grade .txt,#hub .hub-list .cont .grade .txt{font-size:var(--fs-caption);}

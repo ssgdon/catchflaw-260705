@@ -15,9 +15,9 @@
   function verdict(v) { return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }
   function ratioText(v) {
     var r = v <= 50 ? v / 50 : 1 + (v - 50) / 25;
-    if (v < 45) return '평균보다 ' + Math.round((1 - r) * 100) + '% 적어요';   // 경계 45·55 = verdict와 동일(generate.ratio_text)
-    if (v < 55) return '평균과 비슷해요';
-    return '평균의 ' + Math.max(r, 1.2).toFixed(1) + '배';
+    if (r < 0.95) return '평균보다 ' + Math.round((1 - r) * 100) + '% 적어요';
+    if (r <= 1.05) return '평균과 비슷해요';
+    return '평균의 ' + r.toFixed(1) + '배';
   }
   // 항상 2줄('평균의' / '1.2배') — 짧은 값만 1줄이 되면 칸마다 막대 높이가 어긋남
   function ratioHtml(v) { var m = /^(평균보다|평균의|평균과) (.+)$/.exec(ratioText(v)); return m ? '<span class="cmp-rk">' + m[1] + '</span><b>' + m[2] + '</b>' : ratioText(v); }
