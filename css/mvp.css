@@ -125,9 +125,10 @@
 #detail .analysis .risk-acc-body .stat-info{flex:0 0 106px;min-width:0;}
 #detail .analysis .risk-acc-body .stat-info .factor{line-height:1.4;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
 #detail .analysis .risk-acc-body .stat-info .keywords{margin:3px 0 0;line-height:1.5;font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}
-#detail .analysis .risk-acc-body .stat-track{flex:1;position:relative;height:12px;border-radius:12px;background:var(--surface);}
-#detail .analysis .risk-acc-body .stat-fill{position:absolute;top:0;left:0;bottom:0;min-width:20px;border-radius:12px;}
-#detail .analysis .risk-acc-body .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(40%,-50%);display:flex;align-items:center;justify-content:center;min-width:32px;height:32px;padding:0 4px;border-radius:32px;background:var(--surface-card);border:2px solid;box-shadow:0 1px 4px rgb(0 0 0 / 12%);font-size:var(--fs-micro);font-weight:var(--fw-display);font-style:normal;font-variant-numeric:tabular-nums;letter-spacing:-0.03em;}
+#detail .analysis .risk-acc-body .stat-track{flex:1;position:relative;height:8px;border-radius:var(--radius-pill);background:var(--surface);}
+#detail .analysis .risk-acc-body .stat-fill{position:absolute;top:0;left:0;bottom:0;min-width:8px;border-radius:var(--radius-pill);}
+/* 위치 표시 손잡이: 숫자를 넣지 않으므로 슬라이더 손잡이 크기(16) — 중심이 채움 끝에 오도록 */
+#detail .analysis .risk-acc-body .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(50%,-50%);display:block;width:16px;height:16px;border-radius:50%;background:var(--surface-card);border:3px solid;box-shadow:0 1px 3px rgb(0 0 0 / 16%);font-style:normal;}
 #detail .analysis .risk-acc-body .stat-count{flex:0 0 40px;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
 #detail .analysis .risk-acc-body .stat-count.has-reviews{color:var(--primary);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
 #detail .analysis .risk-acc-body .stat-count.zero{color:var(--ink-3);opacity:.6;}
@@ -828,7 +829,6 @@
 #detail .analysis .risk-acc-head .cat-score .pctl{font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
 #detail .analysis .risk-acc-body{padding:4px 16px 16px;}
 #detail .analysis .risk-acc-body .stat-info .keywords{font-size:var(--fs-meta);line-height:1.4;}
-#detail .analysis .risk-acc-body .stat-fill .bubble{font-size:var(--fs-micro);}
 
 /* 2) FAQ 카드: 패딩 16px·질문 17px/700 유지·칩 30px/13px·답변/인용 15px·1.65·메타 12px */
 #detail .faq .faq-card{padding:16px;}
@@ -954,6 +954,19 @@
 /* P5 비교 — 담기 버튼(상세)·플로팅 비교함(상세·검색 공용, js/compare.js) */
 #detail .information .cmp-btn{align-self:flex-start;width:auto;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-btn-sm);margin-top:var(--sp-3);padding:0 var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);cursor:pointer;}
 #detail .information .cmp-btn.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+/* 정보 영역 공유 버튼 (비교 담기는 오른쪽 플로팅으로 이동 — 자리 맞바꿈) */
+#detail .information .info-share{align-self:flex-start;display:inline-flex;align-items:center;gap:var(--sp-2);height:var(--h-btn-sm);margin-top:var(--sp-3);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;cursor:pointer;}
+#detail .information .info-share img{width:18px;height:18px;}
+/* 플로팅 비교 버튼: 상세 어디서든 바로 담기. 담기 전 흰 알약 + 보라 글자, 담은 뒤 보라 채움 */
+#float .float .cmp-fab{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:50px;padding:0 var(--sp-5);border:0;border-radius:var(--radius-pill);background:var(--surface-card);color:var(--primary);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);white-space:nowrap;pointer-events:all;cursor:pointer;box-shadow:var(--shadow-float);}
+#float .float .cmp-fab.is-on{background:var(--primary);color:var(--ink-inverse);}
+#float .float .cmp-fab.is-on::before{content:"";width:10px;height:6px;margin-top:-3px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);}
+/* 상세: 비교 버튼은 처음부터 보이고, 맨 위로 버튼만 스크롤 후 등장 */
+#detail ~ #float{opacity:1;visibility:visible;}
+#detail ~ #float:not(.is-active) .btn-top{opacity:0;visibility:hidden;}
+#detail ~ #float .btn-top{transition:opacity .25s, visibility .25s;}
+/* 비교함 바가 떠 있으면 플로팅 버튼을 그 위로 올림 */
+html.has-cmp #detail ~ #float{bottom:calc(148px + env(safe-area-inset-bottom));}
 .cmp-ico{position:relative;display:inline-block;width:var(--sp-3);height:var(--sp-3);}
 .cmp-ico::before,.cmp-ico::after{content:"";position:absolute;left:50%;top:50%;border-radius:1px;background:currentColor;transform:translate(-50%,-50%);}
 .cmp-ico::before{width:var(--sp-3);height:2px;}
@@ -1131,3 +1144,7 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #detail .analysis .risk-acc-head .cat-rank{order:5;flex:1 0 100%;padding-left:var(--sp-5);font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);text-align:left;}
 /* 비교 페이지 카테고리 칸: 결론 + 평균 대비 한 줄 */
 #cmp .cmp-cell .cmp-line{display:block;margin-top:2px;font-size:var(--fs-caption);color:var(--ink-3);}
+#cmp .cmp-cell .cmp-line b{font-weight:var(--fw-bold);color:var(--ink-2);}
+/* 실전정보 칸: 값마다 한 줄(좁은 3열에서 '무료 · / 체크인 전' 같은 매달림 방지) */
+#cmp .cmp-cell .cmp-li{display:block;}
+#cmp .cmp-cell .cmp-li + .cmp-li{margin-top:2px;}
