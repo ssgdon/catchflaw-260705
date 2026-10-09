@@ -117,7 +117,7 @@
 
     var g1 = row('실망 확률', H.map(function (h) {
         var c = num(h.p, '%');
-        if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰 적음</span>'; }   // 리뷰 적은 호텔은 순위 강조 제외
+        if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰&nbsp;적음</span>'; }   // '리뷰 / 적음'으로 갈라지지 않게 (360 실측)   // 리뷰 적은 호텔은 순위 강조 제외
         return c;
       }), { best: 'min', lab: '가장 낮음' })
       // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지. krw = 날짜별 표본의 중앙값
@@ -136,7 +136,7 @@
     var g3 = nTop ? [0, 1, 2].slice(0, nTop).map(function (i) {
       return row(['가장 많은 불만', '두 번째', '세 번째'][i] + (i ? '' : ' <span class="cmp-kn">분석 리뷰 대비 비율</span>'), H.map(function (h) {
         var t = (h.top || [])[i];
-        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + esc(t[0]) + '</span><b class="cmp-tv">' + t[1] + '%</b>'
+        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + esc(t[0]) + '</span><b class="cmp-tv">' + (+t[1]).toFixed(1) + '%</b>'
           : '<span class="cmp-none">' + (i ? '–' : '두드러진 불만 없음') + '</span>' };
       }));
     }).join('') : row('분석 리뷰 대비 비율', H.map(function () { return { v: null, k: '', h: '<span class="cmp-none">두드러진 불만 없음</span>' }; }));
