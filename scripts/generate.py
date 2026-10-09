@@ -1170,6 +1170,25 @@ def card_tags(h):
     if tc: tags.append([tc[1], f'{SUB_PHRASE[tc[0]]} 불만'])
     return tags
 
+# ── '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6.1) — 검색 인덱스 x·검색 필터·AI 추천이 같은 숫자를 쓴다 ──
+ROACH_RX = re.compile(r'바퀴|cockroach|roach|ゴキブリ|蟑螂', re.I)
+NO_KEYS = [('roach', '바퀴벌레'), ('bug', '벌레 전부'), ('safe', '객실 보안·밤길')]   # URL no= 키 → 화면 라벨
+
+def rare_counts(pid, h, quotes):
+    """최근 1년 심각 리뷰 건수 3종: bug = 벌레 소분류 심각(scoring crit_1y), safe = 객실 보안 + 동네 분위기 심각,
+    roach = 벌레 심각 인용(quotes.json, 호텔·카테고리별 40건 상한 — 하한값이지만 벌레 심각이 40건 넘는 호텔은 없다) 중
+    본문에 바퀴벌레 언급. 채점 안 된 호텔은 None."""
+    if not h.get('scored'): return None
+    def crit(s): return int(h['cats'][SUB_CAT[s]]['subs'][s].get('crit_1y', 0) or 0)
+    cut = str(date.fromisoformat(CITY['asof']) - timedelta(days=365)) if CITY.get('asof') else ''
+    roach = 0
+    for q in quotes.get((pid, SUB_CAT['벌레']), []):
+        if q.get('scat') != '벌레' or q.get('grade') != '심각' or str(q.get('pub') or '') < cut: continue
+        if any(ROACH_RX.search(str(q.get(k) or '')) for k in ('quote', 'summary', 'tfull', 'ofull')):
+            roach += 1
+    bug = crit('벌레')
+    return {'bug': bug, 'roach': min(roach, bug) if bug else roach, 'safe': crit('객실 보안') + crit('동네 분위기')}
+
 # ───────────────────────── compare (P5) ─────────────────────────
 CMP_FAQ = [('luggage', '짐 보관'), ('breakfast', '조식'), ('bath', '대욕장·온천'), ('family', '아이 동반')]
 
@@ -1221,7 +1240,7 @@ def build_compare():
     <script src="./js/compare-page.js?v={BUILD}"></script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── search ─────────────────────────
-def build_search_index(hotels_meta, H):
+def build_search_index(hotels_meta, H, quotes=None):
     items = []
     for pid, meta in hotels_meta.items():
         h = H.get(pid)
@@ -1245,6 +1264,8 @@ def build_search_index(hotels_meta, H):
             'lat': float(meta['latitude']) if meta.get('latitude') else None,
             'lng': float(meta['longitude']) if meta.get('longitude') else None,
             'pb': meta['band'][0] if meta.get('band') else None,
+            'pbw': (price_band(meta['price_we']) or (None,))[0] if meta.get('price_we') else None,   # 주말 가격대(AI 추천 '주말 기준')
+            'x': rare_counts(pid, h, quotes or {}),   # 1년 심각 건수 {bug, roach, safe} — '한 번도 없어야' 조건
             'pt': meta.get('price_txt') or '',
             'ptw': man_txt(meta.get('price_we')) if (meta.get('price_txt') or '').startswith('평일') else '',   # 주말 '약 34만원'
             'ar': area_tag(meta),                # 지역 태그(하카타역·텐진·나카스·기온)
@@ -1288,6 +1309,7 @@ def build_search_ac_index(hotels_meta, H):
             'pop': r.get('pop') or 0,
             'keys': keys,
             'cho': cho,
+            'tok': (r.get('tok') or [])[:60],   # 토큰 매칭(FEEDBACK-2610 §15) — pipeline/build_index.py token_keys
         })
     out.sort(key=lambda x: -x['pop'])
     return json.dumps(out, ensure_ascii=False, separators=(',', ':'))
@@ -1332,7 +1354,20 @@ def build_search(city_avg_pct):
                     <button type="button" class="f-chip" data-v="b1">10만원 미만</button>
                     <button type="button" class="f-chip" data-v="b2">10~20만원</button>
                     <button type="button" class="f-chip" data-v="b3">20만원 이상</button>
-                    <button type="button" class="f-more" id="open-catfilter">항목별 필터</button>
+                </div>
+                <button type="button" class="f-more" id="f-more" aria-expanded="false" aria-controls="f-panel"><span class="f-more-t">조건 더 보기</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 5 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+                <div class="f-panel" id="f-panel" hidden>
+                    <div class="fp-group">
+                        <div class="fp-tit">불만이 적었으면 하는 항목</div>
+                        <div class="fp-sub">고른 항목이 &lsquo;위험&rsquo; 등급인 호텔은 빼드려요</div>
+                        <div class="fp-chips" id="fp-cats"></div>
+                    </div>
+                    <div class="fp-group">
+                        <div class="fp-tit">1년 안에 한 번도 없어야 해요</div>
+                        <div class="fp-sub">심각 리뷰 기준 · 주의 리뷰는 세지 않아요</div>
+                        <div class="fp-chips" id="fp-no"></div>
+                    </div>
+                    <button type="button" class="fp-reset" id="fp-reset">초기화</button>
                 </div>
             </div>
             <div class="map-wrap is-collapsed" id="map-wrap"><div id="map"></div>
@@ -1370,19 +1405,6 @@ def build_search(city_avg_pct):
     </main>
     <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
 
-    <div class="cf-modal" id="cf-catfilter">
-        <div class="cf-modal-dim"></div>
-        <div class="cf-modal-card">
-            <div class="cft-tit">걱정되는 항목을 골라주세요</div>
-            <div class="cft-txt">선택한 항목이 <b>&lsquo;위험&rsquo; 등급</b>인 호텔을 결과에서 빼드려요. (여러 개 선택 가능)</div>
-            <div class="cft-grid" id="cft-grid"></div>
-            <div class="cf-modal-btns">
-                <button type="button" class="cf-btn cf-btn-ghost" data-act="reset">초기화</button>
-                <button type="button" class="cf-btn cf-btn-primary" data-act="apply">적용하기</button>
-            </div>
-        </div>
-    </div>
-
     <script src="./data/index.js?v={BUILD}"></script>
     <script defer src="./data/search_index.js?v={BUILD}"></script>
     <script src="./js/search-key.js?v={BUILD}"></script>
@@ -1397,7 +1419,15 @@ def build_search(city_avg_pct):
         var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
         var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
         var _sq = new URLSearchParams(location.search).get('sort');
-        var fPrice = '', fBand = '', fArea = '', fCats = [], sortCat = '';
+        var fPrice = '', fBand = '', fArea = '', fCats = [], fNo = [], sortCat = '';
+        var MUSTS = (window.CFRec && window.CFRec.MUSTS) || [], MUST_BY = (window.CFRec && window.CFRec.mustBy) || {{}};
+        function normNo(a){{ return (window.CFRec && window.CFRec.normNo) ? window.CFRec.normNo(a) : []; }}
+        function passNo(h, no){{  // '1년 안에 한 번도 없어야' — 심각 건수(h.x)가 1건이라도 있으면 제외. 데이터 없는(미채점) 호텔도 제외
+            if (!no.length) return true;
+            if (!h.x) return false;
+            for (var i=0;i<no.length;i++){{ if ((h.x[no[i]]||0) > 0) return false; }}
+            return true;
+        }}
         var sortBy = (['rs','p','krn','price','rc','g'].indexOf(_sq) >= 0) ? _sq : 'rs';   // 기본 추천순, ?sort= 프리셋 허용
         var CAT_ICON = {{'청결':'','냄새':'','소음':'','객실':'','직원':'','위치':'','안전':''}};
         var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
@@ -1510,8 +1540,12 @@ def build_search(city_avg_pct):
             return parts.length ? '<div class="why">'+parts.slice(0,2).join(WHY_SEP)+'</div>' : '';
         }}
         function tagsHtml(h){{  // P6 리뷰 기반 태그(빌드 시 실측 산출). 좋은 쪽/나쁜 쪽이 색으로만 갈리지 않게 나쁜 쪽엔 '주의 ·'
-            if (!h.tg || !h.tg.length) return '';
-            return '<div class="r-tags">'+h.tg.map(function(t){{ return '<span class="r-tag is-'+t[0]+'">'+(t[0]==='safe' ? '' : '주의 · ')+t[1]+'</span>'; }}).join('')+'</div>';
+            var tg = (h.tg || []).slice();
+            var no = recMode ? recNo : fNo;   // '한 번도 없어야' 조건이 켜져 있으면 그 결과를 태그 1개로 맨 앞에(태그 2개 상한 안에서)
+            if (no.length && h.x) tg.unshift(['safe', String((MUST_BY[no[0]]||{{}}).chip||'').replace(' 0건', '') + ' 심각 0건']);
+            tg = tg.slice(0, 2);
+            if (!tg.length) return '';
+            return '<div class="r-tags">'+tg.map(function(t){{ return '<span class="r-tag is-'+t[0]+'">'+(t[0]==='safe' ? '' : '주의 · ')+t[1]+'</span>'; }}).join('')+'</div>';
         }}
         function statLine(h){{  // 평점 · 성급 · 1박 가격 한 줄 (도시명 'JP'는 후쿠오카 전용 사이트라 생략)
             var a = ['<span class="grade"><span class="ico"><img src="./img/star.svg" alt=""></span><span class="num">'+(h.g?h.g.toFixed(1):'-')+'</span><span class="txt">('+h.rc.toLocaleString()+')</span></span>'];
@@ -1521,6 +1555,8 @@ def build_search(city_avg_pct):
         }}
         function priceHtml(h){{  // generate.price_line_html과 같은 규칙: 평일 굵게 + 주말(굵게 안 함, 넘치면 통째로 다음 줄)
             if (!h.pt) return '';
+            if (recMode && recBw && h.ptw)   // AI 추천 '주말 기준': 주말 값을 굵게 앞에
+                return '1박 <b>주말 '+h.ptw+'</b> <span class="seg pl-we">· '+h.pt+'</span>';
             return '1박 <b>'+h.pt+'</b>' + (h.ptw ? ' <span class="seg pl-we">· 주말 '+h.ptw+'</span>' : '');
         }}
         function areaHtml(h){{  // 지역 태그 + 역 도보 (generate.area_line_html과 같은 줄)
@@ -1587,6 +1623,7 @@ def build_search(city_avg_pct):
             if (fCats.length){{
                 for (var i=0;i<fCats.length;i++){{ if (h.cb && h.cb[fCats[i]] === 'danger') return false; }}
             }}
+            if (!passNo(h, fNo)) return false;
             return true;
         }}
         function filterLabel(){{
@@ -1595,6 +1632,7 @@ def build_search(city_avg_pct):
             if (fPrice) t.push($('#f-price .f-chip[data-v="'+fPrice+'"]').text());
             if (fBand) t.push($('#f-band .f-chip[data-v="'+fBand+'"]').text());
             if (fCats.length) t.push(fCats.length + '개 항목 안심');
+            if (fNo.length) t.push(fNo.map(function(k){{ return (MUST_BY[k]||{{}}).chip; }}).join(' · '));
             return t.length ? ' · ' + t.join(' · ') : '';
         }}
         function unsupported(q){{
@@ -1626,15 +1664,22 @@ def build_search(city_avg_pct):
                 if (idSet && !matched.length) {{
                     matched = pool.filter(function(h){{ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; }});
                 }}
+                var suggested = false;   // 그래도 0건이면 비슷한 이름 제안(자모 바이그램 유사도, FEEDBACK-2610 §15-4)
+                if (!matched.length && window.CFAutocomplete && window.CFAutocomplete.suggest) {{
+                    var sIds = {{}}; window.CFAutocomplete.suggest(q, 3).forEach(function(it){{ sIds[it.id] = 1; }});
+                    matched = pool.filter(function(h){{ return sIds[h.id]; }});
+                    suggested = matched.length > 0;
+                }}
                 // 2) 매칭 0건일 때만 타도시 안내 발동 (§7-d)
                 if (q !== lastQ && typeof gtag === 'function') {{
-                    gtag('event', 'search', {{search_term: q, results: matched.length}});
-                    if (!matched.length) gtag('event', 'search_no_result', {{search_term: q}});
+                    gtag('event', 'search', {{search_term: q, results: suggested ? 0 : matched.length}});
+                    if (!matched.length || suggested) gtag('event', 'search_no_result', {{search_term: q}});
                 }}
                 lastQ = q;
                 if (!matched.length) {{ unsupported(q); if (mapOpen) drawMap(HOTELS.filter(passFilters), true); return; }}
                 pool = matched;
-                $total.html('&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
+                $total.html(suggested ? '&ldquo;<span>'+q+'</span>&rdquo; 와 같은 이름은 없어요 · 혹시 이 호텔인가요?'
+                                      : '&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
             }} else {{
                 $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망&nbsp;확률 '+CITY_AVG+'%');
             }}
@@ -1720,26 +1765,44 @@ def build_search(city_avg_pct):
         }});
         $(document).on('click', function(){{ $('#lh-sort').removeClass('open'); }});
 
-        // 카테고리 위험 필터 시트
-        var $cft = $('#cf-catfilter');
-        $('#cft-grid').html(CATS.map(function(c){{
-            var koDisp = (window.CAT_KO && window.CAT_KO[c.ko]) || c.ko;   // data-cat은 내부키(c.ko), 표시만 순화
-            return '<button type="button" class="cft-chip" data-cat="'+c.ko+'"><span class="cft-ico">'+c.ico+'</span>'+koDisp+'</button>';
-        }}).join(''));
-        function openCatFilter(){{
-            $('#cft-grid .cft-chip').each(function(){{ $(this).toggleClass('on', fCats.indexOf($(this).data('cat'))>=0); }});
-            $cft.addClass('is-open'); $('body').css('overflow','hidden');
-            CFNav.push(function(){{ $cft.removeClass('is-open'); $('body').css('overflow',''); }});
+        // ───── 조건 더 보기 패널 (FEEDBACK-2610 §14): 모달 대신 아래로 펼침, 칩을 누르면 바로 적용, URL ?cat=&no= 동기화 ─────
+        var $fp = $('#f-panel'), $fm = $('#f-more');
+        function renderPanel(){{
+            $('#fp-cats').html(CATS.map(function(c){{
+                var on = fCats.indexOf(c.ko) >= 0, koDisp = (window.CAT_KO && window.CAT_KO[c.ko]) || c.ko;   // data-cat은 내부키(c.ko)
+                return '<button type="button" class="fp-chip'+(on?' on':'')+'" data-cat="'+c.ko+'" aria-pressed="'+on+'">'+koDisp+'</button>';
+            }}).join(''));
+            var allBug = fNo.indexOf('bug') >= 0;
+            $('#fp-no').html(MUSTS.map(function(m){{
+                var locked = m.code === 'roach' && allBug, on = locked || fNo.indexOf(m.code) >= 0;   // '벌레 전부'면 바퀴벌레 잠금 포함
+                return '<button type="button" class="fp-chip'+(on?' on':'')+(locked?' is-locked':'')+'" data-no="'+m.code+'" aria-pressed="'+on+'"'+(locked?' disabled':'')+'>'+m.label+'</button>';
+            }}).join(''));
+            var n = fCats.length + fNo.length;
+            $fm.toggleClass('active', n > 0).find('.f-more-t').text(n ? '조건 '+n+'개 적용 중' : '조건 더 보기');
         }}
-        $('#open-catfilter').on('click', openCatFilter);
-        $cft.on('click', '.cft-chip', function(){{ $(this).toggleClass('on'); }});
-        $cft.find('.cf-modal-dim').on('click', function(){{ CFNav.pop(); }});
-        $cft.find('[data-act="reset"]').on('click', function(){{ $('#cft-grid .cft-chip').removeClass('on'); }});
-        $cft.find('[data-act="apply"]').on('click', function(){{
-            fCats = $('#cft-grid .cft-chip.on').map(function(){{ return $(this).data('cat'); }}).get();
-            $('#open-catfilter').toggleClass('active', fCats.length>0).text(fCats.length ? '항목 '+fCats.length : '⚙ 항목별 필터');
-            CFNav.pop(); run();
+        function syncUrl(){{
+            var u = new URLSearchParams(location.search);
+            if (fCats.length) u.set('cat', fCats.join(',')); else u.delete('cat');
+            if (fNo.length) u.set('no', fNo.join(',')); else u.delete('no');
+            var qs = u.toString();
+            history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+        }}
+        function applyPanel(){{ renderPanel(); syncUrl(); run(); }}
+        $fm.on('click', function(){{
+            var open = $fp.prop('hidden');
+            $fp.prop('hidden', !open); $fm.attr('aria-expanded', open ? 'true' : 'false').toggleClass('is-open', open);
         }});
+        $fp.on('click', '.fp-chip[data-cat]', function(){{
+            var c = String($(this).data('cat')), i = fCats.indexOf(c);
+            if (i >= 0) fCats.splice(i, 1); else fCats.push(c);
+            applyPanel();
+        }});
+        $fp.on('click', '.fp-chip[data-no]', function(){{
+            var c = String($(this).data('no')), i = fNo.indexOf(c);
+            if (i >= 0) fNo.splice(i, 1); else fNo.push(c);
+            fNo = normNo(fNo); applyPanel();
+        }});
+        $('#fp-reset').on('click', function(){{ fCats = []; fNo = []; applyPanel(); }});
 
         $('#btn-search').on('click', run);
         $q.on('keyup', function(e){{ if(e.key==='Enter') run(); }});
@@ -1789,6 +1852,7 @@ def build_search(city_avg_pct):
                 + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
                 + '<div class="badge">'+bandChip(h)+'</div>'
                 + statLine(h)
+                + areaHtml(h)
                 + '</div>'
                 + '<div class="rec-reason">'+recReason(h, pr)+'</div>'
                 + '</div>'
@@ -1813,11 +1877,12 @@ def build_search(city_avg_pct):
             if (a) map.setView([a.lat,a.lng], 15, {{animate:false}});
             else if (pts.length) map.fitBounds(pts, {{padding:[30,30], maxZoom:15}});
         }}
-        var recPr = [], recBud = '', recArea = '';
+        var recPr = [], recBud = '', recArea = '', recNo = [], recBw = false;
         function recCandidates(){{
             return HOTELS.filter(function(h){{
                 if (!h.scored || h.lr) return false;   // 리뷰 적음(최근 1년 100건 미만)은 추천 모수에서 제외 (UI-STANDARDS §5)
-                if (recBud && h.pb !== recBud) return false;
+                if (recBud && (recBw ? h.pbw : h.pb) !== recBud) return false;   // 주말 기준이면 주말 가격대(없으면 제외)
+                if (!passNo(h, recNo)) return false;
                 if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0];
                     if (a){{ if (h.lat==null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; }} }}
                 return true;
@@ -1825,8 +1890,9 @@ def build_search(city_avg_pct):
         }}
         function renderRecHeader(){{
             var chips = recPr.map(function(c, i){{ return '<span class="rh-chip"><span class="rh-rank">'+(i+1)+'</span>'+((RC[c]||{{}}).chip||'')+'</span>'; }});
-            if (recBud){{ var b=(window.CFRec.BUDGETS||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+b.label+'</span>'); }}
+            if (recBud){{ var b=(window.CFRec.BUDGETS||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+b.label+(recBw ? '(주말)' : '')+'</span>'); }}
             if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
+            recNo.forEach(function(k){{ var m=(window.CFRec.mustBy||{{}})[k]; if (m) chips.push('<span class="rh-chip">'+m.chip+'</span>'); }});
             return '<div class="rh-tit">내 조건 맞춤 추천</div>'
                 + '<div class="rh-sub" id="rh-sub"></div>'
                 + '<div class="rh-chips">'+chips.join('')+'</div>'
@@ -1836,8 +1902,9 @@ def build_search(city_avg_pct):
             recMode = true;
             mapOpen = true; $('#map-wrap, #map-hint').removeClass('is-collapsed'); $('#map-toggle').hide();
             recPr = (sp.get('pr')||'').split(',').filter(function(c){{ return RC[c]; }});
-            recBud = sp.get('bud')||''; recArea = sp.get('area')||'';
-            window.CF_REC_PRESET = {{pr:recPr, bud:recBud, area:recArea}};
+            recBud = sp.get('bud')||''; recArea = sp.get('area')||''; recBw = !!(recBud && sp.get('bw') === '1');
+            recNo = normNo((sp.get('no')||'').split(','));
+            window.CF_REC_PRESET = {{pr:recPr, bud:recBud, area:recArea, no:recNo, bw:recBw}};
             $('.filters, #list-head, #map-hint, #total').hide();
             $('#rec-header').html(renderRecHeader()).show();
             var cands = recCandidates();
@@ -1848,10 +1915,11 @@ def build_search(city_avg_pct):
             if (cands.length < 3){{
                 var relax = '';
                 if (recBud) relax += '<a class="notice-btn" href="'+recUrl({{bud:''}})+'">예산 넓혀 다시 보기</a> ';
-                if (recArea) relax += '<a class="notice-btn" href="'+recUrl({{area:''}})+'">지역 넓혀 다시 보기</a>';
+                if (recArea) relax += '<a class="notice-btn" href="'+recUrl({{area:''}})+'">지역 넓혀 다시 보기</a> ';
+                if (recNo.length) relax += '<a class="notice-btn" href="'+recUrl({{no:''}})+'">&lsquo;한 번도 없어야&rsquo; 조건 풀기</a>';
                 $('#results').html('<div class="notice-card" style="margin:16px 0">'
-                    + '<div class="notice-tit">조건에 맞는 곳이 '+cands.length+'곳뿐이에요</div>'
-                    + '<div class="notice-txt">예산이나 지역을 넓히면 더 보여드릴 수 있어요</div>'
+                    + '<div class="notice-tit">'+(cands.length ? '조건에 맞는 곳이 '+cands.length+'곳뿐이에요' : '조건에 맞는 곳이 없어요')+'</div>'
+                    + '<div class="notice-txt">'+(recNo.length ? '조건을 하나씩 풀면 더 보여드릴 수 있어요' : '예산이나 지역을 넓히면 더 보여드릴 수 있어요')+'</div>'
                     + '<div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'+relax+'</div></div>');
             }} else {{
                 $('#results').html(top.map(function(h,i){{ return recRow(h, i+1, recPr); }}).join(''));
@@ -1862,7 +1930,8 @@ def build_search(city_avg_pct):
             var pr = over.pr!==undefined ? over.pr : recPr.join(',');
             var bud = over.bud!==undefined ? over.bud : recBud;
             var area = over.area!==undefined ? over.area : recArea;
-            var qs = 'rec=1&pr='+pr; if(bud) qs+='&bud='+bud; if(area) qs+='&area='+area;
+            var no = over.no!==undefined ? over.no : recNo.join(',');
+            var qs = 'rec=1&pr='+pr; if(bud) qs+='&bud='+bud; if(bud && recBw) qs+='&bw=1'; if(area) qs+='&area='+area; if(no) qs+='&no='+no;
             return './search?'+qs;
         }}
 
@@ -1872,6 +1941,11 @@ def build_search(city_avg_pct):
         else {{
             var initArea = sp.get('area'), initQ = sp.get('q');
             if (initArea){{ fArea = initArea; $('#f-area .f-chip').removeClass('on'); $('#f-area .f-chip[data-area="'+initArea+'"]').addClass('on'); }}
+            var CAT_KEYS = CATS.map(function(c){{ return c.ko; }});
+            fCats = (sp.get('cat')||'').split(',').filter(function(c){{ return CAT_KEYS.indexOf(c) >= 0; }});
+            fNo = normNo((sp.get('no')||'').split(','));
+            renderPanel();
+            if (fCats.length || fNo.length) {{ $fp.prop('hidden', false); $fm.attr('aria-expanded', 'true').addClass('is-open'); }}   // 공유 URL로 들어오면 펼쳐서 보여줌
             if (initQ){{ $q.val(initQ); }}
             run();
             // PC: 지도 상시 표시(토글 숨김은 pc.css). 창 크기가 경계를 넘으면 따라 전환
@@ -4439,7 +4513,7 @@ def main():
     W('404.html', build_404())
     W('recent.html', build_recent(hotels_meta, H))   # F40: 개인화 페이지 — sitemap 제외
     W('about.html', build_about(hotels_meta, H, city))
-    idx = build_search_index(hotels_meta, H)
+    idx = build_search_index(hotels_meta, H, quotes)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
     W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data, monthly),

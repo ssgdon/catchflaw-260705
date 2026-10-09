@@ -358,8 +358,20 @@
 /* ---------- 검색: 도시/지역 필터 행 ---------- */
 #search .filters .f-chip.disabled{opacity:.4;pointer-events:none;position:relative;}
 #search .filters .f-chip.city-on{background:var(--primary);color:var(--ink-inverse);font-weight:var(--fw-bold);}
-#search .filters .f-more{flex:0 0 auto;display:flex;align-items:center;gap:4px;height:var(--h-chip);padding:0 12px;border-radius:32px;background:var(--primary-soft);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
-#search .filters .f-more.active{background:var(--primary);color:var(--ink-inverse);}
+/* 조건 더 보기 (FEEDBACK-2610 §14): 4번째 줄 전체 폭 버튼 → 아래로 펼치는 패널(모달 아님). 칩은 누르면 바로 적용 */
+#search .filters .f-more{display:flex;align-items:center;justify-content:center;gap:var(--sp-1);width:100%;height:var(--h-chip);border-radius:var(--radius-btn);border:1px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;}
+#search .filters .f-more svg{transition:transform .2s;}
+#search .filters .f-more.is-open svg{transform:rotate(180deg);}
+#search .filters .f-more.active{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+#search .filters .f-panel{display:flex;flex-direction:column;gap:var(--sp-5);padding:var(--sp-2) 0 var(--sp-2);}
+#search .filters .f-panel[hidden]{display:none;}
+#search .filters .fp-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#search .filters .fp-sub{margin-top:var(--sp-1);line-height:1.5;font-size:var(--fs-meta);color:var(--ink-3);}
+#search .filters .fp-chips{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-3);}
+#search .filters .fp-chip{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);border:1.5px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
+#search .filters .fp-chip.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);font-weight:var(--fw-bold);}
+#search .filters .fp-chip.is-locked{opacity:.6;cursor:default;}
+#search .filters .fp-reset{align-self:flex-start;padding:var(--sp-1) 0;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);text-decoration:underline;text-underline-offset:3px;}
 
 /* ---------- 검색: 리스트 헤더(정렬 + 개수) ---------- */
 #search .list-head{display:flex;align-items:center;justify-content:space-between;padding:6px var(--page-x) 0;}
@@ -379,16 +391,6 @@
 /* ---------- 검색: 지도 영역 안내 ---------- */
 #search .map-hint{padding:8px var(--page-x) 0;font-size:var(--fs-meta);color:var(--ink-3);}
 #search .map-hint b{color:var(--primary);font-weight:var(--fw-bold);}
-
-/* ---------- 카테고리 위험 필터 시트 ---------- */
-#cf-catfilter .cf-modal-card{text-align:left;padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
-#cf-catfilter .cft-tit{font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-#cf-catfilter .cft-txt{margin:6px 0 16px;line-height:1.5;font-size:var(--fs-caption);color:var(--ink-2);}
-#cf-catfilter .cft-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
-#cf-catfilter .cft-chip{display:flex;align-items:center;gap:6px;padding:13px 12px;border-radius:12px;border:1.5px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink);}
-#cf-catfilter .cft-chip .cft-ico{font-size:16px;}
-#cf-catfilter .cft-chip.on{border-color:var(--danger);background:var(--danger-soft);color:var(--danger-text);font-weight:var(--fw-bold);}
-#cf-catfilter .cf-modal-btns{margin-top:18px;}
 
 /* ---------- 토스트 ---------- */
 .cf-toast{position:fixed;z-index:500;left:50%;bottom:80px;transform:translate(-50%,10px);padding:12px 20px;border-radius:24px;background:rgb(25 27 31 / 92%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-medium);opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;white-space:nowrap;}
@@ -434,6 +436,20 @@
 #cf-rec-wizard .rec-opt .rec-opt-label{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--ink);}
 #cf-rec-wizard .rec-opt.on .rec-opt-label{color:var(--primary);}
 #cf-rec-wizard .rec-opt .rec-opt-desc{font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}
+/* FEEDBACK-2610 §6·§7·§8: '한 번도 없어야' 토글 · 예산 평일/주말 세그먼트 · 동네 추천 딱지 */
+#cf-rec-wizard .rec-must-box{margin-top:var(--sp-6);padding-top:var(--sp-5);border-top:1px solid var(--line-strong);}
+#cf-rec-wizard .rec-must-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#cf-rec-wizard .rec-must-sub{margin-top:var(--sp-1);line-height:1.5;font-size:var(--fs-meta);color:var(--ink-3);}
+#cf-rec-wizard .rec-musts{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-3);}
+#cf-rec-wizard .rec-must{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);border:1.5px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
+#cf-rec-wizard .rec-must.on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);font-weight:var(--fw-bold);}
+#cf-rec-wizard .rec-must.is-locked{opacity:.6;cursor:default;}
+#cf-rec-wizard .rec-seg{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-1);margin-top:var(--sp-4);padding:var(--sp-1);border-radius:var(--radius-btn);background:var(--surface);}
+#cf-rec-wizard .rec-seg-btn{height:var(--h-chip);border-radius:var(--radius-btn);font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;}
+#cf-rec-wizard .rec-seg-btn.on{background:var(--surface-card);color:var(--ink);font-weight:var(--fw-bold);box-shadow:0 1px 4px rgb(0 0 0 / 10%);}
+#cf-rec-wizard .rec-seg + .rec-sub{margin:var(--sp-2) 0 0;}
+#cf-rec-wizard .rec-opt .rec-opt-label{display:inline-flex;align-items:center;gap:var(--sp-2);}
+#cf-rec-wizard .rec-opt-tag{display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--primary-soft);color:var(--primary);font-size:var(--fs-micro);font-weight:var(--fw-bold);}
 #cf-rec-wizard .rec-btns{margin-top:18px;}
 #cf-rec-wizard .rec-btns .cf-btn{flex:0 0 auto;width:100%;height:var(--h-btn);}
 #cf-rec-wizard .rec-btns .cf-btn[disabled]{opacity:.4;pointer-events:none;}

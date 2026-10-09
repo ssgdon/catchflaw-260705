@@ -21,9 +21,23 @@
     { code: 'b3', label: '20만원 이상' }
   ];
   var AREA_DESC = { hakata: '신칸센·공항 이동 편리', tenjin: '쇼핑·맛집 중심가', nakasu: '야타이·나이트라이프', gion: '조용한 구시가' };
+  var AREA_REC = { hakata: 1, tenjin: 1 };   // '추천' 딱지 — 카페 1,000건 중 하카타 160·텐진 131건 (FEEDBACK-2610 §8)
+  /* '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6) — 키는 검색 인덱스 h.x와 같고 URL no= 값. 심각 리뷰만 센다 */
+  var MUSTS = [
+    { code: 'roach', label: '바퀴벌레', chip: '바퀴벌레 0건' },
+    { code: 'bug',   label: '벌레 전부', chip: '벌레 0건' },
+    { code: 'safe',  label: '객실 보안·밤길', chip: '객실 보안·밤길 0건' }
+  ];
   var byCode = {}; CATS.forEach(function (c) { byCode[c.code] = c; });
+  var mustBy = {}; MUSTS.forEach(function (m) { mustBy[m.code] = m; });
+  // '벌레 전부'를 고르면 '바퀴벌레'는 자동 포함 — 정리된 목록(중복 roach 제거) 반환
+  function normNo(arr) {
+    var a = (arr || []).filter(function (c) { return mustBy[c]; });
+    if (a.indexOf('bug') >= 0) a = a.filter(function (c) { return c !== 'roach'; });
+    return a.filter(function (c, i) { return a.indexOf(c) === i; });
+  }
 
-  window.CFRec = { CATS: CATS, BUDGETS: BUDGETS, AREA_DESC: AREA_DESC, byCode: byCode, open: openWizard };
+  window.CFRec = { CATS: CATS, BUDGETS: BUDGETS, AREA_DESC: AREA_DESC, MUSTS: MUSTS, mustBy: mustBy, normNo: normNo, byCode: byCode, open: openWizard };
 
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function toast(msg) {
@@ -34,7 +48,7 @@
   }
 
   // ── 상태 ──
-  var sheet = null, step = 1, maxStep = 1, sel = [], bud = '', area = '';
+  var sheet = null, step = 1, maxStep = 1, sel = [], bud = '', area = '', no = [], bw = false;
   var AREAS = window.CF_AREAS || [];
 
   function build() {
@@ -88,9 +102,20 @@
         '<span class="rec-chip-kw">' + c.kw + '</span>' +
       '</button>';
     }).join('');
+    var allBug = no.indexOf('bug') >= 0;
+    var musts = MUSTS.map(function (m) {
+      var locked = m.code === 'roach' && allBug;           // 벌레 전부에 포함 — 켜진 상태로 잠금
+      var on = locked || no.indexOf(m.code) >= 0;
+      return '<button type="button" class="rec-must' + (on ? ' on' : '') + (locked ? ' is-locked' : '') + '" data-must="' + m.code + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (locked ? ' disabled' : '') + '>' + m.label + '</button>';
+    }).join('');
     return '<div class="rec-tit">여행할 때 이것만은 못 참아요</div>' +
       '<div class="rec-sub">중요한 순서대로 최대 3개 골라주세요</div>' +
       '<div class="rec-grid">' + chips + '</div>' +
+      '<div class="rec-must-box">' +
+        '<div class="rec-must-tit">이건 1년 안에 한 번도 없어야 해요</div>' +
+        '<div class="rec-must-sub">심각 리뷰 기준 · 주의 리뷰는 세지 않아요' + (allBug ? '<br>바퀴벌레는 벌레 전부에 포함돼요' : '') + '</div>' +
+        '<div class="rec-musts">' + musts + '</div>' +
+      '</div>' +
       '<div class="rec-btns"><button type="button" class="cf-btn cf-btn-primary rec-next"' + (sel.length ? '' : ' disabled') + '>다음 →</button></div>';
   }
   function stepBudget() {
@@ -99,6 +124,11 @@
         '<span class="rec-opt-label">' + b.label + '</span></button>';
     }).join('');
     return '<div class="rec-tit">1박 예산은 어느 정도예요?</div>' +
+      '<div class="rec-seg" role="group" aria-label="예산 기준">' +
+        '<button type="button" class="rec-seg-btn' + (bw ? '' : ' on') + '" data-bw="0" aria-pressed="' + (bw ? 'false' : 'true') + '">평일 기준</button>' +
+        '<button type="button" class="rec-seg-btn' + (bw ? ' on' : '') + '" data-bw="1" aria-pressed="' + (bw ? 'true' : 'false') + '">주말(금·토) 기준</button>' +
+      '</div>' +
+      '<div class="rec-sub">주말은 평일의 약 2.6배라 따로 골라요</div>' +
       '<div class="rec-list">' + chips + '</div>';
   }
   function stepArea() {
@@ -107,7 +137,7 @@
     }));
     var chips = opts.map(function (a) {
       return '<button type="button" class="rec-opt' + (area === a.code && a.code !== '' ? ' on' : '') + '" data-area="' + a.code + '">' +
-        '<span class="rec-opt-label">' + a.ko + '</span>' +
+        '<span class="rec-opt-label">' + a.ko + (AREA_REC[a.code] ? '<span class="rec-opt-tag">추천</span>' : '') + '</span>' +
         (a.desc ? '<span class="rec-opt-desc">' + a.desc + '</span>' : '') + '</button>';
     }).join('');
     return '<div class="rec-tit">어느 동네에 머물까요?</div>' +
@@ -123,6 +153,18 @@
       if (i >= 0) sel.splice(i, 1);
       else if (sel.length >= 3) { toast('3개까지 고를 수 있어요'); return; }
       else sel.push(code);
+      render();
+    });
+    body.on('click', '.rec-must', function () {
+      var code = String($(this).data('must'));
+      if (code === 'roach' && no.indexOf('bug') >= 0) return;   // 잠김
+      var i = no.indexOf(code);
+      if (i >= 0) no.splice(i, 1); else no.push(code);
+      no = normNo(no);
+      render();
+    });
+    body.on('click', '.rec-seg-btn', function () {
+      bw = String($(this).data('bw')) === '1';
       render();
     });
     body.on('click', '.rec-next', function () {
@@ -142,7 +184,9 @@
   function finish() {
     var qs = 'rec=1&pr=' + sel.join(',');
     if (bud) qs += '&bud=' + bud;
+    if (bud && bw) qs += '&bw=1';
     if (area) qs += '&area=' + area;
+    if (no.length) qs += '&no=' + normNo(no).join(',');
     // index/search는 루트(./), 상세(hotels/)는 ../ 필요
     var prefix = location.pathname.indexOf('/hotels/') >= 0 ? '../' : './';
     // 결과 전환 전 브랜드 톤 처리 화면 (즉시 전환의 답답함 완화)
@@ -161,6 +205,8 @@
     sel = (preset.pr || []).filter(function (c) { return byCode[c]; });
     bud = preset.bud || '';
     area = preset.area || '';
+    no = normNo(preset.no || []);
+    bw = !!preset.bw;
     step = 1; maxStep = sel.length ? 3 : 1;   // 프리셋이 있으면 모든 스텝 도달 가능
     if (!sheet) { sheet = build(); wireBody(); }
     render();
