@@ -3170,7 +3170,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         </a>
                         <a class="btn-link btn-audit" href="#risk-detail">
                             <span class="ico"><img src="../img/audit.svg" alt=""></span>
-                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}개</span><span class="count"><span class="seg">{per}</span>{DSEP}<span class="seg">구글·트립닷컴 등</span></span></span>
+                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}건</span><span class="count"><span class="seg">{per}</span>{DSEP}<span class="seg">구글·트립닷컴 등</span></span></span>
                         </a>
                     </div>
                     {faq_jump_html}
