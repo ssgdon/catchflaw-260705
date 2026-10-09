@@ -5,7 +5,7 @@
 // 떠 있는 버튼(공유·위로·비교·비교함)이 본문을 가리지 않게: 아래로 스크롤하는 동안 html.is-scroll-down → 숨김, 위로 올리면 다시 (2026-10)
 (function () {
   var last = window.pageYOffset || 0, acc = 0, hidden = false, root = document.documentElement;
-  function set(h) { if (hidden !== h) { hidden = h; root.classList.toggle('is-scroll-down', h); } }
+  function set(h) { hidden = h; if (root.classList.contains('is-scroll-down') !== h) root.classList.toggle('is-scroll-down', h); }   // 실제 클래스 상태 기준(외부에서 바뀌어도 어긋나지 않게)
   window.addEventListener('scroll', function () {
     var y = window.pageYOffset || 0, dy = y - last; last = y;
     if (y < 120) { set(false); acc = 0; return; }            // 맨 위 근처에선 항상 보임

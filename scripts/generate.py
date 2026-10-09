@@ -1937,6 +1937,34 @@ def kr_ratio_dist(share):
     return sorted(share.values())
 
 
+def _has_station(chip):
+    """실전정보 칩에 역 이름이 있는가 — '하카타역 10분'·'지하철역 6분' O, '역에서 조금 멂'·'도보 10분' X (2026-10)."""
+    c = str(chip or '')
+    return bool(re.search(r'[가-힣A-Za-z]{2,}역', c)) and not re.match(r'^\s*역', c)
+
+
+def _station_text(answer):
+    """실전정보 답변("후기가 갈려요. 하카타역에서 도보 5분 또는 10분…")에서 '하카타역 5분'처럼 역 이름+시간만 뽑아 최대 2개.
+    못 뽑으면 '후기가 갈려요.'를 뺀 첫 문장(46자). 후기가 갈리면 뒤에 ' · 후기 갈림'."""
+    a = re.sub(r'\*\*', '', answer or '').strip()
+    split = a.startswith('후기가 갈려요')
+    body = re.sub(r'^후기가 갈려요[.!]?\s*', '', a)
+    found, seen = [], set()
+    _STOP = ('다른', '가장', '가까운', '및', '인근', '근처', '주변')
+    for m in re.finditer(r'((?:[가-힣A-Za-z]{2,}\s)?지하철역|[가-힣A-Za-z]{2,}역)(?:에서|까지|과|도|은|는)?[^.,\d]{0,14}?(\d[\d~\-]*\s*분)', body):
+        st = m.group(1)
+        if ' ' in st and st.split(' ')[0] in _STOP: st = st.split(' ', 1)[1]   # '다른 지하철역' → '지하철역', '와타나베도리 지하철역'은 유지
+        if st in seen: continue
+        seen.add(st); found.append(f'{st} {m.group(2).replace(" ", "")}')
+        if len(found) == 2: break
+    if found:
+        txt = ', '.join(found)
+    else:
+        first = re.split(r'(?<=[.요다])\s', body)[0]
+        txt = (first[:46] + '…') if len(first) > 47 else first
+    return txt + (' · 후기 갈림' if split else '')
+
+
 def period_label(h, mdata):
     """이 호텔 수치의 실제 기간 표기. 기본 '최근 1년'. 단 1년 넘은 리뷰가 하나도 없고(수집이 1년을 못 거슬러 감 —
     리뷰 많은 호텔의 수집 상한·신규 편입 등) 첫 리뷰가 1년 컷보다 늦으면 실제 개월 수('최근 6개월')로 표기.
@@ -2674,10 +2702,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 _it = _faq_by.get(_k)
                 if _it and _it.get('c'):
                     _fc = [str(x) for x in (_it.get('c') or [])[:3]]   # FAQ 칩 — 바깥 _chips(일행 버튼 목록)와 이름 분리
-                    if _k == 'access' and not any('역' in x for x in _fc):   # '도보 6분, 도보 10분'처럼 어느 역인지 없는 칩 → 답변 첫 문장
-                        _ans = re.sub(r'\*\*', '', _it.get('a') or '').strip()
-                        _ans = re.split(r'(?<=[.요다])\s', _ans)[0]
-                        _txt = (_ans[:46] + '…') if len(_ans) > 47 else _ans
+                    if _k == 'access' and not any(_has_station(x) for x in _fc):   # '도보 6분, 도보 10분'처럼 어느 역인지 없는 칩 → 답변에서 '역 이름 N분'을 뽑음
+                        _txt = _station_text(_it.get('a') or '')
                     else:
                         _txt = ', '.join(_fc)
                     _rows.append(('faq', E(WHO_FAQ_LABEL[_k]), E(_txt)))
