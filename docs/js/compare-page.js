@@ -122,8 +122,8 @@
         return c;
       }), { best: 'min', lab: '가장 낮음' })
       // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지. krw = 날짜별 표본의 중앙값
-      // 평일 가격이 없는 칸(주말만·정보 없음)은 '가장 저렴' 후보에서만 뺀다 — 한 곳이라도 없으면 강조가 통째로 사라지던 문제
-      + row('1박 가격', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, nb: h.krw == null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
+      // 평일 가격이 없는 칸(주말만·가격 정보 없음)은 '가장 저렴' 후보에서만 뺀다 — 한 곳이라도 없으면 강조가 통째로 사라지던 문제
+      + row('1박 가격', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, nb: h.krw == null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">가격 정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
       + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? glue(esc(h.st)) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
       + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + glue(esc(h.pd || '최근 1년')) + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
@@ -151,7 +151,7 @@
       + '<div class="cmp-grp"><div class="cmp-gt">리뷰로 확인한 실전 정보</div>' + g4 + '</div>'
       + '<p class="cmp-note">수치는 공개 리뷰를 분석한 참고용 통계예요 · <a href="./about">산출 방법</a></p>'
       + '<div class="cmp-cta" style="' + cols + '"><span class="cmp-h-sp" aria-hidden="true"></span>'
-      + H.map(function (h) { return '<a href="./hotels/' + h.id + '">분석 보기</a>'; }).join('')
+      + H.map(function (h) { return '<a href="./hotels/' + h.id + '">상세 보기</a>'; }).join('')
       + (canAdd ? '<button type="button" class="cmp-cta-add" data-add="1">+ 호텔 추가</button>' : '') + '</div>';
     root.innerHTML = html;
     root.classList.toggle('is-diff-only', diffOnly);
@@ -195,7 +195,7 @@
     return { sub: sub + ' · 실망 확률이 낮고 한국인 리뷰가 많은 순', ids: near.slice(0, 8) };
   }
   function pickRow(id) {
-    var h = D[id], meta = ['1박 ' + (h.pt || '정보 없음')];
+    var h = D[id], meta = [h.pt ? '1박 ' + h.pt : '가격 정보 없음'];
     if (h.st) meta.push(h.st);
     return '<li><button type="button" class="cp-item" data-pick="' + id + '">'
       + '<span class="cp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="" loading="lazy">' : '') + '</span>'

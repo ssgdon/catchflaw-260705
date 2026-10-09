@@ -60,7 +60,7 @@
 .map-wrap .map-legend .lg.none:before{background:var(--ink-3);}
 #main .home-map{padding:48px 20px 8px;overflow:hidden;}
 #main .home-map .map-more{margin:var(--sp-3) 0 0;}
-#main .home-map .map-more a{display:flex;align-items:center;justify-content:center;gap:6px;height:var(--h-btn);border-radius:var(--radius-btn);background:var(--surface);font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-2);}
+#main .home-map .map-more .map-more-btn{display:flex;align-items:center;justify-content:center;width:100%;height:var(--h-btn);border-radius:var(--radius-btn);background:var(--primary);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-inverse);white-space:nowrap;box-shadow:0 6px 16px rgb(141 91 253 / 28%);cursor:pointer;}   /* FEEDBACK-2610 §4: AI 추천 마법사 열기(.btn-airec 위임) */
 .map-pop{min-width:170px;font-family:inherit;}
 .map-pop b{display:block;margin:0 0 4px;font-size:var(--fs-caption);line-height:1.35;}
 .map-pop .pop-meta{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-2);}
@@ -346,7 +346,6 @@
 #cf-share-sheet .sh-item.kakao{background:var(--kakao);}
 
 /* ---------- 메인: CTA 강조 버튼 ---------- */
-#main .home-map .map-more a{background:var(--primary);color:var(--ink-inverse);font-weight:var(--fw-bold);box-shadow:0 6px 16px rgb(141 91 253 / 28%);}
 
 /* ---------- 메인: 인기 지역 자동완성 헤더 ---------- */
 #main .search-box .ac-box .ac-section{padding:10px 16px 4px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
@@ -641,11 +640,16 @@
 #detail .location .loc-station{margin:8px 0 0;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-2);}
 
 /* ---------- 홈: 지역·테마 컬렉션 칩 그리드 ---------- */
-#main .sec-collections{padding:0 var(--page-x);margin-top:var(--sp-8);}
+#main .sec-collections{padding:var(--section-y) var(--page-x);margin-top:var(--sp-8);border-top:1px solid var(--line-strong);}   /* 홈 마지막 블록(FEEDBACK-2610 §3) */
 #main .home-collections .head .title{line-height:1.35;font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
 #main .home-collections .head .desc{margin:6px 0 0;line-height:1.4;font-size:var(--fs-caption);color:var(--ink-2);}
-#main .hub-home-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--sp-4);}
-#main .hub-home-chips .hub-home-chip{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 16px;border-radius:38px;background:var(--surface);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);border:1px solid var(--line-strong);}
+/* 3줄(동네별·동행별·테마별): 라벨 + 칩 가로 스크롤 */
+#main .hub-home-row{display:flex;align-items:center;gap:var(--sp-3);margin-top:var(--sp-4);}
+#main .home-collections .head + .hub-home-row{margin-top:var(--head-gap);}
+#main .hub-home-row .hh-label{flex:none;width:52px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);white-space:nowrap;}
+#main .hub-home-chips{display:flex;flex-wrap:nowrap;gap:var(--sp-2);min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+#main .hub-home-chips::-webkit-scrollbar{display:none;}
+#main .hub-home-chips .hub-home-chip{flex:none;white-space:nowrap;display:inline-flex;align-items:center;height:var(--h-chip);padding:0 16px;border-radius:38px;background:var(--surface);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);border:1px solid var(--line-strong);}
 
 /* ---------- 상세: 소속 컬렉션 칩 ---------- */
 #detail .hub-detail-cols .det-col-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--sp-4);}
@@ -1220,26 +1224,36 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #main .home-vs{padding:var(--section-y) var(--page-x) var(--sp-6);}
 #main .home-vs .vs-list{display:flex;align-items:flex-start;gap:var(--sp-3);margin-top:var(--head-gap);padding-bottom:var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
 #main .home-vs .vs-list::-webkit-scrollbar{display:none;}
-#main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:block;padding:var(--sp-4) var(--sp-4) var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);color:var(--ink);}
+#main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);color:var(--ink);}
 #main .vs-card .vs-topic{display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);margin-bottom:var(--sp-3);border-radius:var(--radius-chip);background:var(--primary-soft);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);}
-/* 3열 표: 라벨 68px · A · B. 셀 자체에 선·여백을 주어 열이 흐트러지지 않게. 이긴 열(.is-win)은 색 면으로 묶음 */
-#main .vs-card .vs-grid{display:grid;grid-template-columns:68px minmax(0,1fr) minmax(0,1fr);column-gap:var(--sp-2);align-items:stretch;}
-#main .vs-card .vs-grid > *{display:flex;align-items:center;min-height:40px;padding:var(--sp-1) var(--sp-1);border-top:1px solid var(--line);font-size:var(--fs-caption);line-height:1.35;}
-#main .vs-card .vs-grid > :nth-child(-n+3){border-top:0;align-items:flex-end;min-height:0;padding-bottom:var(--sp-2);}
-#main .vs-card .vs-k{color:var(--ink-3);font-weight:var(--fw-medium);font-size:var(--fs-meta);}
-#main .vs-card .vs-k.vs-h{color:var(--ink-4);font-weight:var(--fw-bold);}
-#main .vs-card .vs-n{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}
-#main .vs-card .vs-v{color:var(--ink-2);font-variant-numeric:tabular-nums;}
+/* FEEDBACK-2610 §2.2: 사진 2장 + 가운데 겹친 VS 원 → 이름·평점 2열 → 행(A값 | 라벨 | B값) → 결론 상자. 색 면은 결론 상자에만(이긴 쪽은 글자색만) */
+#main .vs-card .vs-pics{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);}
+#main .vs-card .vs-pic{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius-btn);background:var(--surface);}
+#main .vs-card .vs-pic img{width:100%;height:100%;object-fit:cover;}
+#main .vs-card .vs-x{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--surface-card);box-shadow:0 2px 8px rgb(0 0 0 / 12%);font-size:var(--fs-meta);font-weight:var(--fw-display);color:var(--ink-3);}
+#main .vs-card .vs-heads{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin-top:var(--sp-3);}
+#main .vs-card .vs-col{display:flex;flex-direction:column;gap:var(--sp-1);min-width:0;}
+#main .vs-card .vs-col + .vs-col{align-items:flex-end;text-align:right;}
+#main .vs-card .vs-n{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.35;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}
+#main .vs-card .vs-g{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
+#main .vs-card .vs-g img{width:14px;height:14px;}
+#main .vs-card .vs-rows{margin-top:var(--sp-3);border-top:1px solid var(--line-strong);}
+#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:40px;padding:var(--sp-1) 0;}
+#main .vs-card .vs-r + .vs-r{border-top:1px solid var(--line);}
+#main .vs-card .vs-r > :last-child{text-align:right;}
+#main .vs-card .vs-k{text-align:center;font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);white-space:nowrap;}
+#main .vs-card .vs-v{font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);font-variant-numeric:tabular-nums;}
 #main .vs-card .vs-p{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--ink);}
-#main .vs-card .vs-none{color:var(--ink-4);}
-#main .vs-card .is-win{background:var(--primary-soft);}
-#main .vs-card .vs-n.is-win{color:var(--primary);border-radius:var(--radius-chip) var(--radius-chip) 0 0;}
-#main .vs-card .vs-p.is-win{color:var(--primary);}
-#main .vs-card .vs-grid > .is-win:nth-last-child(-n+2){border-radius:0 0 var(--radius-chip) var(--radius-chip);}
-#main .vs-card .vs-foot{display:flex;justify-content:space-between;align-items:center;gap:var(--sp-2);margin-top:var(--sp-2);padding-top:var(--sp-3);border-top:1px solid var(--line-strong);font-size:var(--fs-caption);line-height:1.4;}
-#main .vs-card .vs-verdict{font-weight:var(--fw-bold);color:var(--ink);}
-#main .vs-card .vs-more{flex:none;font-weight:var(--fw-bold);color:var(--primary);white-space:nowrap;}
-/* 카드 사유줄 — '한국인 리뷰 N건 · 평균의 절반 이하' (홈·상세 슬라이더·검색·허브 공통, 실망 확률 숫자는 배지에만) */
+#main .vs-card .vs-none{font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}
+#main .vs-card .is-win{color:var(--primary);}
+#main .vs-card .vs-box{display:flex;align-items:flex-start;gap:var(--sp-2);margin-top:var(--sp-3);padding:var(--sp-3);border-radius:var(--radius-btn);background:var(--primary-soft);}
+#main .vs-card .vs-box.is-bad{background:var(--danger-soft);}
+#main .vs-card .vs-ico{flex:none;display:flex;color:var(--primary);}
+#main .vs-card .vs-box.is-bad .vs-ico{color:var(--danger);}
+#main .vs-card .vs-bt{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.45;}
+#main .vs-card .vs-verdict{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
+#main .vs-card .vs-sub{font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-2);}
+/* 카드 사유줄 — '한국인 리뷰 N건 · 주로 소음 불만' (홈·상세 슬라이더·검색·허브 공통, 실망 확률 숫자는 배지에만) */
 #main .hotel-list .list .item .info .why,#detail .hotel .list .item .info .why{margin-top:4px;font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-medium);color:var(--ink-2);}
 #search .list .cont .why,#hub .hub-list .cont .why{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-medium);color:var(--ink-2);}
 /* 상세 '함께 고민하는 호텔' 나란히 비교 링크 */
@@ -1256,7 +1270,8 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #search .list .cont .stat .grade .txt, #hub .hub-list .cont .stat .grade .txt{font-size:var(--fs-caption);color:var(--ink-3);white-space:nowrap;}
 #search .list .cont .stat .si, #hub .hub-list .cont .stat .si{display:inline-flex;align-items:center;gap:var(--sp-2);}
 #search .list .cont .stat .dot, #hub .hub-list .cont .stat .dot{width:3px;height:3px;border-radius:50%;background:var(--ink-4);}
-#search .list .cont .stat .price, #hub .hub-list .cont .stat .price{white-space:nowrap;}
+#search .list .cont .stat .price, #hub .hub-list .cont .stat .price{white-space:normal;}
+#search .list .cont .stat .price b, #hub .hub-list .cont .stat .price b{white-space:nowrap;}   /* 주말 값(.pl-we)만 넘치면 통째로 다음 줄 */
 #search .list .cont .stat .price b, #hub .hub-list .cont .stat .price b{font-weight:var(--fw-bold);color:var(--ink-2);}   /* 구글 최저가는 참고치라 강조하지 않는다 */
 #search .list .r-foot, #hub .hub-list .r-foot{flex-basis:100%;display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-3);}
 #search .list .r-foot .r-tags{margin:0;flex:1 1 auto;}

@@ -62,7 +62,7 @@
       var band = h.band || null;
       var chip = h.p != null
         ? '<span class="ac-p" style="color:' + (BAND_COLOR[band] || '#8B9097') + '">실망 ' + h.p + '%</span>'
-        : '<span class="ac-p dim">수집중</span>';
+        : '<span class="ac-p dim">분석 준비 중</span>';
       var krn = (h.krn > 0) ? '<span class="ac-krn">한국인 리뷰 ' + h.krn.toLocaleString() + '건</span>' : '';
       return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'
         + '<span class="ac-main"><span class="ac-name">' + esc(h.t) + '</span>' + krn + '</span>'

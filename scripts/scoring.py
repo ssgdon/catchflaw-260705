@@ -39,7 +39,7 @@ MIN_REVIEWS = 30      # 점수 노출 최소 분석 리뷰 수
 # ── 표본 공정성 (2026-10) ──
 RANK_MIN = 100        # 최근 1년 리뷰 100개 미만 = '리뷰 적음': 순위·추천·랭킹 모수에서 제외, 배지는 확실한 위험만
 DANGER_SURE = 0.8     # 리뷰 적은 호텔은 '위험'일 확률이 80% 이상일 때만 위험 배지(아니면 '리뷰 적음')
-RANK_SURE = 0.8       # 순위는 80% 이상 확실할 때만 넉넉한 구간으로 ('상위 25% 안' 등) — 정밀 백분위는 오차가 커서 안 씀
+RANK_SURE = 0.8       # 순위는 80% 이상 확실할 때만 넉넉한 구간으로 ('상위 25% 이내' 등) — 정밀 백분위는 오차가 커서 안 씀
 BADGE_MARGIN = 0.1    # 배지 흔들림 방지: 지난 배지에서 바뀌려면 경계를 10% 넘어서야 함
 BAND_LABEL = {'safe': '양호', 'warning': '주의', 'danger': '위험', 'low': '리뷰 적음'}
 
@@ -132,7 +132,7 @@ def _zone(p, c, prev=None):
 def assess(hotels, city, prev=None, seed=7, draws=2000):
     """표본 공정성 판정 (2026-10). 결과를 hotels에 기록:
        badge = (band, 라벨) — 리뷰 100개 이상은 구간 배지(+흔들림 방지), 미만은 '리뷰 적음' 또는 확실한 '위험'
-       rank_tier = None | (side, '상위 25% 안' …) — 리뷰 100개 이상끼리 순위를 다시 뽑아 80% 이상 확실할 때만
+       rank_tier = None | (side, '상위 25% 이내' …) — 리뷰 100개 이상끼리 순위를 다시 뽑아 80% 이상 확실할 때만
        p_danger = 리뷰 적은 호텔이 위험 구간일 확률. 난수 시드 고정 → 같은 데이터면 같은 결과."""
     import random
     rnd = random.Random(seed)
@@ -162,8 +162,8 @@ def assess(hotels, city, prev=None, seed=7, draws=2000):
         for p in ranked:
             s = sorted(sims[p])
             hi, lo = s[int(draws * RANK_SURE)], s[int(draws * (1 - RANK_SURE))]
-            t = (('top', '상위 10% 안') if hi <= 10 else ('top', '상위 25% 안') if hi <= 25 else
-                 ('bottom', '하위 10% 안') if lo >= 90 else ('bottom', '하위 25% 안') if lo >= 75 else None)
+            t = (('top', '상위 10% 이내') if hi <= 10 else ('top', '상위 25% 이내') if hi <= 25 else
+                 ('bottom', '하위 10% 이내') if lo >= 90 else ('bottom', '하위 25% 이내') if lo >= 75 else None)
             hotels[p]['rank_tier'] = t
 
 def compute(data_dir, prev_badges=None):

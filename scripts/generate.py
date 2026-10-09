@@ -30,10 +30,11 @@ SUB_PHRASE = {
 }
 assert set(SUB_PHRASE) == {s for v in SUBS.values() for s in v}, 'SUB_PHRASE ↔ scoring.SUBS 불일치'
 # P3 누구와 가세요(1단계): 일행 구성별로 관련 깊은 소분류·FAQ 토픽만 모아 보여줌. 구성별 실망 확률은 동행 추출(파이프라인) 후.
+# FEEDBACK-2610 §11 개정: 혼자=객실 보안(밤길과 함께 1인의 핵심), 커플=침대·베개, 친구=온수·수압. 동행 허브(best/solo·couple·group)도 이 소분류를 쓴다.
 WHO_GROUPS = [
-    ('solo', '혼자', ['대기·지연', '동네 분위기', '역 거리'], ['luggage', 'access']),
-    ('two', '2인·커플', ['좁은 방', '실내 온도', '실내 소음'], ['beds']),
-    ('group', '친구 3인 이상', ['좁은 방', '실내 소음', '낡음·고장'], ['beds', 'family']),
+    ('solo', '혼자', ['객실 보안', '동네 분위기', '역 거리'], ['luggage', 'access']),
+    ('two', '2인·커플', ['좁은 방', '침대·베개', '실내 소음'], ['beds']),
+    ('group', '친구 3인 이상', ['좁은 방', '침대·베개', '온수·수압'], ['beds', 'family']),
     ('kids', '아이 동반', ['머리카락·얼룩', '벌레', '좁은 방'], ['family', 'beds']),
 ]
 WHO_FAQ_LABEL = {'luggage': '짐 보관', 'access': '역까지', 'beds': '침대 구성', 'family': '아이 동반'}
@@ -601,16 +602,44 @@ def kr_n_map(kr_stats):
         except (TypeError, ValueError): pass
     return out
 
-def avg_word(p_crit):
-    """실망 확률의 도시 평균 대비 말 표현 (HOME-CONCEPT §2.2 — 카드에선 숫자 대신 말로)."""
-    c = CITY.get('crit') or 0
-    if not c: return ''
-    r = p_crit / c
-    if r <= 0.55: return '평균의 절반 이하'
-    if r <= 0.8: return '평균보다 낮아요'
-    if r < 1.2: return '평균 수준'
-    if r < 1.5: return '평균보다 높아요'
-    return f'평균의 {r:.1f}배'
+def man_txt(krw):
+    """원화 → '약 34만원' (표시 만원 반올림). None이면 ''."""
+    return f'약 {max(1, round(krw / 10_000))}만원' if krw else ''
+
+def price_line_html(meta, weekend_first=False):
+    """카드 가격 줄 정본 (FEEDBACK-2610 §1): '1박 <b>평일 약 13만원</b> <span class="seg">· 주말 약 34만원</span>'.
+    평일만 있으면 평일만, 주말만('주말 약 …')이면 그대로. 근거 없으면 ''. 주말 값은 굵게 안 함(.pl-we, --ink-2).
+    홈 카드·허브 카드·비교 카드가 공용, 검색 statLine(JS)은 같은 규칙(pt·ptw)."""
+    pt = meta.get('price_txt') or ''
+    if not pt: return ''
+    we = man_txt(meta.get('price_we')) if meta.get('price_we') and pt.startswith('평일') else ''
+    if not we: return f'1박 <b>{E(pt)}</b>'
+    return f'1박 <b>{E(pt)}</b> <span class="seg pl-we">· 주말 {we}</span>'
+
+def area_tag(meta):
+    """지역 태그 (FEEDBACK-2610 §1): AREAS 반경 안에 드는 지역 중 중심이 가장 가까운 곳의 짧은 이름
+    (하카타역·텐진·나카스·기온). 반경 밖이면 ''."""
+    lat, lng = meta.get('latitude'), meta.get('longitude')
+    if not lat or not lng: return ''
+    best = None
+    for a in AREAS:
+        d = haversine_km(float(lat), float(lng), a['lat'], a['lng'])
+        if d <= a['r'] and (best is None or d < best[0]):
+            best = (d, a['ko'].split('·')[0])
+    return best[1] if best else ''
+
+def station_short(meta):
+    """카드용 역 도보 문구 '텐진역 도보 3분'. 도보 30분 초과·좌표 없음이면 ''."""
+    ns = nearest_station(meta.get('latitude'), meta.get('longitude'))
+    return f'{ns[0]} 도보 {ns[1]}분' if ns else ''
+
+def area_line_html(meta, station=None):
+    """카드 지역 줄: '<span class="area-tag">텐진</span><span class="seg">텐진역 도보 3분</span>'.
+    태그도 역도 없으면 '' (줄 생략). station에 다른 문구(허브의 '도보 약 7분(직선 450m)')를 넘길 수 있다."""
+    tag = area_tag(meta)
+    st = station_short(meta) if station is None else station
+    if not tag and not st: return ''
+    return (f'<span class="area-tag">{E(tag)}</span>' if tag else '') + (f'<span class="seg">{E(st)}</span>' if st else '')
 
 def worst_cat_of(h):
     """주의·위험 구간인 최다 불만 대분류(점수형 6개 중). 없으면 None."""
@@ -618,8 +647,8 @@ def worst_cat_of(h):
     return c if h['cats'][c]['band'] in ('warning', 'danger') else None
 
 def why_line(pid, h, cls='why'):
-    """카드 사유줄 (HOME-CONCEPT §2.2): '한국인 리뷰 N건 · 평균의 절반 이하' 또는 평균 이상이면 '· 주로 소음 불만'.
-       실망 확률 숫자는 배지가 이미 보여주므로 중복하지 않는다. 최대 2항목(240px 카드에서 2줄 이내)."""
+    """카드 사유줄 (HOME-CONCEPT §2.2 · FEEDBACK-2610 §1): '한국인 리뷰 N건'(N≥10) + 평균의 1.2배 이상이면 '주로 소음 불만'.
+       평균 대비 말('평균의 절반 이하' 등)은 쓰지 않는다(사용자 피드백). 실망 확률 숫자는 배지가 이미 보여준다."""
     if not h.get('scored'): return ''
     parts = []
     n = KRN.get(pid, 0)
@@ -627,9 +656,6 @@ def why_line(pid, h, cls='why'):
     c = CITY.get('crit') or 0
     wc = worst_cat_of(h) if (c and h['p_crit'] / c >= 1.2) else None
     if wc: parts.append(f'<span class="seg">주로 {E(cat_ko(wc))} 불만</span>')
-    else:
-        w = avg_word(h['p_crit'])
-        if w: parts.append(f'<span class="seg">{w}</span>')
     if not parts: return ''
     return f'<div class="{cls}">{DSEP.join(parts[:2])}</div>'
 
@@ -659,11 +685,12 @@ def resolve_pairs(hotels_meta, H):
     return out
 
 def vs_verdict(pa, pb, hotels_meta, H):
-    """비교 카드 결론 (HOME-CONCEPT §2.1): 차이 < 평균의 0.3배면 '비슷해요', 1.5배 이상이면 'N배 낮아요'. (문구, 낮은 쪽 pid)"""
+    """비교 카드 결론 1줄 (HOME-CONCEPT §2.1 · FEEDBACK-2610 §2.2): 둘 다 위험 → '두 곳 다 평균보다 실망이 잦아요',
+    차이 < 평균의 0.3배면 '비슷해요', 1.5배 이상이면 'N배 낮아요'. 반환 (문구 HTML, 낮은 쪽 pid|None)."""
     a, b = H[pa]['p_crit'], H[pb]['p_crit']
     c = CITY.get('crit') or 1e-9
     if H[pa]['badge'][0] == 'danger' and H[pb]['badge'][0] == 'danger':
-        return '두 곳 다 평균보다 불만이 많아요', None
+        return '두 곳 다 평균보다 실망이 잦아요', None
     if abs(a - b) < 0.3 * c:
         return '두 곳 실망 확률이 비슷해요', None
     lo = pa if a <= b else pb
@@ -672,6 +699,32 @@ def vs_verdict(pa, pb, hotels_meta, H):
     if r >= 1.5:
         return f'<span class="seg">{name}{josa_iga(name)}</span> <span class="seg">실망 확률 {r:.1f}배 낮아요</span>', lo
     return f'<span class="seg">{name}{josa_iga(name)}</span> <span class="seg">실망 확률이 낮아요</span>', lo
+
+def vs_sub(pa, pb, win, hotels_meta, H):
+    """비교 카드 결론 상자의 보조 문장과 상자 톤 (FEEDBACK-2610 §2.2). 반환 (문장 HTML, 'ok'|'bad')."""
+    c = CITY.get('crit') or 1e-9
+    ha, hb = H[pa], H[pb]
+    def nm(p): return E(short_name(hotels_meta[p]['title']))
+    def worst(p): return worst_cat_of(H[p])
+    if ha['badge'][0] == 'danger' and hb['badge'][0] == 'danger':
+        cats = [x for x in dict.fromkeys([worst(pa), worst(pb)]) if x]
+        return (f'주로 {"·".join(E(cat_ko(x)) for x in cats)} 불만이에요' if cats else ''), 'bad'
+    if win is None:                                    # 차이가 평균의 0.3배 미만 — 비슷해요
+        if ha['p_crit'] <= SAFE_MULT * c and hb['p_crit'] <= SAFE_MULT * c:
+            return '둘 다 평균보다 실망이 적어요', 'ok'
+        if ha['p_crit'] >= 1.2 * c and hb['p_crit'] >= 1.2 * c:   # 가정: 둘 다 평균보다 높으면 '평균 수준'이라 쓰지 않는다
+            return '둘 다 평균보다 실망이 많은 편이에요', 'ok'
+        return f'둘 다 {CITY["ko"]} 평균 수준이에요', 'ok'
+    lose = pb if win == pa else pa
+    ln, wc = nm(lose), worst(lose)
+    if H[lose]['badge'][0] == 'danger':                # 한쪽만 위험 — 상자는 이긴 쪽 기준(ok), 진 쪽 주의 안내
+        return (f'<span class="seg">{ln}{josa_eun(ln)} 주의가 필요해요</span>'
+                + (f'{DSEP}<span class="seg">주로 {E(cat_ko(wc))} 불만</span>' if wc else '')), 'ok'
+    if wc:
+        return f'<span class="seg">{ln}{josa_eun(ln)}</span> <span class="seg">주로 {E(cat_ko(wc))} 불만이에요</span>', 'ok'
+    if H[lose]['p_crit'] <= SAFE_MULT * c:
+        return f'<span class="seg">{ln}도</span> <span class="seg">평균보다 실망이 적어요</span>', 'ok'
+    return f'<span class="seg">{ln}도</span> <span class="seg">평균 수준이에요</span>', 'ok'
 
 def vs_topic(pa, pb, hotels_meta):
     """비교 카드 주제 한 줄: 두 호텔의 지역(같으면 '텐진', 다르면 '하카타역 vs 텐진') + 같은 가격대면 밴드."""
@@ -688,28 +741,48 @@ def vs_topic(pa, pb, hotels_meta):
     parts = [x for x in (area, band) if x]
     return (' · '.join(parts) + ' 숙소') if parts else '숙소 비교'
 
+VS_ICON_OK = ('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/>'
+              '<path d="m6 10.2 2.6 2.6L14 7.4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+VS_ICON_BAD = ('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/>'
+               '<path d="M10 5.5v5.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/><circle cx="10" cy="14.3" r="1.3" fill="white"/></svg>')
+
 def vs_card(pa, pb, hotels_meta, H, depth=0):
-    """홈 비교 카드 1장: 주제 · 이름 2개 · 실망 확률 · 한국인 리뷰 · 1박 가격 · 결론 → compare 프리셋 링크."""
+    """홈 비교 카드 1장 (FEEDBACK-2610 §2.2): 주제 칩 · 사진 2장 + VS · 이름·평점 2열 · 실망 확률 / 한국인 리뷰 / 1박 평일 행
+    (A값 | 라벨 | B값) · 결론 상자(아이콘 + 굵은 결론 + 보조 문장) → compare 프리셋 링크. 색 면은 결론 상자에만."""
     root = '../' * depth
     verdict, win = vs_verdict(pa, pb, hotels_meta, H)
-    def cell(p, kind):
+    sub, tone = vs_sub(pa, pb, win, hotels_meta, H)
+    def w(p): return ' is-win' if p == win else ''
+    def pic(p):
+        m = hotels_meta[p]
+        return f'<span class="vs-pic"><img src="{img_path(p, m, depth)}" alt="{E(m["title"])}" width="300" height="225" loading="lazy"></span>'
+    def col(p):
+        m = hotels_meta[p]
+        return (f'<span class="vs-col"><span class="vs-n{w(p)}">{E(short_name(m["title"]))}</span>'
+                f'<span class="vs-g"><img src="{root}img/star.svg" alt="" width="14" height="14">{fmt_score(m.get("total_score"))} ({m.get("reviews_count") or 0:,})</span></span>')
+    def val(p, kind):
         h, m = H[p], hotels_meta[p]
-        w = ' is-win' if p == win else ''
-        if kind == 'name': return f'<span class="vs-n{w}">{E(short_name(m["title"]))}</span>'
-        if kind == 'p': return f'<b class="vs-v vs-p{w}">{pct(h["p_crit"])}%</b>'
-        if kind == 'kr': return (f'<span class="vs-v{w}">{KRN.get(p, 0)}건</span>' if KRN.get(p, 0) >= 10
-                                 else f'<span class="vs-v vs-none{w}">10건 미만</span>')
-        return f'<span class="vs-v{w}">{E(m["price_txt"])}</span>' if m.get('price_txt') else f'<span class="vs-v vs-none{w}">정보 없음</span>'
-    # 3열 표(라벨 · A · B): 이름과 값이 같은 열에 정렬되고, 실망 확률이 낮은 쪽 열은 색 면으로 묶인다
+        if kind == 'p': return f'<b class="vs-v vs-p{w(p)}">{pct(h["p_crit"])}%</b>'
+        if kind == 'kr':
+            n = KRN.get(p, 0)
+            return f'<span class="vs-v{w(p)}">{n}건</span>' if n >= 10 else '<span class="vs-v vs-none">리뷰 10건 미만</span>'
+        pt = m.get('price_txt') or ''
+        if not pt: return '<span class="vs-v vs-none">가격 정보 없음</span>'
+        return f'<span class="vs-v{w(p)}">{E(pt[3:] if pt.startswith("평일 ") else pt)}</span>'
+    def row(label, kind):
+        return f'<div class="vs-r">{val(pa, kind)}<span class="vs-k">{label}</span>{val(pb, kind)}</div>'
+    box_cls = 'is-bad' if tone == 'bad' else 'is-ok'
+    icon = VS_ICON_BAD if tone == 'bad' else VS_ICON_OK
     return f'''<a class="vs-card" href="{root}compare?ids={pa},{pb}">
         <div class="vs-topic">{E(vs_topic(pa, pb, hotels_meta))}</div>
-        <div class="vs-grid">
-            <span class="vs-k vs-h">vs</span>{cell(pa, 'name')}{cell(pb, 'name')}
-            <span class="vs-k">실망 확률</span>{cell(pa, 'p')}{cell(pb, 'p')}
-            <span class="vs-k">한국인 리뷰</span>{cell(pa, 'kr')}{cell(pb, 'kr')}
-            <span class="vs-k">1박</span>{cell(pa, 'pr')}{cell(pb, 'pr')}
+        <div class="vs-pics">{pic(pa)}<span class="vs-x">VS</span>{pic(pb)}</div>
+        <div class="vs-heads">{col(pa)}{col(pb)}</div>
+        <div class="vs-rows">
+            {row('실망 확률', 'p')}
+            {row('한국인 리뷰', 'kr')}
+            {row('1박 평일', 'pr')}
         </div>
-        <div class="vs-foot"><span class="vs-verdict">{verdict}</span><span class="vs-more">비교 →</span></div>
+        <div class="vs-box {box_cls}"><span class="vs-ico">{icon}</span><span class="vs-bt"><b class="vs-verdict">{verdict}</b>{f'<span class="vs-sub">{sub}</span>' if sub else ''}</span></div>
     </a>'''
 
 def stars_label(meta):
@@ -719,7 +792,7 @@ def stars_label(meta):
 
 def badge_html(h):
     if not h['scored']:
-        return '<div class="badge-item badge-collect">리뷰 수집중</div>'
+        return '<div class="badge-item badge-collect">분석 준비 중</div>'
     band, label = h['badge']
     return (f'<div class="badge-item badge-{band}">{label}</div>'
             f'<div class="badge-item badge-down">실망 확률 {pct(h["p_crit"])}%</div>')
@@ -740,6 +813,8 @@ def hotel_card(pid, meta, h, depth=0, extra=''):
     """extra: info 하단 추가 HTML (상세 '약점 맞춤 대안'의 비교 줄 등). 기본 빈값 = 기존 카드 그대로."""
     p = '../' * depth
     star_w = round(float(meta.get('total_score') or 0) / 5 * 100)
+    al = area_line_html(meta)
+    pl = price_line_html(meta)
     return f'''<li class="swiper-slide">
         <a href="{p}hotels/{pid}" class="item">
             <div class="thumb">
@@ -748,10 +823,10 @@ def hotel_card(pid, meta, h, depth=0, extra=''):
             </div>
             <div class="info">
                 <h3 class="name">{E(meta['title'])}</h3>
-                <div class="eng">{E(meta.get('sub_title') or CITY['en'])}</div>
+                {f'<div class="area-line">{al}</div>' if al else ''}
                 <div class="star"><i style="width:{star_w}%"></i></div>
-                <div class="text">구글 {fmt_score(meta.get('total_score'))} · 리뷰 {meta.get('reviews_count') or 0:,}개</div>
-                <div class="price-line">{('1박 <b>' + meta['price_txt'] + '</b>') if meta.get('price_txt') else '&nbsp;'}</div>
+                <div class="text">구글 평점 {fmt_score(meta.get('total_score'))} ({meta.get('reviews_count') or 0:,})</div>
+                <div class="price-line">{pl or '&nbsp;'}</div>
                 {why_line(pid, h)}
                 {extra}
             </div>
@@ -800,18 +875,20 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                 f'추천순 · 2인 1박 평일 가격({CITY["price_seen"]} 확인)', pids))
     price_sliders = ''.join(price_parts)
 
-    # 지역·테마별 컬렉션 칩 그리드 (생성된 컬렉션만 노출 — HUB §3-d)
+    # 동네·동행·테마별 허브 칩 (FEEDBACK-2610 §3): 3줄(라벨 + 가로 스크롤 칩), 홈 마지막 블록. 생성된 허브만 노출 — 순서는 COLLECTIONS
     col_chips = ''
     if col_index:
-        # 수요 순(카페 글 1,000건: 하카타 160·텐진 131·가족 131·가격 62·나카스 40) — HOME-CONCEPT §2 블록 4
-        demand = ['area/hakata', 'area/tenjin', 'best/family', 'best/value', 'area/nakasu', 'best/luxury', 'best/capsule', 'best/pool']
-        ordered = sorted(col_index, key=lambda sn: demand.index(sn[0]) if sn[0] in demand else 99)
-        chips = ''.join(f'<a class="hub-home-chip" href="./{E(slug)}">{E(name)}</a>' for slug, name in ordered)
+        rows = []
+        for row, label in COL_ROWS:
+            items = [(slug, name) for slug, name in col_index if COL_BY_SLUG.get(slug, {}).get('row') == row]
+            if not items: continue
+            chips = ''.join(f'<a class="hub-home-chip" href="./{E(slug)}">{E(COL_BY_SLUG[slug].get("chip") or name)}</a>' for slug, name in items)
+            rows.append(f'<div class="hub-home-row"><span class="hh-label">{label}</span><div class="hub-home-chips">{chips}</div></div>')
         col_chips = f'''<article class="section sec-collections">
                 <div class="home-collections init">
                     <div class="head"><div class="title"><em>동네</em>·<em>동행</em>별로 보기</div>
-                    <div class="desc">하카타·텐진·가족·가성비 추천순</div></div>
-                    <div class="hub-home-chips">{chips}</div>
+                    <div class="desc">같은 조건끼리 추천순으로 모았어요</div></div>
+                    {''.join(rows)}
                 </div>
             </article>'''
 
@@ -827,7 +904,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     hero_chips = ''.join(f'<a class="hero-chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
     hero_chips_html = (f'<div class="hero-chips"><span class="hc-label">많이 찾는 호텔</span>{hero_chips}</div>'
                        if hero_chips else '')
-    gems_slider = slider('<em>조용히</em> 좋은 곳', '한국인 리뷰는 적지만 실망 확률 낮고 평점 높아요', gems) if len(gems) >= 3 else ''
+    gems_slider = slider('<em>숨겨진 보석</em> 같은 곳', '한국인 리뷰는 적지만 실망 확률 낮고 평점 높아요', gems) if len(gems) >= 3 else ''
 
     n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
     home_ld = _jsonld({'@context':'https://schema.org','@type':'WebSite','name':'캐치플로','alternateName':'CATCHFLAW',
@@ -838,7 +915,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드립니다. '
                     '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
-    <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
+    <link rel="preload" as="image" href="./img/home_bg.jpg" media="(max-width:1099px)" fetchpriority="high">
+    <link rel="preload" as="image" href="./img/home_bg_pc.jpg" media="(min-width:1100px)" fetchpriority="high">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False) + f'''
     <main id="container">
         <section id="main">
@@ -867,17 +945,16 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-2 sec-rec">
                 {slider('<em>한국인</em>이 찾고 <em>실망</em>은 적은 숙소', '한국인 리뷰 많고 평점 높고 실망 확률 낮은 순', best)}
             </article>
-            {col_chips}
             <article class="section sec-map">
                 <div class="home-map init">
                     <div class="head"><div class="title"><em>지도</em>로 한눈에</div>
                     <div class="desc">마커 색 = 등급 · 누르면 실망 확률</div></div>
                     <div class="map-wrap"><div id="map"></div>
                         <div class="map-legend">
-                            <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
+                            <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">준비 중</span>
                         </div>
                     </div>
-                    <div class="map-more"><a href="./search">가격·지역·등급으로 딱 맞는 호텔 찾기 →</a></div>
+                    <div class="map-more"><button type="button" class="map-more-btn btn-airec">딱 맞는 호텔 찾기</button></div>
                 </div>
             </article>
             <article class="section sec-2">
@@ -893,6 +970,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     }});
                 </script>
             </article>
+            {col_chips}
         </section>
         <section id="float">
             <div class="float">
@@ -920,11 +998,11 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             var mk = L.circleMarker([h.lat, h.lng], {{radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95}}).addTo(map);
             var chip = h.p != null
                 ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
-                : '<span class="pop-p" style="background:var(--ink-3)">리뷰 수집중</span>';
+                : '<span class="pop-p" style="background:var(--ink-3)">분석 준비 중</span>';
             mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
                 + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
                 + (h.pt ? ' · 1박 ' + h.pt : '') + '</div>' + chip
-                + '<a class="pop-link" href="./hotels/' + h.id + '">캐치플로 분석 보기 →</a></div>');
+                + '<a class="pop-link" href="./hotels/' + h.id + '">상세 보기 →</a></div>');
             pts.push([h.lat, h.lng]);
         }});
         // 화면 맞춤은 도심 기준: 중앙값에서 5km 밖 외곽 호텔은 맞춤에서만 제외(마커는 그대로) — 검색 지도와 동일
@@ -1131,10 +1209,9 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None):
 def build_compare():
     """P5 비교 페이지 — ?ids=a,b,c(공유 URL) 또는 localStorage 비교함. 개인화·동적이라 noindex·sitemap 제외."""
     return head('호텔 비교 | 캐치플로', depth=0, extra_head='<meta name="robots" content="noindex">').replace(
-        '<body>', '<body data-page="compare">') + f'''
+        '<body>', '<body data-page="compare">') + site_header(0, back='./search') + f'''
     <main id="container">
         <section id="cmp">
-            {site_header(0, back='./search')}
             <div id="cmp-root"><div class="cmp-empty">불러오는 중…</div></div>
         </section>
     </main>
@@ -1164,11 +1241,14 @@ def build_search_index(hotels_meta, H):
             'lr': bool(h['scored'] and not h['ranked']),    # 리뷰 적음 → 실망 확률·안심순 정렬에서 뒤로
             'p': pct(h['p_crit']) if h['scored'] else None,
             'band': h['badge'][0] if h['scored'] else None,
-            'label': h['badge'][1] if h['scored'] else '리뷰 수집중',
+            'label': h['badge'][1] if h['scored'] else '분석 준비 중',
             'lat': float(meta['latitude']) if meta.get('latitude') else None,
             'lng': float(meta['longitude']) if meta.get('longitude') else None,
             'pb': meta['band'][0] if meta.get('band') else None,
             'pt': meta.get('price_txt') or '',
+            'ptw': man_txt(meta.get('price_we')) if (meta.get('price_txt') or '').startswith('평일') else '',   # 주말 '약 34만원'
+            'ar': area_tag(meta),                # 지역 태그(하카타역·텐진·나카스·기온)
+            'st': station_short(meta),           # '텐진역 도보 3분'
             'krw': meta.get('krw'),
             'rs': round(REC.get(pid, 0.0), 3),   # 추천순 정렬값 (화면 비노출)
             'krn': KRN.get(pid, 0),              # 한국인 리뷰 수(1년) — 사유줄
@@ -1257,7 +1337,7 @@ def build_search(city_avg_pct):
             </div>
             <div class="map-wrap is-collapsed" id="map-wrap"><div id="map"></div>
                 <div class="map-legend">
-                    <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">수집중</span>
+                    <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">준비 중</span>
                 </div>
             </div>
             <div class="map-hint is-collapsed" id="map-hint"></div>
@@ -1352,11 +1432,11 @@ def build_search(city_avg_pct):
         function popupHtml(h){{
             var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
             var chip = h.p != null ? '<span class="pop-p" style="background:'+col+'">실망 확률 '+h.p+'%</span>'
-                                   : '<span class="pop-p" style="background:var(--ink-3)">리뷰 수집중</span>';
+                                   : '<span class="pop-p" style="background:var(--ink-3)">분석 준비 중</span>';
             return '<div class="map-pop"><b>'+h.name+'</b>'
                 + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'
                 + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
-                + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>';
+                + '<a class="pop-link" href="./hotels/'+h.id+'">상세 보기 →</a></div>';
         }}
         // 화면 맞춤용 좌표: 중앙값에서 5km 밖 외곽 호텔(시카노시마 등)은 맞춤에서만 제외 — 도심이 작게 보이는 문제 방지
         function fitPts(list){{
@@ -1404,7 +1484,7 @@ def build_search(city_avg_pct):
 
         // ───── 리스트 렌더 ─────
         function bandChip(h){{
-            if(!h.scored) return '<span class="badge-item badge-collect">리뷰 수집중</span>';
+            if(!h.scored) return '<span class="badge-item badge-collect">분석 준비 중</span>';
             return '<span class="badge-item badge-'+h.band+'">'+h.label+'</span>'
                  + '<span class="badge-item badge-down">실망 확률 '+h.p+'%</span>';
         }}
@@ -1427,10 +1507,6 @@ def build_search(city_avg_pct):
                 if (best && h.cb && (h.cb[best]==='warning' || h.cb[best]==='danger')) wc = best;
             }}
             if (wc) parts.push('<span class="seg">주로 '+wc+' 불만</span>');
-            else if (CITY_AVG){{
-                var w = r <= 0.55 ? '평균의 절반 이하' : r <= 0.8 ? '평균보다 낮아요' : r < 1.2 ? '평균 수준' : r < 1.5 ? '평균보다 높아요' : '평균의 '+r.toFixed(1)+'배';
-                parts.push('<span class="seg">'+w+'</span>');
-            }}
             return parts.length ? '<div class="why">'+parts.slice(0,2).join(WHY_SEP)+'</div>' : '';
         }}
         function tagsHtml(h){{  // P6 리뷰 기반 태그(빌드 시 실측 산출). 좋은 쪽/나쁜 쪽이 색으로만 갈리지 않게 나쁜 쪽엔 '주의 ·'
@@ -1440,8 +1516,16 @@ def build_search(city_avg_pct):
         function statLine(h){{  // 평점 · 성급 · 1박 가격 한 줄 (도시명 'JP'는 후쿠오카 전용 사이트라 생략)
             var a = ['<span class="grade"><span class="ico"><img src="./img/star.svg" alt=""></span><span class="num">'+(h.g?h.g.toFixed(1):'-')+'</span><span class="txt">('+h.rc.toLocaleString()+')</span></span>'];
             if (h.stars) a.push('<span class="si"><span class="dot"></span><span>'+h.stars+'</span></span>');   // 구분점은 뒤 항목에 붙여 줄 끝에 남지 않게
-            if (h.pt) a.push('<span class="si"><span class="dot"></span><span class="price">1박 <b>'+h.pt+'</b></span></span>');
+            if (h.pt) a.push('<span class="si"><span class="dot"></span><span class="price">'+priceHtml(h)+'</span></span>');
             return '<div class="stat">'+a.join('')+'</div>';
+        }}
+        function priceHtml(h){{  // generate.price_line_html과 같은 규칙: 평일 굵게 + 주말(굵게 안 함, 넘치면 통째로 다음 줄)
+            if (!h.pt) return '';
+            return '1박 <b>'+h.pt+'</b>' + (h.ptw ? ' <span class="seg pl-we">· 주말 '+h.ptw+'</span>' : '');
+        }}
+        function areaHtml(h){{  // 지역 태그 + 역 도보 (generate.area_line_html과 같은 줄)
+            if (!h.ar && !h.st) return '';
+            return '<div class="area-line">'+(h.ar ? '<span class="area-tag">'+h.ar+'</span>' : '')+(h.st ? '<span class="seg">'+h.st+'</span>' : '')+'</div>';
         }}
         function footHtml(h){{  // 태그 + 비교 담기: 오른쪽 칸이 아니라 카드 아래 전체 폭
             var t = tagsHtml(h), c = cmpBtn(h);
@@ -1461,6 +1545,7 @@ def build_search(city_avg_pct):
                 + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
                 + '<div class="badge">'+bandChip(h)+'</div>'
                 + statLine(h)
+                + areaHtml(h)
                 + '</div>'
                 + whyHtml(h)
                 + catChip(h)
@@ -1721,7 +1806,7 @@ def build_search(city_avg_pct):
                 var mk = L.marker([h.lat,h.lng], {{icon:icon, zIndexOffset: (11-rank)*10}});
                 mk.bindPopup('<div class="map-pop"><b>'+rank+'위'+' '+h.name+'</b>'
                     + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'+(h.pt?' · 1박 '+h.pt:'')+'</div>'
-                    + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>');
+                    + '<a class="pop-link" href="./hotels/'+h.id+'">상세 보기 →</a></div>');
                 markers.addLayer(mk); pts.push([h.lat,h.lng]);
             }});
             var a = recArea ? AREAS.filter(function(x){{return x.code===recArea;}})[0] : null;
@@ -1765,7 +1850,7 @@ def build_search(city_avg_pct):
                 if (recBud) relax += '<a class="notice-btn" href="'+recUrl({{bud:''}})+'">예산 넓혀 다시 보기</a> ';
                 if (recArea) relax += '<a class="notice-btn" href="'+recUrl({{area:''}})+'">지역 넓혀 다시 보기</a>';
                 $('#results').html('<div class="notice-card" style="margin:16px 0">'
-                    + '<div class="notice-tit">조건에 딱 맞는 곳이 '+cands.length+'곳뿐이에요</div>'
+                    + '<div class="notice-tit">조건에 맞는 곳이 '+cands.length+'곳뿐이에요</div>'
                     + '<div class="notice-txt">예산이나 지역을 넓히면 더 보여드릴 수 있어요</div>'
                     + '<div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'+relax+'</div></div>');
             }} else {{
@@ -1802,7 +1887,7 @@ def build_search(city_avg_pct):
 def gauge_html(p, city_crit, tone='safe', tier=None):
     """실망 확률 게이지 — 값 축(2026-10 표본 공정성). 마커 = 도시평균 대비 위치: 평균 50%, 3배 100%(항목 점수와 같은 눈금).
     예전 백분위 축은 정밀 순위처럼 보였지만 순위 오차가 ±20~30%p라 값 축으로 바꿨다.
-    말풍선 = 순위 구간('상위 25% 안', 확실할 때만) 또는 평균 대비 문장."""
+    말풍선 = 순위 구간('상위 25% 이내', 확실할 때만) 또는 평균 대비 문장."""
     r = (p / city_crit) if city_crit else 1.0
     pos = min(max(50.0 * r if r <= 1 else 50.0 + 25.0 * (r - 1), 0.0), 100.0)
     # 말풍선(순위·평균 대비)은 헤더의 기준 줄(v-sub)로 옮겨 게이지는 점 하나 + 평균 선만 (2026-10 카피 개편)
@@ -2646,11 +2731,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             v_head, v_tone = f'{CITY["ko"]} 평균 수준이에요', 'warning'
         else:
             v_head, v_tone = '평균보다 실망이 잦아요', 'warning'
-        # 순위 구간: '상위 25% 안' → '실망 적은 호텔 25% 안' (낮을수록 좋다는 방향을 말에 넣는다)
+        # 순위 구간: '상위 25% 이내' → '실망 적은 호텔 상위 25% 이내' (낮을수록 좋다는 방향을 말에 넣는다, FEEDBACK-2610 §10)
         _tier = h.get('rank_tier')
         tier_txt = ''
         if _tier:
-            tier_txt = ('실망 적은 호텔 ' if _tier[0] == 'top' else '실망 많은 호텔 ') + _tier[1].replace('상위 ', '').replace('하위 ', '')
+            tier_txt = '실망 적은 호텔 ' + _tier[1]
         tier_html = f'<span class="tier-badge is-{v_tone}">{E(tier_txt)}</span>' if tier_txt else ''
         v_sub_html = f'<div class="v-sub">{CITY["ko"]} 평균 {avg}%{tier_html}</div>'
         # 근거 1: 글 리뷰 N건 중 실망 리뷰 M건 (분모 = 글 리뷰: 실망 리뷰는 글에서만 셀 수 있음) → 리스크 상세로
@@ -3154,7 +3239,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                      f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}">{E(v_head)}</div>'
                      f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{tier_html}</div>')
     else:
-        _top_html = (f'<div class="ps-eyebrow">실망 확률</div><div class="ps-collect">리뷰 수집중</div>'
+        _top_html = (f'<div class="ps-eyebrow">실망 확률</div><div class="ps-collect">분석 준비 중</div>'
                      f'<div class="ps-avg">분석 리뷰가 {MIN_REVIEWS}건 이상 쌓이면 공개해요</div>')
     pc_side = f'''<aside class="pc-side" aria-label="요약">
                     {_top_html}
@@ -3735,31 +3820,49 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 # ───────────────────────── 컬렉션 허브 (HUB-NORMALIZE §3) ─────────────────────────
 # 지역 3 + 테마 5. slug=URL(무확장), kind, H1, min N 가드. 선정 로직은 collection_members().
 COLLECTIONS = [
-    {'slug': 'area/tenjin', 'kind': 'area', 'area': 'tenjin', 'min': 10,
-     'name': '텐진', 'h1': '후쿠오카 텐진 호텔 — 리뷰 위험도로 고른 안심 숙소',
-     'title': '후쿠오카 텐진 호텔 TOP | 캐치플로'},
-    {'slug': 'area/hakata', 'kind': 'area', 'area': 'hakata', 'min': 10,
+    # ── 동네별 (홈 블록 1줄째) — FEEDBACK-2610 §3. 순서 = 홈 칩·상호 링크·sitemap 순서(동네 4 → 동행 4 → 테마 4) ──
+    {'slug': 'area/hakata', 'kind': 'area', 'area': 'hakata', 'min': 10, 'row': 'area',
      'name': '하카타역', 'h1': '하카타역 숙소 — 리뷰 위험도로 고른 안심 호텔',
      'title': '하카타역 호텔 TOP | 캐치플로'},
-    {'slug': 'area/nakasu', 'kind': 'area', 'area': 'nakasu', 'min': 10,
+    {'slug': 'area/tenjin', 'kind': 'area', 'area': 'tenjin', 'min': 10, 'row': 'area',
+     'name': '텐진', 'h1': '후쿠오카 텐진 호텔 — 리뷰 위험도로 고른 안심 숙소',
+     'title': '후쿠오카 텐진 호텔 TOP | 캐치플로'},
+    {'slug': 'area/nakasu', 'kind': 'area', 'area': 'nakasu', 'min': 10, 'row': 'area',
      'name': '나카스·캐널시티', 'h1': '나카스·캐널시티 호텔 — 리뷰 위험도 비교',
      'title': '나카스·캐널시티 호텔 TOP | 캐치플로'},
-    {'slug': 'best/value', 'kind': 'value', 'min': 8,
-     'name': '가성비', 'h1': '후쿠오카 가성비 숙소 TOP — 가격대별 실망 확률 최저',
-     'title': '후쿠오카 가성비 호텔 TOP | 캐치플로'},
-    {'slug': 'best/capsule', 'kind': 'capsule', 'min': 3,
-     'name': '캡슐호텔', 'h1': '후쿠오카 캡슐호텔 전부 비교 — 리뷰 위험도 순',
-     'title': '후쿠오카 캡슐호텔 비교 | 캐치플로'},
-    {'slug': 'best/pool', 'kind': 'pool', 'min': 3,
-     'name': '수영장', 'h1': '후쿠오카 수영장 호텔 전부 비교 — 리뷰 위험도 순',
-     'title': '후쿠오카 수영장 호텔 비교 | 캐치플로'},
-    {'slug': 'best/family', 'kind': 'family', 'min': 8,
+    {'slug': 'area/gion', 'kind': 'area', 'area': 'gion', 'min': 10, 'row': 'area',
+     'name': '기온·오호리', 'h1': '기온·오호리 호텔 — 리뷰 위험도 비교',
+     'title': '기온·오호리 호텔 TOP | 캐치플로'},
+    # ── 동행별 — 소분류는 WHO_GROUPS(상세 '누구와 가세요')와 같은 정의를 쓴다(상수 한 곳) ──
+    {'slug': 'best/solo', 'kind': 'who', 'who': 'solo', 'min': 8, 'row': 'who', 'chip': '혼자',
+     'name': '혼자 여행', 'h1': '후쿠오카 혼자 여행 호텔 — 밤길·객실 보안·역 거리 기준',
+     'title': '후쿠오카 혼자 여행 호텔 TOP | 캐치플로'},
+    {'slug': 'best/couple', 'kind': 'who', 'who': 'two', 'min': 8, 'row': 'who', 'chip': '커플·2인',
+     'name': '커플·2인', 'h1': '후쿠오카 커플·2인 호텔 — 좁은 방·침대·옆방 소음 기준',
+     'title': '후쿠오카 커플 호텔 TOP | 캐치플로'},
+    {'slug': 'best/group', 'kind': 'who', 'who': 'group', 'min': 8, 'row': 'who', 'chip': '친구·단체',
+     'name': '친구·단체', 'h1': '후쿠오카 친구·단체 호텔 — 좁은 방·침대·온수 기준',
+     'title': '후쿠오카 친구 여행 호텔 TOP | 캐치플로'},
+    {'slug': 'best/family', 'kind': 'family', 'min': 8, 'row': 'who', 'chip': '아이 동반',
      'name': '가족여행', 'h1': '후쿠오카 가족여행 안심 호텔 — 방음·청결·위치 기준',
      'title': '후쿠오카 가족 호텔 TOP | 캐치플로'},
-    {'slug': 'best/luxury', 'kind': 'luxury', 'min': 8,
+    # ── 테마별 ──
+    {'slug': 'best/value', 'kind': 'value', 'min': 8, 'row': 'theme',
+     'name': '가성비', 'h1': '후쿠오카 가성비 숙소 TOP — 가격대별 실망 확률 최저',
+     'title': '후쿠오카 가성비 호텔 TOP | 캐치플로'},
+    {'slug': 'best/luxury', 'kind': 'luxury', 'min': 8, 'row': 'theme',
      'name': '4·5성급', 'h1': '후쿠오카 4·5성급 호텔 — 고급 호텔 위험도 비교',
      'title': '후쿠오카 고급 호텔 TOP | 캐치플로'},
+    {'slug': 'best/capsule', 'kind': 'capsule', 'min': 3, 'row': 'theme',
+     'name': '캡슐호텔', 'h1': '후쿠오카 캡슐호텔 전부 비교 — 리뷰 위험도 순',
+     'title': '후쿠오카 캡슐호텔 비교 | 캐치플로'},
+    {'slug': 'best/bath', 'kind': 'bath', 'min': 5, 'row': 'theme',
+     'name': '대욕장·온천', 'h1': '후쿠오카 대욕장·온천 호텔 — 리뷰 위험도로 고른 추천',
+     'title': '후쿠오카 대욕장·온천 호텔 TOP | 캐치플로'},
 ]
+COL_BY_SLUG = {c['slug']: c for c in COLLECTIONS}
+COL_ROWS = [('area', '동네별'), ('who', '동행별'), ('theme', '테마별')]   # 홈 '동네·동행별로 보기' 3줄
+FAQ = {}       # pid → 실전정보(faq.json) 항목들 — main()에서 채움(대욕장 허브 판정·카드 칩)
 # 가족 안심 기준 카테고리 (청결, 방음=소음, 위치) — 분류 v5. 안전(칩 전용)은 점수가 없어 평균에서 제외
 FAMILY_CATS = ['청결', '소음', '위치']
 
@@ -3788,9 +3891,23 @@ def _is_capsule(pid, meta):
     etc = am.get('_etc') or [] if isinstance(am, dict) else []
     return any('캡슐' in str(x) or 'capsule' in str(x).lower() for x in etc)
 
-def _has_pool(meta):
+def _bath_chips(pid):
+    """실전정보 '대욕장·온천' 칩(근거 있는 것만). '…없음' 칩이 하나라도 있으면 None(없다고 언급된 호텔)."""
+    for it in FAQ.get(pid) or []:
+        if it.get('t') == 'bath':
+            c = [str(x) for x in (it.get('c') or [])]
+            return None if any('없음' in x for x in c) else c
+    return []
+
+def _has_bath(pid, meta):
+    """대욕장·온천 허브 대상 (FEEDBACK-2610 §3-4): amenities.spa_bath 참 또는 실전정보 bath 칩에 '없음'이 없는 호텔."""
     am = meta.get('amenities') or {}
-    return bool(isinstance(am, dict) and am.get('pool'))
+    if isinstance(am, dict) and am.get('spa_bath'):
+        return True
+    return bool(_bath_chips(pid))
+
+def _who_group(code):
+    return next((g for g in WHO_GROUPS if g[0] == code), None)
 
 def _stars_num(meta):
     m = re.match(r'(\d)성급', meta.get('hotel_stars') or '')
@@ -3798,7 +3915,7 @@ def _stars_num(meta):
 
 def collection_members(col, hotels_meta, H):
     """컬렉션 소속 scored 호텔 pid 리스트를 랭킹 순으로 반환. 데이터 부족 시 None(스킵).
-       수집중(unscored)·rec_excluded(hotels_meta에서 이미 제외)는 랭킹에서 뺀다."""
+       분석 준비 중(unscored)·rec_excluded(hotels_meta에서 이미 제외)는 랭킹에서 뺀다."""
     scored = [p for p in hotels_meta if p in H and H[p]['scored']]
     kind = col['kind']
 
@@ -3821,12 +3938,28 @@ def collection_members(col, hotels_meta, H):
         cand.sort(key=lambda p: (not H[p]['ranked'], -REC.get(p, 0.0), H[p]['p_crit']))   # 추천순(rec_score), 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
-    if kind == 'pool':
-        # amenities 의존 — 데이터 없으면 매칭 0 → 가드에서 스킵됨
-        if not any(isinstance(hotels_meta[p].get('amenities'), dict) for p in hotels_meta):
-            return None                      # amenities 컬럼 자체가 아직 없음 → 스킵
-        cand = [p for p in scored if _has_pool(hotels_meta[p])]
+    if kind == 'bath':
+        cand = [p for p in scored if _has_bath(p, hotels_meta[p])]
         cand.sort(key=lambda p: (not H[p]['ranked'], -REC.get(p, 0.0), H[p]['p_crit']))   # 추천순(rec_score), 리뷰 적은 호텔은 뒤로(순위 모수 밖)
+        return cand
+
+    if kind == 'who':
+        # 동행 허브 (FEEDBACK-2610 §3-3): 그룹 소분류 3개가 모두 위험 아님 + 그룹의 희소 소분류는 최근 1년 심각 0건.
+        # 정렬 = 소분류 3개 위험도 평균 오름차순 → 동률 추천순. 리뷰 적은 호텔은 뒤로(순위 모수 밖).
+        g = _who_group(col['who'])
+        if not g:
+            return None
+        subs = [(SUB_CAT[s], s) for s in g[2]]
+        def ok(p):
+            for c, s in subs:
+                sb = H[p]['cats'][c]['subs'][s]
+                if sb['band'] == 'danger': return False
+                if s in RARE_SUBS and sb.get('crit_1y', 0) > 0: return False
+            return True
+        cand = [p for p in scored if ok(p)]
+        cand.sort(key=lambda p: (not H[p]['ranked'],
+                                 round(sum(H[p]['cats'][c]['subs'][s]['score'] for c, s in subs) / len(subs), 1),
+                                 -REC.get(p, 0.0)))
         return cand
 
     if kind == 'family':
@@ -3865,17 +3998,18 @@ def _col_href(slug, depth=0):
     """컬렉션 상대경로 링크 — 사이트 전역 무확장 규칙(canonical·sitemap과 동일 표기)."""
     return f'{"../" * depth}{slug}'
 
-def hub_card(pid, meta, h, rank, depth=1):
+def hub_card(pid, meta, h, rank, depth=1, chips=None):
     """허브 랭킹 카드 — 검색 리스트 카드와 픽셀 동일한 구조/클래스 재사용(#hub .hub-list 셀렉터 병기).
-       고유 요소: 순위 배지(썸네일 좌상단)·역거리 1줄·시설 칩만 추가."""
+       고유 요소: 순위 배지(썸네일 좌상단)·지역 태그+역거리 1줄·시설 칩만 추가. chips를 주면 시설 칩 대신(대욕장 허브의 실전정보 칩)."""
     p_root = '../' * depth
     href = f'{p_root}hotels/{pid}'
     img = img_path(pid, meta, depth)
     name = E(meta['title'])
-    st = station_line(meta)
-    st_html = f'<div class="hub-station">{E(st)}</div>' if st else ''
+    al = area_line_html(meta, station=station_line(meta))     # 지역 태그 + 역 도보(허브는 직선거리까지)
+    st_html = f'<div class="hub-station area-line">{al}</div>' if al else ''
+    pl = price_line_html(meta)
     meta_html = f'<span>{E(meta.get("hotel_stars"))}</span>' if meta.get('hotel_stars') else ''
-    chips = amenity_chips(meta, 3)
+    chips = amenity_chips(meta, 3) if chips is None else chips[:3]
     chip_html = ''.join(f'<span class="hub-chip">{E(c)}</span>' for c in chips)
     chip_block = f'<div class="hub-chips">{chip_html}</div>' if chip_html else ''
     band, label = h['badge']
@@ -3892,7 +4026,7 @@ def hub_card(pid, meta, h, rank, depth=1):
                         <div class="badge-item badge-{band}">{label}</div>
                         <div class="badge-item badge-down">실망 확률 {pct(h['p_crit'])}%</div>
                     </div>
-                    <div class="stat"><span class="grade"><span class="ico"><img src="{p_root}img/star.svg" alt=""></span><span class="num">{fmt_score(meta.get('total_score'))}</span><span class="txt">({meta.get('reviews_count') or 0:,})</span></span>{('<span class="si"><span class="dot"></span><span>' + E(stars_label(meta)) + '</span></span>') if stars_label(meta) else ''}</div>
+                    <div class="stat"><span class="grade"><span class="ico"><img src="{p_root}img/star.svg" alt=""></span><span class="num">{fmt_score(meta.get('total_score'))}</span><span class="txt">({meta.get('reviews_count') or 0:,})</span></span>{('<span class="si"><span class="dot"></span><span>' + E(stars_label(meta)) + '</span></span>') if stars_label(meta) else ''}{('<span class="si"><span class="dot"></span><span class="price">' + pl + '</span></span>') if pl else ''}</div>
                     {st_html}
                 </div>
                 {why_line(pid, h)}
@@ -3941,13 +4075,21 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     </div>'''
 
     # ── 3. 랭킹 리스트 TOP 10~15 ──
-    is_all = col['kind'] in ('capsule', 'pool')     # 전부 비교 컬렉션
+    is_all = col['kind'] in ('capsule',)     # 전부 비교 컬렉션
     ranked_p = [p for p in pids if H[p]['ranked']]          # 순위 모수 = 최근 1년 리뷰 RANK_MIN 이상
     low_p = [p for p in pids if not H[p]['ranked']]
     top = ranked_p if is_all else ranked_p[:15]
-    rank_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], i + 1, depth) for i, p in enumerate(top))
-    rank_note = (f'조건에 맞는 곳을 추천순으로 보여드려요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만은 아래 따로)' if is_all else
-                 f'추천순이에요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만·수집중 호텔 제외)')
+    def chips_of(p):   # 대욕장 허브: 시설 칩 대신 실전정보 칩('대욕장 있음'·'사우나'), 근거 없으면 시설 칩 '온천·사우나'
+        if col['kind'] != 'bath': return None
+        return _bath_chips(p) or [AMENITY_LABEL['spa_bath']]
+    rank_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], i + 1, depth, chips_of(p)) for i, p in enumerate(top))
+    if col['kind'] == 'who':
+        _g = _who_group(col['who'])
+        rank_note = (f'{"·".join(SUB_PHRASE[s] for s in _g[2])} 불만이 모두 위험 등급이 아닌 곳을, 세 항목 불만이 적은 순으로 보여드려요 '
+                     f'(최근 1년 리뷰 {RANK_MIN}개 미만·분석 준비 중 호텔 제외)')
+    else:
+        rank_note = (f'조건에 맞는 곳을 추천순으로 보여드려요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만은 아래 따로)' if is_all else
+                     f'추천순이에요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만·분석 준비 중 호텔 제외)')
     search_link = f'<a class="hub-more" href="{"../" * depth}search{("?area=" + col["area"]) if col["kind"]=="area" else ""}">{CITY["ko"]} 호텔 전체 검색 →</a>'
     rank_block = (f'''<div class="hub-sect">
         <div class="hub-h2">추천 TOP {len(top)}</div>
@@ -3957,7 +4099,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     </div>''' if top else '')
     # 리뷰 적은 호텔: 순위 없이 참고용 목록 (전부 비교 컬렉션이거나 순위 대상이 적을 때만 — 지역 TOP15엔 섞지 않음)
     if low_p and (is_all or len(ranked_p) < 5):
-        low_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], '–', depth) for p in low_p)
+        low_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], '–', depth, chips_of(p)) for p in low_p)
         rank_block += f'''<div class="hub-sect">
         <div class="hub-h2">리뷰가 적은 호텔 {len(low_p)}곳</div>
         <div class="hub-sub">최근 1년 리뷰가 {RANK_MIN}개 미만이라 순위 없이 참고용으로 보여드려요</div>
@@ -4084,8 +4226,21 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
         else:
             a2p = f'{name} 평균 실망 확률은 {avg_p}%예요. 지역별 편차가 있으니 개별 호텔 리포트를 함께 확인하세요.'
         faqs.append((q2, E(a2p), a2p))
-    elif kind in ('capsule', 'pool'):
-        typ = '캡슐호텔' if kind == 'capsule' else '수영장 있는 호텔'
+    elif kind == 'who':
+        g = _who_group(col['who'])
+        names = [SUB_PHRASE[s] for s in g[2]]
+        rare = [SUB_PHRASE[s] for s in g[2] if s in RARE_SUBS]
+        q2 = f'{name} 여행이면 호텔에서 뭘 봐야 하나요?'
+        a2p = (f'{", ".join(names)} 불만이 적은지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만 골라 세 항목 불만이 적은 순으로 보여드려요.'
+               + (f' {", ".join(rare)}{josa_eun(rare[-1])} 드물지만 치명적이라 최근 1년 심각 리뷰가 한 건이라도 있으면 뺐어요.' if rare else ''))
+        faqs.append((q2, E(a2p), a2p))
+    elif kind == 'bath':
+        q2 = f'{CITY["ko"]}에 대욕장·온천 있는 호텔은 몇 곳인가요?'
+        a2p = (f'시설 정보나 투숙객 리뷰에서 대욕장·온천·사우나가 확인된 곳은 {n}곳이에요. '
+               '리뷰에 \'대욕장 없음\'으로 언급된 호텔은 뺐어요. 이용 시간·요금은 상세 페이지 실전정보에서 확인하세요.')
+        faqs.append((q2, E(a2p), a2p))
+    elif kind == 'capsule':
+        typ = '캡슐호텔'
         q2 = f'{CITY["ko"]}에 {typ}은 총 몇 곳인가요?'
         _nlow = sum(1 for p in pids if not H[p]['ranked'])
         a2p = (f'캐치플로가 분석한 {CITY["ko"]} {typ}은 총 {n}곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요'
@@ -4150,7 +4305,7 @@ def build_about(hotels_meta, H, city):
         f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않도록 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
         f'<li>최근 1년 리뷰(별점만 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
         f'<li>최근 1년 리뷰가 {RANK_MIN}개 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 리뷰가 적어도 위험 신호가 뚜렷하면 위험으로 알려 드려요</li>'
-        '<li>순위는 정밀한 백분위 대신 \'상위 25% 안\'처럼 넉넉한 구간으로, 80% 이상 확실할 때만 보여 드려요</li>'
+        '<li>순위는 정밀한 백분위 대신 \'상위 25% 이내\'처럼 넉넉한 구간으로, 80% 이상 확실할 때만 보여 드려요</li>'
         '<li>배지(양호·주의·위험)는 경계 근처에서 매주 바뀌지 않도록, 경계를 충분히 넘었을 때만 바꿔요</li>'
         '</ul>')
     s2b = sect('항목별 점수는 이렇게 매겨요',
@@ -4249,6 +4404,7 @@ def main():
     KRN.clear(); KRN.update(kr_n_map(kr_stats))
     REC.clear(); REC.update(rec_scores(H, hotels_meta, KRN))
     PAIRS[:] = resolve_pairs(hotels_meta, H)
+    FAQ.clear(); FAQ.update(faq_data or {})
 
     if os.path.exists(OUT): shutil.rmtree(OUT)
     os.makedirs(os.path.join(OUT, 'hotels'))
@@ -4276,7 +4432,7 @@ def main():
             skipped_cols.append((col['slug'], f'{len(pids)}곳 < 최소 {col["min"]}'))
             continue
         built_cols.append((col, pids))
-    col_index = [(c['slug'], c['name']) for c, _ in built_cols]   # 상호링크·홈칩·상세칩 공용
+    col_index = [(c['slug'], c['name']) for c, _ in built_cols]   # 상호링크·홈칩·상세칩 공용 (COLLECTIONS 순서 = 동네 → 동행 → 테마)
 
     W('index.html', build_index(hotels_meta, H, quotes, col_index))
     W('search.html', build_search(pct(city['crit'])))
@@ -4291,10 +4447,14 @@ def main():
     W('compare.html', build_compare())   # P5: 개인화 페이지 — sitemap 제외·noindex
     open(os.path.join(OUT, '.nojekyll'), 'w').close()
 
-    # 상세 컬렉션 칩용: pid → [(slug, name), ...] (지역 1 + 테마 매칭, 최대 3)
+    # 상세 컬렉션 칩용: pid → [(slug, name), ...] (가장 가까운 지역 1 + 동행·테마 매칭, 최대 3)
     detail_col_map = defaultdict(list)
     for col, pids in built_cols:
         for p in pids:
+            if col['kind'] == 'area':
+                tag = area_tag(hotels_meta[p])
+                if any(COL_BY_SLUG[s]['kind'] == 'area' for s, _ in detail_col_map[p]): continue   # 지역은 1개만
+                if tag and _area_by_code(col['area'])['ko'].split('·')[0] != tag: continue        # 반경이 겹치면 가장 가까운 지역
             detail_col_map[p].append((col['slug'], col['name']))
 
     kr_share = kr_share_map(kr_stats, H)
@@ -4322,7 +4482,7 @@ def main():
     W('sitemap.xml', build_sitemap(written, col_slugs))
     scored = sum(1 for p in H if H[p]['scored'])
     sitemap_n = n + 3 + len(col_slugs)   # 홈·검색·about + 허브 + 상세
-    print(f'OK: 상세 {n}p (점수 노출 {scored}, 수집중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
+    print(f'OK: 상세 {n}p (점수 노출 {scored}, 분석 준비 중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
     print(f'컬렉션 생성 {len(built_cols)}개: ' + ', '.join(f'{c["slug"]}({len(p)})' for c, p in built_cols))
     print(f'추천순 모수 {len(REC)}곳 · 비교 쌍 {len(PAIRS)}개 · 한국인 리뷰 최대 {max(list(KRN.values()) or [0])}건')
     if skipped_cols:
