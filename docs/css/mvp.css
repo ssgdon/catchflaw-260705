@@ -1347,3 +1347,9 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #main .trust-band .tb-i{white-space:nowrap;}
 #main .trust-band .tb-i + .tb-i::before{content:"·";margin-right:var(--sp-3);color:var(--ink-4);}
 
+/* 히어로 가독성(2026-10): 사진이 밝아도 제목·설명·칩이 읽히게 — 어두운 오버레이 + 글자 그림자. 모바일·PC 공통 */
+#main .search-box::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgb(0 0 0 / 58%) 0%, rgb(0 0 0 / 38%) 55%, rgb(0 0 0 / 58%) 100%);pointer-events:none;}
+#main .search-box > *{position:relative;z-index:1;}
+#main .search-box .title .tit,#main .search-box .title .txt,#main .search-box .scope-note,#main .search-box .hero-chips .hc-label{text-shadow:0 1px 2px rgb(0 0 0 / 65%), 0 2px 14px rgb(0 0 0 / 45%);}
+#main .search-box .title .tit span{text-shadow:0 0 1px rgb(0 0 0 / 75%), 0 2px 4px rgb(0 0 0 / 60%), 0 4px 18px rgb(0 0 0 / 50%);}
+
