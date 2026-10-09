@@ -30,6 +30,7 @@
 - 실망 확률 = 실망 리뷰의 최신성 가중 비율(k=20 보정, 도시평균 4.9%). 실망 리뷰 = 심각 OR (재방문 거부 AND 불만). 가중 = 0.5^(나이/180일), 1년 초과 0. 별점만 리뷰는 같은 별점 글 리뷰의 실망 비율로 기대값 반영(`agg_staronly.json`·`star_crit.json`). 정본 `scripts/scoring.py` = `pipeline/score.py` prod. 기준일(asof)은 최신 리뷰일로 매주 이동(`data-src/meta.json` → generate.py 동적 표기).
 - 카테고리(A층, 분류 v5.7): 대분류 7 = 점수 6(청결/냄새/소음/객실/직원/위치) + 안전(칩 전용) × **소분류 21**. **정본 = `pipeline/prompt_v5.py` SUBS = `scripts/scoring.py` SUBS = `pipeline/score.py` CATS_V5.** 분석기 `pipeline/analyze_v5.py`(v4 `analyze.py` 사용 금지, 전환·롤백은 RUNBOOK §5-1). 희소·고위험 소분류 4종(벌레·곰팡이·동네 분위기·객실 보안)은 점수 대신 리뷰 건수 칩으로 렌더.
 - FAQ(B층): 리뷰에서 사전 추출한 실전 정보 카드(짐보관·조식·주차 등). `pipeline/faq_topics.py`(토픽 정본)+`pipeline/faq_extract.py`(gemini 종합, `hotel_faq` 테이블) → `export_pg.py`가 `data-src/faq.json` 생성 → generate.py 상세 FAQ 섹션(근거 없으면 미노출).
+- **추천순(2026-10)**: `scripts/scoring.rec_scores` = 안전(실망 확률, 15% 포화) 0.4 + 신뢰(베이지안 구글 평점) 0.3 + 수요(최근 1년 한국인 리뷰 수 `kr_stats` 1y kr_n) 0.3, 모수 = ranked(1년 리뷰 100+). **정렬 전용, 숫자 비노출** — 메인 콘셉트는 실망 확률 유지. 홈·검색 기본 정렬·허브·상세 대안·AI 추천·비교 팝업이 공용(UI-STANDARDS §16). 배지 위험 문턱 2.0배(`DANGER_MULT`). 비교 쌍 시드 `scripts/compare_pairs.json`, 수용 기준 `scripts/check_rec.py`. 근거·설계 = `RECOMMEND-PRICE-DESIGN.md`·`HOME-CONCEPT-DESIGN.md`.
 - 추천 제외(`hotels.rec_excluded`): 러브호텔·넷카페 등은 검색·상세엔 노출되나 홈 추천·검색 기본목록·지도에선 숨김(호텔명 직접 검색 시에만 노출).
 
 ## MVP 규칙

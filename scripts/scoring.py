@@ -22,6 +22,17 @@ def in_3m(bucket):
     b = str(bucket)
     return b == 'w10' or (b.isdigit() and int(b) <= 90)
 K = 20                # 소표본 보정 의사표본 (도시평균 리뷰 20건)
+# ── 배지 문턱 (2026-10 캘리브레이션, RECOMMEND-PRICE-DESIGN §4.6) ──
+# 위험 1.5배(7.3%)는 전체 23%·카페 인기 24곳 중 9곳을 위험으로 찍어 직관과 충돌 → 2.0배(≈9.7%, 15곳·9%)로 완화.
+SAFE_MULT = 0.8       # 양호 = 도시 평균의 0.8배 이하
+DANGER_MULT = 2.0     # 위험 = 도시 평균의 2.0배 이상
+# ── 추천순 rec_score (2026-10, RECOMMEND-PRICE-DESIGN §4.2) ──
+# 실망 확률 단독 정렬은 한국인 리뷰 9건짜리 호텔을 1위에 올리고 카페 인기 24곳을 중앙 110위로 밀었다.
+# 추천순 = 안전(실망 확률) 0.4 + 신뢰(베이지안 구글 평점) 0.3 + 수요(1년 한국인 리뷰 수) 0.3. 숫자는 화면에 노출하지 않고 정렬에만 쓴다.
+REC_W = (0.4, 0.3, 0.3)
+REC_P_CAP = 0.15      # 실망 확률 15%에서 포화 (그 위는 전부 최저 안전 점수)
+BAYES_PRIOR = 4.0     # 베이지안 평점 사전 평균
+BAYES_K = 100         # 베이지안 평점 의사표본 (search rec 모드 bayes()와 동일)
 GUARD_MIN = 5         # 소분류 불만 리뷰 최소 건수 (미만이면 상한 65)
 GUARD_CAP = 65
 MIN_REVIEWS = 30      # 점수 노출 최소 분석 리뷰 수
@@ -72,10 +83,34 @@ def grade_band(score):
     return 'safe'
 
 def hotel_badge(p_crit, city_crit):
-    """호텔 등급 배지: 도시평균 1.5배↑=위험, 0.8배↓=양호"""
-    if p_crit >= 1.5 * city_crit: return ('danger', '위험')
-    if p_crit <= 0.8 * city_crit: return ('safe', '양호')
+    """호텔 등급 배지: 도시평균 DANGER_MULT배↑=위험, SAFE_MULT배↓=양호"""
+    if p_crit >= DANGER_MULT * city_crit: return ('danger', '위험')
+    if p_crit <= SAFE_MULT * city_crit: return ('safe', '양호')
     return ('warning', '주의')
+
+def bayes_rating(g, rc):
+    """베이지안 구글 평점 (사전 4.0·100건). 리뷰 적은 호텔의 높은 평점을 평균 쪽으로 당긴다."""
+    return (float(g or 0) * (rc or 0) + BAYES_PRIOR * BAYES_K) / ((rc or 0) + BAYES_K)
+
+def rec_scores(hotels, meta, kr_n):
+    """추천순 점수 {pid: 0~1}. 모수 = 채점·순위 대상(ranked)·meta에 있는(사이트 노출) 호텔.
+       safe = minmax(−min(p, REC_P_CAP)) · trust = minmax(bayes 평점) · demand = minmax(log1p(한국인 리뷰 수)).
+       정렬 전용 — 화면에 숫자로 쓰지 않는다(HOME-CONCEPT-DESIGN §3.4). 모수 밖 호텔은 키 없음(정렬 시 뒤로)."""
+    import math
+    pool = [p for p, h in hotels.items() if h.get('scored') and h.get('ranked') and p in meta]
+    if not pool: return {}
+    def mm(vals):
+        lo, hi = min(vals), max(vals)
+        return [(v - lo) / (hi - lo) if hi > lo else 0.0 for v in vals]
+    safe = mm([-min(hotels[p]['p_crit'], REC_P_CAP) for p in pool])
+    trust = mm([bayes_rating(meta[p].get('total_score'), meta[p].get('reviews_count')) for p in pool])
+    dem = mm([math.log1p(kr_n.get(p, 0) or 0) for p in pool])
+    w = REC_W
+    out = {}
+    for i, p in enumerate(pool):
+        out[p] = w[0] * safe[i] + w[1] * trust[i] + w[2] * dem[i]
+        hotels[p]['rec'] = out[p]
+    return out
 
 def _beta_params(h, city_crit):
     """실망 확률의 불확실성(베타 근사). 가중치 때문에 유효 표본수 = (Σw)²/Σw²로 줄여서 쓰고 k=20 보정을 사전분포로."""
@@ -84,8 +119,8 @@ def _beta_params(h, city_crit):
     return sc * cw + K * city_crit, max(sc * (den_w - cw), 0.0) + K * (1 - city_crit)
 
 def _zone(p, c, prev=None):
-    """배지 구간 (양호 ≤0.8×평균 · 위험 ≥1.5×평균). prev(지난 배지)가 있으면 경계를 BADGE_MARGIN만큼 넘어야 바뀐다."""
-    lo, hi, m = 0.8 * c, 1.5 * c, BADGE_MARGIN
+    """배지 구간 (양호 ≤SAFE_MULT×평균 · 위험 ≥DANGER_MULT×평균). prev(지난 배지)가 있으면 경계를 BADGE_MARGIN만큼 넘어야 바뀐다."""
+    lo, hi, m = SAFE_MULT * c, DANGER_MULT * c, BADGE_MARGIN
     if prev == 'safe':
         return 'safe' if p <= lo * (1 + m) else ('danger' if p >= hi else 'warning')
     if prev == 'danger':
@@ -112,7 +147,7 @@ def assess(hotels, city, prev=None, seed=7, draws=2000):
             band, h['p_danger'] = _zone(h['p_crit'], C, prev.get(p)), None
         else:
             a, b = par[p]
-            pd = sum(1 for _ in range(draws) if rnd.betavariate(a, b) >= 1.5 * C) / draws
+            pd = sum(1 for _ in range(draws) if rnd.betavariate(a, b) >= DANGER_MULT * C) / draws
             h['p_danger'] = pd
             band = 'danger' if pd >= DANGER_SURE - (0.1 if prev.get(p) == 'danger' else 0.0) else 'low'
         h['badge'] = (band, BAND_LABEL[band])
