@@ -1175,18 +1175,19 @@ def build_search(city_avg_pct):
                 <div class="lh-sort" id="lh-sort">
                     <button type="button" class="lh-sort-btn" id="lh-sort-btn">추천순</button>
                     <div class="lh-sort-box">
-                        <button type="button" class="on" data-sort="rs" title="{REC_SORT_DESC}">추천순</button>
-                        <button type="button" data-sort="p">실망 확률 낮은 순</button>
-                        <button type="button" data-sort="price">1박 가격 낮은 순</button>
-                        <button type="button" data-sort="rc">구글 리뷰 많은 순</button>
-                        <button type="button" data-sort="g">구글 평점 높은 순</button>
-                        <div class="lh-sort-sep">카테고리 안심순</div>
-                        <button type="button" data-sort="cat:청결">청결 안심순</button>
-                        <button type="button" data-sort="cat:냄새">냄새 안심순</button>
-                        <button type="button" data-sort="cat:소음">소음 안심순</button>
-                        <button type="button" data-sort="cat:객실">객실 안심순</button>
-                        <button type="button" data-sort="cat:직원">직원 안심순</button>
-                        <button type="button" data-sort="cat:위치">위치 안심순</button>
+                        <button type="button" class="on" data-sort="rs" data-label="추천순">추천순<span class="ls-sub">실망 확률 낮고 한국인이 많이 가는 곳부터</span></button>
+                        <button type="button" data-sort="p" data-label="실망 확률 낮은 순">실망 확률 낮은 순<span class="ls-sub">최근 1년 실망한 리뷰 비율이 낮은 곳부터</span></button>
+                        <button type="button" data-sort="krn" data-label="한국인이 많이 가는 순">한국인이 많이 가는 순<span class="ls-sub">최근 1년 한국인 리뷰가 많은 곳부터</span></button>
+                        <button type="button" data-sort="g" data-label="구글 평점 높은 순">구글 평점 높은 순<span class="ls-sub">별점만 보고 싶을 때</span></button>
+                        <button type="button" data-sort="rc" data-label="구글 리뷰 많은 순">구글 리뷰 많은 순<span class="ls-sub">크고 유명한 호텔부터</span></button>
+                        <button type="button" data-sort="price" data-label="1박 가격 낮은 순">1박 가격 낮은 순<span class="ls-sub">구글 최저가 기준 · 날짜 따라 달라요</span></button>
+                        <div class="lh-sort-sep">걱정되는 항목이 적은 곳부터</div>
+                        <button type="button" data-sort="cat:청결" data-label="청결 불만 적은 순">청결 불만 적은 순<span class="ls-sub">머리카락·벌레·곰팡이</span></button>
+                        <button type="button" data-sort="cat:냄새" data-label="냄새 불만 적은 순">냄새 불만 적은 순<span class="ls-sub">담배·하수구·곰팡내</span></button>
+                        <button type="button" data-sort="cat:소음" data-label="소음 불만 적은 순">소음 불만 적은 순<span class="ls-sub">옆방·도로·기계음</span></button>
+                        <button type="button" data-sort="cat:객실" data-label="객실 불만 적은 순">객실 불만 적은 순<span class="ls-sub">좁은 방·침대·온도·고장</span></button>
+                        <button type="button" data-sort="cat:직원" data-label="직원 불만 적은 순">직원 불만 적은 순<span class="ls-sub">불친절·대기·대응</span></button>
+                        <button type="button" data-sort="cat:위치" data-label="위치 불만 적은 순">위치 불만 적은 순<span class="ls-sub">역까지 거리·주변·밤길</span></button>
                     </div>
                 </div>
             </div>
@@ -1224,7 +1225,7 @@ def build_search(city_avg_pct):
         var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
         var _sq = new URLSearchParams(location.search).get('sort');
         var fPrice = '', fBand = '', fArea = '', fCats = [], sortCat = '';
-        var sortBy = (['rs','p','price','rc','g'].indexOf(_sq) >= 0) ? _sq : 'rs';   // 기본 추천순, ?sort= 프리셋 허용
+        var sortBy = (['rs','p','krn','price','rc','g'].indexOf(_sq) >= 0) ? _sq : 'rs';   // 기본 추천순, ?sort= 프리셋 허용
         var CAT_ICON = {{'청결':'','냄새':'','소음':'','객실':'','직원':'','위치':'','안전':''}};
         var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
         var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
@@ -1302,6 +1303,7 @@ def build_search(city_avg_pct):
             }} else if (sortBy === 'price') a.sort(function(x,y){{ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); }});
             else if (sortBy === 'rc') a.sort(function(x,y){{ return (y.rc||0)-(x.rc||0); }});
             else if (sortBy === 'g') a.sort(function(x,y){{ return (y.g||0)-(x.g||0); }});
+            else if (sortBy === 'krn') a.sort(function(x,y){{ return (y.krn||0)-(x.krn||0) || (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); }});   // 한국인이 많이 가는 순(최근 1년 한국인 리뷰 수)
             else if (sortBy === 'rs') a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (y.rs||0)-(x.rs||0) || (x.p||0)-(y.p||0); }});   // 추천순(기본): 실망 확률·한국인 리뷰·평점 복합, 리뷰 적은 호텔은 뒤로
             else a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (x.p||0)-(y.p||0); }});  // 실망확률 낮은순(기본) · 리뷰 적은 호텔은 뒤로
             return a;
@@ -1517,7 +1519,7 @@ def build_search(city_avg_pct):
         if (sortBy !== 'rs'){{   // ?sort= 프리셋이면 버튼 상태 동기화
             $('#lh-sort .lh-sort-box button').removeClass('on');
             var $sb = $('#lh-sort .lh-sort-box button[data-sort="'+sortBy+'"]').addClass('on');
-            if ($sb.length) $('#lh-sort-btn').text($sb.text());
+            if ($sb.length) $('#lh-sort-btn').text($sb.data('label') || $sb.text());
         }}
         $('#lh-sort-btn').on('click', function(e){{ e.stopPropagation(); $('#lh-sort').toggleClass('open'); }});
         $('#lh-sort .lh-sort-box button').on('click', function(){{
@@ -1525,7 +1527,7 @@ def build_search(city_avg_pct):
             if (v.indexOf('cat:') === 0) {{ sortCat = v.slice(4); sortBy = 'p'; }}
             else {{ sortCat = ''; sortBy = v; }}
             $('#lh-sort .lh-sort-box button').removeClass('on'); $(this).addClass('on');
-            $('#lh-sort-btn').text($(this).text());
+            $('#lh-sort-btn').text($(this).data('label') || $(this).text());
             $('#lh-sort').removeClass('open');
             renderVisible();
         }});
