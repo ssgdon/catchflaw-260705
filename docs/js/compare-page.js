@@ -120,8 +120,8 @@
         if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰 적음</span>'; }   // 리뷰 적은 호텔은 순위 강조 제외
         return c;
       }), { best: 'min', lab: '가장 낮음' })
-      // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지
-      + row('1박 평균', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
+      // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지. krw = 날짜별 표본의 중앙값
+      + row('1박 가격', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
       + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? glue(esc(h.st)) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
       + row('구글 평점', H.map(function (h) { return { v: h.g, k: String(h.g), h: '<b>' + h.g.toFixed(1) + '</b> <span class="cmp-sub">(' + h.rc.toLocaleString() + ')</span>' }; }), { best: 'max', lab: '가장 높음' })
       + row('분석한 리뷰', H.map(function (h) { return { v: h.an, k: String(h.an), h: '<b>' + esc(h.an) + '건</b> <span class="cmp-sub">' + glue(esc(h.pd || '최근 1년')) + '</span>' }; }), { best: 'max', lab: '근거 가장 많음' });
