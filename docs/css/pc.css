@@ -1,0 +1,176 @@
+@charset "utf-8";
+/* ============================================================
+   CATCHFLAW PC 레이아웃 (2026-10) — Mobbin PC 예약 사이트 패턴 기반
+   - 로드 순서: tokens → common → layout → swiper → uplift → mvp → **pc.css(최후순위)**
+   - 모바일(≤769px) 규칙은 건드리지 않는다. 넓은 화면에서만 덮어쓴다.
+   - --width: 원래 '모바일 칼럼 폭'. 바텀시트·모달·플로팅이 이 값을 쓰므로 PC에서는 시트 폭(560)으로 두고,
+     페이지 틀(#wrapper)만 100%로 푼다.
+   참고 패턴: 헤더 검색(Tripadvisor·Klook) · 목록+고정지도(Tripadvisor·KAYAK) · 사진 1+4 그리드(KAYAK·Klook)
+             · 오른쪽 고정 결정 카드(Airbnb·Turo) · 비교표 왼쪽 항목명 칸(Zillow) · 카드 그리드(Expedia)
+   ============================================================ */
+
+/* PC 전용 요소는 기본 숨김 */
+.det-header .dh-nav,.det-header .dh-search,
+#detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
+
+/* ── 태블릿·작은 노트북(770~1099): 단일 칼럼을 600px로 넓힘 (기존 360 고정 해소) ── */
+@media (min-width:770px) and (max-width:1099px){
+    :root{--width:600px;}
+}
+
+/* ══════════════════════ PC (≥1100px) ══════════════════════ */
+@media (min-width:1100px){
+    :root{--width:560px;--pc-max:1200px;--pc-x:32px;}
+    body,#wrapper{background:#fff;}
+    #wrapper{width:100%;}
+
+    /* ── 공통 헤더: 로고 · 검색 · 가로 메뉴 (뒤로가기·햄버거 숨김) ── */
+    .det-header{justify-content:flex-start;gap:var(--sp-8);height:64px;padding:0 max(var(--pc-x), calc((100% - var(--pc-max)) / 2 + var(--pc-x)));}
+    .det-header .dh-back,.det-header .dh-back-empty,.det-header .dh-menu{display:none;}
+    .det-header .dh-logo{height:18px;}
+    .det-header .dh-search{display:flex;align-items:center;gap:var(--sp-2);width:360px;height:40px;padding:0 var(--sp-2) 0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface);}
+    .det-header .dh-search input{flex:1;min-width:0;height:100%;border:0;background:transparent;font-size:var(--fs-caption);color:var(--ink);}
+    .det-header .dh-search button{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:0;background:none;color:var(--ink-2);cursor:pointer;}
+    .det-header .dh-search:focus-within{border-color:var(--primary);background:#fff;}
+    .det-header .dh-nav{display:flex;align-items:center;gap:var(--sp-8);margin-left:auto;}
+    .det-header .dh-nav a{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);}
+    .det-header .dh-nav a:hover{color:var(--primary);}
+
+    /* ── 공통 푸터·플로팅 ── */
+    #site-foot{max-width:var(--pc-max);margin:0 auto;padding-left:var(--pc-x);padding-right:var(--pc-x);border-top:1px solid var(--line);}
+    #float{left:auto;right:var(--pc-x);width:auto;transform:none;}
+    .cf-toast{bottom:var(--sp-10);}
+    .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
+
+    /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
+    #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}
+    #detail .content > *{grid-column:1;min-width:0;}
+    #detail .content > .visual{display:none;}                       /* 모바일 스와이프 갤러리 → PC 사진 그리드 */
+    #detail > .button{display:none;}                                  /* 모바일 하단 CTA 바 → 결정 카드 CTA */
+
+    /* 제목줄(정보 섹션): 경로 · 배지 · 호텔명 · 메타 | 오른쪽에 평점·분석 버튼 */
+    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"crumb crumb" "top acts" "cont acts" "fjt fjt" "fj fj";column-gap:var(--sp-8);padding:var(--sp-2) 0 var(--sp-5);overflow:visible;}
+    #detail .information .pc-crumb{grid-area:crumb;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4);font-size:var(--fs-caption);color:var(--ink-3);}
+    #detail .information .pc-crumb a{color:var(--ink-3);}
+    #detail .information .pc-crumb a:hover{color:var(--primary);}
+    #detail .information .pc-crumb b{font-weight:var(--fw-medium);color:var(--ink-2);}
+    #detail .information .info-top{grid-area:top;}
+    #detail .information .info-cont{grid-area:cont;}
+    #detail .information .info-cont .name .name-ko{font-size:32px;line-height:1.3;}   /* PC 제목 전용(uplift 24px 덮어씀) */
+    #detail .information .info-cont .cmp-btn{display:none;}          /* 결정 카드에 있음 */
+    #detail .information .info-bottom{grid-area:acts;align-self:end;display:flex;gap:var(--sp-2);margin:0;}
+    #detail .information .info-bottom .btn-link{min-width:200px;}
+    #detail .information .fj-title{grid-area:fjt;margin-top:var(--sp-5);}
+    #detail .information .faq-jump-wrap{grid-area:fj;}
+
+    /* 사진 그리드: 장수별 배치 (호텔당 사진 1~2장이 대부분) */
+    #detail .content > .pc-gallery{grid-column:1 / -1;grid-row:2;position:relative;display:grid;gap:var(--sp-2);height:440px;margin-bottom:var(--sp-8);overflow:hidden;border-radius:var(--radius-card);}
+    #detail .pc-gallery .pg-cell{position:relative;min-height:0;overflow:hidden;background:var(--surface);}
+    #detail .pc-gallery img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+    #detail .pc-gallery .pg-cell:hover img{transform:scale(1.03);}
+    #detail .pc-gallery.g1{grid-template-columns:1fr;}
+    #detail .pc-gallery.g2{grid-template-columns:2fr 1fr;}
+    #detail .pc-gallery.g3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;}
+    #detail .pc-gallery.g3 .pg-0{grid-row:1 / 3;}
+    #detail .pc-gallery.g4{grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;}
+    #detail .pc-gallery.g4 .pg-0{grid-row:1 / 3;}
+    #detail .pc-gallery.g4 .pg-1{grid-column:2 / 4;}
+    #detail .pc-gallery.g5{grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;}
+    #detail .pc-gallery.g5 .pg-0{grid-row:1 / 3;}
+    #detail .pc-gallery .pg-count{position:absolute;right:var(--sp-4);bottom:var(--sp-4);height:32px;padding:0 var(--sp-3);display:flex;align-items:center;border-radius:var(--radius-btn);background:rgb(25 27 31 / 70%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-bold);}
+
+    /* 오른쪽 고정 결정 카드 */
+    #detail .content > .pc-side{grid-column:2;grid-row:3 / span 60;position:sticky;top:96px;display:block;padding:var(--sp-6);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:#fff;box-shadow:0 12px 32px rgb(25 27 31 / 8%);}
+    .pc-side .ps-eyebrow{font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+    .pc-side .ps-pct{margin-top:var(--sp-1);font-size:40px;font-weight:var(--fw-display);line-height:1.1;color:var(--primary);font-variant-numeric:tabular-nums;}
+    .pc-side .ps-verdict{margin-top:var(--sp-1);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);}
+    .pc-side .ps-verdict.is-safe{color:var(--safe-text);}
+    .pc-side .ps-verdict.is-warning{color:var(--warning-text);}
+    .pc-side .ps-verdict.is-danger{color:var(--danger-text);}
+    .pc-side .ps-collect{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink-2);}
+    .pc-side .ps-avg{margin-top:var(--sp-1);font-size:var(--fs-caption);color:var(--ink-3);}
+    .pc-side .ps-rows{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:1px solid var(--line);}
+    .pc-side .ps-rows li{display:flex;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) 0;font-size:var(--fs-caption);color:var(--ink-3);}
+    .pc-side .ps-rows li span:last-child{color:var(--ink-2);text-align:right;}
+    .pc-side .ps-rows b{font-weight:var(--fw-bold);color:var(--ink);}
+    .pc-side .ps-cta{display:flex;align-items:center;justify-content:center;height:52px;margin-top:var(--sp-5);border-radius:var(--radius-btn);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);}
+    .pc-side .ps-cta:hover{background:var(--primary-deep);}
+    .pc-side .ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);margin-top:var(--sp-2);}
+    .pc-side .ps-actions .cmp-btn,.pc-side .ps-actions .ps-share{display:flex;align-items:center;justify-content:center;gap:var(--sp-1);height:44px;margin:0;padding:0;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:#fff;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);cursor:pointer;}
+    .pc-side .ps-actions .ps-share:only-child{grid-column:1 / -1;}
+    .pc-side .ps-actions .cmp-btn.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+    .pc-side .ps-note{margin-top:var(--sp-4);font-size:var(--fs-micro);color:var(--ink-3);text-align:center;}
+    .pc-side .ps-note a{color:var(--ink-2);text-decoration:underline;}
+
+    /* 본문(왼쪽 칼럼): 섹션 구분은 얇은 선 + 넉넉한 위 여백 */
+    #detail .content > .sect{padding:var(--sp-10) 0;}
+    #detail .content > .sect + .sect{border-top:1px solid var(--line-strong);}
+    #detail .content > .sect.glance{padding:var(--sp-6) 0;}
+    #detail .det-tabs{top:64px;padding:0;}
+    #detail .det-tabs a{flex:0 0 auto;padding:0 var(--sp-5);}
+    #detail .sect[id],#detail .sec-anchor{scroll-margin-top:124px;}
+    #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
+    /* 대안 슬라이더 → 4열 그리드 */
+    #detail .hotel .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}
+    #detail .hotel .list .swiper-slide{width:auto !important;margin:0 !important;}
+    #detail .hotel .list .item .thumb .image{aspect-ratio:4/3;}
+
+    /* ════════ 검색: 상단 필터 바 → [목록 | 고정 지도] ════════ */
+    #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;background:#fff;height:auto;}
+    #title .search{max-width:560px;}
+    #search{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:var(--sp-6);align-items:start;padding:var(--sp-2) var(--pc-x) var(--sp-12);}
+    #search > *{grid-column:1;min-width:0;}
+    #search .filters{flex-direction:row;flex-wrap:wrap;gap:var(--sp-3) var(--sp-5);padding:var(--sp-3) 0;}
+    #search .filters .f-row{overflow:visible;flex-wrap:wrap;}
+    #search .total,#search .list-head{padding-left:0;padding-right:0;}
+    #search .list{padding:0;}
+    #search .list li{padding:var(--sp-5) var(--sp-3);margin:0 calc(var(--sp-3) * -1);border-radius:var(--radius-btn);transition:background .15s;}
+    #search .list li:hover{background:var(--surface);}
+    #search .list li .thumb{width:168px;height:128px;border-radius:var(--radius-img);}
+    #search .list .cont .info .name{font-size:var(--fs-body-lg);line-height:1.35;}
+    #search > .map-wrap{grid-column:2;grid-row:1 / span 30;position:sticky;top:80px;margin:0;height:calc(100vh - 96px);border-radius:var(--radius-card);}
+    #search > .map-wrap #map{height:100%;}
+    #search > .map-hint,#search .map-toggle,html.has-cmp #search .map-toggle{display:none;}
+    #search .rec-header{padding-left:0;padding-right:0;}
+
+    /* ════════ 홈 ════════ */
+    #main{max-width:var(--pc-max);margin:0 auto;background:#fff;}
+    /* 히어로: 둥근 배너 · 왼쪽 카피+검색 / 오른쪽 리뷰 말풍선. 배경은 PC용 가로 사진이 준비될 때까지 브랜드 그라데이션
+       (현행 search_bg.jpg는 720×828 세로라 PC 폭에서 흐려지고 잘림) */
+    #main .sec-1{margin:var(--sp-6) var(--pc-x) 0;}
+    #main .search-box{display:grid;grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"title text" "input text" "note text";column-gap:var(--sp-12);align-items:center;padding:64px 72px;border-radius:var(--radius-card);background:radial-gradient(120% 140% at 85% 20%, rgb(141 91 253 / 55%) 0%, rgb(77 47 145 / 0%) 55%), linear-gradient(135deg, var(--primary-deep) 0%, var(--ink) 75%);}
+    #main .search-box .text{grid-area:text;margin:0;}
+    #main .search-box .title{grid-area:title;align-self:end;}
+    #main .search-box .title .tit{font-size:40px;line-height:1.3;}   /* PC 히어로 전용(상세 .pct 40px와 같은 단계) */
+    #main .search-box .title .txt{font-size:var(--fs-body-lg);line-height:var(--lh-body);}
+    #main .search-box .input{grid-area:input;max-width:560px;margin-top:var(--sp-6);padding:var(--sp-4) var(--sp-5);border-radius:var(--radius-btn);}
+    #main .search-box .scope-note{grid-area:note;align-self:start;}
+    #main .map-wrap #map{height:440px;}
+    #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
+    /* 추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) */
+    #main .hotel-list .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);transform:none !important;}
+    #main .hotel-list .list li{width:auto !important;margin:0 !important;}
+    #main .hotel-list .list .item .thumb .image{aspect-ratio:4/3;}
+    #main .hotel-list .list .item:hover .thumb .image img{transform:scale(1.03);}
+    #main .hotel-list .list .item .thumb .image img{transition:transform .3s;}
+
+    /* ════════ 비교: 왼쪽 항목명 칸 + 호텔 칸 (Zillow Compare homes) ════════ */
+    #cmp{max-width:1080px;margin:0 auto;padding:0 var(--pc-x);background:#fff;min-height:100vh;}
+    #cmp .cmp-hd,#cmp .cmp-cta{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);padding-left:0;padding-right:0;}
+    #cmp .cmp-hd{top:64px;}
+    #cmp .cmp-h-sp{display:block;}
+    #cmp .cmp-sum{padding-left:0;padding-right:0;}
+    #cmp .cmp-gt{padding-left:0;padding-right:0;}
+    #cmp .cmp-tr{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:center;gap:var(--sp-4);padding:var(--sp-4) 0;}
+    #cmp .cmp-k{margin:0;font-size:var(--fs-caption);color:var(--ink-2);}
+    #cmp .cmp-v{gap:var(--sp-4);}
+    #cmp .cmp-cell{font-size:var(--fs-body);}
+    #cmp .cmp-nm{font-size:var(--fs-body);}
+    #cmp .cmp-note{padding-left:0;padding-right:0;}
+    #cmp .cmp-empty{padding:96px 0;}
+
+    /* ════════ 컬렉션 허브·소개·최근 본 ════════ */
+    #hub{max-width:960px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #about{max-width:800px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #main .hotel-list.recent-list .list ul{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
+}

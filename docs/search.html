@@ -33,18 +33,19 @@
     <link rel="apple-touch-icon" href="img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="css/tokens.css?v=1791521225">
-    <link rel="stylesheet" href="css/common.css?v=1791521225">
-    <link rel="stylesheet" href="css/layout.css?v=1791521225">
-    <link rel="stylesheet" href="css/swiper.css?v=1791521225">
-    <link rel="stylesheet" href="css/uplift.css?v=1791521225">
-    <link rel="stylesheet" href="css/mvp.css?v=1791521225">
-    <script src="js/backnav.js?v=1791521225"></script>
+    <link rel="stylesheet" href="css/tokens.css?v=1791524206">
+    <link rel="stylesheet" href="css/common.css?v=1791524206">
+    <link rel="stylesheet" href="css/layout.css?v=1791524206">
+    <link rel="stylesheet" href="css/swiper.css?v=1791524206">
+    <link rel="stylesheet" href="css/uplift.css?v=1791524206">
+    <link rel="stylesheet" href="css/mvp.css?v=1791524206">
+    <link rel="stylesheet" href="css/pc.css?v=1791524206">
+    <script src="js/backnav.js?v=1791524206"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="js/engage.js?v=1791521225" defer></script>
-    <script src="js/recommend.js?v=1791521225"></script>
+    <script src="js/engage.js?v=1791524206" defer></script>
+    <script src="js/recommend.js?v=1791524206"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -53,6 +54,14 @@
         <div class="det-header">
                 <a class="dh-back" href="./" aria-label="뒤로가기"><img src="img/back_b.svg" alt="뒤로가기"></a>
                 <a class="dh-logo" href="./" aria-label="CATCHFLAW 홈"><img src="img/logo.svg" alt="CATCHFLAW"></a>
+                
+                <nav class="dh-nav" aria-label="주요 메뉴">
+                    <a href="./">홈</a>
+                    <a href="search">호텔 검색</a>
+                    <a href="compare">호텔 비교</a>
+                    <a href="recent">최근 본 호텔</a>
+                    <a href="about">산출 방법</a>
+                </nav>
                 <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
             </div>
             <div class="det-drawer" hidden>
@@ -145,7 +154,7 @@
             <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="mt-t">지도로 보기</span></button>
         </section>
     </main>
-    <script src="./js/compare.js?v=1791521225" data-root="./"></script>
+    <script src="./js/compare.js?v=1791524206" data-root="./"></script>
 
     <div class="cf-modal" id="cf-catfilter">
         <div class="cf-modal-dim"></div>
@@ -160,10 +169,10 @@
         </div>
     </div>
 
-    <script src="./data/index.js?v=1791521225"></script>
-    <script defer src="./data/search_index.js?v=1791521225"></script>
-    <script src="./js/search-key.js?v=1791521225"></script>
-    <script src="./js/search-ac.js?v=1791521225"></script>
+    <script src="./data/index.js?v=1791524206"></script>
+    <script defer src="./data/search_index.js?v=1791524206"></script>
+    <script src="./js/search-key.js?v=1791524206"></script>
+    <script src="./js/search-ac.js?v=1791524206"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     (function(){
@@ -213,18 +222,29 @@
                 + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
                 + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>';
         }
+        // 화면 맞춤용 좌표: 중앙값에서 5km 밖 외곽 호텔(시카노시마 등)은 맞춤에서만 제외 — 도심이 작게 보이는 문제 방지
+        function fitPts(list){
+            var pts = list.filter(function(h){ return h.lat != null; }).map(function(h){ return [h.lat, h.lng]; });
+            if (pts.length < 5) return pts;
+            var med = function(a){ a = a.slice().sort(function(x,y){ return x-y; }); return a[Math.floor(a.length/2)]; };
+            var mLat = med(pts.map(function(p){ return p[0]; })), mLng = med(pts.map(function(p){ return p[1]; }));
+            var core = pts.filter(function(p){ return km(mLat, mLng, p[0], p[1]) <= 5; });
+            return core.length >= pts.length * 0.8 ? core : pts;
+        }
+        var markerById = {};
         function drawMap(list, fit){
-            markers.clearLayers();
+            markers.clearLayers(); markerById = {};
             var pts = [];
             list.forEach(function(h){
                 if (h.lat == null) return;
                 var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
                 var mk = L.circleMarker([h.lat,h.lng], {radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95});
                 mk.bindPopup(popupHtml(h));
-                markers.addLayer(mk);
+                markers.addLayer(mk); markerById[h.id] = mk;
                 pts.push([h.lat,h.lng]);
             });
-            if (fit && pts.length) { syncMap = false; map.once('moveend', function(){ syncMap = true; renderVisible(); }); map.fitBounds(pts, {padding:[28,28], maxZoom:15}); }
+            var fp = fitPts(list);
+            if (fit && fp.length) { syncMap = false; map.once('moveend', function(){ syncMap = true; renderVisible(); }); map.fitBounds(fp, {padding:[28,28], maxZoom:15}); }
         }
 
         // ───── 정렬 ─────
@@ -268,7 +288,7 @@
         function row(h){
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
-            return '<li><div class="item'+(h.scored?' with-cmp':'')+'">'
+            return '<li data-id="'+h.id+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
                 + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
@@ -384,8 +404,16 @@
         // ───── 이벤트 ─────
         map.on('moveend', function(){ if (mapOpen && syncMap && !recMode) renderVisible(); });
 
+        // PC: 목록 카드에 마우스를 올리면 지도 마커를 키워 위치를 보여줌(Tripadvisor·Airbnb 패턴)
+        $res.on('mouseenter', 'li[data-id]', function(){
+            var mk = mapOpen && markerById[$(this).data('id')]; if (!mk) return;
+            mk.setStyle({radius:13, weight:3}); mk.bringToFront();
+        }).on('mouseleave', 'li[data-id]', function(){
+            var mk = markerById[$(this).data('id')]; if (mk) mk.setStyle({radius:8, weight:2});
+        });
+
         // P6 지도 토글: 열면 지도 위로 스크롤 + 크기 재계산 + 목록을 보이는 영역으로 연동, 닫으면 전체 목록
-        function setMap(open){
+        function setMap(open, noScroll){
             mapOpen = open;
             $('#map-wrap, #map-hint').toggleClass('is-collapsed', !open);
             $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록만 보기' : '지도로 보기');
@@ -395,12 +423,14 @@
                 var a = fArea ? AREAS.filter(function(x){ return x.code === fArea; })[0] : null;
                 if (a) map.setView([a.lat, a.lng], 15, {animate:false});
                 else {
-                    var pts = baseList.filter(function(h){ return h.lat != null; }).map(function(h){ return [h.lat, h.lng]; });
+                    var pts = fitPts(baseList);
                     if (pts.length) map.fitBounds(pts, {padding:[28,28], maxZoom:15, animate:false});  // 즉시 맞춤 → 아래 renderVisible이 바로 정확
                 }
                 drawMap(baseList, false);
-                var top = $('#map-wrap').offset().top - 64;
-                window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+                if (!noScroll) {
+                    var top = $('#map-wrap').offset().top - 64;
+                    window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+                }
             }
             renderVisible();
         }
@@ -588,6 +618,11 @@
             if (initArea){ fArea = initArea; $('#f-area .f-chip').removeClass('on'); $('#f-area .f-chip[data-area="'+initArea+'"]').addClass('on'); }
             if (initQ){ $q.val(initQ); }
             run();
+            // PC: 지도 상시 표시(토글 숨김은 pc.css). 창 크기가 경계를 넘으면 따라 전환
+            var mqPc = window.matchMedia('(min-width:1100px)');
+            if (mqPc.matches) setMap(true, true);
+            var onMq = function(e){ setMap(e.matches, true); };
+            if (mqPc.addEventListener) mqPc.addEventListener('change', onMq); else mqPc.addListener(onMq);
         }
     })();
     </script>

@@ -59,8 +59,8 @@
         + '<a class="ce-btn" href="./search">호텔 찾으러 가기</a></div>';
       return;
     }
-    var cols = 'grid-template-columns:repeat(' + H.length + ',minmax(0,1fr))';
-    var html = '<div class="cmp-hd" style="' + cols + '">' + H.map(function (h) {
+    var cols = '--n:' + H.length;   // 칸 수는 CSS 변수로(모바일 n칸 · PC는 왼쪽 항목명 칸 + n칸)
+    var html = '<div class="cmp-hd" style="' + cols + '"><div class="cmp-h cmp-h-sp" aria-hidden="true"></div>' + H.map(function (h) {
         return '<div class="cmp-h"><a href="./hotels/' + h.id + '"><span class="cmp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</span>'
           + '<span class="cmp-nm">' + esc(h.n) + '</span></a><button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="비교에서 빼기">×</button></div>';
       }).join('') + '</div>';
@@ -91,7 +91,7 @@
       + '<div class="cmp-grp"><div class="cmp-gt">리뷰에서 자주 나온 불만</div>' + g3 + '</div>'
       + '<div class="cmp-grp"><div class="cmp-gt">리뷰로 확인한 실전 정보</div>' + g4 + '</div>'
       + '<p class="cmp-note">수치는 공개 리뷰를 분석한 참고용 통계예요 · <a href="./about">산출 방법</a></p>'
-      + '<div class="cmp-cta" style="' + cols + '">' + H.map(function (h) { return '<a href="./hotels/' + h.id + '">분석 보기</a>'; }).join('') + '</div>';
+      + '<div class="cmp-cta" style="' + cols + '"><span class="cmp-h-sp" aria-hidden="true"></span>' + H.map(function (h) { return '<a href="./hotels/' + h.id + '">분석 보기</a>'; }).join('') + '</div>';
     root.innerHTML = html;
     root.classList.toggle('is-diff-only', diffOnly);
   }

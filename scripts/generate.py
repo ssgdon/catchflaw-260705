@@ -249,15 +249,17 @@ def load():
     return hotels_meta, quotes, stars, kr, monthly, monthly_cat, faq, social
 
 # ───────────────────────── 공통 조각 ─────────────────────────
-# P2 상세 섹션 탭: 스크롤 위치로 활성 탭 표시 + 클릭 시 헤더(56)+탭 높이만큼 보정해 이동. f-string 아님(JS 중괄호 보존).
+# P2 상세 섹션 탭: 스크롤 위치로 활성 탭 표시 + 클릭 시 헤더+탭 높이만큼 보정해 이동. f-string 아님(JS 중괄호 보존).
 DETAIL_TABS_JS = '''<script>
 (function(){
     var nav = document.getElementById('det-tabs'); if (!nav) return;
     var links = [].slice.call(nav.querySelectorAll('a')), ticking = false;
+    var hd = document.querySelector('.det-header');
+    function top0(){ return (hd ? hd.offsetHeight : 56) + nav.offsetHeight; }   // 헤더 높이: 모바일 56 · PC 64
     function target(a){ return document.getElementById(a.getAttribute('href').slice(1)); }
     function spy(){
         ticking = false;
-        var cur = links[0], lim = 56 + nav.offsetHeight + 24;
+        var cur = links[0], lim = top0() + 24;
         links.forEach(function(a){ var s = target(a); if (s && s.getBoundingClientRect().top <= lim) cur = a; });
         links.forEach(function(a){ a.classList.toggle('is-on', a === cur); });
     }
@@ -266,7 +268,7 @@ DETAIL_TABS_JS = '''<script>
         var a = e.target.closest('a'); if (!a) return;
         var s = target(a); if (!s) return;
         e.preventDefault();
-        window.scrollTo({top: s.getBoundingClientRect().top + window.pageYOffset - (56 + nav.offsetHeight) + 1, behavior: 'smooth'});
+        window.scrollTo({top: s.getBoundingClientRect().top + window.pageYOffset - top0() + 1, behavior: 'smooth'});
         if (typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
     });
 })();
@@ -344,6 +346,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="stylesheet" href="{p}css/swiper.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/uplift.css?v={BUILD}">
     <link rel="stylesheet" href="{p}css/mvp.css?v={BUILD}">
+    <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}">
     <script src="{p}js/backnav.js?v={BUILD}"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{p}js/swiper.js"></script>
@@ -368,16 +371,29 @@ def build_footer(depth=0):
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
 
-def site_header(depth=1, back=None):
+def site_header(depth=1, back=None, search=True):
     """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+드로어 4링크.
     back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 드로어 JS는 jQuery 비의존 vanilla."""
     p = '../' * depth
     home = p or './'
+    # PC 전용 헤더 검색(pc.css에서만 표시) — 상세·비교·허브 등에서 바로 다른 호텔을 찾게(Tripadvisor·Klook 헤더 패턴)
+    dh_search = (f'<form class="dh-search" action="{p}search" method="get" role="search">'
+                 f'<input type="search" name="q" placeholder="{CITY["ko"]} 호텔명 검색" aria-label="호텔 검색">'
+                 '<button type="submit" aria-label="검색"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="m13.5 13.5 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></form>'
+                 if search else '')
     back_slot = (f'<a class="dh-back" href="{back}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>'
                  if back else '<span class="dh-back dh-back-empty" aria-hidden="true"></span>')
     return f'''<div class="det-header">
                 {back_slot}
                 <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
+                {dh_search}
+                <nav class="dh-nav" aria-label="주요 메뉴">
+                    <a href="{home}">홈</a>
+                    <a href="{p}search">호텔 검색</a>
+                    <a href="{p}compare">호텔 비교</a>
+                    <a href="{p}recent">최근 본 호텔</a>
+                    <a href="{p}about">산출 방법</a>
+                </nav>
                 <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
             </div>
             <div class="det-drawer" hidden>
@@ -502,7 +518,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     '위생·소음·시설·동선·서비스·안전 6개 항목의 위험도를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
     <link rel="preload" as="image" href="./img/search_bg.jpg?v={BUILD}" fetchpriority="high">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0) + f'''
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False) + f'''
     <main id="container">
         <section id="main">
             <article class="section sec-1">
@@ -584,7 +600,12 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                 + '<a class="pop-link" href="./hotels/' + h.id + '">캐치플로 분석 보기 →</a></div>');
             pts.push([h.lat, h.lng]);
         }});
-        if (pts.length) map.fitBounds(pts, {{padding: [24, 24], maxZoom: 14}});
+        // 화면 맞춤은 도심 기준: 중앙값에서 5km 밖 외곽 호텔은 맞춤에서만 제외(마커는 그대로) — 검색 지도와 동일
+        var med = function(a){{ a = a.slice().sort(function(x, y){{ return x - y; }}); return a[Math.floor(a.length / 2)]; }};
+        var mLat = med(pts.map(function(p){{ return p[0]; }})), mLng = med(pts.map(function(p){{ return p[1]; }}));
+        var core = pts.filter(function(p){{ return Math.abs(p[0] - mLat) * 111 <= 5 && Math.abs(p[1] - mLng) * 93 <= 5; }});
+        var fit = core.length >= pts.length * 0.8 ? core : pts;
+        if (fit.length) map.fitBounds(fit, {{padding: [24, 24], maxZoom: 14}});
     }});
 
     // ───── 메인 검색: 자동완성(CFAutocomplete) + 구글맵 URL 인식 ─────
@@ -859,7 +880,7 @@ def build_search(city_avg_pct):
         canonical=f'{BASE}/search') + f'''
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
-        ''' + site_header(0, back='./') + f'''
+        ''' + site_header(0, back='./', search=False) + f'''
         <section id="title">
             <div class="search">
                 <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
@@ -990,18 +1011,29 @@ def build_search(city_avg_pct):
                 + (h.pt?' · 1박 '+h.pt:'')+'</div>'+chip
                 + '<a class="pop-link" href="./hotels/'+h.id+'">캐치플로 분석 보기 →</a></div>';
         }}
+        // 화면 맞춤용 좌표: 중앙값에서 5km 밖 외곽 호텔(시카노시마 등)은 맞춤에서만 제외 — 도심이 작게 보이는 문제 방지
+        function fitPts(list){{
+            var pts = list.filter(function(h){{ return h.lat != null; }}).map(function(h){{ return [h.lat, h.lng]; }});
+            if (pts.length < 5) return pts;
+            var med = function(a){{ a = a.slice().sort(function(x,y){{ return x-y; }}); return a[Math.floor(a.length/2)]; }};
+            var mLat = med(pts.map(function(p){{ return p[0]; }})), mLng = med(pts.map(function(p){{ return p[1]; }}));
+            var core = pts.filter(function(p){{ return km(mLat, mLng, p[0], p[1]) <= 5; }});
+            return core.length >= pts.length * 0.8 ? core : pts;
+        }}
+        var markerById = {{}};
         function drawMap(list, fit){{
-            markers.clearLayers();
+            markers.clearLayers(); markerById = {{}};
             var pts = [];
             list.forEach(function(h){{
                 if (h.lat == null) return;
                 var col = h.band ? BAND_COLOR[h.band] : '#9CA3AF';
                 var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95}});
                 mk.bindPopup(popupHtml(h));
-                markers.addLayer(mk);
+                markers.addLayer(mk); markerById[h.id] = mk;
                 pts.push([h.lat,h.lng]);
             }});
-            if (fit && pts.length) {{ syncMap = false; map.once('moveend', function(){{ syncMap = true; renderVisible(); }}); map.fitBounds(pts, {{padding:[28,28], maxZoom:15}}); }}
+            var fp = fitPts(list);
+            if (fit && fp.length) {{ syncMap = false; map.once('moveend', function(){{ syncMap = true; renderVisible(); }}); map.fitBounds(fp, {{padding:[28,28], maxZoom:15}}); }}
         }}
 
         // ───── 정렬 ─────
@@ -1045,7 +1077,7 @@ def build_search(city_avg_pct):
         function row(h){{
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
             var price = h.pt ? '<span class="price">1박 <b>'+h.pt+'</b></span>' : '';
-            return '<li><div class="item'+(h.scored?' with-cmp':'')+'">'
+            return '<li data-id="'+h.id+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
                 + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
@@ -1161,8 +1193,16 @@ def build_search(city_avg_pct):
         // ───── 이벤트 ─────
         map.on('moveend', function(){{ if (mapOpen && syncMap && !recMode) renderVisible(); }});
 
+        // PC: 목록 카드에 마우스를 올리면 지도 마커를 키워 위치를 보여줌(Tripadvisor·Airbnb 패턴)
+        $res.on('mouseenter', 'li[data-id]', function(){{
+            var mk = mapOpen && markerById[$(this).data('id')]; if (!mk) return;
+            mk.setStyle({{radius:13, weight:3}}); mk.bringToFront();
+        }}).on('mouseleave', 'li[data-id]', function(){{
+            var mk = markerById[$(this).data('id')]; if (mk) mk.setStyle({{radius:8, weight:2}});
+        }});
+
         // P6 지도 토글: 열면 지도 위로 스크롤 + 크기 재계산 + 목록을 보이는 영역으로 연동, 닫으면 전체 목록
-        function setMap(open){{
+        function setMap(open, noScroll){{
             mapOpen = open;
             $('#map-wrap, #map-hint').toggleClass('is-collapsed', !open);
             $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록만 보기' : '지도로 보기');
@@ -1172,12 +1212,14 @@ def build_search(city_avg_pct):
                 var a = fArea ? AREAS.filter(function(x){{ return x.code === fArea; }})[0] : null;
                 if (a) map.setView([a.lat, a.lng], 15, {{animate:false}});
                 else {{
-                    var pts = baseList.filter(function(h){{ return h.lat != null; }}).map(function(h){{ return [h.lat, h.lng]; }});
+                    var pts = fitPts(baseList);
                     if (pts.length) map.fitBounds(pts, {{padding:[28,28], maxZoom:15, animate:false}});  // 즉시 맞춤 → 아래 renderVisible이 바로 정확
                 }}
                 drawMap(baseList, false);
-                var top = $('#map-wrap').offset().top - 64;
-                window.scrollTo({{top: Math.max(0, top), behavior: 'smooth'}});
+                if (!noScroll) {{
+                    var top = $('#map-wrap').offset().top - 64;
+                    window.scrollTo({{top: Math.max(0, top), behavior: 'smooth'}});
+                }}
             }}
             renderVisible();
         }}
@@ -1365,6 +1407,11 @@ def build_search(city_avg_pct):
             if (initArea){{ fArea = initArea; $('#f-area .f-chip').removeClass('on'); $('#f-area .f-chip[data-area="'+initArea+'"]').addClass('on'); }}
             if (initQ){{ $q.val(initQ); }}
             run();
+            // PC: 지도 상시 표시(토글 숨김은 pc.css). 창 크기가 경계를 넘으면 따라 전환
+            var mqPc = window.matchMedia('(min-width:1100px)');
+            if (mqPc.matches) setMap(true, true);
+            var onMq = function(e){{ setMap(e.matches, true); }};
+            if (mqPc.addEventListener) mqPc.addEventListener('change', onMq); else mqPc.addListener(onMq);
         }}
     }})();
     </script>''' + build_footer(0) + FOOT
@@ -1733,6 +1780,18 @@ def korean_card(kr, city, kr_rank_pct=None, kr_1y=None, kr_dist=None):
             {serious_block}
         </div>'''
 
+
+def pc_gallery_html(meta, name, fallback):
+    """PC 사진 그리드(pc.css에서만 표시): 장수에 맞춰 1 / 2 / 3 / 4 / 5장 배치(KAYAK·Klook 1+4 패턴).
+       호텔 사진이 대부분 1~2장(가로 960px)이라 장수별 레이아웃을 따로 둔다. 첫 장은 모바일 히어로와 같은 URL(캐시 공유)."""
+    imgs = (meta.get('r2_imgs') or [fallback])[:5]
+    n = len(imgs)
+    cells = ''
+    for i, u in enumerate(imgs):
+        lazy = '' if i == 0 else ' loading="lazy"'
+        cells += f'<div class="pg-cell pg-{i}"><img src="{E(u)}" alt="{E(name)} 사진 {i + 1}" width="960" height="640"{lazy}></div>'
+    more = f'<span class="pg-count">사진 {len(meta.get("r2_imgs") or [])}장</span>' if len(meta.get('r2_imgs') or []) > 1 else ''
+    return f'<div class="pc-gallery g{n}">{cells}{more}</div>'
 
 def gallery_html(meta, name, fallback):
     """상세 히어로: 사진 2장+면 Swiper 갤러리(점 표시·스와이프), 아니면 단일 이미지."""
@@ -2111,6 +2170,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     glance_html = ''
     who_html = ''
     tabs_html = ''
+    v_head, v_tone = '', 'safe'
     if not h['scored']:
         body_scored = f'''<div class="sect"><div class="head">
             <div class="title">아직 분석 리뷰가 부족해요</div>
@@ -2556,6 +2616,34 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     cmp_btn = (f'<button type="button" class="cmp-btn" data-cmp-id="{pid}" data-cmp-name="{E(name)}" '
                f'data-cmp-img="{E(abs_img(pid, meta))}"><span class="cmp-ico"></span><span class="cmp-t">비교 담기</span></button>'
                if h['scored'] else '')
+    # ── PC 전용: 브레드크럼(JSON-LD BreadcrumbList와 동일 경로) + 오른쪽 결정 카드(실망 확률·핵심 수치·CTA) ──
+    _area = next((a for a in AREAS if _in_area(meta, a)), None)
+    pc_crumb = (f'<nav class="pc-crumb" aria-label="경로"><a href="../">캐치플로</a><span>›</span><a href="../search">{CITY["ko"]} 호텔</a>'
+                + (f'<span>›</span><a href="../search?area={_area["code"]}">{E(_area["ko"])}</a>' if _area else '')
+                + f'<span>›</span><b>{E(name)}</b></nav>')
+    _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
+    _rows = [('구글 평점', f'<b>{fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}개)'),
+             ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · 구글·트립닷컴 등')]
+    if meta.get('price_txt'): _rows.append(('1박 평균', f'<b>{E(meta["price_txt"])}</b>'))
+    if _st2: _rows.append(('가까운 역', f'{E(_st2[0])} 도보 <b>{_st2[1]}분</b>'))
+    _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
+    if h['scored']:
+        _pv = pct(h['p_crit'])
+        _rank = (f'{CITY["ko"]} {"상위" if crit_rank_pct <= 50 else "하위"} {crit_rank_pct if crit_rank_pct <= 50 else 100 - crit_rank_pct}%'
+                 if crit_rank_pct else '')
+        _top_html = (f'<div class="ps-eyebrow">이 호텔에서 실망할 확률</div>'
+                     f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}">{E(v_head)}</div>'
+                     f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{(" · " + _rank) if _rank else ""}</div>')
+    else:
+        _top_html = (f'<div class="ps-eyebrow">실망 확률</div><div class="ps-collect">리뷰 수집중</div>'
+                     f'<div class="ps-avg">분석 리뷰가 {MIN_REVIEWS}건 이상 쌓이면 공개해요</div>')
+    pc_side = f'''<aside class="pc-side" aria-label="요약">
+                    {_top_html}
+                    <ul class="ps-rows">{_rows_html}</ul>
+                    <a class="btn-reservate ps-cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a>
+                    <div class="ps-actions">{cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn ps-cmp"') if cmp_btn else ''}<a href="javascript:;" class="btn-share ps-share">공유</a></div>
+                    <p class="ps-note">공개 리뷰 기반 참고용 통계예요 · <a href="../about">산출 방법</a></p>
+                </aside>'''
     canonical = f'{BASE}/hotels/{pid}'
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
     if h['scored']:
@@ -2579,7 +2667,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {site_header(1, back='../search')}
             <div class="content">
                 {gallery_html(meta, name, img)}
+                {pc_gallery_html(meta, name, img)}
                 <div class="sect information">
+                    {pc_crumb}
                     <div class="info-top"><div class="badge">{badge_html(h)}</div></div>
                     <div class="info-cont">
                         <div class="name">
@@ -2601,6 +2691,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {faq_jump_html}
                 </div>
+                {pc_side}
                 {tabs_html}
                 {glance_html}
                 {who_html}

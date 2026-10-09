@@ -990,8 +990,9 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-empty .ce-txt{margin-top:var(--sp-2);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-2);}
 #cmp .cmp-empty .ce-one{margin-top:var(--sp-4);font-size:var(--fs-caption);color:var(--ink-3);}
 #cmp .cmp-empty .ce-btn{display:inline-flex;align-items:center;height:48px;margin-top:var(--sp-5);padding:0 var(--sp-6);border-radius:var(--radius-btn);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);}
-#cmp .cmp-hd{position:sticky;top:56px;z-index:80;display:grid;gap:var(--sp-2);padding:var(--sp-3) var(--page-x);background:#fff;border-bottom:1px solid var(--line-strong);}
+#cmp .cmp-hd{position:sticky;top:56px;z-index:80;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-2);padding:var(--sp-3) var(--page-x);background:#fff;border-bottom:1px solid var(--line-strong);}
 #cmp .cmp-h{position:relative;min-width:0;}
+#cmp .cmp-h-sp{display:none;}   /* PC 항목명 칸 자리(pc.css에서 표시) */
 #cmp .cmp-h a{display:block;color:inherit;}
 #cmp .cmp-img{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius-btn);background:var(--surface);}
 #cmp .cmp-img img{display:block;width:100%;height:100%;object-fit:cover;}
@@ -1032,7 +1033,7 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-sub{font-size:var(--fs-micro);color:var(--ink-3);}
 #cmp .cmp-note{padding:var(--sp-6) var(--page-x) var(--sp-4);font-size:var(--fs-micro);color:var(--ink-3);}
 #cmp .cmp-note a{color:var(--ink-2);text-decoration:underline;}
-#cmp .cmp-cta{position:sticky;bottom:0;z-index:80;display:grid;gap:var(--sp-2);padding:var(--sp-3) var(--page-x);background:#fff;border-top:1px solid var(--line-strong);}
+#cmp .cmp-cta{position:sticky;bottom:0;z-index:80;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-2);padding:var(--sp-3) var(--page-x);background:#fff;border-top:1px solid var(--line-strong);}
 #cmp .cmp-cta a{display:flex;align-items:center;justify-content:center;height:44px;border-radius:var(--radius-btn);background:var(--primary-soft);color:var(--primary);font-size:var(--fs-caption);font-weight:var(--fw-bold);}
 
 /* P3 누구와 가세요(1단계) — 구성 칩 → 패널. 위험 표시는 시맨틱 3색, 실전정보 태그는 중립 */
