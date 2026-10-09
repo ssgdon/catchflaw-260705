@@ -29,35 +29,35 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 /* 정보(제목) 영역 */
 #detail .information{padding-top:var(--sp-6);}
 #detail .information .info-top .badge{gap:6px;}
-#detail .information .info-top .badge .badge-item{height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:var(--radius-chip);line-height:1;font-size:13px;font-weight:var(--fw-bold);}
+#detail .information .info-top .badge .badge-item{height:28px;padding:0 10px;display:inline-flex;align-items:center;border-radius:var(--radius-chip);line-height:1;font-size:var(--fs-meta);font-weight:var(--fw-bold);}
 #detail .information .info-cont .name{margin-top:var(--sp-3);}
 #detail .information .info-cont .name .name-ko{line-height:1.35;font-size:var(--fs-h1);font-weight:var(--fw-display);color:var(--ink);}
-#detail .information .info-cont .name .name-en{margin-top:4px;line-height:1.4;font-size:13px;color:var(--ink-3);}
+#detail .information .info-cont .name .name-en{margin-top:4px;line-height:1.4;font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .information .info-cont .meta{margin-top:var(--sp-2);}
 #detail .information .info-cont .meta span{line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
 #detail .information .info-cont .meta span b{color:var(--primary);font-weight:var(--fw-bold);}
 #detail .information .info-bottom{margin-top:var(--sp-5);gap:var(--sp-2);}
 #detail .information .info-bottom .btn-link{height:64px;padding:0 var(--sp-4);border-radius:var(--radius-btn);}
-#detail .information .info-bottom .btn-link .txt .label{font-size:15px;font-weight:var(--fw-bold);line-height:1.35;}
-#detail .information .info-bottom .btn-link .txt .count{font-size:13px;line-height:1.4;}
-#detail .fj-title{margin-top:var(--sp-6);font-size:13px;font-weight:var(--fw-bold);color:var(--ink-3);}
+#detail .information .info-bottom .btn-link .txt .label{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);line-height:1.35;}
+#detail .information .info-bottom .btn-link .txt .count{font-size:var(--fs-meta);line-height:1.4;}
+#detail .fj-title{margin-top:var(--sp-6);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
 #detail .faq-jump{gap:var(--sp-2);}
 #detail .fj-btn{height:36px;padding:0 14px;border:0;border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-medium);}
 
 /* 섹션 탭 */
 #detail .det-tabs{border-bottom-color:var(--line-strong);}
-#detail .det-tabs a{height:52px;font-size:15px;font-weight:var(--fw-bold);}
+#detail .det-tabs a{height:52px;font-size:var(--fs-body-sm);font-weight:var(--fw-bold);}
 
 /* 한눈에 보기 */
 #detail .sect.glance{padding:var(--sp-2) var(--page-x) var(--sp-6);}
 #detail .glance .gl-box{padding:var(--sp-6);background:var(--surface-2);border:1px solid var(--line);}
-#detail .glance .gl-eyebrow{font-size:13px;}
-#detail .glance .gl-lead{font-size:18px;line-height:1.5;font-weight:var(--fw-display);}
+#detail .glance .gl-eyebrow{font-size:var(--fs-meta);}
+#detail .glance .gl-lead{font-size:var(--fs-lead);line-height:1.5;font-weight:var(--fw-display);}
 #detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-5);}
-#detail .glance .gl-h{margin-bottom:var(--sp-2);font-size:13px;}
-#detail .glance li{padding:6px 0;font-size:15px;line-height:1.55;}
+#detail .glance .gl-h{margin-bottom:var(--sp-2);font-size:var(--fs-meta);}
+#detail .glance li{padding:6px 0;font-size:var(--fs-body-sm);line-height:1.55;}
 #detail .glance .gl-dot{margin-top:9px;}
-#detail .glance .gl-foot{font-size:12px;}
+#detail .glance .gl-foot{font-size:var(--fs-meta);}
 
 /* 누구와 가세요 */
 #detail .who .who-chips{gap:var(--sp-2);}
@@ -65,26 +65,26 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .who .who-chip.is-on{font-weight:var(--fw-bold);}
 #detail .who .who-panel{margin-top:var(--sp-5);padding:var(--sp-5) var(--sp-5) var(--sp-4);border:0;background:var(--surface-2);}
 #detail .who .who-h{font-size:var(--fs-h3);font-weight:var(--fw-display);}
-#detail .who li{padding:var(--sp-3) 0;font-size:15px;border-top-color:var(--line-strong);}
-#detail .who .who-quote{background:#fff;}
+#detail .who li{padding:var(--sp-3) 0;font-size:var(--fs-body-sm);border-top-color:var(--line-strong);}
+#detail .who .who-quote{background:var(--surface-card);}
 
 /* 위치 */
 #detail .location .loc-addr{font-size:var(--fs-caption);line-height:1.55;color:var(--ink-2);}
 #detail .location .loc-chips{gap:var(--sp-2);margin:var(--sp-3) 0;}
-#detail .location .lc-chip{height:32px;padding:0 var(--sp-3);border-radius:var(--radius-pill);font-size:13px;font-weight:var(--fw-medium);}
+#detail .location .lc-chip{height:32px;padding:0 var(--sp-3);border-radius:var(--radius-pill);font-size:var(--fs-meta);font-weight:var(--fw-medium);}
 
 /* 실망 확률 */
-#detail .disappear .head .eyebrow{font-size:15px;font-weight:var(--fw-medium);color:var(--ink-2);}
-#detail .disappear .head .pct{font-size:48px;font-weight:var(--fw-display);}
-#detail .disappear .head .vh{font-size:18px;font-weight:var(--fw-display);}
-#detail .verdict-why{font-size:15px;line-height:1.6;color:var(--ink-2);}
+#detail .disappear .head .eyebrow{font-size:var(--fs-body-sm);font-weight:var(--fw-medium);color:var(--ink-2);}
+#detail .disappear .head .pct{font-size:var(--fs-num-lg);font-weight:var(--fw-display);}
+#detail .disappear .head .vh{font-size:var(--fs-lead);font-weight:var(--fw-display);}
+#detail .verdict-why{font-size:var(--fs-body-sm);line-height:1.6;color:var(--ink-2);}
 
 /* 항목별로 보면: 색 상자 6개 → 구분선 목록 (결론 글자색만으로 의미 전달) */
 #detail .risk .radar-cats{gap:0;margin-top:var(--sp-5);}
 #detail .risk .radar-cat{min-height:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;background:transparent !important;}
 #detail .risk .radar-cat:last-child{border-bottom:0;}
 #detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-bold);}
-#detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:13px;color:var(--ink-3);}
+#detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .risk .radar-cat .rc-verdict{font-size:var(--fs-body);font-weight:var(--fw-display);}
 
 /* 리스크 상세: 테두리 카드 묶음 → 구분선 목록 */
@@ -92,26 +92,26 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .analysis .risk-acc-item:last-child{border-bottom:0;}
 #detail .analysis .risk-acc-head{padding:var(--sp-5) 0;border-radius:0 !important;background:transparent;border-bottom:0 !important;}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
-#detail .analysis .risk-acc-head .cat-verdict{height:26px;font-size:13px;}
-#detail .analysis .risk-acc-head .cat-rank{font-size:12px;}
+#detail .analysis .risk-acc-head .cat-verdict{height:26px;font-size:var(--fs-meta);}
+#detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-meta);}
 #detail .analysis .risk-acc-body{padding:0 0 var(--sp-6);}
-#detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:15px;font-weight:var(--fw-bold);}
-#detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:12px;color:var(--ink-3);}
+#detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);}
+#detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
 #detail .analysis .review .list .item{padding:var(--sp-5);border:0;background:var(--surface-2);}
-#detail .analysis .review .list .item .item-bottom .text{font-size:15px;line-height:1.6;}
-#detail .analysis .more-btn,#detail .analysis .more a{height:48px;border-radius:var(--radius-btn);font-size:15px;}
+#detail .analysis .review .list .item .item-bottom .text{font-size:var(--fs-body-sm);line-height:1.6;}
+#detail .analysis .more-btn,#detail .analysis .more a{height:48px;border-radius:var(--radius-btn);font-size:var(--fs-body-sm);}
 #detail .stat-legend{gap:var(--sp-2) var(--sp-3);}
-#detail .stat-legend .lg,#detail .stat-legend .note{font-size:12px;}
+#detail .stat-legend .lg,#detail .stat-legend .note{font-size:var(--fs-meta);}
 
 /* 대안·추천 슬라이더 카드 (홈·상세 공통 hotel_card) */
 #main .hotel-list .list li,#detail .hotel .list li{width:216px;}
 #main .hotel-list .list .item .info,#detail .hotel .list .item .info{padding:var(--sp-3) 0 0;}
 #main .hotel-list .list .item .info .name,#detail .hotel .list .item .info .name{margin:0 0 2px;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);}
-#main .hotel-list .list .item .info .eng,#detail .hotel .list .item .info .eng{margin:0 0 6px;font-size:13px;color:var(--ink-3);}
-#main .hotel-list .list .item .info .text,#detail .hotel .list .item .info .text{font-size:13px;line-height:1.5;color:var(--ink-3);}
+#main .hotel-list .list .item .info .eng,#detail .hotel .list .item .info .eng{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-3);}
+#main .hotel-list .list .item .info .text,#detail .hotel .list .item .info .text{font-size:var(--fs-meta);line-height:1.5;color:var(--ink-3);}
 #main .hotel-list .list .item .info .price-line,#detail .hotel .list .item .info .price-line{font-size:var(--fs-caption);}
-#main .hotel-list .list .item .thumb .badge .badge-item,#detail .hotel .list .item .thumb .badge .badge-item{padding:4px 8px;font-size:12px;font-weight:var(--fw-bold);}
+#main .hotel-list .list .item .thumb .badge .badge-item,#detail .hotel .list .item .thumb .badge .badge-item{padding:4px 8px;font-size:var(--fs-micro);font-weight:var(--fw-bold);}
 
 /* 실전정보 FAQ: 테두리 카드 → 구분선 목록 */
 #detail .faq .faq-card{margin:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;background:transparent;}
@@ -134,16 +134,16 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #main .hotel-list{padding:var(--section-y) var(--page-x) var(--sp-2);}
 #main .search-box{padding:var(--sp-10) var(--page-x) var(--sp-8);}
 #main .search-box .title .tit{line-height:1.3;font-size:var(--fs-display);font-weight:var(--fw-display);}
-#main .search-box .title .txt{margin-top:var(--sp-3);line-height:1.6;font-size:15px;}
+#main .search-box .title .txt{margin-top:var(--sp-3);line-height:1.6;font-size:var(--fs-body-sm);}
 #main .search-box .input{height:56px;margin-top:var(--sp-6);border-radius:var(--radius-btn);}
-#main .search-box .scope-note{font-size:13px;}
+#main .search-box .scope-note{font-size:var(--fs-meta);}
 
 /* ════════ 검색 ════════ */
 #title .search{height:52px;border-radius:var(--radius-btn);}
 #title .search input{font-size:var(--fs-body);}
 #search .filters{gap:var(--sp-3);padding:var(--sp-4) var(--page-x) var(--sp-2);}
 #search .filters .f-row{gap:var(--sp-2);}
-#search .filters .f-label{font-size:13px;font-weight:var(--fw-bold);color:var(--ink-3);}
+#search .filters .f-label{font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
 #search .filters .f-chip{height:36px;padding:0 14px;border-radius:var(--radius-pill);font-size:var(--fs-caption);}
 #search .total{padding:var(--sp-5) var(--page-x) 0;font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
 #search .list-head{padding:var(--sp-2) var(--page-x) 0;}
@@ -153,17 +153,17 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #search .list li .item,#hub .hub-list li .item{gap:var(--sp-4);}
 #search .list li .thumb,#hub .hub-list li .thumb{width:96px;height:96px;border-radius:var(--radius-btn);}
 #search .list .cont .info .name,#hub .hub-list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
-#search .list .cont .info .meta span,#hub .hub-list .cont .info .meta span{font-size:13px;line-height:1.5;color:var(--ink-3);}
-#search .list .cont .badge .badge-item,#hub .hub-list .cont .badge .badge-item{padding:4px 8px;font-size:12px;}
+#search .list .cont .info .meta span,#hub .hub-list .cont .info .meta span{font-size:var(--fs-meta);line-height:1.5;color:var(--ink-3);}
+#search .list .cont .badge .badge-item,#hub .hub-list .cont .badge .badge-item{padding:4px 8px;font-size:var(--fs-micro);}
 #search .r-tags{margin-top:var(--sp-3);}
-#search .r-tag{height:26px;font-size:12px;}
+#search .r-tag{height:26px;font-size:var(--fs-micro);}
 
 /* ════════ 컬렉션 허브 ════════ */
 #hub{padding:var(--sp-6) var(--page-x) var(--sp-10);}
 #hub .hub-h1{margin:var(--sp-3) 0;font-size:var(--fs-h1);line-height:1.35;font-weight:var(--fw-display);}
-#hub .hub-summary{font-size:15px;line-height:1.65;color:var(--ink-2);}
+#hub .hub-summary{font-size:var(--fs-body-sm);line-height:1.65;color:var(--ink-2);}
 #hub .hub-h2{font-size:var(--fs-h2);line-height:var(--lh-head);font-weight:var(--fw-display);}
-#hub .hub-chip{padding:4px 10px;font-size:12px;}
+#hub .hub-chip{padding:4px 10px;font-size:var(--fs-micro);}
 
 /* ════════ 소개 ════════ */
 #about{padding:var(--sp-8) var(--page-x) var(--sp-12);}
@@ -173,9 +173,9 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 
 /* ════════ 푸터 ════════ */
 #site-foot{margin-top:0;padding:var(--sp-8) var(--page-x) var(--sp-12);background:var(--surface-2);border-top:1px solid var(--line-strong);}
-#site-foot .foot-note{font-size:13px;line-height:1.65;}
-#site-foot .foot-links{margin-top:var(--sp-3);font-size:13px;}
-#site-foot .foot-copy{margin-top:var(--sp-2);font-size:12px;}
+#site-foot .foot-note{font-size:var(--fs-meta);line-height:1.65;}
+#site-foot .foot-links{margin-top:var(--sp-3);font-size:var(--fs-meta);}
+#site-foot .foot-copy{margin-top:var(--sp-2);font-size:var(--fs-meta);}
 
 /* ════════ ⑥ 읽는 글자 최소 13px (12px는 배지·알약 라벨 전용) — v1에서 --fs-micro를 설명문에 쓰던 곳 정리 ════════ */
 #detail .hotel .list .item .info .vs-line,#detail .hotel .list .item .info .vs-line b,#detail .hotel .list .item .info .vs-line span,
