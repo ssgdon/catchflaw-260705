@@ -13,6 +13,7 @@
 
 /* ── ① 기본 글자 ── */
 body{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);letter-spacing:var(--ls-body);word-break:keep-all;overflow-wrap:break-word;}
+p{word-break:keep-all;overflow-wrap:break-word;}   /* common.css p{break-all}이 한글을 단어 중간에서 끊음('텐/진') — 전역 복원 */
 h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 
 /* ════════ ② 섹션 틀 — 상세 ════════ */

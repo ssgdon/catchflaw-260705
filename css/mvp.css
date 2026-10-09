@@ -1031,7 +1031,6 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-x{position:absolute;top:var(--sp-1);right:var(--sp-1);width:24px;height:24px;border:0;border-radius:50%;background:rgb(0 0 0 / 55%);color:var(--ink-inverse);font-size:var(--fs-caption);line-height:1;cursor:pointer;}
 #cmp .cmp-sum{padding:var(--sp-5) var(--page-x) 0;}
 #cmp .cmp-sum-box{padding:var(--sp-5);border-radius:var(--radius-card);background:var(--surface);}
-#cmp .cmp-sum-box p{word-break:keep-all;}   /* common.css p{break-all}이 '텐/진'처럼 단어 중간을 끊음 */
 #cmp .cmp-eyebrow{font-size:var(--fs-caption);color:var(--ink-3);}
 #cmp .cmp-lead{margin-top:var(--sp-2);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:var(--lh-body);}
 #cmp .cmp-lead em{font-style:normal;color:var(--primary);}
