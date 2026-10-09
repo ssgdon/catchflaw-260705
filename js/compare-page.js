@@ -63,19 +63,28 @@
   }
   function num(v, unit) { return { v: v, k: String(v), h: '<b>' + esc(v) + (unit || '') + '</b>' }; }
 
+  // 한 줄 비교 — 긴 문장 대신 "무엇 / 어느 호텔 / 값" 행으로(호텔명이 문장 중간에서 쪼개지지 않게).
+  function sumRow(k, names, v, bad) {
+    return '<li><span class="cg-k">' + glue(k) + '</span><span class="cg-r"><span class="cg-n">' + names + '</span>'
+      + (v ? '<b class="cg-v' + (bad ? ' is-bad' : '') + '">' + v + '</b>' : '') + '</span></li>';
+  }
   function summary(H) {
     var lows = H.filter(function (h) { return h.lr; });
-    var lowNote = lows.length ? ' ' + lows.map(function (h) { return '<em>' + esc(h.n) + '</em>'; }).join('·')
-      + josa(lows[lows.length - 1].n, '은', '는') + ' 최근 1년 리뷰가 적어 순위 비교에서 뺐어요(참고용).' : '';
-    if (H.length < 2) return '<em>' + esc(H[0].n) + '</em>의 실망 확률은 ' + H[0].p + '%예요. 호텔을 하나 더 추가하면 나란히 비교해 드려요.' + lowNote;
+    var lowNote = lows.length ? '<p class="cg-note">' + lows.map(function (h) { return esc(h.n); }).join(', ')
+      + josa(lows[lows.length - 1].n, '은', '는') + ' 최근 1년 리뷰가 적어 순위 비교에서 뺐어요</p>' : '';
+    if (H.length < 2) return '<ul class="cmp-glance">' + sumRow('실망 확률', esc(H[0].n), H[0].p + '%') + '</ul>'
+      + '<p class="cg-note">호텔을 하나 더 추가하면 나란히 비교해 드려요</p>' + lowNote;
     var R = H.filter(function (h) { return !h.lr; });              // 순위 비교는 리뷰 충분한 호텔끼리
-    if (R.length < 2) return '리뷰가 충분한 호텔이 2곳 미만이라 순위를 매기지 않았어요.' + lowNote;
-    var lo = R.slice().sort(function (a, b) { return a.p - b.p; })[0];
-    var s = '실망 확률은 <em>' + esc(lo.n) + '</em>' + josa(lo.n, '이', '가') + ' 가장 낮아요(' + lo.p + '%).';
-    var hi = R.filter(function (h) { return h !== lo && h.top && h.top.length; })   // '가장 높아요'도 리뷰 충분한 호텔끼리
+    if (R.length < 2) return '<p class="cmp-lead">리뷰가 충분한 호텔이 2곳 미만이라 순위를 매기지 않았어요</p>' + lowNote;
+    var minP = Math.min.apply(null, R.map(function (h) { return h.p; }));
+    var los = R.filter(function (h) { return h.p === minP; });     // 화면 값(정수 %)이 같으면 공동
+    var rows = los.length === R.length
+      ? sumRow('실망 확률', (R.length === 2 ? '두' : R.length === 3 ? '세' : R.length) + ' 곳 모두 비슷해요', minP + '%')
+      : sumRow('실망 확률 가장 낮음', los.map(function (h) { return esc(h.n); }).join('<br>'), minP + '%');
+    var hi = R.filter(function (h) { return h.top && h.top.length; })   // 불만 최다 항목도 리뷰 충분한 호텔끼리
       .sort(function (a, b) { return b.top[0][1] - a.top[0][1]; })[0];
-    if (hi) s += ' <em>' + esc(hi.n) + '</em>' + josa(hi.n, '은', '는') + ' ' + esc(hi.top[0][0]) + ' 불만 비율이 가장 높아요(' + hi.top[0][1] + '%).';
-    return s + lowNote;
+    if (hi) rows += sumRow('불만이 가장 많은 항목', esc(hi.n) + '<span class="cg-s">' + esc(hi.top[0][0]) + ' 불만 비율</span>', hi.top[0][1] + '%', true);
+    return '<ul class="cmp-glance">' + rows + '</ul>' + lowNote;
   }
 
   function addSlot() {
@@ -101,7 +110,7 @@
         return '<div class="cmp-h"><a href="./hotels/' + h.id + '"><span class="cmp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</span>'
           + '<span class="cmp-nm">' + esc(h.n) + '</span></a><button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="비교에서 빼기">×</button></div>';
       }).join('') + (canAdd ? addSlot() : '') + '</div>';
-    html += '<div class="cmp-sum"><div class="cmp-sum-box"><div class="cmp-eyebrow">한 줄 비교</div><p class="cmp-lead">' + summary(H) + '</p></div>'
+    html += '<div class="cmp-sum"><div class="cmp-sum-box"><div class="cmp-eyebrow">한눈에 비교</div>' + summary(H) + '</div>'
       + '<div class="cmp-tools"><span>보라색 = 가장 좋은' + NB + '곳</span>'
       + '<button type="button" class="cmp-switch' + (diffOnly ? ' is-on' : '') + '" id="cmp-diff"><i></i>차이 나는 항목만</button></div></div>';
 

@@ -1026,9 +1026,21 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-x{position:absolute;top:var(--sp-1);right:var(--sp-1);width:24px;height:24px;border:0;border-radius:50%;background:rgb(0 0 0 / 55%);color:var(--ink-inverse);font-size:var(--fs-caption);line-height:1;cursor:pointer;}
 #cmp .cmp-sum{padding:var(--sp-5) var(--page-x) 0;}
 #cmp .cmp-sum-box{padding:var(--sp-5);border-radius:var(--radius-card);background:var(--surface);}
+#cmp .cmp-sum-box p{word-break:keep-all;}   /* common.css p{break-all}이 '텐/진'처럼 단어 중간을 끊음 */
 #cmp .cmp-eyebrow{font-size:var(--fs-caption);color:var(--ink-3);}
 #cmp .cmp-lead{margin-top:var(--sp-2);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:var(--lh-body);}
 #cmp .cmp-lead em{font-style:normal;color:var(--primary);}
+/* 한눈에 비교 — 행: 항목(캡션) / 호텔명 + 값. 호텔명은 단어 단위 줄바꿈, 값은 오른쪽 고정 */
+#cmp .cmp-glance{margin-top:var(--sp-2);}
+#cmp .cmp-glance li{padding:var(--sp-3) 0;border-top:1px solid var(--line-strong);}
+#cmp .cmp-glance li:first-child{border-top:0;padding-top:var(--sp-1);}
+#cmp .cg-k{display:block;font-size:var(--fs-meta);color:var(--ink-3);}
+#cmp .cg-r{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-3);margin-top:var(--sp-1);}
+#cmp .cg-n{min-width:0;font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:1.4;color:var(--ink);word-break:keep-all;}
+#cmp .cg-s{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-2);}
+#cmp .cg-v{flex:none;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:1.3;color:var(--primary);}
+#cmp .cg-v.is-bad{color:var(--ink);}   /* 보라색 = 가장 좋은 곳(범례) — 불만 최다 값은 중립색 */
+#cmp .cg-note{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);}
 #cmp .cmp-tools{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
 #cmp .cmp-switch{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-2);border:0;background:none;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
 #cmp .cmp-switch i{position:relative;width:36px;height:20px;border-radius:var(--radius-pill);background:var(--line-strong);transition:background .2s;}
