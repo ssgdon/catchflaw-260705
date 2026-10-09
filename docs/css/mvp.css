@@ -1353,3 +1353,12 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #main .search-box .title .tit,#main .search-box .title .txt,#main .search-box .scope-note,#main .search-box .hero-chips .hc-label{text-shadow:0 1px 2px rgb(0 0 0 / 65%), 0 2px 14px rgb(0 0 0 / 45%);}
 #main .search-box .title .tit span{text-shadow:0 0 1px rgb(0 0 0 / 75%), 0 2px 4px rgb(0 0 0 / 60%), 0 4px 18px rgb(0 0 0 / 50%);}
 
+/* 슬라이더·그리드 카드 높이 맞춤(2026-10): 한 줄의 카드는 같은 높이, 이름·가격은 2줄 자리를 고정, 마지막 블록(사유줄·비교 상자)은 바닥 정렬 */
+#main .hotel-list .list li,#detail .hotel .list li{display:flex;height:auto;}
+#main .hotel-list .list .item,#detail .hotel .list .item{display:flex;flex-direction:column;width:100%;}
+#main .hotel-list .list .item .info,#detail .hotel .list .item .info{display:flex;flex-direction:column;flex:1 1 auto;}
+#main .hotel-list .list .item .info .name,#detail .hotel .list .item .info .name{min-height:calc(1.4em * 2);}
+#main .hotel-list .list .item .info .price-line,#detail .hotel .list .item .info .price-line{min-height:calc(1.45em * 2);}
+#main .hotel-list .list .item .info > :last-child,#detail .hotel .list .item .info > :last-child{margin-top:auto;}
+#main .hotel-list .list .item .info .why,#detail .hotel .list .item .info .why{padding-top:4px;}
+
