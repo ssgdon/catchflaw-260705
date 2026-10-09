@@ -153,6 +153,8 @@ AMENITY_LABEL = {
 AMENITY_CHIP_ORDER = ['breakfast', 'pool', 'spa_bath', 'kitchen', 'parking', 'fitness',
                       'restaurant', 'room_service', 'laundry', 'airport_shuttle']
 
+STATION_MAX_WALK = 30   # 도보 30분 넘으면 가까운 역으로 안내하지 않음
+
 def nearest_station(lat, lng):
     """호텔 좌표 → (역이름, 도보분, 직선m). 좌표 없으면 None. 도보분 = ceil(거리m/67)."""
     if lat is None or lng is None:
@@ -168,6 +170,8 @@ def nearest_station(lat, lng):
             best = (s['ko'], d)
     ko, dist_m = best
     walk = max(1, math.ceil(dist_m / 67.0))
+    if walk > STATION_MAX_WALK:   # 역 목록(STATIONS)에 없는 외곽 호텔 — '텐진역 도보 105분' 같은 의미 없는 표기 대신 미표시
+        return None
     return (ko, walk, int(round(dist_m)))
 
 def station_line(meta):
@@ -855,7 +859,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
                     {hero_chips_html}
-                    <div class="scope-note">현재 <b>{CITY['ko']}</b> 호텔 {len(scored)}곳 분석 완료{DSEP}다른 도시는 준비 중이에요{DSEP}<a class="hero-cmp" href="./compare">두 곳 비교하기 →</a></div>
+                    <div class="scope-note">현재 <b>{CITY['ko']}</b> 호텔 {n_live}곳 중 {len(scored)}곳 실망 확률 공개{DSEP}다른 도시는 준비 중이에요{DSEP}<a class="hero-cmp" href="./compare">두 곳 비교하기 →</a></div>
                 </div>
             </article>
             <div class="trust-band"><span class="tb-i">리뷰 {total_reviews_txt} 건 분석</span><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
