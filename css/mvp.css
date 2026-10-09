@@ -15,6 +15,8 @@
 #detail .information .info-top .badge .badge-item.badge-safe,
 #search .list .cont .badge .badge-item.badge-safe, #hub .hub-list .cont .badge .badge-item.badge-safe{background:var(--safe);color:var(--ink-inverse);border:1px solid rgb(255 255 255 / 20%);}
 .badge .badge-item.badge-collect{background:var(--surface-card);color:var(--ink-3);border:1px solid var(--line-strong);}
+/* 리뷰 적음(최근 1년 리뷰 100개 미만, 순위 제외) — 판정색 대신 중립 (2026-10 표본 공정성) */
+.badge .badge-item.badge-low{background:var(--surface-card);color:var(--ink-2);border:1px solid var(--line-strong);}
 .badge .badge-item{white-space:nowrap;}
 #search .list .cont .grade .txt, #hub .hub-list .cont .grade .txt{white-space:nowrap;}
 
@@ -176,6 +178,7 @@
 #detail .disappear .gauge .bar .g-rank.is-safe{color:var(--safe-text);}
 #detail .disappear .gauge .bar .g-rank.is-warning{color:var(--warning-text);}
 #detail .disappear .gauge .bar .g-rank.is-danger{color:var(--danger-text);}
+#detail .disappear .gauge .bar .g-rank.is-low{color:var(--ink-2);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l{transform:translateX(-14px);}
 #detail .disappear .gauge .bar .g-rank.is-clamp-l:after{left:14px;}
 #detail .disappear .gauge .bar .g-rank.is-clamp-r{transform:translateX(calc(-100% + 14px));}
@@ -879,6 +882,7 @@
 #detail .disappear .head .vh.is-safe{color:var(--safe-text);}
 #detail .disappear .head .vh.is-warning{color:var(--warning-text);}
 #detail .disappear .head .vh.is-danger{color:var(--danger-text);}
+#detail .disappear .head .vh.is-low{color:var(--ink-2);}
 #detail .disappear .verdict-why{margin:14px 0 0;}
 
 /* F37: 게이지 = 백분위 축 — 말풍선 클리어런스(위 여백) + 평균 마커 실위치(style left) */
@@ -1119,6 +1123,7 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 .cmp-pick .cp-p.is-safe{background:var(--safe-soft);color:var(--safe-text);}
 .cmp-pick .cp-p.is-warning{background:var(--warning-soft);color:var(--warning-text);}
 .cmp-pick .cp-p.is-danger{background:var(--danger-soft);color:var(--danger-text);}
+.cmp-pick .cp-p.is-low{background:var(--surface);color:var(--ink-2);}
 .cmp-pick .cp-empty{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
 
 /* §13 결론 라벨 — 카테고리 타일: 숫자 대신 '이름 + 평균 대비 한 줄 | 결론'. 한 줄 목록(모바일 가독성), PC는 2열 */
@@ -1148,3 +1153,7 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 실전정보 칸: 값마다 한 줄(좁은 3열에서 '무료 · / 체크인 전' 같은 매달림 방지) */
 #cmp .cmp-cell .cmp-li{display:block;}
 #cmp .cmp-cell .cmp-li + .cmp-li{margin-top:2px;}
+
+/* 상세 상단 '리뷰 적음' 주의 문구 (최근 1년 리뷰 100개 미만) — 2026-10 표본 공정성 */
+#detail .information .lowrev-note{display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);border-radius:var(--radius-btn);background:var(--warning-soft);color:var(--ink-2);font-size:var(--fs-meta);line-height:var(--lh-body);word-break:keep-all;}
+#detail .information .lowrev-note b{color:var(--ink);font-weight:var(--fw-bold);}

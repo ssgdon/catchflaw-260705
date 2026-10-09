@@ -46,9 +46,10 @@
 
   function row(label, cells, opt) {
     opt = opt || {};
-    var nums = cells.map(function (c) { return c.v; });
+    // nb = 순위 비교 제외 칸(리뷰 적은 호텔): '가장 좋음' 후보에서 뺀다 — 표본 공정성(2026-10)
+    var nums = cells.filter(function (c) { return !c.nb; }).map(function (c) { return c.v; });
     var best = null;
-    if (opt.best && cells.length > 1 && nums.every(function (n) { return typeof n === 'number'; })) {
+    if (opt.best && nums.length > 1 && nums.every(function (n) { return typeof n === 'number'; })) {
       best = opt.best === 'min' ? Math.min.apply(null, nums) : Math.max.apply(null, nums);
       if (nums.every(function (n) { return n === best; })) best = null;
     }
@@ -56,20 +57,25 @@
     var blank = new Array(pad + 1).join('<div class="cmp-cell is-pad"></div>');
     return '<div class="cmp-tr' + (same ? ' is-same' : '') + '"><div class="cmp-k">' + label + '</div><div class="cmp-v">'
       + cells.map(function (c) {
-          var on = best !== null && c.v === best;
+          var on = best !== null && !c.nb && c.v === best;
           return '<div class="cmp-cell' + (on ? ' is-best' : '') + '">' + c.h + (on ? '<span class="cmp-best">' + glue(opt.lab || '가장 좋음') + '</span>' : '') + '</div>';
         }).join('') + blank + '</div></div>';
   }
   function num(v, unit) { return { v: v, k: String(v), h: '<b>' + esc(v) + (unit || '') + '</b>' }; }
 
   function summary(H) {
-    if (H.length < 2) return '<em>' + esc(H[0].n) + '</em>의 실망 확률은 ' + H[0].p + '%예요. 호텔을 하나 더 추가하면 나란히 비교해 드려요.';
-    var lo = H.slice().sort(function (a, b) { return a.p - b.p; })[0];
+    var lows = H.filter(function (h) { return h.lr; });
+    var lowNote = lows.length ? ' ' + lows.map(function (h) { return '<em>' + esc(h.n) + '</em>'; }).join('·')
+      + josa(lows[lows.length - 1].n, '은', '는') + ' 최근 1년 리뷰가 적어 순위 비교에서 뺐어요(참고용).' : '';
+    if (H.length < 2) return '<em>' + esc(H[0].n) + '</em>의 실망 확률은 ' + H[0].p + '%예요. 호텔을 하나 더 추가하면 나란히 비교해 드려요.' + lowNote;
+    var R = H.filter(function (h) { return !h.lr; });              // 순위 비교는 리뷰 충분한 호텔끼리
+    if (R.length < 2) return '리뷰가 충분한 호텔이 2곳 미만이라 순위를 매기지 않았어요.' + lowNote;
+    var lo = R.slice().sort(function (a, b) { return a.p - b.p; })[0];
     var s = '실망 확률은 <em>' + esc(lo.n) + '</em>' + josa(lo.n, '이', '가') + ' 가장 낮아요(' + lo.p + '%).';
-    var hi = H.filter(function (h) { return h !== lo && h.top && h.top.length; })
+    var hi = R.filter(function (h) { return h !== lo && h.top && h.top.length; })   // '가장 높아요'도 리뷰 충분한 호텔끼리
       .sort(function (a, b) { return b.top[0][1] - a.top[0][1]; })[0];
     if (hi) s += ' <em>' + esc(hi.n) + '</em>' + josa(hi.n, '은', '는') + ' ' + esc(hi.top[0][0]) + ' 불만 비율이 가장 높아요(' + hi.top[0][1] + '%).';
-    return s;
+    return s + lowNote;
   }
 
   function addSlot() {
@@ -99,7 +105,11 @@
       + '<div class="cmp-tools"><span>보라색 = 가장 좋은' + NB + '곳</span>'
       + '<button type="button" class="cmp-switch' + (diffOnly ? ' is-on' : '') + '" id="cmp-diff"><i></i>차이 나는 항목만</button></div></div>';
 
-    var g1 = row('실망 확률', H.map(function (h) { return num(h.p, '%'); }), { best: 'min', lab: '가장 낮음' })
+    var g1 = row('실망 확률', H.map(function (h) {
+        var c = num(h.p, '%');
+        if (h.lr) { c.nb = true; c.h += ' <span class="cmp-sub">리뷰 적음</span>'; }   // 리뷰 적은 호텔은 순위 강조 제외
+        return c;
+      }), { best: 'min', lab: '가장 낮음' })
       // 가격은 표시 단위(만원)로 비교 — '약 7만원' 두 곳 중 한 곳만 강조되는 착시 방지
       + row('1박 평균', H.map(function (h) { return { v: h.krw != null ? Math.round(h.krw / 10000) : null, k: h.pt, h: h.pt ? '<b>' + esc(h.pt) + '</b>' : '<span class="cmp-none">정보 없음</span>' }; }), { best: 'min', lab: '가장 저렴' })
       + row('가까운 역', H.map(function (h) { return { v: h.sm, k: h.st, h: h.st ? glue(esc(h.st)) : '<span class="cmp-none">-</span>' }; }), { best: 'min', lab: '가장 가까움' })
@@ -108,7 +118,7 @@
     var g2 = CATS.map(function (c) {
       return row(c + ' 불만', H.map(function (h) {
         var v = h.cs[c], b = band(v);
-        return { v: v, k: verdict(v), h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioHtml(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
+        return { v: v, k: verdict(v), nb: !!h.lr, h: '<b class="is-' + b + '">' + verdict(v) + '</b><span class="cmp-line">' + ratioHtml(v) + '</span><span class="cmp-bar"><i class="is-' + b + '" style="width:' + v + '%"></i></span>' };
       }), { best: 'min', lab: '불만 가장 적음' });
     }).join('');
     var g3 = row('분석 리뷰 대비 비율', H.map(function (h) {

@@ -9,7 +9,7 @@ from urllib.parse import quote as urlquote
 BUILD = str(int(time.time()))  # 에셋 캐시버스터
 
 sys.path.insert(0, os.path.dirname(__file__))
-from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS
+from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS, RANK_MIN
 # 분류 v5: 점수로 보여주는 대분류(6)만 CATS로 쓴다. 칩 전용 대분류(안전)는 위험 칩·별도 펼침 항목으로만 표시
 CATS = SCORED_CATS
 CAT_INDEX = {c: i for i, c in enumerate(ALL_CATS)}   # 펼침 항목 id="risk-{i}" — 점수 대분류는 CATS.index와 같고 안전이 마지막
@@ -64,11 +64,13 @@ def ratio_html(score):
     return f'{m.group(1)}<b>{m.group(2)}</b>' if m else ratio_text(score)
 
 def rank_text(pctl_worse):
-    """도시 내 순위를 직관 문장으로 (pctl_worse = 위험도가 이 호텔 이상인 호텔 비율%)."""
+    """도시 내 위치를 넉넉한 구간 문장으로 (pctl_worse = 위험도가 이 호텔 이상인 호텔 비율%, 리뷰 100개 이상 호텔끼리).
+    정밀 백분위('78%보다 많아요')는 순위 오차가 커서 쓰지 않는다(2026-10 표본 공정성). None(리뷰 적음) → 빈 문자열."""
+    if pctl_worse is None: return ''
     if pctl_worse >= 90: return f'{CITY["ko"]}에서 가장 적은 편'
-    if 40 <= pctl_worse <= 60: return f'{CITY["ko"]} 호텔 중 중간쯤'      # 평균 수준과 '59%보다 많아요'가 엇갈려 보이는 구간
-    if pctl_worse > 50: return f'{CITY["ko"]} 호텔 {pctl_worse}%보다 나아요'
-    if pctl_worse > 10: return f'{CITY["ko"]} 호텔 {100 - pctl_worse}%보다 많아요'
+    if pctl_worse >= 75: return f'{CITY["ko"]} 호텔 중 적은 편'
+    if pctl_worse > 25: return f'{CITY["ko"]} 호텔 중 중간쯤'
+    if pctl_worse > 10: return f'{CITY["ko"]} 호텔 중 많은 편'
     return f'{CITY["ko"]}에서 가장 많은 편'
 CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
 
@@ -566,15 +568,16 @@ def ai_reviews_total():
 
 def build_index(hotels_meta, H, quotes, col_index=()):
     scored = [p for p in H if H[p]['scored'] and p in hotels_meta]  # hotels_meta가 rec_excluded 제외 → scored도 자동 제외
+    ranked = [p for p in scored if H[p]['ranked']]   # 추천·랭킹 모수 = 최근 1년 리뷰 RANK_MIN 이상 (2026-10 표본 공정성)
     _total = sum(r['n'] for r in json.load(open(os.path.join(SRC, 'agg_denom.json'), encoding='utf-8')))
     total_reviews_txt = f"{round(_total/10000)}만"   # 동적: 수집 리뷰 총수 (별점만 리뷰 포함, 예: 6만)
     ai_reviews_txt = f"{round(ai_reviews_total()/10000)}만"   # AI가 읽은 글 리뷰 수 (예: 3만) — 'AI가 분석' 문구는 이 값
 
     def worst_by_sub(mcat, scat, k=8):
-        cand = [p for p in scored if H[p]['cats'][mcat]['subs'][scat]['count_1y'] >= 5]   # 점수와 같은 최근 1년 기준
+        cand = [p for p in ranked if H[p]['cats'][mcat]['subs'][scat]['count_1y'] >= 5]   # 점수와 같은 최근 1년 기준
         return sorted(cand, key=lambda p: -H[p]['cats'][mcat]['subs'][scat]['score'])[:k]
 
-    best = sorted(scored, key=lambda p: H[p]['p_crit'])[:8]
+    best = sorted(ranked, key=lambda p: H[p]['p_crit'])[:8]
     cur1 = worst_by_sub('청결', '벌레')
     cur2 = worst_by_sub('냄새', '악취')
 
@@ -588,7 +591,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     # 가격대별 만족도: 각 밴드에서 실망 확률 낮은 순
     price_parts = []
     for code, label, lo, hi in PRICE_BANDS:
-        pids = sorted((p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code),
+        pids = sorted((p for p in ranked if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code),
                       key=lambda p: H[p]['p_crit'])[:8]
         if len(pids) >= 3:
             price_parts.append(slider(f'{label} · 추천 숙소',
@@ -688,7 +691,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         var pts = [];
         HOTELS.forEach(function(h){{
             if (h.lat == null) return;
-            var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
+            var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
             var mk = L.circleMarker([h.lat, h.lng], {{radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95}}).addTo(map);
             var chip = h.p != null
                 ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
@@ -846,7 +849,7 @@ def top_complaint(h):
 
 def card_tags(h):
     """P6 검색 카드 태그(최대 2): 가장 안전한 양호 카테고리 + 대표 불만. [[tone, text], ...] — 실측만."""
-    if not h['scored']: return []
+    if not h['scored'] or not h['ranked']: return []   # 리뷰 적은 호텔은 '불만 적음' 같은 비교형 태그 생략
     tags = []
     tc = top_complaint(h)
     tc_cat = next((c for c in CATS if tc and tc[0] in SUBS[c]), None)
@@ -880,6 +883,7 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None):
             'p': pct(h['p_crit']), 'b': h['badge'][0], 'l': h['badge'][1],
             'pt': meta.get('price_txt') or '', 'krw': meta.get('krw'),
             'g': float(meta.get('total_score') or 0), 'rc': meta.get('reviews_count') or 0, 'an': h['analyzed'],
+            'lr': not h['ranked'],                          # 리뷰 적음(최근 1년 RANK_MIN 미만) — 순위 아닌 참고용
             'pd': period_label(h, (monthly or {}).get(pid)),   # 수치 기간 ('최근 1년' 또는 수집이 짧으면 '최근 N개월')
             'st': f'{st[0]} 도보 {st[1]}분' if st else '', 'sm': st[1] if st else None,
             'cs': {c: round(h['cats'][c]['score']) for c in CATS},
@@ -921,6 +925,7 @@ def build_search_index(hotels_meta, H):
             'rc': meta.get('reviews_count') or 0,
             'img': meta.get('r2_img') or (f'img/hotels/{pid}.jpg' if meta.get('local_img') else ''),
             'scored': h['scored'],
+            'lr': bool(h['scored'] and not h['ranked']),    # 리뷰 적음 → 실망 확률·안심순 정렬에서 뒤로
             'p': pct(h['p_crit']) if h['scored'] else None,
             'band': h['badge'][0] if h['scored'] else None,
             'label': h['badge'][1] if h['scored'] else '리뷰 수집중',
@@ -1103,7 +1108,7 @@ def build_search(city_avg_pct):
         $(window).on('load', function(){{ map.invalidateSize(); }});
 
         function popupHtml(h){{
-            var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
+            var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
             var chip = h.p != null ? '<span class="pop-p" style="background:'+col+'">실망 확률 '+h.p+'%</span>'
                                    : '<span class="pop-p" style="background:var(--ink-3)">리뷰 수집중</span>';
             return '<div class="map-pop"><b>'+h.name+'</b>'
@@ -1126,7 +1131,7 @@ def build_search(city_avg_pct):
             var pts = [];
             list.forEach(function(h){{
                 if (h.lat == null) return;
-                var col = h.band ? BAND_COLOR[h.band] : '#8B95A1';
+                var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
                 var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95}});
                 mk.bindPopup(popupHtml(h));
                 markers.addLayer(mk); markerById[h.id] = mk;
@@ -1144,12 +1149,12 @@ def build_search(city_avg_pct):
                 a.sort(function(x,y){{
                     var sx = (x.cs && x.cs[sortCat] != null) ? x.cs[sortCat] : 999;
                     var sy = (y.cs && y.cs[sortCat] != null) ? y.cs[sortCat] : 999;
-                    return sx - sy;
+                    return (x.lr?1:0)-(y.lr?1:0) || sx - sy;   // 리뷰 적은 호텔은 순위 정렬에서 뒤로
                 }});
             }} else if (sortBy === 'price') a.sort(function(x,y){{ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); }});
             else if (sortBy === 'rc') a.sort(function(x,y){{ return (y.rc||0)-(x.rc||0); }});
             else if (sortBy === 'g') a.sort(function(x,y){{ return (y.g||0)-(x.g||0); }});
-            else a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); }});  // 실망확률 낮은순(기본)
+            else a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (x.p||0)-(y.p||0); }});  // 실망확률 낮은순(기본) · 리뷰 적은 호텔은 뒤로
             return a;
         }}
 
@@ -1518,16 +1523,22 @@ def build_search(city_avg_pct):
     </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── detail ─────────────────────────
-def gauge_html(rank_pct, avg_rank_pct, city_crit, tone='safe'):
-    """F37: 백분위(상대순위) 축 게이지 — 마커 위치 = crit_rank_pct(좌 0=우수, 우 100=최악).
-    평균 마커 = city_crit이 실제로 위치하는 백분위(실계산, 50 고정 아님). 말풍선은 마커와 동일 좌표(축 일치)."""
-    pos = min(max(float(rank_pct if rank_pct is not None else 50), 0.0), 100.0)
-    avg_pos = min(max(float(avg_rank_pct if avg_rank_pct is not None else 50), 8.0), 92.0)  # 끝 라벨(우수/위험)과 겹침 방지 클램프
-    rank_html = ''
-    if rank_pct:
-        txt = (f'{CITY["ko"]} 상위 {rank_pct}%' if rank_pct <= 50 else f'{CITY["ko"]} 하위 {100 - rank_pct}%')
-        clamp = ' is-clamp-l' if pos <= 18 else (' is-clamp-r' if pos >= 82 else '')
-        rank_html = f'<span class="g-rank is-{tone}{clamp}" style="left:{pos:.1f}%">{E(txt)}</span>'
+def gauge_html(p, city_crit, tone='safe', tier=None):
+    """실망 확률 게이지 — 값 축(2026-10 표본 공정성). 마커 = 도시평균 대비 위치: 평균 50%, 3배 100%(항목 점수와 같은 눈금).
+    예전 백분위 축은 정밀 순위처럼 보였지만 순위 오차가 ±20~30%p라 값 축으로 바꿨다.
+    말풍선 = 순위 구간('상위 25% 안', 확실할 때만) 또는 평균 대비 문장."""
+    r = (p / city_crit) if city_crit else 1.0
+    pos = min(max(50.0 * r if r <= 1 else 50.0 + 25.0 * (r - 1), 0.0), 100.0)
+    if tier:
+        txt = f'{CITY["ko"]} {tier[1]}'
+    elif r < 0.95:
+        txt = f'평균보다 {round((1 - r) * 100)}% 낮아요'
+    elif r <= 1.05:
+        txt = '평균과 비슷해요'
+    else:
+        txt = f'평균의 {r:.1f}배'
+    clamp = ' is-clamp-l' if pos <= 18 else (' is-clamp-r' if pos >= 82 else '')
+    rank_html = f'<span class="g-rank is-{tone}{clamp}" style="left:{pos:.1f}%">{E(txt)}</span>'
     return f'''<div class="gauge">
         <div class="bar">
             {rank_html}
@@ -1535,7 +1546,7 @@ def gauge_html(rank_pct, avg_rank_pct, city_crit, tone='safe'):
         </div>
         <div class="label">
             <span>우수</span>
-            <span class="analysis" style="left:{avg_pos:.1f}%">평균 {pct(city_crit)}%</span>
+            <span class="analysis" style="left:50%">평균 {pct(city_crit)}%</span>
             <span>위험</span>
         </div>
     </div>'''
@@ -1619,7 +1630,7 @@ def similar_hotels(pid, hotels_meta, H, k=8):
     my_band = me.get('band')
     cands = []
     for p, m in hotels_meta.items():
-        if p == pid or p not in H or not H[p]['scored']: continue
+        if p == pid or p not in H or not H[p]['scored'] or not H[p]['ranked']: continue   # 추천 모수 = 리뷰 RANK_MIN 이상
         rank = H[p]['p_crit'] * 100.0                       # 실망 확률(%p 단위)
         if my_band and m.get('band') and m['band'][0] != my_band[0]:
             rank += 8.0                                     # 다른 가격대 페널티
@@ -1635,7 +1646,7 @@ def kr_share_map(kr_stats, H):
        별점만 남긴 리뷰는 언어(국적)를 알 수 없어 분모에서 뺀다 — 넣으면 한국인 비중이 낮게 나옴 (2026-10 검토)."""
     out = {}
     for (pid, period), r in kr_stats.items():
-        if period != '1y' or pid not in H: continue
+        if period != '1y' or pid not in H or not H[pid].get('ranked'): continue   # 순위 모수 = 리뷰 RANK_MIN 이상
         try: kr_n = int(float(r.get('kr_n') or 0))
         except (TypeError, ValueError): continue
         tn = H[pid].get('text_1y') or 0
@@ -2203,6 +2214,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
     # 이 호텔 수치의 실제 기간 — 수집이 1년을 못 채운 호텔은 '최근 N개월' (2026-10 검토 case 1)
     per = period_label(h, (monthly or {}).get(pid))
+    # 표본 공정성(2026-10): 최근 1년 리뷰 RANK_MIN 미만이면 상단에 주의 문구 — 순위·추천에서 빠진 이유와 함께
+    lowrev_html = ''
+    if h['scored'] and not h['ranked']:
+        lowrev_html = (f'<div class="lowrev-note"><b>{per} 리뷰가 {h["analyzed"]:,}개뿐이에요</b>'
+                       f'<span>리뷰 몇 건에 숫자가 크게 달라질 수 있어 순위·추천에서는 뺐어요{DSEP}참고용으로 봐 주세요</span></div>')
     # ── 딜브레이커 발동 계산 (경고 스트립·점프칩·verdict 공용): 희소·고위험 최근 1년 심각 ≥3건 — 캘리브레이션 고정 ──
     # 건수는 집계(findings_sub)의 정확한 값 — 예전엔 인용문 목록(카테고리당 40건 상한·이름+날짜 중복제거)에서 세서 일부 과소집계
     db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만 (점프칩 fj-risk·verdict 공용, F35로 스트립은 삭제)
@@ -2311,7 +2327,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _worst = max(CATS, key=lambda c: h['cats'][c]['score'])
         _worst_sc = h['cats'][_worst]['score']
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
-        if ratio <= 0.8:                              # A
+        if not h['ranked'] and h['badge'][0] != 'danger':   # 리뷰 적음(위험 신호가 뚜렷하지 않음) — 판정 대신 참고 안내
+            v_head, v_tone = '리뷰가 적어 참고용이에요', 'low'
+            v_why = (f'{per} 리뷰가 <b>{h["analyzed"]:,}개</b>뿐이라 몇 건만 달라져도 숫자가 크게 바뀌어요,<br>'
+                     f'{CITY["ko"]} 평균은 <b>{avg}%</b>예요')
+        elif ratio <= 0.8:                            # A
             v_head, v_tone = '까다롭게 봐도 통과', 'safe'
             if rare_crit and all(n == 0 for n in rare_crit.values()):   # 스트립 발동 시 자동 배제(카운트>0)
                 v_why = f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중<br>벌레·곰팡이·동네 분위기·객실 보안 심각 리뷰는 <b>0건</b>이었어요'
@@ -2526,7 +2546,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         if total_q > 0 else '')
             quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div></div>{more_btn}'''
                             if qc else '<div class="no-quote">이 카테고리는 문제 언급 리뷰가 거의 없어요</div>')
-            pctl_txt = f"{'하위 ' + str(cat['pctl_worse']) if cat['pctl_worse'] <= 50 else '상위 ' + str(100 - cat['pctl_worse'])}%"
             is_open = ' is-open' if order == 0 else ''      # 1위만 초기 펼침(§4-c)
 
             # ── 카테고리별 월별 위험 리뷰 흐름 (CAT-TREND). 최상단(axis 앞) 삽입 ──
@@ -2664,7 +2683,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="pct">{v}%</div>
                 <div class="vh is-{v_tone}">{E(v_head)}</div>
             </div>
-            {gauge_html(crit_rank_pct, city_crit_rank_pct(H, city['crit']), city['crit'], v_tone)}
+            {gauge_html(h['p_crit'], city['crit'], v_tone, h.get('rank_tier'))}
             {verdict_why_html}
             {overall_trend}
             <div class="basis-fold">
@@ -2801,8 +2820,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
     if h['scored']:
         _pv = pct(h['p_crit'])
-        _rank = (f'{CITY["ko"]} {"상위" if crit_rank_pct <= 50 else "하위"} {crit_rank_pct if crit_rank_pct <= 50 else 100 - crit_rank_pct}%'
-                 if crit_rank_pct else '')
+        _rank = f'{CITY["ko"]} {h["rank_tier"][1]}' if h.get('rank_tier') else ''   # 순위는 확실할 때만 구간으로
         _top_html = (f'<div class="ps-eyebrow">이 호텔에서 실망할 확률</div>'
                      f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}">{E(v_head)}</div>'
                      f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{(" · " + _rank) if _rank else ""}</div>')
@@ -2820,8 +2838,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
     if h['scored']:
         _v = pct(h['p_crit']); _avg = pct(city['crit'])
-        rank_txt = (f' 실망 확률이 낮은 순으로 {CITY["ko"]} 상위 {crit_rank_pct}%.'
-                    if crit_rank_pct and crit_rank_pct <= 50 else '')
+        _t = h.get('rank_tier')
+        rank_txt = f' 실망 확률이 낮은 순으로 {CITY["ko"]} {_t[1]}.' if (_t and _t[0] == 'top') else ''
         seo_title = f'{name} 리뷰 위험도 · 실망확률 {_v}% | 캐치플로'
         seo_desc = (f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%).{rank_txt} '
                     '청결·냄새·소음·객실·직원·위치 6개 항목의 리뷰 위험도와 안전 신호를 예약 전에 확인하세요.')
@@ -2851,6 +2869,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         <div class="meta"><span>{CITY['ko']}, JP</span>{f'<span>{hstars}</span>' if hstars else ''}{f"<span class='price'>1박 <b>{meta['price_txt']}</b></span>" if meta.get('price_txt') else ''}</div>
                         <button type="button" class="btn-share info-share"><img src="../img/b_share.svg" alt="">공유하기</button>
                     </div>
+                    {lowrev_html}
                     <div class="info-bottom">
                         <a class="btn-link btn-google" href="{E(gmap)}" target="_blank" rel="noopener">
                             <span class="ico"><img src="../img/google.svg" alt=""></span>
@@ -3419,18 +3438,18 @@ def collection_members(col, hotels_meta, H):
         if not area:
             return None
         cand = [p for p in scored if _in_area(hotels_meta[p], area)]
-        cand.sort(key=lambda p: H[p]['p_crit'])
+        cand.sort(key=lambda p: (not H[p]['ranked'], H[p]['p_crit']))   # 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
     if kind == 'value':
         # 하위 2밴드(b1·b2) × p_crit 낮은순
         cand = [p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] in ('b1', 'b2')]
-        cand.sort(key=lambda p: H[p]['p_crit'])
+        cand.sort(key=lambda p: (not H[p]['ranked'], H[p]['p_crit']))   # 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
     if kind == 'capsule':
         cand = [p for p in scored if _is_capsule(p, hotels_meta[p])]
-        cand.sort(key=lambda p: H[p]['p_crit'])
+        cand.sort(key=lambda p: (not H[p]['ranked'], H[p]['p_crit']))   # 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
     if kind == 'pool':
@@ -3438,19 +3457,19 @@ def collection_members(col, hotels_meta, H):
         if not any(isinstance(hotels_meta[p].get('amenities'), dict) for p in hotels_meta):
             return None                      # amenities 컬럼 자체가 아직 없음 → 스킵
         cand = [p for p in scored if _has_pool(hotels_meta[p])]
-        cand.sort(key=lambda p: H[p]['p_crit'])
+        cand.sort(key=lambda p: (not H[p]['ranked'], H[p]['p_crit']))   # 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
     if kind == 'family':
         # 방음·청결·위치 3개 카테고리 band != danger & scored, 그 3개 평균점수 낮은순
         cand = [p for p in scored
                 if all(H[p]['cats'][c]['band'] != 'danger' for c in FAMILY_CATS)]
-        cand.sort(key=lambda p: sum(H[p]['cats'][c]['score'] for c in FAMILY_CATS) / len(FAMILY_CATS))
+        cand.sort(key=lambda p: (not H[p]['ranked'], sum(H[p]['cats'][c]['score'] for c in FAMILY_CATS) / len(FAMILY_CATS)))
         return cand
 
     if kind == 'luxury':
         cand = [p for p in scored if (_stars_num(hotels_meta[p]) or 0) >= 4]
-        cand.sort(key=lambda p: H[p]['p_crit'])
+        cand.sort(key=lambda p: (not H[p]['ranked'], H[p]['p_crit']))   # 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
     return None
@@ -3460,10 +3479,13 @@ def collection_stats(pids, hotels_meta, H, city):
        반환 dict. reviews M = Σ analyzed."""
     n = len(pids)
     reviews = sum(H[p]['analyzed'] for p in pids)
-    avg_p = pct(sum(H[p]['p_crit'] for p in pids) / n) if n else 0
+    # 평균·항목 편차는 리뷰 RANK_MIN 이상 호텔로 (리뷰 적은 호텔의 흔들리는 숫자가 평균을 끌지 않게). 없으면 전체
+    base = [p for p in pids if H[p]['ranked']] or pids
+    nb = len(base)
+    avg_p = pct(sum(H[p]['p_crit'] for p in base) / nb) if nb else 0
     city_p = pct(city['crit'])
     # 항목별로 보면: 컬렉션 평균 카테고리 점수 vs 도시평균(=50). 편차 상위 2~3개.
-    cat_avg = {c: sum(H[p]['cats'][c]['score'] for p in pids) / n for c in CATS} if n else {c: 50 for c in CATS}
+    cat_avg = {c: sum(H[p]['cats'][c]['score'] for p in base) / nb for c in CATS} if nb else {c: 50 for c in CATS}
     devs = sorted(((c, cat_avg[c] - 50.0) for c in CATS), key=lambda kv: -abs(kv[1]))
     top_dev = [(c, d) for c, d in devs if abs(d) >= 3.0][:3]   # 의미 있는 편차만
     worst_cat = max(CATS, key=lambda c: cat_avg[c]) if n else CATS[0]
@@ -3557,15 +3579,27 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
 
     # ── 3. 랭킹 리스트 TOP 10~15 ──
     is_all = col['kind'] in ('capsule', 'pool')     # 전부 비교 컬렉션
-    top = pids if is_all else pids[:15]
+    ranked_p = [p for p in pids if H[p]['ranked']]          # 순위 모수 = 최근 1년 리뷰 RANK_MIN 이상
+    low_p = [p for p in pids if not H[p]['ranked']]
+    top = ranked_p if is_all else ranked_p[:15]
     rank_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], i + 1, depth) for i, p in enumerate(top))
-    rank_note = '조건에 맞는 곳을 전부 실망 확률 낮은 순으로 보여드려요' if is_all else \
-                '실망 확률이 낮은 순이에요 (리뷰 수집중 호텔 제외)'
-    rank_block = f'''<div class="hub-sect">
+    rank_note = (f'조건에 맞는 곳을 실망 확률 낮은 순으로 보여드려요 (최근 1년 리뷰 {RANK_MIN}개 미만은 아래 따로)' if is_all else
+                 f'실망 확률이 낮은 순이에요 (최근 1년 리뷰 {RANK_MIN}개 미만·수집중 호텔 제외)')
+    search_link = f'<a class="hub-more" href="{"../" * depth}search{("?area=" + col["area"]) if col["kind"]=="area" else ""}">{CITY["ko"]} 호텔 전체 검색 →</a>'
+    rank_block = (f'''<div class="hub-sect">
         <div class="hub-h2">실망 확률 낮은 순 TOP {len(top)}</div>
         <div class="hub-sub">{rank_note}</div>
         <ul class="hub-list">{rank_cards}</ul>
-        <a class="hub-more" href="{'../' * depth}search{('?area=' + col['area']) if col['kind']=='area' else ''}">{CITY['ko']} 호텔 전체 검색 →</a>
+        {search_link}
+    </div>''' if top else '')
+    # 리뷰 적은 호텔: 순위 없이 참고용 목록 (전부 비교 컬렉션이거나 순위 대상이 적을 때만 — 지역 TOP15엔 섞지 않음)
+    if low_p and (is_all or len(ranked_p) < 5):
+        low_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], '–', depth) for p in low_p)
+        rank_block += f'''<div class="hub-sect">
+        <div class="hub-h2">리뷰가 적은 호텔 {len(low_p)}곳</div>
+        <div class="hub-sub">최근 1년 리뷰가 {RANK_MIN}개 미만이라 순위 없이 참고용으로 보여드려요</div>
+        <ul class="hub-list">{low_cards}</ul>
+        {'' if top else search_link}
     </div>'''
 
     # ── 4. 가격대별 베스트 (지역 컬렉션만) ──
@@ -3573,7 +3607,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     if col['kind'] == 'area':
         parts = []
         for code, label, lo, hi in PRICE_BANDS:
-            band_pids = [p for p in pids if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code][:2]
+            band_pids = [p for p in pids if H[p]['ranked'] and hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code][:2]
             if band_pids:
                 items = ''.join(
                     f'<li class="hub-pb-item"><a href="{"../" * depth}hotels/{p}">'
@@ -3675,7 +3709,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
         other = 'hakata' if col['area'] != 'hakata' else 'tenjin'
         other_area = _area_by_code(other)
         other_ko = other_area['ko'] if other_area else '하카타'
-        other_pids = [p for p in hotels_meta if p in H and H[p]['scored'] and _in_area(hotels_meta[p], other_area)] if other_area else []
+        other_pids = [p for p in hotels_meta if p in H and H[p]['scored'] and H[p]['ranked'] and _in_area(hotels_meta[p], other_area)] if other_area else []
         other_p = pct(sum(H[p]['p_crit'] for p in other_pids) / len(other_pids)) if other_pids else None
         q2 = f'{name} vs {other_ko}, 어디에 잡을까요?'
         if other_p is not None:
@@ -3690,10 +3724,12 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
     elif kind in ('capsule', 'pool'):
         typ = '캡슐호텔' if kind == 'capsule' else '수영장 있는 호텔'
         q2 = f'{CITY["ko"]}에 {typ}은 총 몇 곳인가요?'
-        a2p = f'캐치플로가 분석한 {CITY["ko"]} {typ}은 총 {n}곳이에요. 이 페이지에서 전부 실망 확률 순으로 비교할 수 있어요.'
+        _nlow = sum(1 for p in pids if not H[p]['ranked'])
+        a2p = (f'캐치플로가 분석한 {CITY["ko"]} {typ}은 총 {n}곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요'
+               + (f' (최근 1년 리뷰 {RANK_MIN}개 미만 {_nlow}곳은 순위 없이 참고용).' if _nlow else '.'))
         faqs.append((q2, E(a2p), a2p))
     elif kind == 'value':
-        best_pid = pids[0] if pids else None
+        best_pid = next((p for p in pids if H[p]['ranked']), None)   # '가장 낮은 곳'은 순위 모수 안에서
         q2 = '10만원 이하에서 실망 확률이 가장 낮은 곳은?'
         if best_pid:
             a2p = f'현재 기준 {E(hotels_meta[best_pid]["title"])}가 실망 확률 {pct(H[best_pid]["p_crit"])}%로 가장 낮아요. 가격은 스크랩 시점 기준이라 실제 예약가는 확인이 필요해요.'
@@ -3747,6 +3783,9 @@ def build_about(hotels_meta, H, city):
         '<li>별점만 남긴 리뷰는 같은 별점 리뷰에서 실망이 나온 비율로 추정해 반영해요</li>'
         f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않도록 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
         f'<li>최근 1년 리뷰(별점만 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
+        f'<li>최근 1년 리뷰가 {RANK_MIN}개 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 리뷰가 적어도 위험 신호가 뚜렷하면 위험으로 알려 드려요</li>'
+        '<li>순위는 정밀한 백분위 대신 \'상위 25% 안\'처럼 넉넉한 구간으로, 80% 이상 확실할 때만 보여 드려요</li>'
+        '<li>배지(양호·주의·위험)는 경계 근처에서 매주 바뀌지 않도록, 경계를 충분히 넘었을 때만 바꿔요</li>'
         '</ul>')
     s2b = sect('항목별 점수는 이렇게 매겨요',
         '<ul class="about-list">'
@@ -3822,11 +3861,21 @@ def build_sitemap(detail_pids, collection_slugs=()):
             f'{urls}\n</urlset>\n')
 
 
+def prev_badges():
+    """지난 빌드의 배지(docs/data/compare.js의 b) — 배지 흔들림 방지용(scoring.assess). docs를 지우기 전에 읽는다. 없으면 {}."""
+    f = os.path.join(OUT, 'data', 'compare.js')
+    try:
+        t = open(f, encoding='utf-8').read()
+        return {pid: d.get('b') for pid, d in json.loads(t[t.index('=') + 1:].strip().rstrip(';')).items()}
+    except Exception:
+        return {}
+
+
 def main():
     # UI 규칙 v2 게이트 (UI-STANDARDS §14): 토큰 밖 글자 크기·색, 배지 외 12px, PC 규칙 위치 등 위반 시 빌드 중단
     import lint_ui
     lint_ui.run(strict=True)
-    city, H = compute(SRC)
+    city, H = compute(SRC, prev_badges=prev_badges())
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data, social_data = load()
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
 

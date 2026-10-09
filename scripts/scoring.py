@@ -25,6 +25,12 @@ K = 20                # 소표본 보정 의사표본 (도시평균 리뷰 20건
 GUARD_MIN = 5         # 소분류 불만 리뷰 최소 건수 (미만이면 상한 65)
 GUARD_CAP = 65
 MIN_REVIEWS = 30      # 점수 노출 최소 분석 리뷰 수
+# ── 표본 공정성 (2026-10) ──
+RANK_MIN = 100        # 최근 1년 리뷰 100개 미만 = '리뷰 적음': 순위·추천·랭킹 모수에서 제외, 배지는 확실한 위험만
+DANGER_SURE = 0.8     # 리뷰 적은 호텔은 '위험'일 확률이 80% 이상일 때만 위험 배지(아니면 '리뷰 적음')
+RANK_SURE = 0.8       # 순위는 80% 이상 확실할 때만 넉넉한 구간으로 ('상위 25% 안' 등) — 정밀 백분위는 오차가 커서 안 씀
+BADGE_MARGIN = 0.1    # 배지 흔들림 방지: 지난 배지에서 바뀌려면 경계를 10% 넘어서야 함
+BAND_LABEL = {'safe': '양호', 'warning': '주의', 'danger': '위험', 'low': '리뷰 적음'}
 
 # 분류 v5.7 (2026-10-09 확정) — 정본: pipeline/prompt_v5.py SUBS · 판정 기준서 pipeline/eval_v5/SPEC.md
 CATS = ['청결', '냄새', '소음', '객실', '직원', '위치', '안전']
@@ -71,14 +77,69 @@ def hotel_badge(p_crit, city_crit):
     if p_crit <= 0.8 * city_crit: return ('safe', '양호')
     return ('warning', '주의')
 
-def compute(data_dir):
+def _beta_params(h, city_crit):
+    """실망 확률의 불확실성(베타 근사). 가중치 때문에 유효 표본수 = (Σw)²/Σw²로 줄여서 쓰고 k=20 보정을 사전분포로."""
+    den_w, den2, cw = h['_unc']
+    sc = (den_w / den2) if den2 else 0.0          # = 유효표본수 / Σw
+    return sc * cw + K * city_crit, max(sc * (den_w - cw), 0.0) + K * (1 - city_crit)
+
+def _zone(p, c, prev=None):
+    """배지 구간 (양호 ≤0.8×평균 · 위험 ≥1.5×평균). prev(지난 배지)가 있으면 경계를 BADGE_MARGIN만큼 넘어야 바뀐다."""
+    lo, hi, m = 0.8 * c, 1.5 * c, BADGE_MARGIN
+    if prev == 'safe':
+        return 'safe' if p <= lo * (1 + m) else ('danger' if p >= hi else 'warning')
+    if prev == 'danger':
+        return 'danger' if p >= hi * (1 - m) else ('safe' if p <= lo else 'warning')
+    if prev == 'warning':
+        return 'safe' if p <= lo * (1 - m) else ('danger' if p >= hi * (1 + m) else 'warning')
+    return 'safe' if p <= lo else ('danger' if p >= hi else 'warning')
+
+def assess(hotels, city, prev=None, seed=7, draws=2000):
+    """표본 공정성 판정 (2026-10). 결과를 hotels에 기록:
+       badge = (band, 라벨) — 리뷰 100개 이상은 구간 배지(+흔들림 방지), 미만은 '리뷰 적음' 또는 확실한 '위험'
+       rank_tier = None | (side, '상위 25% 안' …) — 리뷰 100개 이상끼리 순위를 다시 뽑아 80% 이상 확실할 때만
+       p_danger = 리뷰 적은 호텔이 위험 구간일 확률. 난수 시드 고정 → 같은 데이터면 같은 결과."""
+    import random
+    rnd = random.Random(seed)
+    prev = prev or {}
+    C = city['crit']
+    sc = [p for p, h in hotels.items() if h['scored']]
+    par = {p: _beta_params(hotels[p], C) for p in sc}
+    ranked = [p for p in sc if hotels[p]['ranked']]
+    for p in sc:
+        h = hotels[p]
+        if h['ranked']:
+            band, h['p_danger'] = _zone(h['p_crit'], C, prev.get(p)), None
+        else:
+            a, b = par[p]
+            pd = sum(1 for _ in range(draws) if rnd.betavariate(a, b) >= 1.5 * C) / draws
+            h['p_danger'] = pd
+            band = 'danger' if pd >= DANGER_SURE - (0.1 if prev.get(p) == 'danger' else 0.0) else 'low'
+        h['badge'] = (band, BAND_LABEL[band])
+        h['rank_tier'] = None
+    n = len(ranked)
+    if n >= 10:
+        sims = {p: [] for p in ranked}
+        for _ in range(draws):
+            v = {p: rnd.betavariate(*par[p]) for p in ranked}
+            for i, p in enumerate(sorted(ranked, key=v.get)):
+                sims[p].append(100.0 * (i + 1) / n)          # 실망 확률 낮은 순 백분위(작을수록 상위)
+        for p in ranked:
+            s = sorted(sims[p])
+            hi, lo = s[int(draws * RANK_SURE)], s[int(draws * (1 - RANK_SURE))]
+            t = (('top', '상위 10% 안') if hi <= 10 else ('top', '상위 25% 안') if hi <= 25 else
+                 ('bottom', '하위 10% 안') if lo >= 90 else ('bottom', '하위 25% 안') if lo >= 75 else None)
+            hotels[p]['rank_tier'] = t
+
+def compute(data_dir, prev_badges=None):
     J = lambda f: json.load(open(os.path.join(data_dir, f), encoding='utf-8'))
     denoms, findings_main, findings_sub, reviewlevel = (
         J('agg_denom.json'), J('agg_findings.json'), J('findings_sub.json'), J('agg_reviewlevel.json'))
 
-    den = defaultdict(float); den_n = defaultdict(int); den_1y = defaultdict(int)
+    den = defaultdict(float); den_n = defaultdict(int); den_1y = defaultdict(int); den2 = defaultdict(float)
     for d in denoms:
         den[d['place_id']] += d['n'] * wt(d['bucket'])
+        den2[d['place_id']] += d['n'] * wt(d['bucket']) ** 2     # 유효 표본수 계산용 (불확실성)
         den_n[d['place_id']] += d['n']
         if d['bucket'] != 'w015':          # 최근 1년(365일 이내) 카운트 = 표시·게이트 모수 (w015=365일 초과)
             den_1y[d['place_id']] += d['n']
@@ -147,12 +208,14 @@ def compute(data_dir):
     for p in den:
         # analyzed = 최근 1년 평가 리뷰(글 리뷰 + 별점만 리뷰) = 실망확률·비율의 분모. text_1y = 그중 글 리뷰(LLM 분석분)
         h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS,
+             'ranked': den_1y[p] >= RANK_MIN,      # 순위·추천·랭킹 모수 포함 여부
              'text_1y': text_1y[p], 'star_only_1y': max(den_1y[p] - text_1y[p], 0),
              'crit_1y': crit_1y[p], 'any_1y': any_1y[p], 'imp_1y': imp_1y[p]}
         if h['scored']:
             pc = (crit_w[p] + K * city['crit']) / (den[p] + K)
             h['p_crit'] = pc
-            h['badge'] = hotel_badge(pc, city['crit'])
+            h['badge'] = hotel_badge(pc, city['crit'])      # assess()가 표본 공정성 기준으로 덮어씀
+            h['_unc'] = (den[p], den2[p], crit_w[p])
             h['cats'] = {}
             for c in CATS:
                 radj = (m_num[(p, c)] + K * city['cat'][c]) / (den[p] + K)
@@ -169,13 +232,20 @@ def compute(data_dir):
                                                'crit_1y': s_crit_1y[(p, c, s)], 'crit_3m': s_crit_3m[(p, c, s)]}
         hotels[p] = h
 
-    # 백분위 (같은 도시 내, 카테고리 점수 기준) — 칩 전용 대분류(안전)는 순위를 매기지 않는다
+    # 백분위 (같은 도시 내, 카테고리 점수 기준) — 칩 전용 대분류(안전)는 순위를 매기지 않는다.
+    # 모수 = 최근 1년 리뷰 RANK_MIN 이상 호텔만 (2026-10 표본 공정성). 리뷰 적은 호텔은 None(순위 문구 미노출)
+    rank_pool = [p for p in scored if hotels[p]['ranked']]
     for c in SCORED_CATS:
-        vals = sorted(hotels[p]['cats'][c]['score'] for p in scored)
+        vals = sorted(hotels[p]['cats'][c]['score'] for p in rank_pool)
         n = len(vals)
         for p in scored:
+            if not hotels[p]['ranked'] or not n:
+                hotels[p]['cats'][c]['pctl_worse'] = None
+                continue
             v = hotels[p]['cats'][c]['score']
             below = sum(1 for x in vals if x < v)
             hotels[p]['cats'][c]['pctl_worse'] = round(100 * (n - below) / n)  # "하위 N%"
+
+    assess(hotels, city, prev_badges)
 
     return city, hotels
