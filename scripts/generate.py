@@ -13,6 +13,16 @@ from scoring import compute, CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS
 
 # ── 카테고리 표시명 (TAXONOMY v4: 명칭이 이미 중립적이라 순화층 불요). cat_ko는 identity로 유지해 호출부 보존. ──
 def cat_ko(c): return c
+# P1 한눈에 보기 문장 재료: 소분류 → 고객 언어 명사구 (SUBS 17개와 키 동일해야 함 — scoring.py SUBS 변경 시 동기화)
+SUB_PHRASE = {
+    '침구/바닥 청결': '침구·바닥 청결', '청소 상태': '청소 상태', '해충/곰팡이': '벌레·곰팡이',
+    '담배 냄새': '담배 냄새', '화장실·곰팡 악취': '화장실·곰팡 악취',
+    '내부 소음': '옆방·복도 소음', '외부 소음': '도로·유흥가 소음',
+    '공간 협소': '좁은 객실·욕실', '노후/고장': '낡은 시설·고장', '냉난방/수압': '냉난방·수압', '네트워크/TV': '와이파이·TV',
+    '응대 태도': '직원 응대', '체크인/처리 지연': '체크인 지연', '사후 대처': '문제 발생 시 대처',
+    '접근성': '역 접근성', '주변 편의': '주변 편의시설', '치안·안심': '치안',
+}
+assert set(SUB_PHRASE) == {s for v in SUBS.values() for s in v}, 'SUB_PHRASE ↔ scoring.SUBS 불일치'
 CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
 
 def mask_name(s):
@@ -230,6 +240,29 @@ def load():
     return hotels_meta, quotes, stars, kr, monthly, monthly_cat, faq, social
 
 # ───────────────────────── 공통 조각 ─────────────────────────
+# P2 상세 섹션 탭: 스크롤 위치로 활성 탭 표시 + 클릭 시 헤더(56)+탭 높이만큼 보정해 이동. f-string 아님(JS 중괄호 보존).
+DETAIL_TABS_JS = '''<script>
+(function(){
+    var nav = document.getElementById('det-tabs'); if (!nav) return;
+    var links = [].slice.call(nav.querySelectorAll('a')), ticking = false;
+    function target(a){ return document.getElementById(a.getAttribute('href').slice(1)); }
+    function spy(){
+        ticking = false;
+        var cur = links[0], lim = 56 + nav.offsetHeight + 24;
+        links.forEach(function(a){ var s = target(a); if (s && s.getBoundingClientRect().top <= lim) cur = a; });
+        links.forEach(function(a){ a.classList.toggle('is-on', a === cur); });
+    }
+    window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, {passive: true});
+    nav.addEventListener('click', function(e){
+        var a = e.target.closest('a'); if (!a) return;
+        var s = target(a); if (!s) return;
+        e.preventDefault();
+        window.scrollTo({top: s.getBoundingClientRect().top + window.pageYOffset - (56 + nav.offsetHeight) + 1, behavior: 'smooth'});
+        if (typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
+    });
+})();
+</script>'''
+
 # Microsoft Clarity (히트맵·세션 리플레이). f-string 아님 — JS 중괄호 리터럴 보존.
 CLARITY = '''<script type="text/javascript">
     (function(c,l,a,r,i,t,y){
@@ -372,7 +405,8 @@ def fmt_score(v):
     try: return f'{float(v):.1f}'
     except (TypeError, ValueError): return '-'
 
-def hotel_card(pid, meta, h, depth=0):
+def hotel_card(pid, meta, h, depth=0, extra=''):
+    """extra: info 하단 추가 HTML (상세 '약점 맞춤 대안'의 비교 줄 등). 기본 빈값 = 기존 카드 그대로."""
     p = '../' * depth
     star_w = round(float(meta.get('total_score') or 0) / 5 * 100)
     return f'''<li class="swiper-slide">
@@ -387,6 +421,7 @@ def hotel_card(pid, meta, h, depth=0):
                 <div class="star"><i style="width:{star_w}%"></i></div>
                 <div class="text">구글 {fmt_score(meta.get('total_score'))} · 리뷰 {meta.get('reviews_count') or 0:,}개</div>
                 <div class="price-line">{('1박 <b>' + meta['price_txt'] + '</b>') if meta.get('price_txt') else '&nbsp;'}</div>
+                {extra}
             </div>
         </a>
     </li>'''
@@ -1890,16 +1925,33 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <div class="det-col-chips">{chips}</div>
         </div>'''
 
+    # P4 약점 맞춤 대안: 최고 위험 카테고리가 주의·위험이면 같은 가격대·근거리 후보 중 그 카테고리 위험도가
+    # 10 이상 낮은 곳만(3곳 미만이면 기존 일반 추천 폴백). 채점 호텔은 리스크 상세 바로 뒤에 배치(스크롤 50% 대응).
     sim = similar_hotels(pid, hotels_meta, H)
+    sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', '비슷한 가격대·가까운 위치에서 실망 확률이 낮은 순이에요', {}
+    if h['scored']:
+        _wc = max(CATS, key=lambda c: h['cats'][c]['score'])
+        _ws = round(h['cats'][_wc]['score'])
+        if h['cats'][_wc]['band'] in ('warning', 'danger'):
+            _alt = [p for p in similar_hotels(pid, hotels_meta, H, k=24)
+                    if round(H[p]['cats'][_wc]['score']) <= _ws - 10][:8]
+            if len(_alt) >= 3:
+                sim = _alt
+                sim_title = f'{cat_ko(_wc)} 불만이 걱정된다면'
+                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 위험도가 더 낮은 곳이에요'
+                sim_extra = {p: (f'<div class="vs-line">{E(cat_ko(_wc))} 위험도 <b>{round(H[p]["cats"][_wc]["score"])}</b>'
+                                 f'<span> · 이 호텔 {_ws}</span></div>') for p in _alt}
     similar_block = ''
     if sim:
-        sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1) for p in sim)
-        similar_block = f'''<div class="sect hotel">
-            <div class="head"><div class="title">이런 호텔은 어떠세요?</div>
-            <div class="desc">비슷한 가격대·가까운 위치에서 실망 확률이 낮은 순이에요</div></div>
+        sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1, extra=sim_extra.get(p, '')) for p in sim)
+        similar_block = f'''<div class="sect hotel" id="sec-alt">
+            <div class="head"><div class="title">{E(sim_title)}</div>
+            <div class="desc">{E(sim_desc)}</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{sim_cards}</ul></div>
         </div>'''
 
+    glance_html = ''
+    tabs_html = ''
     if not h['scored']:
         body_scored = f'''<div class="sect"><div class="head">
             <div class="title">아직 분석 리뷰가 부족해요</div>
@@ -1966,6 +2018,64 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 v_why = f'최근 1년 심각 언급 비율 <b>{v}%</b>,<br>{CITY["ko"]} 평균(<b>{avg}%</b>)보다 높아요'
         # F41: 히어로 줄 = %+판정 같은 줄·같은 케이스색(verdict 별도 줄 흡수). 근거(why)는 게이지 아래 유지
         verdict_why_html = f'<div class="verdict-why">{v_why}</div>'
+
+        # ── P1 한눈에 보기: 걸리는 점 = 딜브레이커 발동분(희소 심각 최근 1년 ≥3, db_data와 동일 캘리브레이션) 우선
+        #    + 주의·위험 소분류 중 최근 1년 3건+ & 비율 2%+ (위험도순). 없는데 판정이 C·D면 최고 위험 카테고리로 폴백.
+        #    괜찮은 점 = 양호 카테고리(위험도 낮은 순 2) + 역 도보 5분 이내(위치·안전 양호일 때만). 전부 실측 조립.
+        _neg = []    # (dot, lead용 구문, 상세 html, 카테고리)
+        for _rc, _rl, _rcl, _rn in db_data:
+            _scat = '해충/곰팡이' if _rc == '위생' else '치안·안심'
+            _neg.append(('danger', f'<em>{E(SUB_PHRASE[_scat])} 심각 리뷰</em>가 반복돼요',
+                         f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · 최근 1년 {_rn}건', _rc, None))
+        _cand = []
+        for _c in CATS:
+            for _s in SUBS[_c]:
+                _sb = h['cats'][_c]['subs'][_s]
+                _n1 = _sb.get('count_1y', 0)
+                if (_s not in RARE_SUBS and _sb['band'] in ('warning', 'danger') and _n1 >= 3
+                        and _n1 / h['analyzed'] >= 0.02):
+                    _cand.append((-_sb['score'], _s, _sb['band'], _n1, _c))
+        for _x, _s, _bd, _n1, _c in sorted(_cand):
+            _neg.append((_bd, f'<em>{E(SUB_PHRASE[_s])}</em> 불만이 반복돼요',
+                         f'<b>{E(SUB_PHRASE[_s])} 불만</b> · 최근 1년 리뷰의 {round(_n1 / h["analyzed"] * 100, 1)}% ({_n1}건)', _c,
+                         SUB_PHRASE[_s]))
+        if not _neg and ratio >= 1.15 and h['cats'][_worst]['band'] in ('warning', 'danger'):
+            _neg.append((h['cats'][_worst]['band'], f'<em>{E(cat_ko(_worst))}</em> 불만이 평균보다 많아요',
+                         f'<b>{E(cat_ko(_worst))} 불만</b> · 위험도 {round(_worst_sc)} (평균 50)', _worst, None))
+        _neg = _neg[:3]
+        _negc = {n[3] for n in _neg}    # 걸리는 점과 같은 카테고리는 괜찮은 점에서 제외(모순 문장 방지)
+        _safe = sorted((c for c in CATS if h['cats'][c]['band'] == 'safe' and c not in _negc),
+                       key=lambda c: h['cats'][c]['score'])
+        _pos = [f'<b>{E(cat_ko(c))} 불만 적음</b> · 위험도 {round(h["cats"][c]["score"])} (평균 50)' for c in _safe[:2]]
+        _st = nearest_station(meta.get('latitude'), meta.get('longitude'))
+        if _st and _st[1] <= 5 and h['cats']['위치·안전']['band'] == 'safe' and '위치·안전' not in _negc:
+            _pos.append(f'<b>역 가까움</b> · {E(_st[0])} 도보 {_st[1]}분')
+        if _neg or _pos:
+            _ok = ratio < 1.15          # verdict A·B(통과) — 어조를 "무난 + 굳이 꼽자면"으로
+            if _ok and _neg and _neg[0][4]:
+                _lead = f'전반적으로 무난해요. 굳이 꼽자면 <em>{E(_neg[0][4])}</em> 불만이 있어요.'
+            elif _ok and _neg:
+                _lead = f'전반적으로 무난하지만, {_neg[0][1]}.'
+            elif _neg and _safe:
+                _lead = f'{E(cat_ko(_safe[0]))}{josa_eun(cat_ko(_safe[0]))} 괜찮지만, {_neg[0][1]}.'
+            elif _neg:
+                _lead = f'{_neg[0][1]}.'
+            else:
+                _lead = '<em>두드러진 불만이 없는</em> 호텔이에요.'
+            _col = lambda tit, items: (f'<div class="gl-col"><div class="gl-h">{tit}</div><ul>'
+                                       + ''.join(f'<li><span class="gl-dot is-{d}"></span><span>{t}</span></li>' for d, t in items)
+                                       + '</ul></div>')
+            glance_html = f'''<div class="sect glance" id="sec-sum">
+                <div class="gl-box">
+                    <div class="gl-eyebrow">리뷰 {h['analyzed']:,}건으로 본 한 줄 결론</div>
+                    <p class="gl-lead">{_lead}</p>
+                    <div class="gl-cols">
+                        {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
+                        {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
+                    </div>
+                    <div class="gl-foot"><span>분석 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']} · 수치에서 자동 생성</span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
+                </div>
+            </div>'''
 
         # F35: 딜브레이커 경고 스트립 삭제(db_data 계산은 점프칩 fj-risk·verdict용으로 유지)
         radar_labels = json.dumps([cat_ko(c) for c in CATS], ensure_ascii=False)  # 표시 라벨만 순화(순서=CATS 고정)
@@ -2113,7 +2223,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             </div>'''
 
         body_scored = f'''
-        <div class="sect disappear">
+        <div class="sect disappear" id="sec-prob">
             <div class="head">
                 <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="pct">{v}%</div>
@@ -2186,7 +2296,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
+        {similar_block}
         {faq_section(faq)}
+        {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
         {social_section(social, name)}
         {stars_block}
         {korean_card(kr, city, kr_rank_pct, kr_1y, kr_dist)}
@@ -2220,6 +2332,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         window.CF_PID = {json.dumps(pid)};
         window.CF_GREVIEWS = 'https://search.google.com/local/reviews?placeid={pid}';
         </script>'''
+
+    # P2 고정 섹션 탭 (채점 호텔만) — DOM 순서 = 탭 순서. 없는 섹션은 탭도 생략.
+    if h['scored']:
+        _tabs = ([('sec-sum', '요약')] if glance_html else []) + [('sec-prob', '위험도')]
+        if similar_block: _tabs.append(('sec-alt', '대안'))
+        if faq: _tabs.append(('hotel-faq', '실전정보'))
+        if social or stars_block: _tabs.append(('sec-rev', '후기'))
+        tabs_html = ('<nav class="det-tabs" id="det-tabs" aria-label="섹션 바로가기">'
+                     + ''.join(f'<a href="#{t}" class="{"is-on" if i == 0 else ""}">{lbl}</a>' for i, (t, lbl) in enumerate(_tabs))
+                     + '</nav>' + DETAIL_TABS_JS)
 
     canonical = f'{BASE}/hotels/{pid}'
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
@@ -2265,10 +2387,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {faq_jump_html}
                 </div>
+                {tabs_html}
+                {glance_html}
                 {map_block}
                 {body_scored}
                 {col_chip_block}
-                {similar_block}
+                {'' if h['scored'] else similar_block}
             </div>
             <div class="button"><a class="btn-reservate" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
         </section>

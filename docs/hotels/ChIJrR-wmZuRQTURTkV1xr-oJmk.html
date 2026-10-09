@@ -35,18 +35,18 @@
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="../css/tokens.css?v=1791517647">
-    <link rel="stylesheet" href="../css/common.css?v=1791517647">
-    <link rel="stylesheet" href="../css/layout.css?v=1791517647">
-    <link rel="stylesheet" href="../css/swiper.css?v=1791517647">
-    <link rel="stylesheet" href="../css/uplift.css?v=1791517647">
-    <link rel="stylesheet" href="../css/mvp.css?v=1791517647">
-    <script src="../js/backnav.js?v=1791517647"></script>
+    <link rel="stylesheet" href="../css/tokens.css?v=1791519735">
+    <link rel="stylesheet" href="../css/common.css?v=1791519735">
+    <link rel="stylesheet" href="../css/layout.css?v=1791519735">
+    <link rel="stylesheet" href="../css/swiper.css?v=1791519735">
+    <link rel="stylesheet" href="../css/uplift.css?v=1791519735">
+    <link rel="stylesheet" href="../css/mvp.css?v=1791519735">
+    <script src="../js/backnav.js?v=1791519735"></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="../js/swiper.js"></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"위생": "위생", "냄새": "냄새", "소음": "소음", "시설": "시설", "불친절": "불친절", "위치·안전": "위치·안전"};</script>
-    <script src="../js/engage.js?v=1791517647" defer></script>
-    <script src="../js/recommend.js?v=1791517647"></script>
+    <script src="../js/engage.js?v=1791519735" defer></script>
+    <script src="../js/recommend.js?v=1791519735"></script>
 </head>
 <body>
 <div id="wrapper">
@@ -109,6 +109,38 @@
                     </div>
                     <div class="fj-title">리뷰에서 찾아봤어요</div><div class="faq-jump-wrap"><div class="faq-jump"><button type="button" class="fj-btn fj-q" data-target="faq-luggage">짐 맡아주나요?</button><button type="button" class="fj-btn fj-q" data-target="faq-family">아이동반 되나요?</button><button type="button" class="fj-btn fj-all" data-target="hotel-faq">실전정보 5개 전체보기</button></div></div>
                 </div>
+                <nav class="det-tabs" id="det-tabs" aria-label="섹션 바로가기"><a href="#sec-sum" class="is-on">요약</a><a href="#sec-prob" class="">위험도</a><a href="#sec-alt" class="">대안</a><a href="#hotel-faq" class="">실전정보</a><a href="#sec-rev" class="">후기</a></nav><script>
+(function(){
+    var nav = document.getElementById('det-tabs'); if (!nav) return;
+    var links = [].slice.call(nav.querySelectorAll('a')), ticking = false;
+    function target(a){ return document.getElementById(a.getAttribute('href').slice(1)); }
+    function spy(){
+        ticking = false;
+        var cur = links[0], lim = 56 + nav.offsetHeight + 24;
+        links.forEach(function(a){ var s = target(a); if (s && s.getBoundingClientRect().top <= lim) cur = a; });
+        links.forEach(function(a){ a.classList.toggle('is-on', a === cur); });
+    }
+    window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, {passive: true});
+    nav.addEventListener('click', function(e){
+        var a = e.target.closest('a'); if (!a) return;
+        var s = target(a); if (!s) return;
+        e.preventDefault();
+        window.scrollTo({top: s.getBoundingClientRect().top + window.pageYOffset - (56 + nav.offsetHeight) + 1, behavior: 'smooth'});
+        if (typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
+    });
+})();
+</script>
+                <div class="sect glance" id="sec-sum">
+                <div class="gl-box">
+                    <div class="gl-eyebrow">리뷰 70건으로 본 한 줄 결론</div>
+                    <p class="gl-lead">전반적으로 무난해요. 굳이 꼽자면 <em>옆방·복도 소음</em> 불만이 있어요.</p>
+                    <div class="gl-cols">
+                        <div class="gl-col"><div class="gl-h">아쉬운 점</div><ul><li><span class="gl-dot is-warning"></span><span><b>옆방·복도 소음 불만</b> · 최근 1년 리뷰의 4.3% (3건)</span></li><li><span class="gl-dot is-warning"></span><span><b>역 접근성 불만</b> · 최근 1년 리뷰의 7.1% (5건)</span></li><li><span class="gl-dot is-warning"></span><span><b>낡은 시설·고장 불만</b> · 최근 1년 리뷰의 10.0% (7건)</span></li></ul></div>
+                        <div class="gl-col"><div class="gl-h">괜찮은 점</div><ul><li><span class="gl-dot is-safe"></span><span><b>위생 불만 적음</b> · 위험도 21 (평균 50)</span></li><li><span class="gl-dot is-safe"></span><span><b>불친절 불만 적음</b> · 위험도 30 (평균 50)</span></li></ul></div>
+                    </div>
+                    <div class="gl-foot"><span>분석 리뷰 70건 · 기준 2026년 7월 · 수치에서 자동 생성</span><a class="gl-more" href="#risk-detail">근거 보기</a></div>
+                </div>
+            </div>
                 <div class="sect location">
             <div class="head"><div class="title">위치</div></div>
             
@@ -117,7 +149,7 @@
                 loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="플라자 후요 호텔 지도"></iframe></div>
         </div>
                 
-        <div class="sect disappear">
+        <div class="sect disappear" id="sec-prob">
             <div class="head">
                 <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="pct">6%</div>
@@ -597,6 +629,138 @@
                 <span class="note">벌레·치안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
+        <div class="sect hotel" id="sec-alt">
+            <div class="head"><div class="title">소음 불만이 걱정된다면</div>
+            <div class="desc">비슷한 가격대·가까운 위치에서 소음 위험도가 더 낮은 곳이에요</div></div>
+            <div class="list hotel-slider"><ul class="swiper-wrapper"><li class="swiper-slide">
+        <a href="../hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg/0.webp" alt="웰 캐빈 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">웰 캐빈 텐진</h3>
+                <div class="eng">ウェルキャビン天神</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 536개</div>
+                <div class="price-line">1박 <b>약 5만원</b></div>
+                <div class="vs-line">소음 위험도 <b>54</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g/0.webp" alt="베스트 웨스턴 플러스 후쿠오카 텐진-미나미" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">베스트 웨스턴 플러스 후쿠오카 텐진-미나미</h3>
+                <div class="eng">ベストウェスタンプラス福岡天神南</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 732개</div>
+                <div class="price-line">1박 <b>약 8만원</b></div>
+                <div class="vs-line">소음 위험도 <b>31</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw/0.webp" alt="호텔 몬테 에르마나 후쿠오카" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 몬테 에르마나 후쿠오카</h3>
+                <div class="eng">ホテル モンテ エルマーナ福岡</div>
+                <div class="star"><i style="width:86%"></i></div>
+                <div class="text">구글 4.3 · 리뷰 3,685개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+                <div class="vs-line">소음 위험도 <b>19</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJ_0mjd5CRQTUROsF1EigVii0" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ_0mjd5CRQTUROsF1EigVii0/0.webp" alt="호텔 카스비 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 카스비 텐진</h3>
+                <div class="eng">HOTEL CASVI TENJIN</div>
+                <div class="star"><i style="width:78%"></i></div>
+                <div class="text">구글 3.9 · 리뷰 223개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+                <div class="vs-line">소음 위험도 <b>21</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U/0.webp" alt="호텔 텐진 플레이스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 텐진 플레이스</h3>
+                <div class="eng">ホテル天神プレイス</div>
+                <div class="star"><i style="width:82%"></i></div>
+                <div class="text">구글 4.1 · 리뷰 542개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+                <div class="vs-line">소음 위험도 <b>14</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM/0.webp" alt="다이와 로이넷 호텔 후쿠오카 - 니시나카스" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">다이와 로이넷 호텔 후쿠오카 - 니시나카스</h3>
+                <div class="eng">DEL style 福岡西中洲 by Daiwa Roynet Hotel</div>
+                <div class="star"><i style="width:84%"></i></div>
+                <div class="text">구글 4.2 · 리뷰 681개</div>
+                <div class="price-line">1박 <b>약 7만원</b></div>
+                <div class="vs-line">소음 위험도 <b>26</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">도큐스테이 후쿠오카 텐진</h3>
+                <div class="eng">東急ステイ 福岡天神</div>
+                <div class="star"><i style="width:88%"></i></div>
+                <div class="text">구글 4.4 · 리뷰 1,459개</div>
+                <div class="price-line">1박 <b>약 10만원</b></div>
+                <div class="vs-line">소음 위험도 <b>23</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="../hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU" class="item">
+            <div class="thumb">
+                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
+                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU/0.webp" alt="호텔 그란돌체 하카타" width="600" height="400" loading="lazy"></div>
+            </div>
+            <div class="info">
+                <h3 class="name">호텔 그란돌체 하카타</h3>
+                <div class="eng">ホテルグランドルチェ博多</div>
+                <div class="star"><i style="width:90%"></i></div>
+                <div class="text">구글 4.5 · 리뷰 353개</div>
+                <div class="price-line">1박 <b>약 9만원</b></div>
+                <div class="vs-line">소음 위험도 <b>18</b><span> · 이 호텔 79</span></div>
+            </div>
+        </a>
+    </li></ul></div>
+        </div>
         <div class="sect faq" id="hotel-faq">
             <div class="head"><div class="title">리뷰로 확인한 실전 정보</div>
             <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
@@ -640,6 +804,7 @@
                 </div>
             </div></div>
         </div><script>window.FAQEVID={"family": [{"q": "아기가있어서 온돌방 선택햇음 만족", "qh": "<b>아기</b>가있어서 온돌방 선택햇음 만족", "d": "2026-06-06", "st": 5, "o": "Google", "n": "강**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2tOSFdESllXbkZmVkZjNFprOURabEZoYm1SS1oxRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOkNHWDJYWnFfVFc4Zk9DZlFhbmRKZ1E%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "아이있는 집이면 무조건 강추합니다", "qh": "<b>아이</b>있는 집이면 무조건 강추합니다", "d": "2026-05-21", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "일본식인 것, 목욕과 화장실이 다른 것, 키친이 있는 것은 작은 아이 동반에는 좋을까라고 생각했습니다.", "qh": "일본식인 것, 목욕과 화장실이 다른 것, 키친이 있는 것은 작은 <b>아이</b> 동반에는 좋을까라고 생각했습니다.", "d": "2026-04-10", "st": 3, "o": "Google", "n": "ま**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21KdVVESjBOMVY0ZEVsSVVYVXlNR2hmVjA1V05VRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOmJuUDJ0N1V4dElIUXUyMGhfV05WNUE%7C%7C?hl=ko", "l": "ja", "tf": "하카타 역에서 멀리 떨어져 있지만, 술집 거리 안에 있기 때문에 비교적 밤늦게까지 활기찬 장소에 있습니다.\n다만, 일본식인 것, 목욕과 화장실이 다른 것, 키친이 있는 것은 작은 아이 동반에는 좋을까라고 생각했습니다.\n또한 아침에는 무료 차와 커피, 빵 서비스가 접수 카운터에 있으므로 이용하면 유익한 느낌도했습니다.\n숙박중 비가 내리는 경우가 있었습니다만, 무료 우산을 대여해 주셨기 때문에 살아났습니다. 단지, 수에 한계는 있습니다."}, {"q": "주변에 유흥바가 조금 있긴하지만 어린이가 있는 가족 단위가 아니라면 최고의 옵션!", "qh": "주변에 유흥바가 조금 있긴하지만 어린이가 있는 <b>가족</b> 단위가 아니라면 최고의 옵션!", "d": "2026-02-19", "st": 5, "o": "Google", "n": "S**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21oNGFVdGFWMjlsT0VoWVFsQk5XRXgzWTJsaFVrRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOmh4aUtaV29lOEhYQlBNWEx3Y2lhUkE%7C%7C?hl=ko", "l": "ko", "tf": ""}], "kitchen": [{"q": "객실은 33제곱미터로 넓었고, 테라스, 주방, 가스레인지, 대형 냉장고, 전자레인지까지 갖춰져 있었습니다.", "qh": "객실은 33제곱미터로 넓었고, 테라스, <b>주방</b>, 가스레인지, 대형 <b>냉장고</b>, <b>전자레인지</b>까지 갖춰져 있었습니다.", "d": "2026-05-19", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "객실은 33제곱미터로 넓었고, 테라스, 주방, 가스레인지, 대형 냉장고, 전자레인지까지 갖춰져 있었습니다. 와타나베도리 지하철역에서 도보로 4분 거리라 매우 편리했습니다. 다음에 다시 방문할 일이 있으면 꼭 다시 묵을 생각입니다."}, {"q": "객실에는 스토브, 전자레인지, 식기류가 완비된 주방이 있었습니다. 근처 슈퍼마켓에서 저렴한 와규를 사서 호텔에서 직접 요리해 먹었는데, 경제적이고 즐거운 경험이었습니다. 직원들은 친절하고 세심한 배려가 돋보였는데, 아침마다 빵과 커피를 무료로 제공해 주는 작은 배려가 인상적이었습니다. 세탁기와 건조기도 있어서 장거리 여행에 정말 유용했습니다.", "qh": "객실에는 스토브, <b>전자레인지</b>, 식기류가 완비된 <b>주방</b>이 있었습니다. 근처 슈퍼마켓에서 저렴한 와규를 사서 호텔에서 직접 요리해 먹었는데, 경제적이고 즐거운 경험이었습니다. 직원들은 친절하고 세심한 배려가 돋보였는데, 아침마다 빵과 커피를 <b>무료</b>로 제공해 주는 작은 배려가 인상적이었습니다. <b>세탁</b>기와 건조기도 있어서 장거리 여행에 정말 유용했습니다.", "d": "2026-03-24", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "후쿠오카 숙소 후기 | 후롱 플라자 호텔: 자유여행객을 위한 최고의 선택! 후쿠오카 자유여행 중 후롱 플라자 호텔에 묵은 것은 정말 큰 만족이었습니다! 호텔은 지하철역에서 도보 7분 거리에 있어 시내 여러 관광지로 이동하기 매우 편리했습니다. 근처에 해산물 시장도 있었고요! 객실에는 스토브, 전자레인지, 식기류가 완비된 주방이 있었습니다. 근처 슈퍼마켓에서 저렴한 와규를 사서 호텔에서 직접 요리해 먹었는데, 경제적이고 즐거운 경험이었습니다. 직원들은 친절하고 세심한 배려가 돋보였는데, 아침마다 빵과 커피를 무료로 제공해 주는 작은 배려가 인상적이었습니다. 세탁기와 건조기도 있어서 장거리 여행에 정말 유용했습니다. 가장 감동적이었던 것은 공항 수하물 운반 서비스였습니다. 체크아웃 후 프런트 데스크에 짐을 맡기니 직원분이 공항까지 바로 가는 교통편을 예약해 주셔서 짐을 직접 끌고 다니는 수고를 덜 수 있었습니다. 자유여행객이라면 꼭 한번 방문해 보시길 추천합니다!"}, {"q": "프라이팬, 기본적인 접시와 수저가 갖춰진 작은 주방도 있습니다.", "qh": "프라이팬, 기본적인 접시와 수저가 갖춰진 작은 <b>주방</b>도 있습니다.", "d": "2026-06-22", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "이 호텔은 와타나베도리 지하철역과 버스 정류장 근처에 위치하여 어느 관광지로든 쉽게 이동할 수 있는 편리한 위치에 있습니다! 객실 시설은 다소 오래되었지만, 객실은 넓고 화장실과 욕실이 분리되어 있습니다. 프라이팬, 기본적인 접시와 수저가 갖춰진 작은 주방도 있습니다. 가격도 매우 합리적이며, 지하철역이 가깝고 주변에 식당도 많습니다. 전반적으로 만족스러운 환경이었고, 후쿠오카에 다시 방문할 기회가 있다면 꼭 다시 묵을 생각입니다."}, {"q": "조리 도구가 갖춰진 오픈형 주방이 있어서 간단한 식사를 방에서 해 먹을 수 있었습니다.", "qh": "조리 도구가 갖춰진 오픈형 <b>주방</b>이 있어서 간단한 식사를 방에서 해 먹을 수 있었습니다.", "d": "2026-06-21", "st": 5, "o": "Google", "n": "L**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xwV2RFWkxWblZXYWxkNmNWSlZVekZDTnpCbmRIYxAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOlpWdEZLVnVWald6cVJVUzFCNzBndHc%7C%7C?hl=ko", "l": "en", "tf": "이 호텔에서 4박을 묵었습니다. 지하철역과 가까워서 하카타 JR역까지 걸어갈 수 있는 위치입니다. 주변에 바비큐 식당이 많아서 호텔 밖에서는 음식 냄새나 담배 연기가 나지만, 호텔 안으로는 들어오지 않았습니다.\n제가 묵었던 방은 다다미방이었는데, 아주 마음에 들었습니다. 조리 도구가 갖춰진 오픈형 주방이 있어서 간단한 식사를 방에서 해 먹을 수 있었습니다. 욕실에는 온수기가 있는 일본식 욕조가 있어서 매일 이용했습니다. 방 크기도 꽤 넓고 모든 가전제품이 잘 작동했습니다. 다만 창문을 열 수 없고 방음이 잘 안 돼서 위층 소음이 들렸습니다. 또 하나 아쉬운 점은 문 높이가 너무 낮다는 것입니다. 약 17cm 정도 되는 것 같은데, 저에게는 괜찮지만 키가 큰 사람들에게는 불편할 것 같습니다."}, {"q": "노후된곳이지만 냉장고만 보고 예약했습니다 커요!! 음료든 푸딩이든 쟁여놓기 아주좋아요", "qh": "노후된곳이지만 <b>냉장고</b>만 보고 예약했습니다 커요!! 음료든 푸딩이든 쟁여놓기 아주좋아요", "d": "2026-06-17", "st": 5, "o": "Google", "n": "우**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2pKV1ZXTkZYelZtU2xCV1ltMXRNbkUwY0hsdk5XYxAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOjJWVWNFXzVmSlBWYm1tMnE0cHlvNWc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "주방에 간단한 조리도 할 수 있도록 비품도 있어, 냉장고, 전자 레인지, 냄비, 세면도 넓고, 욕조에 천천히 붙여 매우 만족했습니다.", "qh": "<b>주방</b>에 간단한 조리도 할 수 있도록 비품도 있어, <b>냉장고</b>, 전자 레인지, 냄비, 세면도 넓고, 욕조에 천천히 붙여 매우 만족했습니다.", "d": "2026-01-27", "st": 4, "o": "Google", "n": "村**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21aNlQydFZXVk5XYlZWSlkyUTFZMUJWUW5SaFNWRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOmZ6T2tVWVNWbVVJY2Q1Y1BVQnRhSVE%7C%7C?hl=ko", "l": "ja", "tf": "약원역에서 도보 5분 정도로, 주변에 음식점도 있어 편리합니다\n방도 넓게 연대는 느끼지만, 신경이 쓰이지 않습니다.\n주방에 간단한 조리도 할 수 있도록 비품도 있어, 냉장고, 전자 레인지, 냄비, 세면도 넓고, 욕조에 천천히 붙여 매우 만족했습니다.\n간단한 빵과 음료 조식도 무료로 제공되었습니다. 다시 이용하고 싶습니다!"}, {"q": "흡연실은 5층 세탁실에 같이있는데 누군가가 세탁을하고있을때엔 괜히 미안해지는 공간이기도 해요", "qh": "흡연실은 <b>5층</b> <b>세탁</b>실에 같이있는데 누군가가 <b>세탁</b>을하고있을때엔 괜히 미안해지는 공간이기도 해요", "d": "2026-07-03", "st": 5, "o": "Google", "n": "주**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xGSmJGbHNkM0pZWW00eWRHSmpWSE5pWjJOSFVtYxAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOlFJbFlsd3JYYm4ydGJjVHNiZ2NHUmc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "흡연하시는분들은 5층 코인세탁소에 가시면됩니다.", "qh": "흡연하시는분들은 <b>5층</b> 코인<b>세탁</b>소에 가시면됩니다.", "d": "2026-02-05", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}], "access": [{"q": "역도 걸어서 3분이면 갈수 있어서 텐진이나 하카타까지 편했습니다.", "qh": "역도 <b>걸어서</b> <b>3분</b>이면 갈수 있어서 텐진이나 하카타까지 편했습니다.", "d": "2025-08-31", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "와타나베도리 지하철역에서 도보로 4분 거리라 매우 편리했습니다.", "qh": "와타나베도리 지하철<b>역에서</b> <b>도보</b>로 <b>4분</b> 거리라 매우 편리했습니다.", "d": "2026-05-19", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "객실은 33제곱미터로 넓었고, 테라스, 주방, 가스레인지, 대형 냉장고, 전자레인지까지 갖춰져 있었습니다. 와타나베도리 지하철역에서 도보로 4분 거리라 매우 편리했습니다. 다음에 다시 방문할 일이 있으면 꼭 다시 묵을 생각입니다."}, {"q": "와타나베도리역과 걸어서 5분이라 텐진이나 하카타 가시 쉽습니다.", "qh": "와타나베도리역과 <b>걸어서</b> <b>5분</b>이라 텐진이나 하카타 가시 쉽습니다.", "d": "2025-09-01", "st": 4, "o": "Google", "n": "이**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2swM1RGcEtjRVF5UkROUk9FVjBhV053U2pOWVpsRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOk03TFpKcEQyRDNROEV0aWNwSjNYZlE%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "약원역에서 도보 5분 정도로, 주변에 음식점도 있어 편리합니다", "qh": "약원<b>역에서</b> <b>도보</b> <b>5분</b> 정도로, 주변에 음식점도 있어 편리합니다", "d": "2026-01-27", "st": 4, "o": "Google", "n": "村**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT21aNlQydFZXVk5XYlZWSlkyUTFZMUJWUW5SaFNWRRAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOmZ6T2tVWVNWbVVJY2Q1Y1BVQnRhSVE%7C%7C?hl=ko", "l": "ja", "tf": "약원역에서 도보 5분 정도로, 주변에 음식점도 있어 편리합니다\n방도 넓게 연대는 느끼지만, 신경이 쓰이지 않습니다.\n주방에 간단한 조리도 할 수 있도록 비품도 있어, 냉장고, 전자 레인지, 냄비, 세면도 넓고, 욕조에 천천히 붙여 매우 만족했습니다.\n간단한 빵과 음료 조식도 무료로 제공되었습니다. 다시 이용하고 싶습니다!"}, {"q": "텐진역에서 도보로 10분 전후 걸리는 거리였고 나나쿠마선과는 도보로 5분 정도로 접근성이 좋았습니다.", "qh": "텐진<b>역에서</b> <b>도보</b>로 <b>10분</b> 전후 걸리는 거리였고 나나쿠마선과는 <b>도보</b>로 <b>5분</b> 정도로 접근성이 좋았습니다.", "d": "2025-11-04", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}, {"q": "텐진 백화점거리에서나 텐진미나미 거리에서 10-15분정도 걸어서 나오는 곳이고", "qh": "텐진 백화점거리에서나 텐진미나미 거리에서 10-<b>15분</b>정도 <b>걸어서</b> 나오는 곳이고", "d": "2026-07-03", "st": 5, "o": "Google", "n": "주**", "u": "https://www.google.com/maps/reviews/data=!4m8!14m7!1m6!2m5!1sCi9DQUlRQUNvZENodHljRjlvT2xGSmJGbHNkM0pZWW00eWRHSmpWSE5pWjJOSFVtYxAB!2m1!1s0x0:0x6926a8bfc675454e!3m1!1s2@1:CAIQACodChtycF9oOlFJbFlsd3JYYm4ydGJjVHNiZ2NHUmc%7C%7C?hl=ko", "l": "ko", "tf": ""}, {"q": "호텔은 지하철역에서 도보 7분 거리에 있어 시내 여러 관광지로 이동하기 매우 편리했습니다.", "qh": "호텔은 지하철<b>역에서</b> <b>도보</b> <b>7분</b> 거리에 있어 시내 여러 관광지로 이동하기 매우 편리했습니다.", "d": "2026-03-24", "st": null, "o": "Trip.com", "n": "T**", "u": "https://hk.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "zh", "tf": "후쿠오카 숙소 후기 | 후롱 플라자 호텔: 자유여행객을 위한 최고의 선택! 후쿠오카 자유여행 중 후롱 플라자 호텔에 묵은 것은 정말 큰 만족이었습니다! 호텔은 지하철역에서 도보 7분 거리에 있어 시내 여러 관광지로 이동하기 매우 편리했습니다. 근처에 해산물 시장도 있었고요! 객실에는 스토브, 전자레인지, 식기류가 완비된 주방이 있었습니다. 근처 슈퍼마켓에서 저렴한 와규를 사서 호텔에서 직접 요리해 먹었는데, 경제적이고 즐거운 경험이었습니다. 직원들은 친절하고 세심한 배려가 돋보였는데, 아침마다 빵과 커피를 무료로 제공해 주는 작은 배려가 인상적이었습니다. 세탁기와 건조기도 있어서 장거리 여행에 정말 유용했습니다. 가장 감동적이었던 것은 공항 수하물 운반 서비스였습니다. 체크아웃 후 프런트 데스크에 짐을 맡기니 직원분이 공항까지 바로 가는 교통편을 예약해 주셔서 짐을 직접 끌고 다니는 수고를 덜 수 있었습니다. 자유여행객이라면 꼭 한번 방문해 보시길 추천합니다!"}, {"q": "호텔이 역에서 상당히 가깝고 값도 싸서 좋은 경험이었습니다.", "qh": "호텔이 <b>역에서</b> 상당히 가깝고 값도 싸서 좋은 경험이었습니다.", "d": "2026-02-27", "st": null, "o": "Trip.com", "n": "T**", "u": "https://kr.trip.com/hotels/detail?hotelid=2935796&Allianceid=810504&Sid=1394411&utm_medium=cpc&utm_campaign=HPA&utm_source=google#review", "l": "ko", "tf": ""}]};</script>
+        <div id="sec-rev" class="sec-anchor"></div>
         <div class="sect social-blog">
             <div class="head"><div class="title">네이버 블로그 후기</div>
             <div class="desc">네이버 "플라자 후요 호텔 후기" 상위 글이에요 · 탭하면 여기서 바로 읽을 수 있어요</div></div>
@@ -746,130 +911,7 @@
             <div class="desc">같은 조건의 다른 호텔과 위험도를 비교해 보세요</div></div>
             <div class="det-col-chips"><a class="det-col-chip" href="../area/tenjin">텐진 리포트</a><a class="det-col-chip" href="../best/value">가성비 리포트</a></div>
         </div>
-                <div class="sect hotel">
-            <div class="head"><div class="title">이런 호텔은 어떠세요?</div>
-            <div class="desc">비슷한 가격대·가까운 위치에서 실망 확률이 낮은 순이에요</div></div>
-            <div class="list hotel-slider"><ul class="swiper-wrapper"><li class="swiper-slide">
-        <a href="../hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg/0.webp" alt="웰 캐빈 텐진" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">웰 캐빈 텐진</h3>
-                <div class="eng">ウェルキャビン天神</div>
-                <div class="star"><i style="width:84%"></i></div>
-                <div class="text">구글 4.2 · 리뷰 536개</div>
-                <div class="price-line">1박 <b>약 5만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGzOhvkGRQTUR-_TO-yLlS-g/0.webp" alt="베스트 웨스턴 플러스 후쿠오카 텐진-미나미" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">베스트 웨스턴 플러스 후쿠오카 텐진-미나미</h3>
-                <div class="eng">ベストウェスタンプラス福岡天神南</div>
-                <div class="star"><i style="width:82%"></i></div>
-                <div class="text">구글 4.1 · 리뷰 732개</div>
-                <div class="price-line">1박 <b>약 8만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOf-kmZCRQTURgJqZF_Y7rJw/0.webp" alt="호텔 몬테 에르마나 후쿠오카" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">호텔 몬테 에르마나 후쿠오카</h3>
-                <div class="eng">ホテル モンテ エルマーナ福岡</div>
-                <div class="star"><i style="width:86%"></i></div>
-                <div class="text">구글 4.3 · 리뷰 3,685개</div>
-                <div class="price-line">1박 <b>약 7만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJ_0mjd5CRQTUROsF1EigVii0" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ_0mjd5CRQTUROsF1EigVii0/0.webp" alt="호텔 카스비 텐진" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">호텔 카스비 텐진</h3>
-                <div class="eng">HOTEL CASVI TENJIN</div>
-                <div class="star"><i style="width:78%"></i></div>
-                <div class="text">구글 3.9 · 리뷰 223개</div>
-                <div class="price-line">1박 <b>약 7만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 5%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJgx1kKpuRQTURG6JoxU6ym2U/0.webp" alt="호텔 텐진 플레이스" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">호텔 텐진 플레이스</h3>
-                <div class="eng">ホテル天神プレイス</div>
-                <div class="star"><i style="width:82%"></i></div>
-                <div class="text">구글 4.1 · 리뷰 542개</div>
-                <div class="price-line">1박 <b>약 7만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJPcCaAZSRQTURiMVEQs7yaFM/0.webp" alt="다이와 로이넷 호텔 후쿠오카 - 니시나카스" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">다이와 로이넷 호텔 후쿠오카 - 니시나카스</h3>
-                <div class="eng">DEL style 福岡西中洲 by Daiwa Roynet Hotel</div>
-                <div class="star"><i style="width:84%"></i></div>
-                <div class="text">구글 4.2 · 리뷰 681개</div>
-                <div class="price-line">1박 <b>약 7만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">도큐스테이 후쿠오카 텐진</h3>
-                <div class="eng">東急ステイ 福岡天神</div>
-                <div class="star"><i style="width:88%"></i></div>
-                <div class="text">구글 4.4 · 리뷰 1,459개</div>
-                <div class="price-line">1박 <b>약 10만원</b></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="../hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU" class="item">
-            <div class="thumb">
-                <div class="badge"><div class="badge-item badge-safe">양호</div><div class="badge-item badge-down">실망 확률 4%</div></div>
-                <div class="image"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJbwgVKFSRQTUReMeoTS8GJJU/0.webp" alt="호텔 그란돌체 하카타" width="600" height="400" loading="lazy"></div>
-            </div>
-            <div class="info">
-                <h3 class="name">호텔 그란돌체 하카타</h3>
-                <div class="eng">ホテルグランドルチェ博多</div>
-                <div class="star"><i style="width:90%"></i></div>
-                <div class="text">구글 4.5 · 리뷰 353개</div>
-                <div class="price-line">1박 <b>약 9만원</b></div>
-            </div>
-        </a>
-    </li></ul></div>
-        </div>
+                
             </div>
             <div class="button"><a class="btn-reservate" href="https://www.google.com/maps/search/?api=1&amp;query=%ED%94%8C%EB%9D%BC%EC%9E%90%20%ED%9B%84%EC%9A%94%20%ED%98%B8%ED%85%94&amp;query_place_id=ChIJrR-wmZuRQTURTkV1xr-oJmk" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
         </section>

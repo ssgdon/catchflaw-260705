@@ -920,3 +920,33 @@
 #main .recent-empty{padding:64px var(--page-x);text-align:center;}
 #main .recent-empty .re-txt{font-size:var(--fs-body);font-weight:var(--fw-medium);color:var(--ink-2);line-height:1.5;}
 #main .recent-empty .re-btn{display:inline-flex;align-items:center;justify-content:center;margin-top:16px;height:48px;padding:0 24px;border-radius:var(--radius-btn);background:var(--primary);font-size:var(--fs-body);font-weight:var(--fw-bold);color:#fff;}
+
+/* P2 상세 섹션 탭 — 공통 헤더(56px) 바로 아래 고정. 활성 탭 = 스크롤 위치(DETAIL_TABS_JS) */
+#detail .det-tabs{position:sticky;top:56px;z-index:80;display:flex;padding:0 var(--sp-2);background:#fff;border-bottom:1px solid var(--line-strong);overflow-x:auto;scrollbar-width:none;}
+#detail .det-tabs::-webkit-scrollbar{display:none;}
+#detail .det-tabs a{flex:1 0 auto;display:flex;align-items:center;justify-content:center;height:48px;padding:0 var(--sp-3);margin-bottom:-1px;border-bottom:2px solid transparent;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-3);white-space:nowrap;}
+#detail .det-tabs a.is-on{color:var(--ink);border-bottom-color:var(--ink);}
+#detail .sect[id],#detail .sec-anchor{scroll-margin-top:112px;}
+#detail .sec-anchor{height:0;}
+
+/* P1 한눈에 보기 — 걸리는 점(시맨틱 점: 위험/주의) · 괜찮은 점(양호). 문장은 generate.py가 실측으로 조립 */
+#detail .sect.glance{padding:var(--sp-5) var(--page-x) var(--sp-6);}
+#detail .glance .gl-box{padding:var(--sp-5);border-radius:var(--radius-card);background:var(--surface);}
+#detail .glance .gl-eyebrow{font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+#detail .glance .gl-lead{margin-top:var(--sp-2);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:var(--lh-body);color:var(--ink);}
+#detail .glance .gl-lead em{font-style:normal;color:var(--primary);}
+#detail .glance .gl-cols{display:grid;gap:var(--sp-4);margin-top:var(--sp-5);}
+#detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);}
+#detail .glance li{display:flex;gap:var(--sp-2);padding:var(--sp-1) 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-2);}
+#detail .glance li b{font-weight:var(--fw-bold);color:var(--ink);}
+#detail .glance .gl-dot{flex:none;width:var(--sp-2);height:var(--sp-2);margin-top:var(--sp-2);border-radius:50%;}
+#detail .glance .gl-dot.is-danger{background:var(--danger);}
+#detail .glance .gl-dot.is-warning{background:var(--warning);}
+#detail .glance .gl-dot.is-safe{background:var(--safe);}
+#detail .glance .gl-foot{display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--line-strong);font-size:var(--fs-micro);color:var(--ink-3);}
+#detail .glance .gl-more{flex:none;margin-left:auto;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
+
+/* P4 약점 맞춤 대안 — 카드 하단 비교 줄(그 카테고리 위험도 vs 이 호텔) */
+#detail .hotel .list .item .info .vs-line{margin-top:var(--sp-2);padding:var(--sp-1) var(--sp-2);border-radius:var(--radius-chip);background:var(--safe-soft);font-size:var(--fs-micro);font-weight:var(--fw-medium);color:var(--ink-2);}
+#detail .hotel .list .item .info .vs-line b{font-weight:var(--fw-bold);color:var(--safe-text);}
+#detail .hotel .list .item .info .vs-line span{color:var(--ink-3);}
