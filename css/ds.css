@@ -20,7 +20,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .sect{padding:var(--section-y) var(--page-x);}
 #detail .sect + .sect{border-top:0;}
 #detail .content > .sect + .sect::before,
-#detail .content > .det-tabs + .sect::before{content:"";position:absolute;top:0;left:var(--page-x);right:var(--page-x);height:1px;background:var(--line-strong);}
+#detail .content > .det-tabs + .sect::before{content:"";position:absolute;top:0;left:var(--page-x);right:var(--page-x);height:1px;background:var(--line);}
 #detail .content > .det-tabs + .sect::before,#detail .content > .sect.glance::before,#detail .content > .sect.glance + .sect.who::before{display:none;}
 #detail .sect .head{margin:0 0 var(--head-gap);}
 #detail .sect .head .title{line-height:var(--lh-head);font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
@@ -48,7 +48,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .fj-btn{height:var(--h-chip);padding:0 14px;border:0;border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
 
 /* 섹션 탭 */
-#detail .det-tabs{border-bottom-color:var(--line-strong);}
+#detail .det-tabs{border-bottom-color:var(--line);}
 #detail .det-tabs a{height:var(--h-tab);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);}
 
 /* 한눈에 보기 */
@@ -70,7 +70,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .who .who-chip.is-on{font-weight:var(--fw-bold);}
 #detail .who .who-panel{margin-top:var(--sp-5);padding:var(--sp-5) var(--sp-5) var(--sp-4);border:0;background:var(--surface-2);}
 #detail .who .who-h{font-size:var(--fs-h3);font-weight:var(--fw-display);}
-#detail .who li{padding:var(--sp-3) 0;font-size:var(--fs-body-sm);border-top-color:var(--line-strong);}
+#detail .who li{padding:var(--sp-3) 0;font-size:var(--fs-body-sm);border-top-color:var(--line);}
 #detail .who .who-quote{background:var(--surface-card);}
 
 /* 위치 */
@@ -85,7 +85,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 
 /* 항목별로 보면: 색 상자 6개 → 구분선 목록 (결론 글자색만으로 의미 전달) */
 #detail .risk .radar-cats{gap:0;margin-top:var(--sp-5);}
-#detail .risk .radar-cat{min-height:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;background:transparent !important;}
+#detail .risk .radar-cat{min-height:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent !important;}
 #detail .risk .radar-cat:last-child{border-bottom:0;}
 #detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-bold);}
 #detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-caption);color:var(--ink-3);}
@@ -93,7 +93,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .risk .radar-cat .rc-verdict{font-size:var(--fs-body);font-weight:var(--fw-display);}
 
 /* 리스크 상세: 테두리 카드 묶음 → 구분선 목록 */
-#detail .analysis .risk-acc-item{margin:0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;background:transparent;}
+#detail .analysis .risk-acc-item{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;}
 #detail .analysis .risk-acc-item:last-child{border-bottom:0;}
 #detail .analysis .risk-acc-head{padding:var(--sp-5) 0;border-radius:0 !important;background:transparent;border-bottom:0 !important;}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
@@ -102,7 +102,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 /* 펼친 소분류 = 하위 단계: 대분류 점(●) 중심에서 내려오는 세로 안내선 + 대분류 이름 위치(20)까지 들여쓰기.
    점 10px 중심 5 = 선 4~6px, 내용 시작 4+2+14 = 20 = .cat-rank 들여쓰기. 열린 머리는 아래 여백을 줄여 하위와 붙임 */
 #detail .analysis .risk-acc-item.is-open > .risk-acc-head{padding-bottom:var(--sp-3);}
-#detail .analysis .risk-acc-body{margin:0 0 var(--sp-6) var(--sp-1);padding:0 0 0 calc(var(--sp-4) - 2px);border-left:2px solid var(--line-strong);}
+#detail .analysis .risk-acc-body{margin:0 0 var(--sp-6) var(--sp-1);padding:0 0 0 calc(var(--sp-4) - 2px);border-left:2px solid var(--line);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:var(--fs-body-sm);font-weight:var(--fw-bold);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
@@ -138,21 +138,21 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .faq .faq-chips{gap:var(--sp-2);margin-top:var(--sp-3);}
 #detail .faq .faq-chip{padding:0 var(--sp-3);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);}
 #detail .faq .faq-a{margin-top:var(--sp-4);}
-#detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding-top:var(--sp-4);border-top:1px solid var(--line-strong);}
+#detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding-top:var(--sp-4);border-top:1px solid var(--line);}
 #detail .faq .faq-ev{gap:0;}
 #detail .faq .faq-ev .fe-item{padding:var(--sp-4) 0;border-radius:0;background:transparent;}
 #detail .faq .faq-ev .fe-item + .fe-item{border-top:1px solid var(--line);}
 #detail .faq .faq-more-btn{margin-top:var(--sp-4);}
 
 /* 블로그 후기 카드 */
-.social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line-strong);border-radius:0;}
+.social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;}
 .social-blog .nb-card:last-of-type{border-bottom:0;}
 
 /* 컬렉션 칩 */
 #detail .hub-detail-cols .det-col-chip{height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
 
 /* 하단 CTA 바 */
-#detail .button{padding:var(--sp-3) var(--page-x) calc(var(--sp-3) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line-strong);}
+#detail .button{padding:var(--sp-3) var(--page-x) calc(var(--sp-3) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}
 #detail .button .btn-reservate{height:var(--h-btn-lg);border-radius:var(--radius-img);font-size:var(--fs-body);font-weight:var(--fw-display);}
 
 /* ════════ 홈 ════════ */
@@ -177,7 +177,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #search .list-head{padding:var(--sp-2) var(--page-x) 0;}
 #search .list{padding:0 var(--page-x);}
 #search .list li,#hub .hub-list li{padding:var(--sp-5) 0;}
-#search .list li + li,#hub .hub-list li + li{border-top:1px solid var(--line-strong);}
+#search .list li + li,#hub .hub-list li + li{border-top:1px solid var(--line);}
 #search .list li .item,#hub .hub-list li .item{gap:var(--sp-4);}
 #search .list li .thumb,#hub .hub-list li .thumb{width:88px;height:88px;border-radius:var(--radius-btn);}   /* 104→88: 오른쪽 정보 칸을 넓힌다(375px에서 207→223px) */
 #search .list .cont .info .name,#hub .hub-list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
@@ -205,7 +205,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #search .list .cont .badge .badge-item,#detail .information .info-top .badge .badge-item{letter-spacing:-0.01em;}
 
 /* ════════ 푸터 ════════ */
-#site-foot{margin-top:0;padding:var(--sp-8) var(--page-x) var(--sp-12);background:var(--surface-2);border-top:1px solid var(--line-strong);}
+#site-foot{margin-top:0;padding:var(--sp-8) var(--page-x) var(--sp-12);background:var(--surface-2);border-top:1px solid var(--line);}
 #site-foot .foot-note{font-size:var(--fs-meta);line-height:1.65;}
 #site-foot .foot-links{margin-top:var(--sp-3);font-size:var(--fs-meta);}
 #site-foot .foot-copy{margin-top:var(--sp-2);font-size:var(--fs-meta);}

@@ -990,7 +990,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     <script>
     // ───── 메인: 지도 (한국어 라벨 타일) ─────
     $(function(){{
-        var BAND_COLOR = {{safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'}};
+        var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
         var map = L.map('map', {{scrollWheelZoom: false}}).setView([33.5902, 130.4017], 13);
         // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
         map.on('popupopen popupclose', function(e){{ var w = map.getContainer().closest('.map-wrap'); if (w) w.classList.toggle('is-pop', e.type === 'popupopen'); }});
@@ -1000,8 +1000,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         var pts = [];
         HOTELS.forEach(function(h){{
             if (h.lat == null) return;
-            var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
-            var mk = L.circleMarker([h.lat, h.lng], {{radius: 8, color: '#fff', weight: 2, fillColor: col, fillOpacity: 0.95}}).addTo(map);
+            var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
+            var mk = L.circleMarker([h.lat, h.lng], {{radius: 8, color: CF.tok('--surface-card'), weight: 2, fillColor: col, fillOpacity: 0.95}}).addTo(map);
             var chip = h.p != null
                 ? '<span class="pop-p" style="background:' + col + '">실망 확률 ' + h.p + '%</span>'
                 : '<span class="pop-p" style="background:var(--ink-3)">분석 준비 중</span>';
@@ -1450,7 +1450,7 @@ def build_search(city_avg_pct):
             var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }}
 
         // ───── 지도 ─────
-        var BAND_COLOR = {{safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'}};
+        var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
         var map = L.map('map', {{scrollWheelZoom:false}}).setView([33.5902,130.4017], 13);
         // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
         map.on('popupopen popupclose', function(e){{ var w = map.getContainer().closest('.map-wrap'); if (w) w.classList.toggle('is-pop', e.type === 'popupopen'); }});
@@ -1472,7 +1472,7 @@ def build_search(city_avg_pct):
         $(window).on('load', function(){{ map.invalidateSize(); }});
 
         function popupHtml(h){{
-            var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
+            var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
             var chip = h.p != null ? '<span class="pop-p" style="background:'+col+'">실망 확률 '+h.p+'%</span>'
                                    : '<span class="pop-p" style="background:var(--ink-3)">분석 준비 중</span>';
             return '<div class="map-pop"><b>'+h.name+'</b>'
@@ -1495,8 +1495,8 @@ def build_search(city_avg_pct):
             var pts = [];
             list.forEach(function(h){{
                 if (h.lat == null) return;
-                var col = (h.band && BAND_COLOR[h.band]) || '#8B95A1';
-                var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:'#fff', weight:2, fillColor:col, fillOpacity:0.95}});
+                var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
+                var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:CF.tok('--surface-card'), weight:2, fillColor:col, fillOpacity:0.95}});
                 mk.bindPopup(popupHtml(h));
                 markers.addLayer(mk); markerById[h.id] = mk;
                 pts.push([h.lat,h.lng]);
@@ -3257,6 +3257,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             </div>
             <script>
             document.addEventListener('DOMContentLoaded', function(){{
+                if (window.Chart) Chart.defaults.font.size = 14;   // 차트 글자 14, 축 라벨만 13 (v3 §3-1)
                 var ctx = document.getElementById('radar').getContext('2d');
                 new Chart(ctx, {{
                     type: 'radar',
@@ -3264,11 +3265,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         labels: {radar_labels},
                         datasets: [
                             {{label: '{E(name)}', data: {radar_vals}, fill: true,
-                              backgroundColor: 'rgba(141,91,253,0.13)', borderColor: '#8D5BFD', borderWidth: 2,
-                              pointBackgroundColor: '#fff', pointBorderColor: '#8D5BFD', pointBorderWidth: 2,
+                              backgroundColor: CF.rgba('--primary', .13), borderColor: CF.tok('--primary'), borderWidth: 2,
+                              pointBackgroundColor: CF.tok('--surface-card'), pointBorderColor: CF.tok('--primary'), pointBorderWidth: 2,
                               pointRadius: 3.5, pointHoverRadius: 4, tension: 0}},
                             {{label: '{CITY['ko']} 평균', data: [50,50,50,50,50,50], fill: false,
-                              borderColor: '#B0B8C1', borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
+                              borderColor: CF.tok('--ink-4'), borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
                         ]
                     }},
                     options: {{
@@ -3277,10 +3278,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         plugins: {{legend: {{display: false}}, tooltip: {{enabled: false}}}},
                         scales: {{r: {{
                             min: 0, max: {radar_max},
-                            angleLines: {{color: '#F2F4F6'}},
-                            grid: {{color: '#E5E8EB', circular: false}},
-                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: '#B0B8C1', font: {{size: 12}}}},
-                            pointLabels: {{font: {{size: 13, weight: '600'}}, color: '#4E5968', padding: 12}}
+                            angleLines: {{color: CF.tok('--line')}},
+                            grid: {{color: CF.tok('--line-strong'), circular: false}},
+                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: CF.tok('--ink-4'), font: {{size: 13}}}},
+                            pointLabels: {{font: {{size: 13, weight: '600'}}, color: CF.tok('--ink-3'), padding: 12}}
                         }}}}
                     }}
                 }});
@@ -3853,22 +3854,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             // ── 월별 불만 리뷰 비율 라인차트 공통 생성 헬퍼 (카테고리·전체 공용) ──
             function makeTrendChart(canvasId, d){{
                 var el = document.getElementById(canvasId); if (!el || !window.Chart || !d) return;
+                Chart.defaults.font.size = 14;
                 var ctx = el.getContext('2d');
-                var gW = ctx.createLinearGradient(0,0,0,130); gW.addColorStop(0,'rgba(240,160,40,.22)'); gW.addColorStop(1,'rgba(240,160,40,.02)');
-                var gC = ctx.createLinearGradient(0,0,0,130); gC.addColorStop(0,'rgba(250,82,82,.22)'); gC.addColorStop(1,'rgba(250,82,82,.02)');
+                var gW = ctx.createLinearGradient(0,0,0,130); gW.addColorStop(0,CF.rgba('--warning',.22)); gW.addColorStop(1,CF.rgba('--warning',.02));
+                var gC = ctx.createLinearGradient(0,0,0,130); gC.addColorStop(0,CF.rgba('--danger',.22)); gC.addColorStop(1,CF.rgba('--danger',.02));
                 var n = d.m.length, pr = Array(n).fill(0); pr[n-1] = 3;
                 new Chart(ctx, {{type:'line', data:{{labels:d.m, datasets:[
-                    {{label:'심각', data:d.c, borderColor:'#FA5252', backgroundColor:gC, fill:'origin', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#FA5252', stack:'risk'}},
-                    {{label:'주의', data:d.w, borderColor:'#F0A028', backgroundColor:gW, fill:'-1', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:'#F0A028', stack:'risk'}},
-                    {{label:'후쿠오카 평균', data:d.a, borderColor:'#B0B8C1', borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false, tension:.35, stack:'avg'}}]}},
+                    {{label:'심각', data:d.c, borderColor:CF.tok('--danger'), backgroundColor:gC, fill:'origin', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:CF.tok('--danger'), stack:'risk'}},
+                    {{label:'주의', data:d.w, borderColor:CF.tok('--warning'), backgroundColor:gW, fill:'-1', tension:.35, borderWidth:2, pointRadius:pr, pointBackgroundColor:CF.tok('--warning'), stack:'risk'}},
+                    {{label:'후쿠오카 평균', data:d.a, borderColor:CF.tok('--ink-4'), borderDash:[4,4], borderWidth:1.5, pointRadius:0, fill:false, tension:.35, stack:'avg'}}]}},
                   options:{{responsive:true, maintainAspectRatio:false, interaction:{{mode:'index', intersect:false}},
-                    plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:'#fff', titleColor:'#191F28', bodyColor:'#4E5968',
-                        borderColor:'#E5E8EB', borderWidth:1, cornerRadius:10, padding:10, footerColor:'#191F28', footerFont:{{weight:'bold'}},
+                    plugins:{{legend:{{display:false}}, tooltip:{{displayColors:false, backgroundColor:CF.tok('--surface-card'), titleColor:CF.tok('--ink'), bodyColor:CF.tok('--ink-3'),
+                        borderColor:CF.tok('--line-strong'), borderWidth:1, cornerRadius:10, padding:10, footerColor:CF.tok('--ink'), footerFont:{{weight:'bold'}},
                         callbacks:{{label:function(t){{return t.dataset.label+' '+t.parsed.y.toFixed(1)+'%';}},
                             footer:function(items){{var s=0; items.forEach(function(it){{if(it.dataset.stack==='risk') s+=it.parsed.y;}}); return '합계 '+s.toFixed(1)+'%';}}}}}}}},
-                    scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:12}}, color:'#8B95A1', maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
-                            y:{{beginAtZero:true, stacked:true, grid:{{color:'#F2F4F6'}}, border:{{display:false}},
-                               ticks:{{font:{{size:12}}, color:'#8B95A1', maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
+                    scales:{{x:{{grid:{{display:false}}, ticks:{{font:{{size:13}}, color:CF.tok('--ink-3'), maxRotation:0, autoSkip:true, maxTicksLimit:7}}}},
+                            y:{{beginAtZero:true, stacked:true, grid:{{color:CF.tok('--line')}}, border:{{display:false}},
+                               ticks:{{font:{{size:13}}, color:CF.tok('--ink-3'), maxTicksLimit:4, callback:function(v){{return v+'%';}}}}}}}}}}}});
             }}
 
 

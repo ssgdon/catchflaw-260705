@@ -5,7 +5,8 @@
 (function () {
   'use strict';
 
-  var BAND_COLOR = { safe: '#5EA5E7', warning: '#F0A028', danger: '#FA5252' };
+  // 등급 색은 토큰 변수로(--safe·--warning·--danger), 없으면 메타 회색
+  var BAND_VAR = { safe: 'var(--safe)', warning: 'var(--warning)', danger: 'var(--danger)' };
 
   function toast(msg) {
     var el = document.createElement('div');
@@ -171,7 +172,7 @@
     function hotelRow(h, i) {
       var band = h.band || null;
       var chip = h.p != null
-        ? '<span class="ac-p" style="color:' + (BAND_COLOR[band] || '#8B9097') + '">실망 ' + h.p + '%</span>'
+        ? '<span class="ac-p" style="color:' + (BAND_VAR[band] || 'var(--ink-3)') + '">실망 ' + h.p + '%</span>'
         : '<span class="ac-p dim">분석 준비 중</span>';
       var krn = (h.krn > 0) ? '<span class="ac-krn">한국인 리뷰 ' + h.krn.toLocaleString() + '건</span>' : '';
       return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'

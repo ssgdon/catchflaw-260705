@@ -2,7 +2,23 @@
    - 오버레이(리뷰시트/필터시트/공유시트/피드백모달)가 열려 있으면
      아이폰 스와이프백 · 갤럭시 뒤로가기가 페이지를 나가지 않고 오버레이만 닫음
    - 외부에서 처음 들어온 페이지에서 뒤로가기로 사이트를 나가려 하면 종료 확인 모달 표시
-   의존: 없음 (순수 JS, jQuery 불필요) */
+   의존: 없음 (순수 JS, jQuery 불필요)
+   + 디자인 토큰 읽기 CF.tok / CF.rgba — 동기 로드 파일이라 어느 인라인 스크립트에서도 바로 쓸 수 있다(DESIGN-SYSTEM-V3 §3-1) */
+window.CF = window.CF || {};
+// 차트·지도처럼 CSS 밖에서 색을 쓰는 곳은 hex 대신 토큰을 읽는다: CF.tok('--ink') → #222222
+CF.tok = function (name, fallback) {
+  var v = '';
+  try { v = getComputedStyle(document.documentElement).getPropertyValue(name).trim(); } catch (e) {}
+  return v || fallback || '';
+};
+// 토큰 색 + 투명도: CF.rgba('--primary', .13) → 'rgba(141,91,253,0.13)' (#RRGGBB·#RGB 토큰만)
+CF.rgba = function (name, a) {
+  var h = CF.tok(name).replace('#', '');
+  if (h.length === 3) h = h.replace(/(.)/g, '$1$1');
+  if (!/^[0-9a-fA-F]{6}$/.test(h)) return CF.tok(name);
+  var n = parseInt(h, 16);
+  return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
+};
 (function () {
   var closers = [];        // 열린 오버레이의 '시각적 닫기' 함수 스택
   var suppressPop = false; // 버튼 닫기로 history.back() 할 때 popstate 중복 처리 방지

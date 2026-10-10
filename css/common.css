@@ -4,7 +4,7 @@
 *{margin:0;padding:0;list-style-type:none;box-sizing:border-box;font-style: normal;border:0;outline:0;font-family:'Pretendard Variable','Pretendard', -apple-system, 'Apple SD Gothic Neo', 'Malgun Gothic','dotum','돋움','gulim','굴림','Tahoma';}
 
 html{font-size:62.5%;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;scroll-behavior: smooth;overflow-y: scroll;background:#ffffff;}
-body{line-height: 150%;font-size:var(--fs-body);color:#232323;-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;background: #eee;}
+body{line-height: 150%;font-size:var(--fs-body);color:var(--ink);-webkit-text-size-adjust:none;box-sizing:border-box;-webkit-font-smoothing:antialiased;background: #eee;}
 article, aside, canvas, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section, summary{display:block}
 blockquote, q{quotes:none}
@@ -34,6 +34,6 @@ hr{position:absolute;top:0;left:0;margin:0;padding:0;display:inline-block;line-h
 pre{overflow-x:scroll;font-size:1.1em}
 select {-webkit-appearance: none;-moz-appearance: none;appearance: none;}
 select:disabled{background:#fafafa}
-*::placeholder{color:#9e9e9e;}
+*::placeholder{color:var(--ink-3);}   /* 기능 안내 플레이스홀더(5.41:1) — 장식 예시만 --ink-4 */
 
 .blind{position: absolute;width: 1px;height: 1px;margin: -1px;overflow: hidden;padding: 0;border: 0;clip: rect(0,0,0,0)}
