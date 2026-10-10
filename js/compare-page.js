@@ -101,8 +101,8 @@
       pad = 0;
       root.innerHTML = '<div class="cmp-empty"><div class="ce-tit">어떤 호텔을 비교할까요?</div>'
         + '<div class="ce-txt">호텔을 검색해 바로 추가하거나, 상세·검색 결과에서 <b>비교 담기</b>를 눌러 주세요 (최대 ' + MAX + '곳)</div>'
-        + '<button type="button" class="ce-btn" data-add="1">호텔 검색해서 추가</button>'
-        + '<a class="ce-link" href="./search">검색 결과에서 고르기</a></div>';
+        + '<button type="button" class="btn-brand" data-add="1">호텔 검색해서 추가</button>'
+        + '<a class="btn-text" href="./search">검색 결과에서 고르기</a></div>';
       return;
     }
     var canAdd = H.length < MAX;

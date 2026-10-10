@@ -15,7 +15,7 @@
 
 /* ── 태블릿·작은 노트북(770~1099): 단일 칼럼을 600px로 넓힘 (기존 360 고정 해소) ── */
 @media (min-width:770px) and (max-width:1099px){
-    :root{--width:600px;}
+    :root{--width:600px;--hcard-w:252px;}   /* 캐러셀 카드 폭 = 단일 칼럼(600)의 42% */
 }
 
 /* ══════════════════════ PC (≥1100px) ══════════════════════ */
@@ -42,7 +42,6 @@
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
     html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
     html.is-scroll-down #float:has(.btn-airec){transform:none;}   /* 홈 추천 버튼은 PC에서도 항상 표시 */
-    .cmp-tray.on-home{bottom:calc(var(--h-btn-lg) + var(--sp-8));}
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
     #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}
@@ -59,7 +58,6 @@
     #detail .information .info-top{grid-area:top;}
     #detail .information .info-cont{grid-area:cont;}
     #detail .information .info-cont .name .name-ko{font-size:var(--fs-title);line-height:var(--lh-title);}   /* PC도 모바일과 같은 26(v3 §2-1, --fs-pc-h1 34 폐지) */
-    #detail .information .info-cont .cmp-btn{display:none;}          /* 결정 카드에 있음 */
     #detail .information .info-share,#float .float .cmp-fab{display:none;}   /* PC는 오른쪽 결정 카드의 비교·공유 버튼 사용 */
     #detail .information .info-bottom{grid-area:acts;align-self:end;display:flex;gap:var(--sp-2);margin:0;}
     #detail .information .info-bottom .btn-link{min-width:200px;height:auto;min-height:64px;padding-top:var(--sp-3);padding-bottom:var(--sp-3);}
@@ -82,7 +80,7 @@
     #detail .pc-gallery.g4 .pg-1{grid-column:2 / 4;}
     #detail .pc-gallery.g5{grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;}
     #detail .pc-gallery.g5 .pg-0{grid-row:1 / 3;}
-    #detail .pc-gallery .pg-count{position:absolute;right:var(--sp-4);bottom:var(--sp-4);height:32px;padding:0 var(--sp-3);display:flex;align-items:center;border-radius:var(--radius-btn);background:rgb(25 27 31 / 70%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-bold);}
+    #detail .pc-gallery .pg-count{position:absolute;right:var(--sp-4);bottom:var(--sp-4);height:32px;padding:0 var(--sp-3);display:flex;align-items:center;border-radius:var(--radius-box);background:rgb(25 27 31 / 70%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-bold);}
 
     /* 오른쪽 고정 결정 카드 */
     #detail .content > .pc-side{grid-column:2;grid-row:3 / span 60;position:sticky;top:96px;display:block;padding:var(--sp-6);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);box-shadow:0 12px 32px rgb(25 27 31 / 8%);}
@@ -101,12 +99,9 @@
     .pc-side .ps-rows li{display:flex;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) 0;font-size:var(--fs-caption);color:var(--ink-3);}
     .pc-side .ps-rows li span:last-child{color:var(--ink-2);text-align:right;}
     .pc-side .ps-rows b{font-weight:var(--fw-bold);color:var(--ink);}
-    .pc-side .ps-cta{display:flex;align-items:center;justify-content:center;height:var(--h-btn);margin-top:var(--sp-5);border-radius:var(--radius-btn);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);}
-    .pc-side .ps-cta:hover{background:var(--primary-deep);}
+    .pc-side .ps-cta{margin-top:var(--sp-5);}
     .pc-side .ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);margin-top:var(--sp-2);}
-    .pc-side .ps-actions .cmp-btn,.pc-side .ps-actions .ps-share{white-space:nowrap;display:flex;align-items:center;justify-content:center;gap:var(--sp-1);height:44px;margin:0;padding:0;border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);cursor:pointer;}
     .pc-side .ps-actions .ps-share:only-child{grid-column:1 / -1;}
-    .pc-side .ps-actions .cmp-btn.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
     .pc-side .ps-note{margin-top:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);text-align:center;}
     .pc-side .ps-note a{color:var(--ink-2);text-decoration:underline;}
 
@@ -114,16 +109,16 @@
     #detail .content > .sect{padding:var(--section-pt) 0 var(--section-pb);}
     #detail .content > .sect::before{left:0 !important;right:0 !important;}   /* ds.css 구분선: PC 본문 칼럼은 좌우 여백이 없으므로 끝까지 */
     #detail .content > .sect.glance{padding:var(--sp-6) 0;}
-    #detail .det-tabs{top:64px;padding:0;}
-    #detail .det-tabs a{flex:0 0 auto;padding:0 var(--sp-5);}
-    #detail .sect[id],#detail .sec-anchor{scroll-margin-top:124px;}
+    #detail .det-tabs{top:64px;}
+    #detail .sect[id],#detail .sec-anchor{scroll-margin-top:calc(64px + var(--h-tab) + var(--sp-1));}
     #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
     #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--sp-10);}   /* 결론 목록 2열 */
-    /* 대안 슬라이더 → 4열 그리드 */
-    #detail .hotel .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}
-    #detail .hotel .list .swiper-slide{width:auto !important;margin:0 !important;}
-    #detail .hotel .list .item .thumb .image{aspect-ratio:4/3;}
-
+    /* 대안·추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) — 홈·상세 공용 .hotel-slider */
+    .hotel-slider{margin-right:0;}
+    .hotel-slider .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}
+    .hotel-slider .swiper-slide{width:auto !important;margin:0 !important;}
+    .hcard--carousel .hcard-photo{aspect-ratio:4/3;}
+    .hcard:hover .hcard-photo img{transform:scale(1.03);}
     /* ════════ 검색: 상단 필터 바 → [목록 | 고정 지도] ════════ */
     #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;background:var(--surface-card);height:auto;box-shadow:none;transform:none;}   /* PC는 sticky 아님 → iOS 이음매 보정 해제 */
     #title .search{max-width:560px;}
@@ -135,7 +130,7 @@
     #search .filters .f-panel{flex-basis:100%;}
     #search .total,#search .list-head{padding-left:0;padding-right:0;}
     #search .list{padding:0;}
-    #search .list li{padding:var(--sp-5) var(--sp-3);margin:0 calc(var(--sp-3) * -1);border-radius:var(--radius-btn);transition:background .15s;}
+    #search .list li{padding:var(--sp-5) var(--sp-3);margin:0 calc(var(--sp-3) * -1);border-radius:var(--radius-box);transition:background .15s;}
     #search .list li:hover{background:var(--surface);}
     #search .list li .thumb{width:168px;height:128px;border-radius:var(--radius-img);}
     #search .list .cont .info .name{font-size:var(--fs-body-lg);line-height:1.35;}
@@ -154,16 +149,9 @@
     #main .search-box .title{grid-area:title;align-self:end;}
     #main .search-box .title .tit{font-size:var(--fs-hero);line-height:var(--lh-title);}   /* PC 홈 히어로 48 */
     #main .search-box .title .txt{font-size:var(--fs-body-lg);line-height:var(--lh-body);}
-    #main .search-box .input{grid-area:input;max-width:560px;margin-top:var(--sp-6);padding:var(--sp-4) var(--sp-5);border-radius:var(--radius-btn);}
+    #main .search-box .input{grid-area:input;max-width:560px;margin-top:var(--sp-6);}
     #main .map-wrap #map{height:440px;}
     #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
-    /* 추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) */
-    #main .hotel-list .list .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);transform:none !important;}
-    #main .hotel-list .list li{width:auto !important;margin:0 !important;}
-    #main .hotel-list .list .item .thumb .image{aspect-ratio:4/3;}
-    #main .hotel-list .list .item:hover .thumb .image img{transform:scale(1.03);}
-    #main .hotel-list .list .item .thumb .image img{transition:transform .3s;}
-
     /* ════════ 비교: 왼쪽 항목명 칸 + 호텔 칸 (Zillow Compare homes) ════════ */
     #cmp{max-width:1080px;margin:0 auto;padding:0 var(--pc-x);background:var(--surface-card);min-height:100vh;}
     #cmp .cmp-hd,#cmp .cmp-cta{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);padding-left:0;padding-right:0;}

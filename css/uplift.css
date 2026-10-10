@@ -17,8 +17,6 @@ body{color:var(--ink);}
 
 /* ---------- 서브페이지 타이틀바 ---------- */
 #title{height:60px;gap:12px;padding:0 12px;}
-#title .search{height:48px;border-radius:var(--radius-btn);background:var(--surface);}
-#title .search input{font-size:var(--fs-body-sm);}
 
 /* ---------- 섹션 공통 헤드 ---------- */
 #main .head .title{line-height:30px;font-size:var(--fs-h2);font-weight:800;color:var(--ink);}
@@ -36,31 +34,11 @@ body{color:var(--ink);}
 
 /* ---------- 호텔 카드 리스트(슬라이더) ---------- */
 #main .hotel-list{padding:48px 20px 8px;}
-#main .hotel-list .list li,
-#detail .hotel .list li{width:205px;}
-#main .hotel-list .list .item .thumb .image,
-#detail .hotel .list .item .thumb .image{border-radius:var(--radius-img);}
-#main .hotel-list .list .item .thumb .badge,
-#detail .hotel .list .item .thumb .badge{top:8px;left:8px;gap:4px;}
-#main .hotel-list .list .item .info,
-#detail .hotel .list .item .info{padding:12px 2px 0;}
-#main .hotel-list .list .item .info .name,
-#detail .hotel .list .item .info .name{margin:0 0 4px;line-height:23px;font-size:var(--fs-h3);font-weight:700;}
-#main .hotel-list .list .item .info .eng,
-#detail .hotel .list .item .info .eng{margin:0 0 8px;line-height:16px;font-size:var(--fs-meta);}
-#main .hotel-list .list .item .info .text,
-#detail .hotel .list .item .info .text{line-height:21px;font-size:var(--fs-body-sm);}
 
 /* ---------- 뱃지 (전 화면 공통) ---------- */
-#main .hotel-list .list .item .thumb .badge .badge-item,
-#detail .hotel .list .item .thumb .badge .badge-item,
-#detail .information .info-top .badge .badge-item,
-#search .list .cont .badge .badge-item, #hub .hub-list .cont .badge .badge-item{padding:5px 9px;border-radius:var(--radius-chip);line-height:16px;font-size:var(--fs-meta);font-weight:700;}
 
 /* ---------- 별점 (전 화면 공통 확대) ---------- */
 #main .search-box .text .star,
-#main .hotel-list .list .item .info .star,
-#detail .hotel .list .item .info .star,
 #detail .analysis .review .list .item .item-info .star,
 #review .list .item .item-top .star{width:82px;}
 
@@ -75,7 +53,7 @@ body{color:var(--ink);}
 #detail .information .info-cont .name .name-ko{line-height:32px;font-size:var(--fs-h1);font-weight:800;}
 #detail .information .info-cont .name .name-en{line-height:16px;font-size:var(--fs-meta);}
 #detail .information .info-cont .meta span{line-height:20px;font-size:var(--fs-body-sm);}
-#detail .information .info-bottom .btn-link{height:62px;border-radius:var(--radius-btn);}
+#detail .information .info-bottom .btn-link{height:62px;border-radius:var(--radius-box);}
 #detail .information .info-bottom .btn-link .txt .label{font-size:var(--fs-caption);}
 #detail .information .info-bottom .btn-link .txt .count{font-size:var(--fs-meta);}
 
@@ -94,12 +72,11 @@ body{color:var(--ink);}
 
 /* ---------- 상세: 분석 요약/테이블 ---------- */
 #detail .analysis .result{padding:22px;border-radius:var(--radius-card);background:var(--surface);}
-#detail .analysis .summary .table{border-radius:var(--radius-btn);border:1px solid var(--line);}
+#detail .analysis .summary .table{border-radius:var(--radius-box);border:1px solid var(--line);}
 #detail .analysis .summary .table table tr{height:48px;font-size:var(--fs-caption);}
 #detail .analysis .summary .table table tr th{background:var(--surface);font-weight:700;color:var(--ink-2);}
 #detail .analysis .summary .table table tr td a{font-size:var(--fs-caption);}
 #detail .analysis .summary .table table tr:last-of-type td{border-bottom:0;}
-#detail .analysis .summary .table table .status-item{height:var(--h-badge);padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
 
 /* ---------- 상세: 핵심 요약 — Savant 스타일 스탯 바
    [deprecated] 루트 목업 detail*.html 전용. 생성 페이지(docs/hotels)는 mvp.css의
@@ -139,7 +116,6 @@ body{color:var(--ink);}
 #detail .analysis .review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
 #detail .analysis .review .list .item .item-bottom .text{line-height:24px;font-size:var(--fs-body-sm);}
 #detail .analysis .review .list .item .item-bottom .date{font-size:var(--fs-meta);}
-#detail .analysis .review .more a{height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body-sm);background:var(--surface);}
 
 /* ---------- 상세: 최근 본/공유 ---------- */
 #detail .recent .list{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
@@ -150,21 +126,20 @@ body{color:var(--ink);}
 
 /* ---------- 상세: 하단 CTA ---------- */
 #detail .button{padding:12px 16px 16px;}
-#detail .button .btn-reservate{height:var(--h-btn-lg);border-radius:var(--radius-img);font-size:var(--fs-h3);}
 #detail ~ #float{bottom:84px;}
 
 /* ---------- 검색/위시/최근 리스트 ---------- */
 #search .total{padding:20px 20px 0;line-height:20px;font-size:var(--fs-body-sm);}
-#search .list li, #hub .hub-list li{padding:22px 0;}
-#search .list li .item, #hub .hub-list li .item{gap:14px;}
-#search .list li .thumb, #hub .hub-list li .thumb{width:92px;height:92px;border-radius:var(--radius-btn);}
-#search .list .cont .info, #hub .hub-list .cont .info{margin:0 0 12px;}
-#search .list .cont .info .name, #hub .hub-list .cont .info .name{line-height:23px;font-size:var(--fs-h3);}
-#search .list .cont .info .name a, #hub .hub-list .cont .info .name a{color:var(--ink);}
-#search .list .cont .info .meta, #hub .hub-list .cont .info .meta{margin:6px 0 0;}
-#search .list .cont .info .meta span, #hub .hub-list .cont .info .meta span{line-height:17px;font-size:var(--fs-meta);}
-#search .list .cont .grade .num, #hub .hub-list .cont .grade .num{font-size:var(--fs-body-sm);}
-#search .list .cont .grade .txt, #hub .hub-list .cont .grade .txt{font-size:var(--fs-meta);}
+#search .list li{padding:22px 0;}
+#search .list li .item{gap:14px;}
+#search .list li .thumb{width:92px;height:92px;border-radius:var(--radius-box);}
+#search .list .cont .info{margin:0 0 12px;}
+#search .list .cont .info .name{line-height:23px;font-size:var(--fs-h3);}
+#search .list .cont .info .name a{color:var(--ink);}
+#search .list .cont .info .meta{margin:6px 0 0;}
+#search .list .cont .info .meta span{line-height:17px;font-size:var(--fs-meta);}
+#search .list .cont .grade .num{font-size:var(--fs-body-sm);}
+#search .list .cont .grade .txt{font-size:var(--fs-meta);}
 #search .list .cont .request a{padding:8px 10px;border-radius:var(--radius-chip);font-size:var(--fs-meta);line-height:16px;}
 
 /* ---------- 리뷰 페이지 ---------- */
@@ -174,7 +149,6 @@ body{color:var(--ink);}
 #review .list > ul{gap:16px;}
 #review .list .item{padding:22px;border-radius:var(--radius-card);border:1px solid var(--line);}
 #review .list .item .item-top{margin:0 0 14px;}
-#review .list .item .item-top .status .status-item{height:var(--h-badge);padding:0 9px;border-radius:var(--radius-chip);font-size:var(--fs-meta);}
 #review .list .item .item-info .cont .name{line-height:22px;font-size:var(--fs-body);}
 #review .list .item .item-info .cont .date{font-size:var(--fs-meta);}
 #review .list .item .item-info .cont .link a{font-size:var(--fs-meta);}

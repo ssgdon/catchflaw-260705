@@ -34,7 +34,9 @@
       if (a.length >= MAX) { toast('비교는 ' + MAX + '곳까지 담을 수 있어요'); return; }
       a.push({ id: id, n: btn.getAttribute('data-cmp-name') || '', img: btn.getAttribute('data-cmp-img') || '' });
       ev('compare_add', { hotel_id: id, count: a.length });
+      set(a);   // 트레이를 먼저 그려야 토스트가 트레이 위로 뜬다(backnav.js liftPx)
       if (a.length === 1) toast('비교함에 담았어요 · 1곳 더 담으면 비교할 수 있어요');
+      return;
     }
     set(a);
   }
@@ -69,8 +71,7 @@
     link.href = url(a);
     link.innerHTML = '<span class="ct-th">' + a.map(function (x) {
         return x.img ? '<img src="' + esc(x.img) + '" alt="">' : '<i></i>';
-      }).join('') + '</span><span class="ct-n">비교함 ' + a.length + '</span>'
-      + '<span class="ct-go' + (a.length < 2 ? ' is-off' : '') + '">' + (a.length < 2 ? '1곳 더' : '비교하기') + '</span>';
+      }).join('') + '</span><span class="ct-n">' + (a.length < 2 ? '1곳 더 담기' : '비교하기 (' + a.length + ')') + '</span>';
   }
 
   document.addEventListener('click', function (e) {

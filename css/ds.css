@@ -31,8 +31,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 
 /* 정보(제목) 영역 */
 #detail .information{padding-top:var(--sp-6);padding-bottom:var(--sp-8);}
-#detail .information .info-top .badge{gap:6px;}
-#detail .information .info-top .badge .badge-item{height:var(--h-badge);padding:0 10px;display:inline-flex;align-items:center;border-radius:var(--radius-chip);line-height:1;font-size:var(--fs-meta);font-weight:var(--fw-bold);}
 #detail .information .info-cont .name{margin-top:var(--sp-3);}
 #detail .information .info-cont .name .name-ko{line-height:var(--lh-title);font-size:var(--fs-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .information .info-cont .name .name-en{margin-top:4px;line-height:1.4;font-size:var(--fs-meta);color:var(--ink-3);}
@@ -42,16 +40,14 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 가격 기준(2인 1박·확인일) — .info-cont 간격 16 중 12를 당겨 가격 줄에 붙임(4px) */
 #detail .information .info-cont .price-note{margin-top:calc(var(--sp-3) * -1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 #detail .information .info-bottom{margin-top:var(--sp-5);gap:var(--sp-2);}
-#detail .information .info-bottom .btn-link{height:72px;padding:0 var(--sp-4);border-radius:var(--radius-btn);}
+#detail .information .info-bottom .btn-link{height:72px;padding:0 var(--sp-4);border-radius:var(--radius-box);}
 #detail .information .info-bottom .btn-link .txt .label{font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:1.35;}
 #detail .information .info-bottom .btn-link .txt .count{font-size:var(--fs-meta);line-height:1.4;}
 #detail .fj-title{margin-top:var(--sp-6);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
 #detail .faq-jump{gap:var(--sp-2);}
-#detail .fj-btn{height:var(--h-chip);padding:0 14px;border:0;border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
 
 /* 섹션 탭 */
 #detail .det-tabs{border-bottom-color:var(--line);}
-#detail .det-tabs a{height:var(--h-tab);font-size:var(--fs-body);font-weight:var(--fw-bold);}
 
 /* 한눈에 보기 */
 #detail .sect.glance{padding:var(--sp-2) var(--page-x) var(--sp-6);}
@@ -68,8 +64,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 
 /* 누구와 가세요 */
 #detail .who .who-chips{gap:var(--sp-2);}
-#detail .who .who-chip{height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
-#detail .who .who-chip.is-on{font-weight:var(--fw-bold);}
 #detail .who .who-panel{margin-top:var(--sp-5);padding:var(--sp-5) var(--sp-5) var(--sp-4);border:0;background:var(--surface-2);}
 #detail .who .who-h{font-size:var(--fs-h3);font-weight:var(--fw-display);}
 #detail .who li{padding:var(--sp-3) 0;font-size:var(--fs-body);border-top-color:var(--line);}
@@ -78,7 +72,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 위치 */
 #detail .location .loc-addr{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .location .loc-chips{gap:var(--sp-2);margin:var(--sp-3) 0;}
-#detail .location .lc-chip{height:var(--h-chip-sm);padding:0 var(--sp-3);border-radius:var(--radius-pill);font-size:var(--fs-meta);font-weight:var(--fw-semi);}
 
 /* 실망 확률 */
 /* 실망 확률: 섹션 제목 22(왼쪽) → 가운데 히어로 숫자 64 잉크 → 판정 22(시맨틱 글자색 허용 최소 크기). 숫자는 잉크, 의미는 판정 글자가 맡는다(v3 §7-3) */
@@ -100,7 +93,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .risk-acc-item:last-child{border-bottom:0;}
 #detail .analysis .risk-acc-head{padding:var(--sp-5) 0;border-radius:0 !important;background:transparent;border-bottom:0 !important;}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
-#detail .analysis .risk-acc-head .cat-verdict{height:var(--h-badge);font-size:var(--fs-meta);}
 #detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-caption);}
 /* 펼친 소분류 = 하위 단계: 대분류 점(●) 중심에서 내려오는 세로 안내선 + 대분류 이름 위치(20)까지 들여쓰기.
    점 10px 중심 5 = 선 4~6px, 내용 시작 4+2+14 = 20 = .cat-rank 들여쓰기. 열린 머리는 아래 여백을 줄여 하위와 붙임 */
@@ -111,52 +103,36 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
 #detail .analysis .review .list .item{padding:var(--sp-5);border:0;background:var(--surface-2);}
 #detail .analysis .review .list .item .item-bottom .text{font-size:var(--fs-body);line-height:var(--lh-body);}
-#detail .analysis .more-btn,#detail .analysis .more a{height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body);}
 #detail .stat-legend{gap:var(--sp-2) var(--sp-3);}
 #detail .stat-legend .lg,#detail .stat-legend .note{font-size:var(--fs-meta);}
 /* 주석 문장: 한 문장 안의 줄바꿈은 붙이고(1.4), 문장 사이는 넓게(12) — mvp.css의 1.6·6px 덮어씀 */
 #detail .analysis .stat-legend{row-gap:var(--sp-3);}
 #detail .analysis .stat-legend .note{line-height:var(--lh-ui);}
 
-/* 대안·추천 슬라이더 카드 (홈·상세 공통 hotel_card) */
-#main .hotel-list .list li,#detail .hotel .list li{width:240px;}
-#main .hotel-list .list .item .info,#detail .hotel .list .item .info{padding:var(--sp-3) 0 0;}
-#main .hotel-list .list .item .info .name,#detail .hotel .list .item .info .name{display:block;overflow:visible;-webkit-line-clamp:unset;margin:0 0 2px;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);word-break:keep-all;}   /* 레거시 1줄 말줄임 해제 — 호텔명은 끝까지 보여준다 */
-#main .hotel-list .list .item .info .eng,#detail .hotel .list .item .info .eng{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-3);}
-#main .hotel-list .list .item .info .text,#detail .hotel .list .item .info .text{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
-#main .hotel-list .list .item .info .price-line,#detail .hotel .list .item .info .price-line{font-size:var(--fs-caption);}
-/* 카드 지역 줄 (FEEDBACK-2610 §1): 지역 태그 + 역 도보 — 홈·상세 슬라이더·검색·허브 공용. 일본어 부제(.eng)는 상세 헤더에만 */
+/* 검색 목록(JS) 지역 줄: '나카스 · 나카스카와바타역 도보 12분' 메타 글자 한 줄 */
 .area-line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1) var(--sp-2);margin:var(--sp-1) 0 var(--sp-2);line-height:1.4;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
-.area-tag{display:inline-flex;align-items:center;flex:none;height:var(--h-badge);padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--primary-soft);color:var(--primary);font-size:var(--fs-micro);font-weight:var(--fw-bold);white-space:nowrap;}
-#search .list .cont .area-line,#hub .hub-list .cont .area-line{margin:var(--sp-2) 0 0;}
-.area-line .seg{flex:1 1 8em;min-width:0;}   /* 역 도보 문구는 태그 옆에 붙고, 길면 그 안에서 줄바꿈 */
+#search .list .cont .area-line{margin:var(--sp-2) 0 0;}
 /* 가격 줄의 주말 값: 굵게 안 함, 넘치면 통째로 다음 줄(.seg) */
-.price-line .pl-we,.price .pl-we{font-weight:var(--fw-regular);color:var(--ink-2);}
-#main .hotel-list .list .item .thumb .badge .badge-item,#detail .hotel .list .item .thumb .badge .badge-item{padding:4px 8px;font-size:var(--fs-micro);font-weight:var(--fw-bold);}
+.price .pl-we{font-weight:var(--fw-regular);color:var(--ink-3);}
 
 /* 실전정보 FAQ: 질문마다 간격을 둔 개별 카드(선 하나) — 펼친 근거 리뷰는 카드 안에서 선으로만 구분(상자 안 상자 금지) */
 #detail .faq .faq-cards{display:flex;flex-direction:column;gap:var(--sp-3);}
 #detail .faq .faq-card{margin:0;padding:var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);}
 #detail .faq .faq-q{gap:var(--sp-2);}
-#detail .faq .faq-chips{gap:var(--sp-2);margin-top:var(--sp-3);}
-#detail .faq .faq-chip{padding:0 var(--sp-3);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);}
 #detail .faq .faq-a{margin-top:var(--sp-4);}
 #detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding-top:var(--sp-4);border-top:1px solid var(--line);}
 #detail .faq .faq-ev{gap:0;}
 #detail .faq .faq-ev .fe-item{padding:var(--sp-4) 0;border-radius:0;background:transparent;}
 #detail .faq .faq-ev .fe-item + .fe-item{border-top:1px solid var(--line);}
-#detail .faq .faq-more-btn{margin-top:var(--sp-4);}
 
 /* 블로그 후기 카드 */
 .social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;}
 .social-blog .nb-card:last-of-type{border-bottom:0;}
 
 /* 컬렉션 칩 */
-#detail .hub-detail-cols .det-col-chip{height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
 
 /* 하단 CTA 바 */
-#detail .button{padding:var(--sp-3) var(--page-x) calc(var(--sp-3) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}
-#detail .button .btn-reservate{height:var(--h-btn-lg);border-radius:var(--radius-img);font-size:var(--fs-body);font-weight:var(--fw-display);}
+#detail .button{padding:var(--sp-4) var(--page-x) calc(var(--sp-4) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}   /* 바 80 = 16 + 버튼 48 + 16 (§6-8) */
 
 /* ════════ 홈 ════════ */
 #main .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
@@ -168,32 +144,26 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #main .search-box{background:linear-gradient(180deg, rgb(10 14 28 / 42%), rgb(10 14 28 / 66%)), url(../img/home_bg.jpg) center / cover no-repeat;}
 #main .search-box .title .tit{line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
 #main .search-box .title .txt{margin-top:var(--sp-3);line-height:1.6;font-size:var(--fs-body);}
-#main .search-box .input{height:56px;margin-top:var(--sp-6);border-radius:var(--radius-btn);}
 
 /* ════════ 검색 ════════ */
-#title .search{height:var(--h-btn-lg);border-radius:var(--radius-btn);}
-#title .search input{font-size:var(--fs-body);}
 #search .filters{gap:var(--sp-3);padding:var(--sp-4) var(--page-x) var(--sp-2);}
 #search .filters .f-row{gap:var(--sp-2);}
 #search .filters .f-label{font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
-#search .filters .f-chip{height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);font-size:var(--fs-caption);font-weight:var(--fw-semi);}
 #search .total{padding:var(--sp-5) var(--page-x) 0;font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
 #search .list-head{padding:var(--sp-2) var(--page-x) 0;}
 #search .list{padding:0 var(--page-x);}
-#search .list li,#hub .hub-list li{padding:var(--sp-5) 0;}
-#search .list li + li,#hub .hub-list li + li{border-top:1px solid var(--line);}
-#search .list li .item,#hub .hub-list li .item{gap:var(--sp-4);}
-#search .list li .thumb,#hub .hub-list li .thumb{width:88px;height:88px;border-radius:var(--radius-btn);}   /* 104→88: 오른쪽 정보 칸을 넓힌다(375px에서 207→223px) */
-#search .list .cont .info .name,#hub .hub-list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
-#search .list .cont .info .meta span,#hub .hub-list .cont .info .meta span{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
-#search .list .cont .grade .txt,#hub .hub-list .cont .grade .txt{font-size:var(--fs-caption);}
-#search .list .cont .info .meta span.price b,#hub .hub-list .cont .info .meta span.price b{font-size:var(--fs-body);}
+#search .list li{padding:var(--sp-5) 0;}
+#search .list li + li{border-top:1px solid var(--line);}
+#search .list li .item{gap:var(--sp-4);}
+#search .list li .thumb{width:88px;height:88px;border-radius:var(--radius-box);}   /* 104→88: 오른쪽 정보 칸을 넓힌다(375px에서 207→223px) */
+#search .list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
+#search .list .cont .info .meta span{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
+#search .list .cont .grade .txt{font-size:var(--fs-caption);}
+#search .list .cont .info .meta span.price b{font-size:var(--fs-body);}
 /* 가격은 항상 자기 줄 — 줄바꿈 시 '4성급 호텔 |'처럼 구분선이 끝에 매달리던 문제 제거 */
-#search .list .cont .info .meta span.price,#hub .hub-list .cont .info .meta span.price{flex-basis:100%;margin-top:2px;}
-#search .list .cont .info .meta span:has(+ .price)::after,#hub .hub-list .cont .info .meta span:has(+ .price)::after{display:none;}
-#search .list .cont .badge .badge-item,#hub .hub-list .cont .badge .badge-item{padding:4px 8px;font-size:var(--fs-micro);}
+#search .list .cont .info .meta span.price{flex-basis:100%;margin-top:2px;}
+#search .list .cont .info .meta span:has(+ .price)::after{display:none;}
 #search .r-tags{margin-top:var(--sp-3);}
-#search .r-tag{height:var(--h-badge);font-size:var(--fs-meta);}
 
 /* ════════ 컬렉션 허브 ════════ */
 #hub{padding:var(--sp-6) var(--page-x) var(--sp-10);}
@@ -202,7 +172,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #hub .hub-h1-sub{margin:0 0 var(--sp-3);line-height:var(--lh-ui);font-size:var(--fs-body);color:var(--ink-3);}
 #hub .hub-summary{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #hub .hub-h2{font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
-#hub .hub-chip{padding:4px 10px;font-size:var(--fs-micro);}
 
 /* ════════ 소개 ════════ */
 #about{padding:var(--sp-8) var(--page-x) var(--sp-12);}
@@ -244,8 +213,8 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 #detail .recent .list ul{gap:0;}
 #detail .recent .list li{padding:var(--sp-3) var(--sp-4);}
 #detail .recent .list li:nth-child(-n+2){background:var(--danger-soft);}
-#detail .recent .list li:nth-child(1){padding-top:var(--sp-4);border-radius:var(--radius-btn) var(--radius-btn) 0 0;}
-#detail .recent .list li:nth-child(2){padding-bottom:var(--sp-4);margin-bottom:var(--sp-2);border-radius:0 0 var(--radius-btn) var(--radius-btn);}
+#detail .recent .list li:nth-child(1){padding-top:var(--sp-4);border-radius:var(--radius-box) var(--radius-box) 0 0;}
+#detail .recent .list li:nth-child(2){padding-bottom:var(--sp-4);margin-bottom:var(--sp-2);border-radius:0 0 var(--radius-box) var(--radius-box);}
 #detail .recent .list li:nth-child(-n+2) .num,#detail .recent .list li:nth-child(-n+2) .per{color:var(--danger-text);font-weight:var(--fw-bold);}
 #detail .recent .list li:nth-child(-n+2) .bar{background:var(--surface-card);}
 #detail .recent .list li:nth-child(-n+2) .bar i{background:var(--danger);}
@@ -260,9 +229,6 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 .page-empty{padding:0 0 var(--sp-12);}
 .page-empty .pe-txt{margin:0 var(--page-x);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 .page-empty .pe-btns{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin:var(--sp-6) var(--page-x) 0;}
-.page-empty .pe-btn{display:inline-flex;align-items:center;justify-content:center;height:var(--h-btn);padding:0 var(--sp-5);border-radius:var(--radius-btn);font-size:var(--fs-body);font-weight:var(--fw-bold);white-space:nowrap;}
-.page-empty .pe-btn.is-brand{background:var(--primary-cta);color:var(--ink-inverse);}
-.page-empty .pe-btn.is-line{border:1px solid var(--ink);color:var(--ink);}
 
 /* ════════ §v3 오버레이 1벌 (DESIGN-SYSTEM-V3 §5 · UI-STANDARDS §17) ════════
    그릇: .ov[data-ov=sheet] 페이지 시트(높이 고정) · [data-ov=bottom] 바텀 시트(내용 높이) · [data-ov=dialog] 가운데 다이얼로그 · CF.toast
@@ -340,21 +306,86 @@ html.ov-lock{overflow:hidden;}
 .ov-foot-note{margin:0;text-align:center;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .ov[data-ov=dialog] .ov-foot{padding-bottom:var(--sp-4);border-top:0;}
 
-/* 버튼(§6-1) — 시트 푸터가 먼저 쓴다. 높이·라운드는 토큰(P1 부품 단계에서 --h-btn 48 · --radius-btn 10으로) */
-.btn-ink,.btn-brand,.btn-gray{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:var(--h-btn);padding:0 var(--sp-6);border:0;border-radius:var(--radius-btn);font-size:var(--fs-body);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;text-decoration:none;cursor:pointer;}
-.btn-ink{background:var(--ink);color:var(--ink-inverse);}
-.btn-brand{background:var(--primary-cta);color:var(--ink-inverse);}
+/* ════════ 버튼 5종 + 상태 (DESIGN-SYSTEM-V3 §6-1 · UI-STANDARDS §18) ════════
+   종류: .btn-brand(화면당 최종 행동 1개, --primary-cta 면) · .btn-ink(진행·확정) · .btn-gray(보조·'더 보기') · .btn-line(외곽선) · .btn-text(링크)
+   크기: 기본 48(--h-btn) / .btn-sm 36(--h-btn-sm, ::before로 터치 44) · 폭: .btn-block = 전폭. 라벨은 한 줄(nowrap)
+   상태: :active 눌림(브랜드 --primary-deep, 잉크 어둡게) · :disabled/[aria-disabled=true] 흐림 면(숨기지 않음, §3-4) · .is-loading 점 3개 */
+.btn-ink,.btn-brand,.btn-gray,.btn-line{position:relative;display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:var(--h-btn);padding:0 var(--sp-6);border:0;border-radius:var(--radius-btn);font-family:inherit;font-size:var(--fs-body);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;text-decoration:none;cursor:pointer;}
+.btn-ink{--dot:var(--ink-inverse);background:var(--ink);color:var(--ink-inverse);}
+.btn-brand{--dot:var(--ink-inverse);background:var(--primary-cta);color:var(--ink-inverse);}
+.btn-gray{--dot:var(--ink);background:var(--surface);color:var(--ink);font-weight:var(--fw-semi);}
+.btn-line{--dot:var(--ink);border:1px solid var(--ink);background:var(--surface-card);color:var(--ink);font-weight:var(--fw-semi);}
+.btn-ink:active{filter:brightness(.7);}
 .btn-brand:active{background:var(--primary-deep);}
-.btn-gray{background:var(--surface);color:var(--ink);font-weight:var(--fw-semi);}
-.btn-ink:disabled,.btn-brand:disabled,.btn-gray:disabled{background:var(--line);color:var(--ink-3);cursor:default;}   /* 비활성: 숨기거나 흐리게 하지 않음(§3-4) */
-.btn-text{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
+.btn-gray:active{background:var(--line-strong);}
+.btn-line:active{background:var(--surface-2);}
+.btn-block{display:flex;width:100%;}
+.btn-sm{height:var(--h-btn-sm);padding:0 var(--sp-4);font-size:var(--fs-meta);font-weight:var(--fw-semi);}
+.btn-sm::before{content:"";position:absolute;inset:-4px 0;}   /* 36 → 터치 44 (UI-STANDARDS §14) */
+.btn-ink:disabled,.btn-brand:disabled,.btn-gray:disabled,.btn-line:disabled,.btn-ink[aria-disabled=true],.btn-brand[aria-disabled=true],.btn-gray[aria-disabled=true]{border-color:transparent;background:var(--line);color:var(--ink-3);cursor:default;filter:none;}   /* 비활성: 숨기거나 흐리게 하지 않음(§3-4) */
+.btn-ink.is-loading,.btn-brand.is-loading,.btn-gray.is-loading,.btn-line.is-loading{color:transparent;pointer-events:none;}
+.btn-ink.is-loading::after,.btn-brand.is-loading::after,.btn-gray.is-loading::after,.btn-line.is-loading::after{content:"";position:absolute;left:50%;top:50%;width:36px;height:6px;margin:-3px 0 0 -18px;background:radial-gradient(circle at 3px 3px,var(--dot) 3px,transparent 3.5px) 0 0 / 12px 6px repeat-x;animation:cf-dots 1s steps(1) infinite;}
+@keyframes cf-dots{0%{opacity:1;}50%{opacity:.35;}}
+.btn-text{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-family:inherit;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
+.btn-text--sm{font-size:var(--fs-meta);}   /* 작은 맥락(건수 링크·'근거 보기'·'분류가 이상해요') — 터치는 그대로 44 */
+.btn-text.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
+/* 아이콘 버튼: 터치 44 · 보이는 원 36(--h-circle). --surface = 목록 헤더 · --photo = 사진 위(흰 원 + 얕은 그림자) · 기본 = 원 없음 */
+.btn-icon{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer;}
+.btn-icon > *{position:relative;}
+.btn-icon--surface::before,.btn-icon--photo::before{content:"";position:absolute;left:50%;top:50%;width:var(--h-circle);height:var(--h-circle);margin:calc(var(--h-circle) / -2) 0 0 calc(var(--h-circle) / -2);border-radius:50%;background:var(--surface);}
+.btn-icon--photo::before{background:var(--surface-card);box-shadow:var(--shadow-badge);}
 
-/* 오버레이 안 고르기 부품: 필터 칩(다중, 선택 = 2px 잉크 + 옅은 면) · 보기 전환 칩(단일, 선택 = 잉크 채움) · 라디오 행 · 입력 */
+/* 접기 줄(월별 추이): .btn-gray 줄 + 펼친 본문(테두리 상자 없음). 화살표는 펼치면 뒤집힘 */
+.trend-fold-btn{justify-content:flex-start;gap:var(--sp-2);text-align:left;}
+.trend-fold-btn .tf-tit{flex:1 1 auto;font-size:var(--fs-body);font-weight:var(--fw-semi);}
+.trend-fold-btn .tf-now{flex:none;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.trend-fold-btn .tf-arrow{flex:none;width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg) translateY(-2px);transition:transform .2s;}
+.trend-fold.is-open .trend-fold-btn .tf-arrow{transform:rotate(-135deg) translateY(-2px);}
+.trend-fold-body{display:none;padding:var(--sp-4) 0 0;}
+.trend-fold.is-open .trend-fold-body{display:block;}
+
+/* ════════ 칩·탭·세그먼트 (DESIGN-SYSTEM-V3 §6-2 · UI-STANDARDS §18) — 한 라운드(pill), 선택 = 잉크 ════════
+   .chip-filter 필터 칩(다중·적용형) 40(결과 위는 --sm 36) — 선택 = 2px 잉크 + --surface-2
+   .chip-view 보기 전환 칩(단일) 36 — 선택 = 잉크 채움 + 흰 글자 · .chip-go 이동 칩(링크) 36 · .chip-sort 정렬 알약 36(흰 + 1px, ⌄)
+   .tabs-u 밑줄 탭 48 — 선택 = 잉크 + 라벨 폭 2px 밑줄 · 세그먼트 .rec-seg(마법사)
+   36 칩은 ::before로 터치 44. 가로 스크롤 줄은 위아래 4씩 패딩(.chip-row 계열)으로 확장분이 잘리지 않게 한다 */
 .ov-chips{display:flex;flex-wrap:wrap;gap:var(--sp-3) var(--sp-2);}
-.chip-filter{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
-.chip-filter.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--surface-2);}
-.chip-view{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-4);border:0;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
-.chip-view.on{background:var(--ink);color:var(--ink-inverse);}
+.chip-filter,.chip-view,.chip-go,.chip-sort{position:relative;flex:none;display:inline-flex;align-items:center;gap:var(--sp-2);border-radius:var(--radius-pill);font-family:inherit;font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;text-decoration:none;cursor:pointer;}
+.chip-filter{height:var(--h-chip);padding:0 var(--sp-4);border:1px solid var(--line-strong);background:var(--surface-card);}
+.chip-filter.on,.chip-filter.is-on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--surface-2);}
+.chip-filter.is-locked{opacity:.6;cursor:default;}
+.chip-filter--sm{height:var(--h-chip-sm);}
+.chip-view,.chip-go,.chip-sort{height:var(--h-chip-sm);padding:0 var(--sp-4);border:0;}
+.chip-filter--sm::before,.chip-view::before,.chip-go::before,.chip-sort::before{content:"";position:absolute;inset:-4px 0;}   /* 36 → 터치 44 */
+.chip-view,.chip-go{background:var(--surface);}
+.chip-view.on,.chip-view.is-on{background:var(--ink);color:var(--ink-inverse);}
+.chip-view.disabled{opacity:.4;pointer-events:none;}
+.chip-go:active,.chip-view:active{background:var(--line);}
+.chip-sort{border:1px solid var(--line-strong);background:var(--surface-card);}
+.chip-sort::after{content:"";width:8px;height:8px;margin:-4px 0 0 2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;}
+.lh-sort.open .chip-sort::after{margin-top:2px;transform:rotate(-135deg);}
+.chip-row,.faq-jump,.who-chips,.hub-home-chips,#search .filters .f-row,.rs-chips{padding-block:var(--sp-1);margin-block:calc(var(--sp-1) * -1);}
+.tabs-u{display:flex;overflow-x:auto;padding:0 calc(var(--page-x) - var(--sp-3));border-bottom:1px solid var(--line);scrollbar-width:none;}
+.tabs-u::-webkit-scrollbar{display:none;}
+.tabs-u > a,.tabs-u > button{position:relative;flex:none;display:flex;align-items:center;height:var(--h-tab);padding:0 var(--sp-3);border:0;background:none;font-family:inherit;font-size:var(--fs-body);line-height:1;font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;cursor:pointer;}
+.tabs-u > a::after,.tabs-u > button::after{content:"";position:absolute;left:var(--sp-3);right:var(--sp-3);bottom:0;height:2px;background:transparent;}
+.tabs-u > .is-on,.tabs-u > .on{color:var(--ink);}
+.tabs-u > .is-on::after,.tabs-u > .on::after{background:var(--ink);}
+.faq-tabs.tabs-u{margin:var(--sp-4) calc(var(--page-x) * -1) var(--sp-4);}   /* 섹션 안에서 전폭(밑줄이 화면 끝까지) */
+/* 상태 점(.sdot): 사진 위 배지·태그·카드 글줄 앞의 8px 색 점(색만으로 뜻을 전하지 않는다 — 옆에 늘 숫자나 등급어) */
+.status-item,.rare-chip,.who-tag,.r-tag,.tier-badge{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 10px;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;}   /* 상태 태그 계열 — 리뷰 심각도·희소 소분류·누구와·검색 카드 태그·순위 구간 */
+.status-item::before,.rare-chip::before,.who-tag::before,.r-tag::before,.tier-badge::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
+.status-item.danger::before,.rare-chip.is-alert::before,.who-tag.is-danger::before,.r-tag.is-danger::before,.tier-badge.is-danger::before{background:var(--danger);}
+.status-item.warning::before,.who-tag.is-warning::before,.r-tag.is-warning::before,.tier-badge.is-warning::before{background:var(--warning);}
+.rare-chip.is-clear::before,.who-tag.is-safe::before,.r-tag.is-safe::before,.tier-badge.is-safe::before{background:var(--safe);}
+.who-tag.is-faq::before{display:none;}
+#detail .analysis .risk-acc-body .stat-row.is-rare .rare-chip{flex:1 1 auto;min-width:0;}
+.tier-badge{margin-left:var(--sp-2);}
+.sdot{display:inline-block;flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
+.sdot.is-danger{background:var(--danger);}
+.sdot.is-warning{background:var(--warning);}
+.sdot.is-safe{background:var(--safe);}
+.chip-go .sdot{margin-right:-2px;}
 .ov-opts{display:flex;flex-direction:column;}
 .ov-opt{display:flex;align-items:center;gap:var(--sp-4);min-height:64px;padding:var(--sp-3) 0;border-top:1px solid var(--line);cursor:pointer;}
 .ov-opt:first-child{border-top:0;}
@@ -511,3 +542,98 @@ textarea.ov-input{height:96px;resize:none;}
 .lh-sort-box button.on::after{border:7px solid var(--ink);}
 .lh-sort-box .ls-sub{display:block;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink-3);}
 .lh-sort-sep{margin-top:var(--sp-2);padding:var(--sp-4) 0 var(--sp-1);border-top:1px solid var(--line);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+
+/* ════════ §v3 컴포넌트 — 입력·떠 있는 컨트롤 (DESIGN-SYSTEM-V3 §6-9 · §6-11 · UI-STANDARDS §18) ════════ */
+/* 검색 알약(§6-9): 흰 면 + 1px --line-strong + --shadow-float. 홈 56(--h-search) · 결과 화면 48(--h-btn). 실행 원은 잉크(보라는 화면당 최종 행동 1개만) */
+#main .search-box .input{display:flex;align-items:center;gap:var(--sp-2);height:var(--h-search);margin-top:var(--sp-6);padding:0 var(--sp-2) 0 var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
+#main .search-box .input::before{content:"";flex:none;width:20px;height:20px;background:url("../img/search.svg") no-repeat center / 20px;}
+#main .search-box .input input{min-width:0;height:100%;padding:0;font-size:var(--fs-body);color:var(--ink);background:none;}
+#main .search-box .input button{flex:none;width:var(--h-icon);height:var(--h-icon);border-radius:50%;background:var(--ink);}
+#main .search-box .input button img{width:20px;height:20px;filter:brightness(0) invert(1);}
+#title .search{height:var(--h-btn);padding:0 var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
+#title .search input{font-size:var(--fs-body);color:var(--ink);}
+
+/* 떠 있는 컨트롤(§6-11): 같은 알약 44(--h-float) — 지도/목록 토글 = 잉크 알약 · 비교함 트레이 = 잉크 알약(썸네일 + '비교하기 (N)' + X 44) · 상세 비교 = 흰 알약.
+   겹치면 아래에서부터 하단 바 → 트레이 → 토스트 순으로 16씩 띄움(토스트 위치는 js/backnav.js liftPx). 맨 위로 버튼은 없다 */
+.map-toggle,.cmp-tray,#float .float .cmp-fab{position:fixed;z-index:var(--z-float);left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));transform:translateX(-50%);display:inline-flex;align-items:center;gap:var(--sp-2);height:var(--h-float);border:0;border-radius:var(--radius-pill);background:var(--ink);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;}
+.map-toggle{padding:0 var(--sp-5);cursor:pointer;}
+html.has-cmp #search .map-toggle{bottom:calc(var(--sp-6) + var(--h-float) + var(--sp-3) + env(safe-area-inset-bottom));}
+.cmp-tray{padding:0 0 0 var(--sp-2);}
+.cmp-tray[hidden]{display:none;}
+.cmp-tray.on-detail{bottom:calc(var(--h-btn) + var(--sp-8) + var(--sp-4) + env(safe-area-inset-bottom));}
+.cmp-tray.on-home{bottom:calc(var(--h-btn) + var(--sp-8));}   /* 홈 하단 추천 버튼 위 */
+.cmp-tray .ct-link{display:flex;align-items:center;gap:var(--sp-2);height:100%;padding-right:var(--sp-1);color:inherit;}
+.cmp-tray .ct-th{display:flex;}
+.cmp-tray .ct-th img,.cmp-tray .ct-th i{display:block;width:28px;height:28px;margin-left:calc(var(--sp-2) * -1);border:2px solid var(--ink);border-radius:50%;object-fit:cover;background:var(--ink-3);}
+.cmp-tray .ct-th :first-child{margin-left:0;}
+.cmp-tray .ct-x{position:relative;flex:none;width:var(--h-icon);height:100%;padding:0;border:0;background:none;color:var(--ink-inverse);cursor:pointer;}
+.cmp-tray .ct-x::before,.cmp-tray .ct-x::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:2px;background:currentColor;}
+.cmp-tray .ct-x::before{transform:translate(-50%,-50%) rotate(45deg);}
+.cmp-tray .ct-x::after{transform:translate(-50%,-50%) rotate(-45deg);}
+#float .float .cmp-fab{position:static;transform:none;justify-content:center;padding:0 var(--sp-5);background:var(--surface-card);color:var(--ink);pointer-events:all;cursor:pointer;}
+#float .float .cmp-fab.is-on{background:var(--ink);color:var(--ink-inverse);}
+#float .float .cmp-fab.is-on::before{content:"";width:10px;height:6px;margin-top:-3px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);}
+#detail ~ #float{bottom:calc(var(--h-btn) + var(--sp-8) + env(safe-area-inset-bottom));}
+html.has-cmp #detail ~ #float{bottom:calc(var(--h-btn) + var(--h-float) + var(--sp-12) + env(safe-area-inset-bottom));}
+.cmp-ico{position:relative;display:inline-block;width:var(--sp-3);height:var(--sp-3);}
+.cmp-ico::before,.cmp-ico::after{content:"";position:absolute;left:50%;top:50%;border-radius:var(--radius-chip);background:currentColor;transform:translate(-50%,-50%);}
+.cmp-ico::before{width:var(--sp-3);height:2px;}
+.cmp-ico::after{width:2px;height:var(--sp-3);}
+.is-on > .cmp-ico{display:none;}
+/* 비교 담기 버튼(PC 결정 카드 .btn-gray) — 담김 = 선택 문법(2px 잉크 + 옅은 면) + 잉크 체크 */
+.cmp-btn.is-on{background:var(--surface-2);box-shadow:inset 0 0 0 2px var(--ink);}
+.btn-gray.cmp-btn.is-on::before{content:"";width:10px;height:6px;margin-top:-3px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(-45deg);}
+
+/* ════════ 배지·태그 4종 (DESIGN-SYSTEM-V3 §6-3 · UI-STANDARDS §18) ════════
+   .photo-badge 사진 위 배지 — 흰 알약 26 + 8px 색 점(.sdot) + 13/700 --ink + --shadow-badge, 사진당 1개(등급 배지 + 확률 알약을 합침). 등급어는 sr 텍스트·카드 글줄('● 위험 · …')이 맡는다
+   .tag 상태 태그 — --surface 알약 26 + 점 + 13/700 --ink(글 속: 상세 제목 위·검색 목록·지도 팝업·리뷰 심각도) · .cnt 카운트·순위 — --ink 원 24 + 흰 13/700(보라 아님)
+   사진 카운터는 .gallery-count(높이 26 · 라운드 8 · --scrim-photo + 흰 13/600) · 상태 문구·색은 generate.BADGE_STATES 1벌 */
+.photo-badge,.tag{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 10px;border-radius:var(--radius-pill);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;}
+.photo-badge{position:absolute;z-index:1;top:var(--sp-3);left:var(--sp-3);background:var(--surface-card);box-shadow:var(--shadow-badge);}
+.tag{background:var(--surface);}
+.cnt{display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:var(--radius-pill);background:var(--ink);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-bold);color:var(--ink-inverse);font-variant-numeric:tabular-nums;}
+
+/* ════════ 호텔 카드 .hcard (DESIGN-SYSTEM-V3 §6-4 · UI-STANDARDS §18) — 3종 + 15px 글줄 스택 ════════
+   .hcard--carousel 홈·상세 대안(20:19, 폭 --hcard-w ≈ 화면 42%, 간격 12) · .hcard--wide 허브(4:3 전폭, 카드 사이 32) · .hcard--grid 최근 본(1:1, 2열)
+   글줄: ① 이름 600(최대 2줄) → ② 메타 --ink-3 → ③ 가격(숫자 700, 맨 아래 — 이름이 1줄이든 2줄이든 가격 줄 높이가 맞는다). 별 이미지·'구글 평점' 이중 표기·min-height 예약은 없다 */
+.hcard{display:flex;flex-direction:column;width:100%;height:100%;color:var(--ink);}
+.hcard-photo{position:relative;display:block;overflow:hidden;border-radius:var(--radius-img);background:var(--surface);}
+.hcard-photo img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s;}
+.hcard--carousel .hcard-photo{aspect-ratio:20/19;}
+.hcard--wide .hcard-photo{aspect-ratio:4/3;}
+.hcard--grid .hcard-photo{aspect-ratio:1/1;}
+.hcard-photo .cnt{position:absolute;z-index:1;top:var(--sp-3);right:var(--sp-3);}
+.hcard-body{display:flex;flex:1 1 auto;flex-direction:column;gap:2px;margin-top:10px;font-size:var(--fs-card);line-height:var(--lh-ui);}
+.hcard--wide .hcard-body{margin-top:var(--sp-3);}
+.hcard--grid .hcard-body{margin-top:var(--sp-2);}
+.hcard-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-3);}
+.hcard-name{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;margin:0;font-size:var(--fs-card);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-wrap:balance;}
+.hcard-rate{flex:none;font-size:var(--fs-card);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);white-space:nowrap;}
+.hcard-meta{overflow:hidden;font-size:var(--fs-card);line-height:var(--lh-ui);color:var(--ink-3);white-space:nowrap;text-overflow:ellipsis;}
+.hcard--wide .hcard-meta{white-space:normal;}
+.hcard-meta .sdot{margin-right:6px;vertical-align:middle;}
+.hcard-grade{font-weight:var(--fw-semi);color:var(--ink);}
+.hcard-price{margin-top:auto;padding-top:var(--sp-1);font-size:var(--fs-card);line-height:var(--lh-ui);color:var(--ink);}
+.hcard-price b{font-weight:var(--fw-bold);}
+.hcard-we{color:var(--ink-3);}
+.hcard--wide .hcard-price{margin-top:0;}
+.hcard-note{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.hcard-note b{font-weight:var(--fw-semi);color:var(--ink);}
+.hcard-note .seg{display:block;}
+/* 캐러셀 슬라이더(홈·상세 대안): 카드 폭 = 화면의 42%(tokens --hcard-w) — 다음 카드가 약 10 보이게 슬라이더를 화면 오른쪽 끝까지 늘린다 */
+.hotel-slider{margin-right:calc(var(--page-x) * -1);}
+.hotel-slider .swiper-slide{display:flex;width:var(--hcard-w);height:auto;}
+#hub .hub-list{display:flex;flex-direction:column;gap:var(--sp-8);}
+
+/* 결론 라벨('불만 많은 편')은 배지가 아니다 — 8px 점 + 14/600 --ink 글자(§3-3). 카드 사유 글줄·AI 조건 알약·메타성 라벨들 */
+.cat-verdict{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
+.cat-verdict::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
+.cat-verdict.is-danger::before{background:var(--danger);}
+.cat-verdict.is-warning::before{background:var(--warning);}
+.cat-verdict.is-safe::before{background:var(--safe);}
+#search .list .rec-li .rp{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 var(--sp-2) 0 6px;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}   /* 조건 충족 태그: 면은 회색, 의미는 체크/느낌표 원이 맡는다 */
+.q-lang,.rel-badge{margin-left:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;}   /* 알약 → 메타 글자('일본어 리뷰'·'11개월 전') */
+.rel-badge:empty{display:none;}
+.faq-chips{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* FAQ 키워드: '후기가 갈려요 · 가족여행 추천' 메타 한 줄 */
+.vs-topic{margin-bottom:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}   /* 비교 카드 주제 = 메타 글자('텐진 숙소') */
+.visual .hotel-gallery .gallery-count{position:absolute;z-index:2;right:var(--sp-4);bottom:var(--sp-4);display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--scrim-photo);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-semi);color:var(--ink-inverse);font-variant-numeric:tabular-nums;}   /* 사진 카운터: 26 · 8 · 스크림 + 흰 13/600 */
