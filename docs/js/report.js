@@ -3,7 +3,7 @@
    전송: Supabase classification_reports (anon INSERT, RLS status='new') → VM report_review.py가 AI 재판정·디스코드 승인
    중복 방지: localStorage cf_rep = 신고한 fid 배열 → 버튼 '신고함' 비활성
    GA4: report_open / report_submit {reason, cat, sub}
-   의존: backnav.js(CFNav), window.CF_HOTEL.pid, window.CF_SB, window.CAT_KO */
+   의존: backnav.js(CF.sheet·CF.toast), window.CF_HOTEL.pid, window.CF_SB, window.CAT_KO */
 (function () {
   'use strict';
   var REASONS = [
@@ -23,12 +23,7 @@
   }
   function catKo(c) { return (window.CAT_KO && window.CAT_KO[c]) || c; }
   function gtagSafe(name, p) { if (typeof gtag === 'function') gtag('event', name, p || {}); }
-  function toast(msg) {
-    var el = document.createElement('div'); el.className = 'cf-toast'; el.textContent = msg;
-    document.body.appendChild(el);
-    requestAnimationFrame(function () { el.classList.add('show'); });
-    setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 2200);
-  }
+  function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
   // 남용 집계용 익명 ID: localStorage 랜덤값의 SHA-256 앞 16자 (개인정보 아님)
   function clientHash() {
     var id = '';
@@ -54,36 +49,29 @@
     });
   }
 
+  // A 페이지 시트 · H2 큰 제목 · F3(잉크 '신고하기' + 비활성일 때 위 안내). 리뷰 근거 시트 위에서 열리면 '시트 위 시트'
   function build() {
-    var m = document.createElement('div');
-    m.className = 'cf-modal'; m.id = 'cf-report';
-    m.innerHTML =
-      '<div class="cf-modal-dim"></div>' +
-      '<form class="cf-modal-card rp-card" novalidate>' +
-        '<div class="rp-head"><div class="rp-tit">이 리뷰 분류가 맞지 않나요?</div>' +
-        '<button type="button" class="rp-close" aria-label="닫기">✕</button></div>' +
-        '<div class="rp-now"><span class="rp-label">지금 분류</span><span class="rp-cur-chip"></span></div>' +
-        '<div class="rp-label">이유를 골라 주세요</div>' +
-        '<div class="rp-reasons">' + REASONS.map(function (r) {
-          return '<label class="rp-reason"><input type="radio" name="rp-reason" value="' + r.code + '">' +
-            '<span class="rp-r-t"><b>' + r.label + '</b>' + (r.desc ? '<span>' + r.desc + '</span>' : '') + '</span></label>' +
-            (r.code === 'wrong_category' ? '<div class="rp-cats" hidden>' + CATS7.map(function (c) {
-              return '<button type="button" class="rp-cat" data-cat="' + c + '">' + esc(catKo(c)) + '</button>';
+    var m = CF.sheet.make({
+      id: 'cf-report', type: 'sheet', w: 'md', head: 'large', tag: 'form', title: '어떤 점이 이상한가요?', sub: ' ',
+      body: '<div class="ov-sec"><div class="ov-opts rp-reasons" role="radiogroup" aria-label="신고 이유">' + REASONS.map(function (r) {
+          return '<label class="ov-opt rp-reason"><span class="ov-opt-t"><b>' + r.label + '</b>' + (r.desc ? '<span>' + r.desc + '</span>' : '') + '</span>'
+            + '<input type="radio" class="ov-radio" name="rp-reason" value="' + r.code + '"></label>'
+            + (r.code === 'wrong_category' ? '<div class="rp-cats ov-chips" hidden>' + CATS7.map(function (c) {
+              return '<button type="button" class="chip-filter rp-cat" data-cat="' + c + '" aria-pressed="false">' + esc(catKo(c)) + '</button>';
             }).join('') + '</div>' : '');
-        }).join('') + '</div>' +
-        '<label class="rp-label" for="rp-comment">덧붙일 말 <span class="rp-opt">(선택, 200자)</span></label>' +
-        '<textarea id="rp-comment" class="rp-comment" maxlength="200" placeholder="어떤 점이 이상한지 알려 주세요"></textarea>' +
-        '<input type="text" class="rp-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">' +
-        '<div class="rp-note">검토 후 반영돼요 · 신고만으로 점수가 바로 바뀌지는 않아요</div>' +
-        '<button type="submit" class="cf-btn cf-btn-primary rp-submit" disabled>신고하기</button>' +
-      '</form>';
-    document.body.appendChild(m);
-    m.querySelector('.cf-modal-dim').addEventListener('click', function () { CFNav.pop(); });
-    m.querySelector('.rp-close').addEventListener('click', function () { CFNav.pop(); });
+        }).join('') + '</div></div>'
+        + '<div class="ov-sec"><label class="ov-sec-t" for="rp-comment">덧붙일 말 <span class="ov-opt-q">(선택, 200자)</span></label>'
+        + '<textarea id="rp-comment" class="ov-input rp-comment" maxlength="200" placeholder="어떤 점이 이상한지 알려 주세요"></textarea>'
+        + '<p class="ov-note">검토 후 반영돼요 · 신고만으로 분류가 바로 바뀌지는 않아요</p></div>'
+        + '<input type="text" class="rp-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">',
+      footType: 'f3',
+      foot: '<p class="ov-foot-note rp-hint">이유를 하나 골라 주세요</p><button type="submit" class="btn-ink rp-submit" disabled>신고하기</button>'
+    });
     m.addEventListener('change', function (e) {
       if (e.target.name !== 'rp-reason') return;
       m.querySelector('.rp-cats').hidden = e.target.value !== 'wrong_category';
-      m.querySelector('.rp-submit').disabled = false;
+      setReady(true);
+      CF.sheet.update(m);
     });
     m.addEventListener('click', function (e) {
       var b = e.target.closest('.rp-cat'); if (!b) return;
@@ -94,6 +82,11 @@
     m.querySelector('form').addEventListener('submit', function (e) { e.preventDefault(); submit(); });
     return m;
   }
+  function setReady(on) {
+    var sb = modal.querySelector('.rp-submit');
+    sb.disabled = !on; sb.textContent = '신고하기';
+    modal.querySelector('.rp-hint').hidden = on;
+  }
 
   function open(btn) {
     cur = {
@@ -103,13 +96,12 @@
     if (!modal) modal = build();
     var f = modal.querySelector('form'); f.reset();
     modal.querySelector('.rp-cats').hidden = true;
-    modal.querySelectorAll('.rp-cat').forEach(function (x) { x.classList.remove('on'); });
+    modal.querySelectorAll('.rp-cat').forEach(function (x) { x.classList.remove('on'); x.setAttribute('aria-pressed', 'false'); });
     var sub = (window.QSUBKO && window.QSUBKO[cur.sub]) || cur.sub;
-    modal.querySelector('.rp-cur-chip').textContent = [catKo(cur.cat), sub].filter(Boolean).join(' > ') + (cur.grade ? ' · ' + cur.grade : '');
-    var sb = modal.querySelector('.rp-submit'); sb.disabled = true; sb.textContent = '신고하기';
-    modal.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-    CFNav.push(function () { modal.classList.remove('is-open'); if (!document.querySelector('.review-sheet.is-open')) document.body.style.overflow = ''; });   // 리뷰 시트 위에서 열렸으면 스크롤 잠금 유지
+    modal.querySelector('.ov-sub').textContent = '지금 분류 · ' + [catKo(cur.cat), sub].filter(Boolean).join(' > ') + (cur.grade ? ' · ' + cur.grade : '');
+    setReady(false);
+    modal.querySelector('.ov-body').scrollTop = 0;
+    CF.sheet.open(modal, { opener: btn });   // 리뷰 근거 시트 위면 아래 시트는 scale .96 + 딤 하나, 닫으면 스크롤 잠금 유지
     gtagSafe('report_open', { cat: cur.cat, sub: cur.sub });
   }
 
@@ -125,7 +117,7 @@
       if (ok) {
         markDone(cur.fid); refresh();
         gtagSafe('report_submit', { reason: r.value, cat: cur.cat, sub: cur.sub });
-        CFNav.pop();
+        CF.sheet.close(modal);
         toast('신고가 접수됐어요 · 검토 후 반영돼요');
       } else {
         sb.disabled = false; sb.textContent = '신고하기';

@@ -5,15 +5,9 @@
 (function () {
   'use strict';
 
-  var BAND_COLOR = { safe: '#5EA5E7', warning: '#F0A028', danger: '#FA5252' };
+  // 등급 색은 토큰 변수로(--safe·--warning·--danger), 없으면 메타 회색
 
-  function toast(msg) {
-    var el = document.createElement('div');
-    el.className = 'cf-toast'; el.innerHTML = msg;
-    document.body.appendChild(el);
-    requestAnimationFrame(function () { el.classList.add('show'); });
-    setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 2000);
-  }
+  function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
@@ -155,6 +149,21 @@
     return ok && keyOk;
   }
 
+  // 미매칭 → 분석 요청 (Supabase analysis_requests · anon INSERT RLS — engage.js 피드백과 동일 패턴). 검색 결과 없음 화면의 '분석 요청하기'도 이 함수
+  function requestAnalysis(q) {
+    if (window.CF_SB && window.CF_SB.url && window.CF_SB.key) {
+      fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
+        method: 'POST',
+        headers: { 'apikey': window.CF_SB.key, 'Authorization': 'Bearer ' + window.CF_SB.key,
+          'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+        body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
+      }).catch(function () {});
+      toast('요청했어요. 분석되면 사이트에 올라와요');
+      return;
+    }
+    toast('분석 요청은 준비 중이에요');
+  }
+
   function attach(input, opts) {
     opts = opts || {};
     var $input = $(input);
@@ -168,28 +177,29 @@
 
     function hide() { $box.prop('hidden', true).empty(); sel = -1; }
 
-    function hotelRow(h, i) {
-      var band = h.band || null;
-      var chip = h.p != null
-        ? '<span class="ac-p" style="color:' + (BAND_COLOR[band] || '#8B9097') + '">실망 ' + h.p + '%</span>'
-        : '<span class="ac-p dim">분석 준비 중</span>';
-      var krn = (h.krn > 0) ? '<span class="ac-krn">한국인 리뷰 ' + h.krn.toLocaleString() + '건</span>' : '';
+    // 컴팩트 행(v3 §6-4): 이름 16/600(일치 글자 700) + 메타 14 '나카스 · ● 실망 확률 4%'. 오른쪽 열 없음 → 이름 폭을 넓게
+    function hl(name, q) {
+      var i = q ? name.toLowerCase().indexOf(q.toLowerCase()) : -1;
+      return i < 0 ? esc(name) : esc(name.slice(0, i)) + '<b>' + esc(name.slice(i, i + q.length)) + '</b>' + esc(name.slice(i + q.length));
+    }
+    function hotelRow(h, i, q) {
+      var meta = [];
+      if (h.ar) meta.push(esc(h.ar));
+      meta.push(h.p != null ? '<i class="sdot' + (h.band ? ' is-' + h.band : '') + '"></i>실망 확률 ' + h.p + '%' : '분석 준비 중');   // 글자는 잉크, 의미는 점이(§3-3)
       return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'
-        + '<span class="ac-main"><span class="ac-name">' + esc(h.t) + '</span>' + krn + '</span>'
-        + chip + '</a>';
+        + '<span class="ac-main"><span class="ac-name">' + hl(h.t, q) + '</span><span class="ac-meta">' + meta.join(' · ') + '</span></span></a>';
     }
 
     function missRow(q) {
       return '<div class="ac-miss" data-q="' + esc(q) + '">'
-        + '<span class="ac-miss-q">&lsquo;' + esc(q) + '&rsquo;</span> 분석된 호텔이 없어요 — <b>분석 요청하기</b></div>';
+        + '<span class="ac-miss-q">&lsquo;' + esc(q) + '&rsquo;</span> 호텔이 없어요 · <b>분석 요청하기</b></div>';
     }
 
     function areaBlock() {
       var areas = window.CF_AREAS || [];
       if (!areas.length) return '';
-      return '<div class="ac-section">후쿠오카 인기 지역</div>' + areas.map(function (a) {
-        return '<a class="ac-area" href="' + areaHref + a.code + '"><span>' + esc(a.ko) + '</span>'
-          + '<span class="ac-sub">이 지역 호텔 보기</span></a>';
+      return '<div class="ac-section">인기 지역</div>' + areas.map(function (a) {
+        return '<a class="ac-area" href="' + areaHref + a.code + '"><span>' + esc(a.ko) + '</span></a>';
       }).join('');
     }
 
@@ -206,28 +216,13 @@
       lastList = list;
       var html = '';
       if (list.length) {
-        html = '<div class="ac-section">호텔</div>' + list.map(hotelRow).join('');
+        html = list.map(function (h, i) { return hotelRow(h, i, q); }).join('');
       } else {
         var sug = suggest(q, 3);   // 폴백: 비슷한 이름 제안 → 그래도 없으면 분석 요청 행
-        html = (sug.length ? '<div class="ac-section">혹시 이 호텔인가요?</div>' + sug.map(hotelRow).join('') : '') + missRow(q);
+        html = (sug.length ? '<div class="ac-section">혹시 이 호텔인가요?</div>' + sug.map(function (h, i) { return hotelRow(h, i, ''); }).join('') : '') + missRow(q);
       }
       $box.prop('hidden', false).html(html);
       sel = -1;
-    }
-
-    // 미매칭 → 분석 요청 (Supabase analysis_requests · anon INSERT RLS — engage.js 피드백과 동일 패턴)
-    function requestAnalysis(q) {
-      if (window.CF_SB && window.CF_SB.url && window.CF_SB.key) {
-        fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
-          method: 'POST',
-          headers: { 'apikey': window.CF_SB.key, 'Authorization': 'Bearer ' + window.CF_SB.key,
-            'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-          body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
-        }).catch(function () {});
-        toast('요청했어요! 분석되면 사이트에 올라와요');
-        return;
-      }
-      toast('분석 요청 기능은 준비 중이에요 · 곧 열릴게요');
     }
 
     function highlight() {
@@ -271,5 +266,5 @@
     return { render: render, showAreas: showAreas, hide: hide, matchIds: matchIds };
   }
 
-  window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest };
+  window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest, requestAnalysis: requestAnalysis };
 })();
