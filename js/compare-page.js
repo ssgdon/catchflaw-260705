@@ -217,9 +217,10 @@
       pick.addEventListener('click', function (e) {
         var it = e.target.closest('[data-pick]'); if (!it) return;
         var a = ids(); if (a.length >= MAX) return;
-        a.push(it.getAttribute('data-pick')); saveIds(a);
+        a.push(it.getAttribute('data-pick'));
         ev('compare_add', { hotel_id: it.getAttribute('data-pick'), count: a.length, source: 'compare_page' });
-        CF.sheet.close(pick); render();
+        // 시트를 먼저 닫고(버퍼 소비 back) 그 뒤에 주소를 바꾼다 — 반대 순서면 back()이 옛 ?ids=로 되돌림
+        CF.sheet.close(pick, { afterHistory: function () { saveIds(a); render(); } });
       });
       var t = null;
       pick.querySelector('.cp-q').addEventListener('input', function () { clearTimeout(t); t = setTimeout(renderPick, 120); });
@@ -235,9 +236,15 @@
     if (e.target.closest('[data-add]')) { openPick(e); return; }
     var x = e.target.closest('[data-x]');
     if (x) {
-      var id = x.getAttribute('data-x');
-      saveIds(ids().filter(function (it) { return it !== id; }));
-      render(); return;
+      var id = x.getAttribute('data-x'), cur = ids(), at = cur.indexOf(id);
+      saveIds(cur.filter(function (it) { return it !== id; }));
+      render();
+      // 빼기 버튼이 사라지면 포커스가 body로 떨어짐 → 같은 자리(없으면 앞) 빼기 버튼, 다 비면 제목으로
+      var xs = root.querySelectorAll('.cmp-x'), nx = xs[Math.min(at, xs.length - 1)];
+      var h1 = document.querySelector('#cmp h1');
+      if (nx) nx.focus();
+      else if (h1) { h1.setAttribute('tabindex', '-1'); h1.focus(); }
+      return;
     }
     if (e.target.closest('#cmp-diff')) { diffOnly = !diffOnly; render(); }
   });

@@ -155,11 +155,19 @@ CF.rgba = function (name, a) {
     // 연 버튼이 사라졌거나 비활성이 됐으면(신고 → '신고함') 아래 시트의 제목으로
     if (top && !top.el.contains(doc.activeElement)) { var tt = top.el.querySelector('.ov-title'); if (tt && tt.offsetParent) { tt.setAttribute('tabindex', '-1'); tt.focus({ preventScroll: true }); } }
   }
-  function close(el) {
-    var ent = el ? entryOf(el) : stack[stack.length - 1];
-    if (!ent) return;
-    if (ent.closer && closers.indexOf(ent.closer) >= 0) CFNav.pop(ent.closer);   // 뒤로가기 버퍼도 함께 소비
-    else finish(ent);
+  // o.afterHistory: 버퍼를 소비한 history.back()이 끝난 뒤 실행 — 닫은 직후 replaceState(주소 동기화)를 하면
+  // 뒤이은 back()이 옛 주소로 되돌리므로, 주소를 바꾸는 일은 여기서 한다(popstate 1회 + 400ms 대비)
+  function afterPop(fn) {
+    var done = false;
+    function go() { if (done) return; done = true; fn(); }
+    window.addEventListener('popstate', function h() { window.removeEventListener('popstate', h); setTimeout(go, 0); });
+    setTimeout(go, 400);
+  }
+  function close(el, o) {
+    var ent = el ? entryOf(el) : stack[stack.length - 1], after = o && o.afterHistory;
+    if (!ent) { if (after) after(); return; }
+    if (ent.closer && closers.indexOf(ent.closer) >= 0) { CFNav.pop(ent.closer); if (after) afterPop(after); }   // 뒤로가기 버퍼도 함께 소비
+    else { finish(ent); if (after) after(); }
   }
 
   // 마크업 만들기(JS로 그리는 오버레이용). 서버 렌더 오버레이(리뷰 근거·블로그·메뉴)는 같은 구조를 generate.py가 쓴다.
