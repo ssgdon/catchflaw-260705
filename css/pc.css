@@ -179,7 +179,7 @@
     .cmp-sum,.cmp-gt,.cmp-gs{padding-left:0;padding-right:0;}
     .cmp-note{padding-left:0;padding-right:0;}
     .cmp-tr{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:start;padding:var(--sp-4) 0;}
-    .cmp-k{margin:0;padding:var(--sp-2) var(--sp-4) 0 0;}
+    .cmp-k{margin:0;padding:var(--sp-2) var(--sp-4) 0 0;font-size:var(--fs-body);}   /* PC는 왼쪽 200 칸이라 16/700 */
     .cmp-v{margin:0;}
     .cmp-cell{font-size:var(--fs-body);}
     .cmp-line{font-size:var(--fs-meta);}

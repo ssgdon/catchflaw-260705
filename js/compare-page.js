@@ -253,10 +253,13 @@
     }).join('');
     // 순위별 한 행(1·2·3위) — 호텔마다 항목명 길이가 달라도 같은 순위끼리 가로로 줄이 맞음. 이름/비율은 항상 2줄
     var nTop = Math.max.apply(null, H.map(function (h) { return (h.top || []).length; }));
+    // 2026-10-10 가독성: 행 이름 '1위 불만'·'2위'·'3위', 칸 = 불만 이름 16/600 → 비율 14 + 막대(표 전체 최댓값 기준이라 호텔끼리 길이로 비교)
+    var topMax = Math.max.apply(null, [0.1].concat(H.map(function (h) { return (h.top || []).reduce(function (m, t) { return Math.max(m, +t[1] || 0); }, 0); })));
     var g3 = nTop ? [0, 1, 2].slice(0, nTop).map(function (i) {
-      return row(['가장 많은 불만', '두 번째', '세 번째'][i] + (i ? '' : ' <span class="cmp-kn">분석 리뷰 대비 비율</span>'), H.map(function (h) {
+      return row((i + 1) + '위 불만', H.map(function (h) {
         var t = (h.top || [])[i];
-        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + glue(esc(t[0])) + '</span><b class="cmp-tv">' + (+t[1]).toFixed(1) + '%</b>'
+        return { v: null, k: t ? t[0] + t[1] : '', h: t ? '<span class="cmp-tn">' + glue(esc(t[0])) + '</span><span class="cmp-tv">' + (+t[1]).toFixed(1) + '%</span>'
+          + '<span class="cmp-bar"><i class="is-warning" style="width:' + Math.max(4, Math.round((+t[1] / topMax) * 100)) + '%"></i></span>'
           : '<span class="cmp-none">' + (i ? '–' : '두드러진 불만 없음') + '</span>' };
       }));
     }).join('') : row('분석 리뷰 대비 비율', H.map(function () { return { v: null, k: '', h: '<span class="cmp-none">두드러진 불만 없음</span>' }; }));
@@ -265,7 +268,7 @@
     }).join('');
     html += '<div class="cmp-grp"><h2 class="cmp-gt">핵심</h2>' + g1 + '</div>'
       + '<div class="cmp-grp"><h2 class="cmp-gt">항목별 불만</h2><p class="cmp-gs">' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔 평균과 비교해요</p>' + g2 + '</div>'
-      + '<div class="cmp-grp"><h2 class="cmp-gt">자주 나온 불만</h2>' + g3 + '</div>'
+      + '<div class="cmp-grp"><h2 class="cmp-gt">자주 나온 불만</h2><p class="cmp-gs">분석한 리뷰 중 이 불만이 나온 비율이에요</p>' + g3 + '</div>'
       + '<div class="cmp-grp"><h2 class="cmp-gt">실전 정보</h2><p class="cmp-gs">리뷰에서 확인한 내용이에요</p>' + g4 + '</div>'
       + '<p class="cmp-note">공개 리뷰를 분석한 참고용 통계예요 · <a href="./about">산출 방법</a></p>';
     root.innerHTML = html;

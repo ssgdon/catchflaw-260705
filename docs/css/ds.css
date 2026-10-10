@@ -888,8 +888,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cmp-tr{padding:var(--sp-3) var(--page-x);border-top:1px solid var(--line);}
 .cmp-gt + .cmp-tr,.cmp-gs + .cmp-tr{border-top:0;}
 #cmp-root.is-diff-only .cmp-tr.is-same{display:none;}
-.cmp-k{margin-bottom:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
-.cmp-kn{margin-left:var(--sp-1);}
+.cmp-k{margin-bottom:var(--sp-3);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}   /* 행 이름 18/700 잉크(2026-10-10: 14 회색이라 '무엇에 대한 비교인지' 안 보였음) — 묶음 22 > 행 18 > 값 16 */
+.cmp-kn{margin-left:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-regular);letter-spacing:0;color:var(--ink-3);}
 .cmp-v{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);margin:0 calc(var(--sp-2) * -1);}
 .cmp-cell{min-width:0;padding:var(--sp-2);border-radius:var(--radius-chip);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);overflow-wrap:anywhere;word-break:keep-all;}   /* 글 행: 14/400, 3줄까지 */
 .cmp-cell b{font-weight:var(--fw-semi);}
@@ -912,8 +912,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cmp-bar i.is-danger{background:var(--danger);}
 .cmp-cell:has(> .cmp-tn){display:flex;flex-direction:column;}   /* 순위 행: 항목명이 한 칸만 2줄이 돼도 비율 숫자는 같은 높이(칸 아래)에 */
 .cmp-cell:has(> .cmp-tn) .cmp-tv{margin-top:auto;}
-.cmp-tn{display:block;}
-.cmp-tv{display:block;}
+.cmp-tn{display:block;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}   /* 순위 행: 불만 이름이 주인공(16/600) */
+.cmp-tv{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* 비율은 보조 + 아래 막대 */
 .cmp-li{display:block;}   /* 실전정보 칸: 값마다 한 줄(좁은 3열에서 '무료 · / 체크인 전' 같은 매달림 방지) */
 .cmp-li + .cmp-li{margin-top:2px;}
 .cmp-note{margin:0;padding:var(--sp-6) var(--page-x) var(--sp-4);border-top:var(--sp-2) solid var(--surface-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
