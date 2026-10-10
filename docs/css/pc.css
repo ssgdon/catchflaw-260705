@@ -43,6 +43,8 @@
     .cf-toast{bottom:var(--sp-10);}
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
     html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
+    html.is-scroll-down #float:has(.btn-airec){transform:none;}   /* 홈 추천 버튼은 PC에서도 항상 표시 */
+    .cmp-tray.on-home{bottom:calc(var(--h-btn-lg) + var(--sp-8));}
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
     #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}
@@ -125,7 +127,7 @@
     #detail .hotel .list .item .thumb .image{aspect-ratio:4/3;}
 
     /* ════════ 검색: 상단 필터 바 → [목록 | 고정 지도] ════════ */
-    #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;background:var(--surface-card);height:auto;}
+    #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;background:var(--surface-card);height:auto;box-shadow:none;transform:none;}   /* PC는 sticky 아님 → iOS 이음매 보정 해제 */
     #title .search{max-width:560px;}
     #search{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:var(--sp-6);align-items:start;padding:var(--sp-2) var(--pc-x) var(--sp-12);}
     #search > *{grid-column:1;min-width:0;}

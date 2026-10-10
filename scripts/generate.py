@@ -868,6 +868,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     # 가격대별 만족도: 각 밴드에서 실망 확률 낮은 순
     price_parts = []
     for code, label, lo, hi in PRICE_BANDS:
+        if code == 'b1': continue   # 홈은 가장 많이 찾는 10~20만원대부터 — 10만원 미만은 검색 가격 필터로(2026-10-10 사용자 결정)
         pids = sorted((p for p in ranked if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code),
                       key=lambda p: -REC.get(p, 0))[:8]
         if len(pids) >= 3:
@@ -949,13 +950,12 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-map">
                 <div class="home-map init">
                     <div class="head"><div class="title"><em>지도</em>로 한눈에</div>
-                    <div class="desc">마커 색 = 등급 · 누르면 실망 확률</div></div>
+                    </div>
                     <div class="map-wrap"><div id="map"></div>
                         <div class="map-legend">
                             <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">준비 중</span>
                         </div>
                     </div>
-                    <div class="map-more"><button type="button" class="map-more-btn btn-airec">딱 맞는 호텔 찾기</button></div>
                 </div>
             </article>
             <article class="section sec-2">
@@ -975,7 +975,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         </section>
         <section id="float">
             <div class="float">
-                <a href="javascript:;" class="btn-airec"><span>AI 추천받기</span></a>
+                <a href="javascript:;" class="btn-airec"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
             </div>
         </section>
     </main>

@@ -448,7 +448,9 @@
    ============================================================ */
 
 /* ---------- 플로팅 "AI 추천받기" pill (메인, 항상 표시) ---------- */
-#float .float a.btn-airec{width:auto;height:var(--h-btn);padding:0 var(--sp-5);border-radius:var(--radius-pill);
+/* 2026-10-10: 메인 주 버튼처럼 전체폭 사각형, 스크롤해도 항상 따라다님(아래 is-scroll-down 예외) */
+#float .float:has(.btn-airec){align-items:stretch;}
+#float .float a.btn-airec{width:100%;height:var(--h-btn-lg);padding:0 var(--sp-5);border-radius:var(--radius-btn);justify-content:center;
   display:inline-flex;align-items:center;gap:6px;pointer-events:all;white-space:nowrap;
   background:linear-gradient(90deg, var(--primary) 0%, var(--primary-deep) 100%);
   color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);box-shadow:0 6px 18px rgb(141 91 253 / 40%);}
@@ -995,6 +997,9 @@
 
 /* F36+F40: 공통 사이트 헤더 (좌 back · 중앙 로고 · 우 햄버거) — 상세·recent 공유, sticky(시트 z 300/400보다 아래) */
 .det-header{position:sticky;top:0;z-index:90;display:flex;align-items:center;justify-content:space-between;height:56px;padding:0 var(--page-x);background:var(--surface-card);border-bottom:1px solid var(--line);}
+/* iOS Safari: 위아래로 붙은 sticky 두 개(헤더 top 0 + 검색·탭 top 56)가 관성 스크롤 중 1~2px 벌어져 뒷 내용이 비침 →
+   아래쪽 sticky가 위로 흰 띠를 깔아 이음매를 덮고 자기 합성 레이어로 고정(헤더는 전체 메뉴 position:fixed 때문에 transform 금지) */
+#title,#detail .det-tabs,#cmp .cmp-hd{box-shadow:0 -8px 0 var(--surface-card);-webkit-transform:translateZ(0);transform:translateZ(0);}
 .det-header .dh-back{display:flex;align-items:center;justify-content:center;width:40px;height:40px;margin-left:-8px;}
 .det-header .dh-back img{display:block;width:24px;height:24px;}
 /* F45: back 없는 홈 — 동일 폭 스페이서로 로고 중앙 유지 */
@@ -1348,6 +1353,8 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 /* 떠 있는 버튼: 아래로 스크롤 중 숨김 (common.js가 html.is-scroll-down 토글). 모바일은 가운데 정렬 translateX(-50%) 유지 */
 #float,.cmp-tray{transition:transform .25s ease,opacity .25s ease;}
 html.is-scroll-down #float,html.is-scroll-down .cmp-tray{transform:translate(-50%,130%);opacity:0;pointer-events:none;}
+html.is-scroll-down #float:has(.btn-airec){transform:translateX(-50%);opacity:1;}   /* 홈 추천 버튼은 숨기지 않음 */
+.cmp-tray.on-home{bottom:calc(var(--h-btn-lg) + var(--sp-8));}   /* 홈 하단 추천 버튼 위 */
 /* 상세는 '#detail ~ #float{opacity:1;visibility:visible}'(id 2개)가 위 규칙을 이겨 버튼 윗부분이 화면 아래에 걸려 보였다 → 같은 무게로 덮어씀 */
 #detail ~ #float{transition:transform .25s ease,opacity .25s ease,visibility .25s;}
 html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
@@ -1363,6 +1370,7 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 /* 히어로 가독성(2026-10): 사진이 밝아도 제목·설명·칩이 읽히게 — 어두운 오버레이 + 글자 그림자. 모바일·PC 공통 */
 #main .search-box::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgb(0 0 0 / 58%) 0%, rgb(0 0 0 / 38%) 55%, rgb(0 0 0 / 58%) 100%);pointer-events:none;}
 #main .search-box > *{position:relative;z-index:1;}
+#main .search-box > .input{z-index:3;}   /* 검색 자동완성(.ac-box)이 아래 칩·문구 위에 그려지게 — 같은 z-index면 뒤 형제가 위로 옴 */
 #main .search-box .title .tit,#main .search-box .title .txt,#main .search-box .scope-note,#main .search-box .hero-chips .hc-label{text-shadow:0 1px 2px rgb(0 0 0 / 65%), 0 2px 14px rgb(0 0 0 / 45%);}
 #main .search-box .title .tit span{text-shadow:0 0 1px rgb(0 0 0 / 75%), 0 2px 4px rgb(0 0 0 / 60%), 0 4px 18px rgb(0 0 0 / 50%);}
 

@@ -65,7 +65,7 @@
     var tray = document.querySelector('.cmp-tray');
     if (!a.length) { if (tray) tray.hidden = true; return; }
     if (!tray) {
-      tray = document.createElement('div'); tray.className = 'cmp-tray' + (document.getElementById('detail') ? ' on-detail' : '');   // 상세는 하단 CTA 위로
+      tray = document.createElement('div'); tray.className = 'cmp-tray' + (document.getElementById('detail') ? ' on-detail' : document.querySelector('#float .btn-airec') ? ' on-home' : '');   // 상세는 하단 CTA 위로
       tray.innerHTML = '<a class="ct-link"></a><button type="button" class="ct-x" aria-label="비교함 비우기">×</button>';
       tray.querySelector('.ct-link').addEventListener('click', function (e) {
         var n = get().length;
