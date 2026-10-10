@@ -289,6 +289,11 @@ $(function(){
         show(opener);
     }
     $(document).on('click', '[data-act="faq-more"]', function(){ faqOpen($(this).data('topic'), $(this).data('q'), this); });
+    // 비교 화면 '드물지만 치명적인 리뷰' 건수 → hotels/{id}?rv=벌레 : 들어오자마자 그 소분류 리뷰 시트(2026-10-10)
+    (function(){
+        var rv = new URLSearchParams(location.search).get('rv'), cat = rv && window.QSUBCAT && window.QSUBCAT[rv];
+        if (cat) setTimeout(function(){ open(cat, rv); }, 0);
+    })();
     function open(cat, sub, opener){
         setMode('cat');
         curCat = cat; curSub = sub || null; krOnly = false;
@@ -454,9 +459,6 @@ $(function(){
         // 이동 오프셋(탭 48 + 헤더 숨김/보임)은 상세 공용 CF_jump가 계산(DETAIL_TABS_JS)
         window.CF_jump($item[0], 8);
     }
-    $('.radar-cats').on('click', '.radar-cat', function(){
-        openAndScroll($(this).data('target'));
-    });
     // 실망 확률 근거 줄('심각 리뷰 벌레 3건' 등) → 해당 카테고리 아코디언을 열고 그 소분류 행으로 스크롤·잠시 강조
     $('#detail').on('click', '.ev-row[data-target]', function(e){
         e.preventDefault();

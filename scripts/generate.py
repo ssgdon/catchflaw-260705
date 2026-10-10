@@ -2203,21 +2203,19 @@ def build_search(city_avg_pct):
 
 # ───────────────────────── detail ─────────────────────────
 def gauge_html(p, city_crit, tone='safe', tier=None):
-    """실망 확률 게이지 — 값 축(2026-10 표본 공정성). 마커 = 도시평균 대비 위치: 평균 50%, 3배 100%(항목 점수와 같은 눈금).
-    예전 백분위 축은 정밀 순위처럼 보였지만 순위 오차가 ±20~30%p라 값 축으로 바꿨다.
-    말풍선 = 순위 구간('상위 25% 이내', 확실할 때만) 또는 평균 대비 문장."""
+    """실망 확률 눈금 줄 — 값 축(2026-10 표본 공정성). 점 = 도시평균 대비 위치: 평균 50%, 3배 100%(항목 점수와 같은 눈금).
+    2026-10-10: 그라데이션 막대·화살표 → 회색 줄 + 0부터 점까지 판정색 채움 + 점 위 '이 호텔' + 가운데 평균 눈금(비교 가격 그래프와 같은 모양)."""
     r = (p / city_crit) if city_crit else 1.0
     pos = min(max(50.0 * r if r <= 1 else 50.0 + 25.0 * (r - 1), 0.0), 100.0)
-    # 말풍선(순위·평균 대비)은 헤더의 기준 줄(v-sub)로 옮겨 게이지는 점 하나 + 평균 선만 (2026-10 카피 개편)
-    return f'''<div class="gauge">
-        <div class="bar">
-            <div class="pointer is-{tone}" style="left:calc({pos:.1f}% - 5px)"><div class="arrow"></div><span class="dot"></span></div>
+    avg = pct(city_crit) if city_crit else ''
+    return f'''<div class="gline">
+        <div class="gl-track">
+            <span class="gl-fill is-{tone}" style="width:{pos:.1f}%"></span>
+            <span class="gl-avg" style="left:50%"></span>
+            <span class="gl-pt is-{tone}" style="left:{pos:.1f}%"></span>
+            <span class="gl-me{' is-l' if pos < 10 else ' is-r' if pos > 90 else ''}" style="left:{pos:.1f}%">이 호텔</span>
         </div>
-        <div class="label">
-            <span>실망 적음</span>
-            <span class="analysis" style="left:50%">평균</span>
-            <span>실망 많음</span>
-        </div>
+        <div class="gl-ax"><span>실망 적음</span><span class="gl-ax-avg" style="left:50%">평균 {avg}%</span><span>실망 많음</span></div>
     </div>'''
 
 def city_crit_rank_pct(H, city_crit):
@@ -3175,6 +3173,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 _lead = f'{_neg[0][1]}.'
             else:
                 _lead = '<em>두드러진 불만이 없는</em> 호텔이에요.'
+            # 드물지만 치명적인 리뷰(2026-10-10): 벌레·곰팡이·밤길·보안 — 최근 1년 리뷰 건수 + 심각. 비교 화면 표와 같은 숫자·색
+            def _rare_row(_s):
+                _sb = h['cats'][SUB_CAT[_s]]['subs'][_s]
+                _n, _cr = int(_sb.get('count_1y', 0) or 0), int(_sb.get('crit_1y', 0) or 0)
+                _tone = 'danger' if _cr >= 3 else 'warning' if _cr else 'some' if _n else 'zero'
+                _v = (f'<b>{_n}건</b>' + (f'<small>심각 {_cr}</small>' if _cr else ''))
+                _v = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" aria-label="{E(SUB_PHRASE[_s])} 리뷰 {_n}건 보기">{_v}</button>'
+                      if _n else _v)
+                return f'<tr><th scope="row">{E(SUB_PHRASE[_s])}</th><td class="is-{_tone}">{_v}</td></tr>'
+            _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 리뷰 건수 · 색이 있으면 심각 리뷰 포함</p>'
+                         '<table class="cv-tbl gl-tbl"><tbody>' + ''.join(_rare_row(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS)
+                         + '</tbody></table></div>')
             _col = lambda tit, items: (f'<div class="gl-col"><div class="gl-h">{tit}</div><ul>'
                                        + ''.join(f'<li><span class="gl-dot is-{d}"></span><span>{t}</span></li>' for d, t in items)
                                        + '</ul></div>')
@@ -3186,6 +3196,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
                         {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
                     </div>
+                    {_rare_tbl}
                     <div class="gl-foot"><span>{per} 리뷰 {h['analyzed']:,}건 기준</span><a class="gl-more btn-text btn-text--sm" href="#risk-detail">근거 보기</a></div>
                 </div>
             </div>'''
@@ -3204,7 +3215,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         cmonths = _complete_months(CITY['asof'], 12) if (monthly_cat and CITY['asof']) else []
         mcat_data = (monthly_cat or {}).get(pid) or {}
         m_n = {ym: nvals[0] for ym, nvals in ((monthly or {}).get(pid) or {}).items()}  # {ym: n}
-        radar_chips = []
         for order, c in enumerate(cats_sorted):
             ci = CATS.index(c)                 # 카테고리 고정 인덱스 (칩 data-target ↔ id="risk-{ci}")
             cat = h['cats'][c]
@@ -3260,7 +3270,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         if total_q > 0 else '')
             quotes_block = (f'''<div class="review"><div class="list review-slider"><ul class="swiper-wrapper">{qc}</ul></div></div>{more_btn}'''
                             if qc else '<div class="no-quote">이 항목은 불만 리뷰가 거의 없어요</div>')
-            is_open = ' is-open' if order == 0 else ''      # 1위만 초기 펼침(§4-c)
+            is_open = ''      # 2026-10-10: 방사형 아래 목록과 합쳐 모두 접힘으로 시작(누르면 그 자리에서 펼침)
 
             # ── 카테고리별 월별 불만 리뷰 비율 (CAT-TREND). 최상단(axis 앞) 삽입 ──
             cat_trend = ''
@@ -3297,8 +3307,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             groups.append(f'''<div class="risk-acc-item{is_open}" id="risk-{ci}" data-order="{order}">
                 <button type="button" class="risk-acc-head">
                     <span class="risk-dot is-{band}"></span>
-                    <span class="cat-name">{E(cat_ko(c))}</span>
-                    <span class="cat-verdict is-{band}">불만 {E(cat_verdict(cat['score'])[0])}</span>
+                    <span class="cat-main"><span class="cat-name">{E(cat_ko(c))}</span><span class="cat-sub">{ratio_html(cat["score"])}</span></span>
+                    <span class="cat-verdict is-{band}">{E(cat_verdict(cat['score'])[0])}</span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
@@ -3307,12 +3317,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     {quotes_block}
                 </div>
             </div>''')
-            # §3-b 레이더 카테고리 칩 (동일 순서)
-            _vl, _vs, _vb = cat_verdict(cat['score'])
-            radar_chips.append(
-                f'<button type="button" class="radar-cat is-{band}" data-target="risk-{ci}" aria-label="{E(cat_ko(c))} 불만 {_vl}, 자세히 보기">'
-                f'<span class="rc-main"><span class="rc-name">{E(cat_ko(c))}</span><span class="rc-sub">{ratio_html(cat["score"])}</span></span>'
-                f'<span class="rc-verdict">{E(_vl)}</span><span class="rc-arrow" aria-hidden="true"></span></button>')
         # ── 분류 v5: 칩 전용 대분류(안전) — 점수·순위 없이 최근 1년 심각 칩 + 근거 리뷰만. 점수 대분류 뒤에 고정 ──
         for c in ALL_CATS:
             if c not in CHIP_ONLY_CATS: continue
@@ -3359,7 +3363,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     {quotes_block}
                 </div>
             </div>''')
-        radar_cats_html = f'<div class="radar-cats">{"".join(radar_chips)}</div>'
 
         # ── 전체 통합 월별 흐름 라인차트 (게이지 아래·인사이트 앞) ──
         overall_trend, trendc_all = overall_trend_html(pid, monthly, monthly_cat, CITY['asof'], city_avg)
@@ -3419,7 +3422,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <div class="sect risk">
             <div class="head"><div class="title">항목별로 보면</div>
-            <div class="desc">{CITY['ko']} 평균과 비교한 불만 정도예요{DSEP}<span class="seg">누르면 리뷰로 이동해요</span></div></div>
+            <div class="desc">{CITY['ko']} 평균과 비교한 불만 정도예요{DSEP}<span class="seg">항목을 누르면 실제 리뷰가 펼쳐져요</span></div></div>
             <div class="chart">
                 <div class="radar-box"><canvas id="radar"></canvas></div>
                 <div class="custom-legend">
@@ -3459,11 +3462,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 }});
             }});
             </script>
-            {radar_cats_html}
         </div>
-        <div class="sect analysis" id="risk-detail">
-            <div class="head"><div class="title">항목별 불만 리뷰</div>
-            <div class="desc">항목을 눌러 실제 리뷰를 확인해 보세요</div></div>
+        <div class="sect analysis is-merged" id="risk-detail">
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">

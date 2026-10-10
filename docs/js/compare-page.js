@@ -104,7 +104,9 @@
         var v = h.rr && h.rr[r[0]];
         if (!v) return '<td class="is-none">–</td>';
         var tone = v[1] >= 3 ? 'danger' : v[1] > 0 ? 'warning' : v[0] > 0 ? 'some' : 'zero';
-        return '<td class="is-' + tone + '"><b>' + v[0] + '건</b>' + (v[1] ? '<small>심각 ' + v[1] + '</small>' : '') + '</td>';
+        var inner = '<b>' + v[0] + '건</b>' + (v[1] ? '<small>심각 ' + v[1] + '</small>' : '');
+        // 1건 이상 = 그 호텔 상세로 가서 이 소분류 리뷰 시트를 바로 연다(?rv=)
+        return '<td class="is-' + tone + '">' + (v[0] ? '<a class="cv-go" href="./hotels/' + h.id + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 리뷰 ' + v[0] + '건 보기">' + inner + '</a>' : inner) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     return '<section class="cv-blk cv-rare"><h3 class="cv-t">드물지만 치명적인 리뷰</h3><p class="cv-s">최근 1년 리뷰 건수 · 색이 있으면 심각 리뷰 포함</p>'

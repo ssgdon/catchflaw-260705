@@ -109,7 +109,6 @@
     #detail .det-tabs > a:first-child::after{left:0;}
     #detail .sect[id],#detail .sec-anchor{scroll-margin-top:calc(var(--sticky-top) + var(--h-tab) + var(--sp-1));}
     #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
-    #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--sp-10);}   /* 결론 목록 2열 */
     /* 대안·추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) — 홈·상세 공용 .hotel-slider */
     .hotel-slider{margin-right:0;}
     .hotel-slider .swiper-wrapper{display:grid !important;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-5);transform:none !important;}

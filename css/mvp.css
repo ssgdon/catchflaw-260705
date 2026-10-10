@@ -311,10 +311,7 @@ body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--
 #detail .risk .chart .custom-legend .legend-hotel .hotel-text{color:var(--primary-deep);font-weight:var(--fw-bold);}
 #detail .risk .chart .custom-legend .legend-average .legend-symbol,
 #detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:var(--ink-4);}
-#detail .risk .radar-cats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:18px;}
 /* 카테고리 버튼: 밴드 소프트 배경(테두리 색 제거) + 점수 강조 — 사이트 톤 통일(검색 cat-row 계열) */
-#detail .risk .radar-cat{display:flex;align-items:center;gap:8px;padding:13px 14px;border-radius:var(--radius-box);border:1px solid var(--line);background:var(--surface);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);text-align:left;}
-#detail .risk .radar-cat .rc-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 
 /* ── 신호등 점 (§4-b) ── */
 .risk-dot{flex:0 0 auto;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ink-3);}
@@ -614,16 +611,6 @@ body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--
 
 
 /* §13 결론 라벨 — 카테고리 타일: 숫자 대신 '이름 + 평균 대비 한 줄 | 결론'. 한 줄 목록(모바일 가독성), PC는 2열 */
-#detail .risk .radar-cats{grid-template-columns:1fr;gap:var(--sp-2);}
-#detail .risk .radar-cat{display:flex;align-items:center;gap:var(--sp-3);min-height:60px;padding:var(--sp-3) var(--sp-4);cursor:pointer;}
-#detail .risk .radar-cat .rc-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
-#detail .risk .radar-cat .rc-name{flex:none;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
-#detail .risk .radar-cat .rc-sub{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-2);}
-#detail .risk .radar-cat .rc-verdict{flex:none;font-size:var(--fs-body);font-weight:var(--fw-display);}
-#detail .risk .radar-cat.is-danger .rc-verdict{color:var(--danger-text);}
-#detail .risk .radar-cat.is-warning .rc-verdict{color:var(--warning-text);}
-#detail .risk .radar-cat.is-safe .rc-verdict{color:var(--safe-text);}
-#detail .risk .radar-cat .rc-arrow{flex:none;width:7px;height:7px;border-right:2px solid var(--ink-3);border-bottom:2px solid var(--ink-3);transform:rotate(-45deg);}
 /* 리스크 상세 아코디언 헤드: 이름 · 결론 칩 · 도시 내 위치 문장 */
 #detail .analysis .risk-acc-head .cat-name{flex:0 0 auto;}
 /* 순위 문장은 잘리지 않게 둘째 줄로: [항목명 · 결론 칩 ········ ▼] / [후쿠오카 호텔 86%보다 나아요] */

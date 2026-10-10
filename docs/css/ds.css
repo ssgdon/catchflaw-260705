@@ -47,7 +47,14 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .glance .gl-lead{margin-top:var(--sp-1);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .glance .gl-lead em{font-style:normal;color:inherit;white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리, 색 없음 */
 #detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-4);}
-#detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);}
+#detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}   /* '걸리는 점·괜찮은 점' 18/700(2026-10-10: 14 회색이라 안 보였음) */
+#detail .glance .gl-rare{margin-top:var(--sp-6);}
+#detail .glance .gl-rs{margin:0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .glance .gl-tbl{margin-top:var(--sp-2);}
+#detail .glance .gl-tbl th{width:auto;}
+#detail .glance .gl-tbl td{text-align:right;padding-right:0;}
+#detail .glance .gl-tbl tr:last-child th,#detail .glance .gl-tbl tr:last-child td{border-bottom:0;}
+#detail .glance .gl-rv{display:inline-flex;flex-direction:column;align-items:flex-end;min-height:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}   /* 건수 = 그 소분류 리뷰 시트 */
 #detail .glance li{padding:var(--sp-2) 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .glance li b{font-weight:var(--fw-semi);}
 #detail .glance li .seg{display:block;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
@@ -72,28 +79,33 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 실망 확률 */
 /* 실망 확률: 섹션 제목 22(왼쪽) → 가운데 히어로 숫자 64 잉크 → 판정 22(시맨틱 글자색 허용 최소 크기). 숫자는 잉크, 의미는 판정 글자가 맡는다(v3 §7-3) */
 #detail .disappear .head .eyebrow{margin:0 0 var(--sp-6);text-align:left;line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
-#detail .disappear .head .pct{line-height:var(--lh-num);font-size:var(--fs-num-xl);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#detail .disappear .head .pct{line-height:var(--lh-num);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .disappear .head .vh{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
 #detail .disappear .head .v-sub{margin-top:var(--sp-2);color:var(--ink-3);}
 #detail .disappear .ev-row b{font-weight:var(--fw-semi);}
 #detail .disappear .ev-txt .ev-sub{display:block;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+/* 실망 확률 눈금 줄(2026-10-10): 회색 줄 + 0→점 판정색 채움 + 점 위 '이 호텔' + 평균 눈금. 비교 가격 그래프와 같은 모양 */
+#detail .gline{margin-top:var(--sp-2);}
+#detail .gl-track{position:relative;height:calc(var(--sp-6) + var(--sp-4));}
+#detail .gl-track::before{content:"";position:absolute;left:0;right:0;bottom:var(--sp-2);height:6px;margin-bottom:-3px;border-radius:var(--radius-pill);background:var(--surface);}
+#detail .gl-fill{position:absolute;left:0;bottom:var(--sp-2);height:6px;margin-bottom:-3px;border-radius:var(--radius-pill);opacity:.45;}
+#detail .gl-fill.is-safe,#detail .gl-pt.is-safe{background:var(--safe);}
+#detail .gl-fill.is-warning,#detail .gl-pt.is-warning{background:var(--warning);}
+#detail .gl-fill.is-danger,#detail .gl-pt.is-danger{background:var(--danger);}
+#detail .gl-fill.is-low,#detail .gl-pt.is-low{background:var(--ink-3);}
+#detail .gl-avg{position:absolute;bottom:var(--sp-2);width:2px;height:var(--sp-4);margin:0 0 calc(var(--sp-2) * -1) -1px;background:var(--ink);}
+#detail .gl-pt{position:absolute;bottom:var(--sp-2);width:18px;height:18px;margin:0 0 -9px -9px;border-radius:50%;border:3px solid var(--surface-card);box-shadow:var(--shadow-badge);}
+#detail .gl-me{position:absolute;top:0;transform:translateX(-50%);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;}
+#detail .gl-me.is-l{transform:translateX(calc(var(--sp-2) * -1));}   /* 끝에 가까우면 글자를 안쪽으로 */
+#detail .gl-me.is-r{transform:translateX(calc(-100% + var(--sp-2)));}
+#detail .gl-ax{position:relative;display:flex;justify-content:space-between;margin-top:var(--sp-3);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .gl-ax-avg{position:absolute;top:0;transform:translateX(-50%);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
 #detail .disappear .basis{margin-top:var(--sp-4);text-align:left;}   /* 산출 기준(?) 펼침: 왼쪽 정렬 14 --ink-3 */
 #detail .disappear .basis-fold{text-align:left;}
 #detail .disappear .basis-fold .basis{padding:0;}
 #detail .disappear .basis p + p{margin-top:var(--sp-2);}
 
 /* 항목별로 보면: 색 상자 6개 → 구분선 목록 (결론 글자색만으로 의미 전달) */
-#detail .risk .radar-cats{gap:0;margin-top:var(--sp-5);}
-#detail .risk .radar-cat{min-height:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent !important;}
-#detail .risk .radar-cat:last-child{border-bottom:0;}
-#detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-semi);}
-#detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-meta);color:var(--ink-3);}
-#detail .risk .radar-cat .rc-sub b{font-weight:var(--fw-semi);color:var(--ink);}   /* 핵심 수치(1.1배·60% 적어요) */
-#detail .risk .radar-cat .rc-verdict,#detail .risk .radar-cat.is-danger .rc-verdict,#detail .risk .radar-cat.is-warning .rc-verdict,#detail .risk .radar-cat.is-safe .rc-verdict{display:inline-flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);}   /* 16/600 --ink + 8px 색 점(§3-3) */
-#detail .risk .radar-cat .rc-verdict::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
-#detail .risk .radar-cat.is-danger .rc-verdict::before{background:var(--danger);}
-#detail .risk .radar-cat.is-warning .rc-verdict::before{background:var(--warning);}
-#detail .risk .radar-cat.is-safe .rc-verdict::before{background:var(--safe);}
 
 /* 리스크 상세: 테두리 카드 묶음 → 구분선 목록 */
 #detail .analysis .risk-acc-item{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;}
@@ -101,6 +113,12 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .risk-acc-head{padding:var(--sp-5) 0;border-radius:0 !important;background:transparent;border-bottom:0 !important;}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
 #detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-meta);}
+/* 2026-10-10 방사형 아래 목록 + 항목별 불만 리뷰를 한 목록으로: 항목 · 평균 대비 · 판정 · 펼침. 위 '항목별로 보면'에 이어 붙는다(선·제목 없음) */
+#detail .content > .sect.analysis.is-merged::before{display:none;}
+#detail .sect.analysis.is-merged{padding-top:0;}
+#detail .analysis .risk-acc-head .cat-main{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-start;text-align:left;}
+#detail .analysis .risk-acc-head .cat-sub{margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink-3);}
+#detail .analysis .risk-acc-head .cat-sub b{font-weight:var(--fw-semi);color:var(--ink);}
 /* 펼친 소분류 = 하위 단계: 대분류 점(●) 중심에서 내려오는 세로 안내선 + 대분류 이름 위치(20)까지 들여쓰기.
    점 10px 중심 5 = 선 4~6px, 내용 시작 4+2+14 = 20 = .cat-rank 들여쓰기. 열린 머리는 아래 여백을 줄여 하위와 붙임 */
 #detail .analysis .risk-acc-item.is-open > .risk-acc-head{padding-bottom:var(--sp-3);}
@@ -876,6 +894,7 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cv-tbl td.is-warning{color:var(--warning-text);}
 .cv-tbl td.is-danger{color:var(--danger-text);}
 .cv-tbl td.is-none{color:var(--ink-4);}
+.cv-go{display:block;color:inherit;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px;}   /* 건수 → 그 호텔 상세의 해당 리뷰(?rv=) */
 .cv-key{display:inline-flex;align-items:center;gap:var(--sp-1);margin-left:var(--sp-2);}
 .cv-k{display:inline-block;width:10px;height:10px;border-radius:50%;border:2px solid var(--ink-3);}
 .cv-k.is-wd{background:var(--ink-3);}
