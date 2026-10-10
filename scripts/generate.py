@@ -570,7 +570,7 @@ def site_header(depth=1, back=None, search=True):
                 {dh_search}
                 <nav class="dh-nav" aria-label="주요 메뉴">
                     <a href="{home}">홈</a>
-                    <a href="{p}recommend">맞춤 추천</a>
+                    <a href="{p}recommend">맞춤형 추천</a>
                     <a href="{p}search">호텔 검색</a>
                     <a href="{p}compare">호텔 비교</a>
                     <a href="{p}recent">최근 본 호텔</a>
@@ -584,7 +584,7 @@ def site_header(depth=1, back=None, search=True):
                     <button type="button" class="dd-close" aria-label="닫기">✕</button>
                     <nav class="dd-nav">
                         <a href="{home}">홈</a>
-                        <a href="{p}recommend">맞춤 추천</a>
+                        <a href="{p}recommend">맞춤형 추천</a>
                         <a href="{p}search">호텔 검색</a>
                         <a href="{p}recent">최근 본 호텔</a>
                         <a href="{p}about">산출 방법</a>
@@ -1264,7 +1264,7 @@ def build_recommend(hotels_meta, H):
     n_live = sum(1 for p in hotels_meta if p in H)
     desc = (f'못 참는 것과 동네·예산만 고르면 {CITY["ko"]} 호텔 {n_live}곳의 리뷰 분석으로 '
             '나에게 맞는 호텔을 골라 드려요.')
-    hd = head(f'{CITY["ko"]} 호텔 맞춤 추천 | 캐치플로', depth=0, description=desc,
+    hd = head(f'{CITY["ko"]} 호텔 맞춤형 추천 | 캐치플로', depth=0, description=desc,
               canonical=f'{BASE}/recommend').replace('<body>', '<body data-page="recommend">')
     sh = site_header(0, back='./').replace('href="recommend">', 'href="recommend" aria-current="page">')
     city_js = json.dumps({'code': CITY['code'], 'ko': CITY['ko'], 'n': n_live}, ensure_ascii=False)
@@ -1272,7 +1272,7 @@ def build_recommend(hotels_meta, H):
     <main id="container">
         <section id="recp">
             <div class="rw-head">
-                <h1 class="rw-tit">맞춤 추천</h1>
+                <h1 class="rw-tit">맞춤형 추천</h1>
                 <p class="rw-desc">네 가지만 고르면 리뷰 분석으로 <span class="nw">나에게 맞는 호텔을</span> 골라 드려요</p>
             </div>
             <ol class="rw-steps" id="rw-steps"></ol>
@@ -1984,7 +1984,7 @@ def build_search(city_avg_pct):
             if (recBud){{ var b=((recBw ? window.CFRec.BUDGETS_W : window.CFRec.BUDGETS)||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+(recBw ? '주말 ' : '평일 ')+b.label+'</span>'); }}
             if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
             if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join(', ')+' 제외</span>');
-            return '<div class="rh-top"><div class="rh-tit">맞춤 추천</div><a href="javascript:;" class="rh-edit rec-reset">조건 수정</a></div>'
+            return '<div class="rh-top"><div class="rh-tit">맞춤형 추천</div><a href="javascript:;" class="rh-edit rec-reset">조건 수정</a></div>'
                 + '<div class="rh-chips">'+chips.join('')+'</div>'
                 + '<div class="rh-sum" id="rh-sub"></div>';
         }}
