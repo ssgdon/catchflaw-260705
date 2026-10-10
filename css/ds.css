@@ -127,11 +127,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .stat-legend{row-gap:var(--sp-3);}
 #detail .analysis .stat-legend .note{line-height:var(--lh-ui);}
 
-/* 검색 목록(JS) 지역 줄: '나카스 · 나카스카와바타역 도보 12분' 메타 글자 한 줄 */
-.area-line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-1) var(--sp-2);margin:var(--sp-1) 0 var(--sp-2);line-height:1.4;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
-#search .list .cont .area-line{margin:var(--sp-2) 0 0;}
-/* 가격 줄의 주말 값: 굵게 안 함, 넘치면 통째로 다음 줄(.seg) */
-.price .pl-we{font-weight:var(--fw-regular);color:var(--ink-3);}
 
 /* 실전정보 FAQ(§7-3): 카드 상자 해체 → 행 목록(행 64+ · 1px --line). 펼친 답변은 16 --ink, 근거 인용은 왼쪽 2px 선 + 들여쓰기 16(상자 없음) */
 #detail .faq .faq-cards{display:block;}
@@ -246,25 +241,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 .det-header.dh-home .dh-menu{position:relative;width:var(--h-circle);height:var(--h-circle);margin-right:0;padding:0 var(--sp-2);border-radius:50%;background:var(--surface);}
 .det-header.dh-home .dh-menu::before{content:"";position:absolute;inset:-4px;}   /* 36 → 터치 44 */
 
-/* ════════ 검색 ════════ */
-#search .filters{gap:var(--sp-3);padding:var(--sp-4) var(--page-x) var(--sp-2);}
-#search .filters .f-row{gap:var(--sp-2);}
-#search .filters .f-label{font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
-#search .total{padding:var(--sp-5) var(--page-x) 0;font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
-#search .list-head{padding:var(--sp-2) var(--page-x) 0;}
-#search .list{padding:0 var(--page-x);}
-#search .list li{padding:var(--sp-5) 0;}
-#search .list li + li{border-top:1px solid var(--line);}
-#search .list li .item{gap:var(--sp-4);}
-#search .list li .thumb{width:88px;height:88px;border-radius:var(--radius-box);}   /* 104→88: 오른쪽 정보 칸을 넓힌다(375px에서 207→223px) */
-#search .list .cont .info .name{line-height:1.4;font-size:var(--fs-h3);font-weight:var(--fw-bold);}
-#search .list .cont .info .meta span{font-size:var(--fs-caption);line-height:1.5;color:var(--ink-3);}
-#search .list .cont .grade .txt{font-size:var(--fs-caption);}
-#search .list .cont .info .meta span.price b{font-size:var(--fs-body);}
-/* 가격은 항상 자기 줄 — 줄바꿈 시 '4성급 호텔 |'처럼 구분선이 끝에 매달리던 문제 제거 */
-#search .list .cont .info .meta span.price{flex-basis:100%;margin-top:2px;}
-#search .list .cont .info .meta span:has(+ .price)::after{display:none;}
-#search .r-tags{margin-top:var(--sp-3);}
 
 /* ════════ 컬렉션 허브 ════════ */
 #hub{padding:var(--sp-6) var(--page-x) var(--sp-10);}
@@ -630,14 +606,13 @@ textarea.ov-input{height:96px;resize:none;}
 .lb-prev::before{transform:translate(-30%,-50%) rotate(45deg);}
 .lb-next::before{transform:translate(-70%,-50%) rotate(-135deg);}
 .lb-count{position:absolute;left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));display:inline-flex;align-items:center;height:var(--h-badge);padding:0 10px;border-radius:var(--radius-chip);background:var(--scrim-photo);transform:translateX(-50%);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-semi);color:var(--ink-inverse);font-variant-numeric:tabular-nums;}
-/* ⑭ 정렬(모바일 C 다이얼로그 '정렬' / PC 앵커 팝오버 280): 행 56 + 1px, 라디오 24 오른쪽, 선택 행 600. 옵션 12개·2단계 정리는 페이지 단계(P2) */
+/* ⑭ 정렬(모바일 C 다이얼로그 '정렬' / PC 앵커 팝오버 280): 행 56 + 1px, 라디오 24 오른쪽, 선택 행 600. 옵션 5개 + '항목별 걱정 적은 순 ›' 2단계(v3 4C search 블록) */
 .lh-sort-box button{position:relative;display:block;width:100%;min-height:56px;padding:var(--sp-3) 40px var(--sp-3) 0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;text-align:left;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);white-space:normal;cursor:pointer;}
-.lh-sort-box button:first-child,.lh-sort-sep + button{border-top:0;}
+.lh-sort-box button:first-child{border-top:0;}
 .lh-sort-box button::after{content:"";position:absolute;right:0;top:50%;width:24px;height:24px;margin-top:-12px;border:1px solid var(--ink-4);border-radius:50%;box-sizing:border-box;}
 .lh-sort-box button.on{font-weight:var(--fw-semi);}
 .lh-sort-box button.on::after{border:7px solid var(--ink);}
 .lh-sort-box .ls-sub{display:block;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink-3);}
-.lh-sort-sep{margin-top:var(--sp-2);padding:var(--sp-4) 0 var(--sp-1);border-top:1px solid var(--line);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
 
 /* ════════ §v3 컴포넌트 — 입력·떠 있는 컨트롤 (DESIGN-SYSTEM-V3 §6-9 · §6-11 · UI-STANDARDS §18) ════════ */
 /* 검색 알약(§6-9): 흰 면 + 1px --line-strong + --shadow-float. 홈 56(--h-search) · 결과 화면 48(--h-btn). 실행 원은 잉크(보라는 화면당 최종 행동 1개만) */
@@ -646,14 +621,11 @@ textarea.ov-input{height:96px;resize:none;}
 #main .search-box .input input{flex:1;width:100%;min-width:0;height:100%;padding:0;border:0;font-size:var(--fs-body);color:var(--ink);background:none;}
 #main .search-box .input button{flex:none;width:var(--h-icon);height:var(--h-icon);border-radius:50%;background:var(--ink);}
 #main .search-box .input button img{width:20px;height:20px;filter:brightness(0) invert(1);}
-#title .search{height:var(--h-btn);padding:0 var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
-#title .search input{font-size:var(--fs-body);color:var(--ink);}
 
 /* 떠 있는 컨트롤(§6-11): 같은 알약 44(--h-float) — 지도/목록 토글 = 잉크 알약 · 비교함 트레이 = 잉크 알약(썸네일 + '비교하기 (N)' + X 44) · 상세 비교 = 흰 알약.
    겹치면 아래에서부터 하단 바 → 트레이 → 토스트 순으로 16씩 띄움(토스트 위치는 js/backnav.js liftPx). 맨 위로 버튼은 없다 */
 .map-toggle,.cmp-tray,#float .float .cmp-fab{position:fixed;z-index:var(--z-float);left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));transform:translateX(-50%);display:inline-flex;align-items:center;gap:var(--sp-2);height:var(--h-float);border:0;border-radius:var(--radius-pill);background:var(--ink);color:var(--ink-inverse);box-shadow:var(--shadow-float);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;}
 .map-toggle{padding:0 var(--sp-5);cursor:pointer;}
-html.has-cmp #search .map-toggle{bottom:calc(var(--sp-6) + var(--h-float) + var(--sp-3) + env(safe-area-inset-bottom));}
 .cmp-tray{padding:0 0 0 var(--sp-2);}
 .cmp-tray[hidden]{display:none;}
 .cmp-tray.on-detail{bottom:calc(var(--h-btn) + var(--sp-8) + var(--sp-4) + env(safe-area-inset-bottom));}
@@ -721,13 +693,226 @@ html.has-cmp #detail ~ #float{bottom:calc(var(--h-btn) + var(--h-float) + var(--
 .hotel-slider .swiper-slide{display:flex;width:var(--hcard-w);height:auto;}
 #hub .hub-list{display:flex;flex-direction:column;gap:var(--sp-8);}
 
+/* ════════ v3 4C search — 검색·AI 추천 결과·비교·최근 본 (DESIGN-SYSTEM-V3 §7-2 · §7-4 · §7-5 · UI-STANDARDS §11 · §16) ════════
+   검색: 상단 한 줄(뒤로 원 · 검색 알약 48 · 필터 원 + 적용 개수) → 칩 한 줄 → 목록 머리('후쿠오카 호텔 N곳' + 정렬 알약) → 와이드 카드 4:3(사진 위 비교 원). 필터는 시트(전체 해제 + 'N곳 보기').
+   비교: 큰 머리(썸네일 56) → 고정 머리(호텔명만 · 3줄) → 문장 요약 → 그룹. 최근 본: 큰 제목 + 편집 알약 + 묶음 + 그리드 카드. 하단 3버튼 바는 없다 — 이름을 누르면 상세 */
+
+/* ── 검색 상단: 모바일은 상단 바(.det-header)를 숨기고 이 줄이 대신한다(PC는 헤더 그대로 — pc.css) ── */
+body[data-page=search] .det-header{display:none;}
+#title{position:sticky;top:0;z-index:var(--z-sticky);padding:0 var(--page-x);background:var(--surface-card);border-bottom:1px solid var(--line);}
+.st-row{position:relative;display:flex;align-items:center;gap:var(--sp-2);min-height:calc(var(--h-btn) + var(--sp-4));}
+.st-back{margin-left:calc(var(--sp-1) * -1);}   /* 보이는 원 36이 왼쪽 24 선에 맞게 */
+.st-back img{width:20px;height:20px;}
+#title .search{display:flex;flex:1 1 auto;align-items:center;gap:var(--sp-2);min-width:0;height:var(--h-btn);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
+#title .search button{flex:none;display:flex;width:20px;height:20px;padding:0;border:0;background:none;cursor:pointer;}
+#title .search button img{display:block;width:20px;height:20px;}
+#title .search input{flex:1 1 auto;min-width:0;height:100%;padding:0;border:0;background:none;font-size:var(--fs-body);color:var(--ink);outline:0;}
+#title .search input::placeholder{color:var(--ink-3);opacity:1;}
+.st-filter{position:relative;flex:none;display:flex;align-items:center;justify-content:center;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;background:none;color:var(--ink);cursor:pointer;}
+.st-filter::before{content:"";position:absolute;left:50%;top:50%;width:calc(var(--h-circle) + var(--sp-1));height:calc(var(--h-circle) + var(--sp-1));margin:calc((var(--h-circle) + var(--sp-1)) / -2) 0 0 calc((var(--h-circle) + var(--sp-1)) / -2);border:1px solid var(--line-strong);border-radius:50%;background:var(--surface-card);}
+.st-filter svg{position:relative;}
+.st-filter .cnt{position:absolute;z-index:1;top:0;right:0;}   /* 적용 개수 — --ink 원 */
+.st-filter .cnt[hidden]{display:none;}
+/* 칩 한 줄(36 + 위아래 8 = 52): 지역 ⌄ · 가격 ⌄ · 불만 적은 항목 ⌄ · 한 번도 없어야 ⌄ — 누르면 필터 시트가 그 구획으로 열린다. 적용된 칩은 2px 잉크 + 값 */
+.f-bar{display:flex;gap:var(--sp-2);margin:0 calc(var(--page-x) * -1);padding:var(--sp-2) var(--page-x);overflow-x:auto;scrollbar-width:none;}
+.f-bar::-webkit-scrollbar{display:none;}
+.f-bar .chip-filter::after{content:"";flex:none;width:7px;height:7px;margin:-3px 0 0 var(--sp-1);border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);}
+/* AI 맞춤 추천 결과: 검색 알약·칩은 숨기고 '뒤로'만(PC는 헤더가 있어 줄 전체를 숨긴다) */
+html.rec-mode #title .search,html.rec-mode .st-filter,html.rec-mode .f-bar{display:none;}
+
+/* ── 자동완성(모든 .ac-box 공용) — 컴팩트 행 64: 이름 16/600(일치 글자 700) + 메타 14 '나카스 · ● 실망 확률 4%', 오른쪽 열 없음 ── */
+#title .search .ac-box{position:absolute;z-index:var(--z-popover);top:calc(100% - var(--sp-1));left:0;right:0;max-height:60vh;overflow-y:auto;border-radius:var(--radius-box);background:var(--surface-card);box-shadow:var(--shadow-pop);}
+.ac-box .ac-section{padding:var(--sp-3) var(--sp-4) var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+.ac-box .ac-item{display:flex;align-items:center;min-height:calc(var(--h-btn) + var(--sp-4));padding:var(--sp-2) var(--sp-4);color:var(--ink);}
+.ac-box .ac-item + .ac-item,.ac-box .ac-area + .ac-area{border-top:1px solid var(--line);}
+.ac-box .ac-item.is-sel,.ac-box .ac-item:active,.ac-box .ac-area:active,.ac-box .ac-miss:active{background:var(--surface-2);}
+.ac-box .ac-main{display:flex;flex:1 1 auto;flex-direction:column;gap:2px;min-width:0;}
+.ac-box .ac-name{display:block;overflow:hidden;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-overflow:ellipsis;white-space:nowrap;}
+.ac-box .ac-name b{font-weight:var(--fw-bold);}
+.ac-box .ac-meta{display:block;overflow:hidden;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);text-overflow:ellipsis;white-space:nowrap;}
+.ac-box .ac-meta .sdot{margin-right:6px;vertical-align:middle;}
+.ac-box .ac-area{display:flex;align-items:center;gap:var(--sp-2);min-height:calc(var(--h-btn) + var(--sp-2));padding:0 var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);}
+.ac-box .ac-area .ac-sub{margin-left:auto;font-size:var(--fs-meta);color:var(--ink-3);}
+.ac-box .ac-miss{padding:var(--sp-4);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);cursor:pointer;}
+.ac-box .ac-miss .ac-miss-q{font-weight:var(--fw-semi);color:var(--ink);}
+.ac-box .ac-miss b{color:var(--ink);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
+
+/* ── 목록 머리: '후쿠오카 호텔 179곳' 14/600 + 정렬 알약 ── */
+#search .list-head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-4) var(--page-x);}
+.lh-count{min-width:0;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
+#search .list-head .lh-sort{position:relative;flex:none;}
+#lh-sort > .lh-sort-box{position:absolute;z-index:var(--z-popover);top:calc(100% + var(--sp-1));right:0;display:none;width:280px;max-height:60vh;overflow-y:auto;padding:var(--sp-1) var(--sp-4);border-radius:var(--radius-box);background:var(--surface-card);box-shadow:var(--shadow-pop);}   /* PC 앵커 팝오버(모바일은 '정렬' 다이얼로그로 옮겨 씀) */
+#lh-sort.open > .lh-sort-box{display:block;}
+.lh-sort-box .ls-pane{display:none;}
+.lh-sort-box .ls-pane.is-cur{display:block;}
+.lh-sort-box .ls-sep{display:none;}
+.lh-sort-box .ls-sep + button{border-top:0;}
+.lh-sort-box .ls-more::after{width:8px;height:8px;margin-top:-4px;border:0;border-right:2px solid var(--ink);border-top:2px solid var(--ink);border-radius:0;transform:rotate(45deg);}   /* 2단계로 가는 행: 라디오 대신 꺾쇠 › */
+.lh-sort-box .ls-more.on::after{border:0;border-right:2px solid var(--ink);border-top:2px solid var(--ink);}
+
+/* ── 결과 카드: 와이드 .hcard(§6-4) — 사진 위 배지 + 오른쪽 위 비교 원, 카드 사이 32·선 없음 ── */
+#search .list{padding:0 var(--page-x);}
+#results{display:flex;flex-direction:column;gap:var(--sp-8);margin:0;padding:0;list-style:none;}
+.hres{position:relative;}
+.hres .hcard{height:auto;}
+.hcard-cmp{position:absolute;z-index:2;top:var(--sp-1);right:var(--sp-1);display:flex;align-items:center;justify-content:center;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;background:none;color:var(--ink);cursor:pointer;}
+.hcard-cmp::before{content:"";position:absolute;left:50%;top:50%;width:calc(var(--h-circle) - var(--sp-1));height:calc(var(--h-circle) - var(--sp-1));margin:calc((var(--h-circle) - var(--sp-1)) / -2) 0 0 calc((var(--h-circle) - var(--sp-1)) / -2);border-radius:50%;background:var(--surface-card);box-shadow:var(--shadow-badge);}
+.hcard-cmp .cmp-ico{position:relative;}
+.is-on.hcard-saved::before{background:var(--primary);}   /* 담김 = 저장 상태(보라 채움, §3-2 ②) + 흰 체크 */
+.is-on.hcard-saved::after{content:"";position:absolute;left:50%;top:50%;width:10px;height:6px;margin:-5px 0 0 -5px;border-left:2px solid var(--ink-inverse);border-bottom:2px solid var(--ink-inverse);transform:rotate(-45deg);}
+.hcard-body .hres-tag{align-self:flex-start;margin-bottom:var(--sp-1);}
+.hcard-photo .hres-rank{top:auto;right:auto;bottom:var(--sp-3);left:var(--sp-3);}   /* AI 추천 순위 원(--ink) — 사진 왼쪽 아래(배지·비교 원과 안 겹침) */
+
+/* ── 지도: 접힘 기본 + 잉크 알약(지도 ↔ 목록) · 핀을 누르면 아래에 떠 있는 카드 ── */
+.map-wrap.is-collapsed{display:none;}
+#search .map-wrap{margin:0 var(--page-x) var(--sp-3);border:0;border-radius:var(--radius-card);}
+#search .map-wrap #map{height:320px;}
+#search .map-wrap #map{z-index:var(--z-sticky);}   /* 지도 판(Leaflet z 400–1000)을 이 상자 안에 가둔다 → 떠 있는 카드·범례가 위에 */
+.map-card{position:absolute;z-index:var(--z-float);left:var(--sp-3);right:var(--sp-3);bottom:var(--sp-3);padding:var(--sp-2);border-radius:var(--radius-card);background:var(--surface-card);box-shadow:var(--shadow-float);}
+.map-card[hidden]{display:none;}
+.map-card .hcard--map{flex-direction:row;align-items:center;gap:var(--sp-3);height:auto;}
+.map-card .hcard-photo{flex:none;width:112px;border-radius:var(--radius-box);aspect-ratio:4/3;}
+.map-card .hcard-body{flex:1 1 auto;justify-content:center;min-width:0;margin:0;padding-right:var(--sp-4);}
+.map-card .hcard-name{padding-right:var(--sp-5);}
+.map-card .hcard-meta{white-space:normal;}
+.map-card .mc-x{position:absolute;top:var(--sp-1);right:var(--sp-1);}
+.map-toggle .mt-ic-list{display:none;}
+.map-toggle[aria-pressed=true] .mt-ic-map{display:none;}
+.map-toggle[aria-pressed=true] .mt-ic-list{display:block;}
+html.has-cmp #search .map-toggle{bottom:calc(var(--sp-6) + var(--h-float) + var(--sp-3) + env(safe-area-inset-bottom));}
+#search{padding-bottom:calc(var(--h-float) + var(--sp-12));}   /* 떠 있는 알약이 마지막 카드를 가리지 않게 */
+
+/* ── 결과 없음·미지원 도시(섹션형 빈 상태 + '혹시 이 호텔인가요?' 컴팩트 행) ── */
+#search .notice{padding:0 var(--page-x);}
+#search .notice .empty-sec{padding-top:var(--sp-5);}
+.es-sug{margin-top:var(--sp-3);}
+.es-sug-t{font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+.es-sug .cp-list{margin-top:var(--sp-1);}
+.es-sug .cp-item{text-decoration:none;color:inherit;}
+.es-sug + .es-btns{margin-top:var(--sp-3);}
+
+/* ── 필터 시트: 섹션은 §17 .ov-sec · 칩 .chip-filter(40) · 푸터 F1 '전체 해제' + 'N곳 보기'(폭 고정 — 숫자가 바뀌어도 흔들리지 않게) ── */
+#flt-apply{min-width:calc(var(--sp-12) * 3);}
+.btn-text:disabled{color:var(--ink-3);text-decoration:none;cursor:default;}
+
+/* ── AI 맞춤 추천 결과(§7-2): 큰 제목 26 + '조건 수정' → 조건 칩 줄 → 요약 16 → 묶음 머리 18 → 와이드 카드 ── */
+#search .rec-header{padding:var(--sp-5) var(--page-x) var(--sp-2);}
+.rec-header .rh-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);}
+.rec-header .rh-tit{margin:0;font-size:var(--fs-title);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+.rec-header .rh-chips{display:flex;gap:var(--sp-2);margin:var(--sp-3) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x);overflow-x:auto;scrollbar-width:none;}
+.rec-header .rh-chips::-webkit-scrollbar{display:none;}
+.rec-header .rh-chips .chip-filter{cursor:default;}
+.rec-header .rh-chips .chip-filter::before{display:none;}
+.rec-header .rh-rank{margin-right:var(--sp-1);font-style:normal;font-weight:var(--fw-bold);}
+.rec-header .rh-sum{margin-top:var(--sp-3);}
+.rec-header .rh-lead{margin:0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+.rec-header .rh-lead b{font-weight:var(--fw-semi);}
+.rec-header .rh-note{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rec-header .rh-cmp{margin-top:var(--sp-1);}
+#results > .rec-group{display:flex;align-items:baseline;gap:var(--sp-2);margin-bottom:calc(var(--sp-4) * -1);}
+.rec-group .rg-t{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
+.rec-group .rg-n{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rec-more-wrap,.rec-empty{list-style:none;}
+.rec-pills{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-2);}
+.rp{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 var(--sp-2) 0 6px;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}   /* 조건 충족 태그: 면은 회색, 의미는 체크/느낌표 원이 맡는다 */
+.rp i{position:relative;flex:none;width:16px;height:16px;border-radius:50%;}
+.rp.is-ok i{background:var(--safe);}
+.rp.is-ok i::before{content:"";position:absolute;left:5px;top:3px;width:4px;height:7px;border:solid var(--ink-inverse);border-width:0 2px 2px 0;transform:rotate(45deg);}
+.rp.is-bad i{background:var(--warning);}
+.rp.is-bad i::before{content:"";position:absolute;left:7px;top:3px;width:2px;height:6px;border-radius:var(--radius-chip);background:var(--ink-inverse);}
+.rp.is-bad i::after{content:"";position:absolute;left:7px;top:11px;width:2px;height:2px;border-radius:50%;background:var(--ink-inverse);}
+
+/* ── 비교 페이지(§7-4): 360에서 이름이 잘리지 않는 고정 머리 + 숫자 행만 16/700 ── */
+body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나만 따라오게(고정 UI 약 76) */
+#cmp{padding-bottom:var(--sp-12);}
+.cmp-top,.cmp-hd{display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));}
+.cmp-top{padding:0 calc(var(--page-x) - var(--sp-2)) var(--sp-3);}
+.cmp-th{position:relative;min-width:0;padding:0 var(--sp-2);}
+.cmp-img{display:block;width:56px;height:56px;overflow:hidden;border-radius:var(--radius-chip);background:var(--surface);}
+.cmp-img img{display:block;width:100%;height:100%;object-fit:cover;}
+.cmp-x{position:absolute;top:-12px;left:calc(var(--sp-2) + 56px - 12px);width:24px;height:24px;padding:0;border:0;border-radius:50%;box-shadow:var(--shadow-badge);background:linear-gradient(45deg, transparent calc(50% - 1px), var(--ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) center / 12px 12px no-repeat, linear-gradient(-45deg, transparent calc(50% - 1px), var(--ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) center / 12px 12px no-repeat, var(--surface-card);cursor:pointer;}
+.cmp-x::before{content:"";position:absolute;inset:-10px;}   /* 24 → 터치 44 */
+.cmp-add{display:block;border:0;background:none;text-align:left;cursor:pointer;}
+.cmp-add .ca-box{position:relative;display:block;width:56px;height:56px;border:1px dashed var(--ink-4);border-radius:var(--radius-chip);color:var(--ink-3);}
+.cmp-add .ca-plus{position:absolute;left:50%;top:50%;width:18px;height:18px;margin:-9px 0 0 -9px;}
+.cmp-add .ca-plus::before,.cmp-add .ca-plus::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;transform:translate(-50%,-50%);}
+.cmp-add .ca-plus::before{width:18px;height:2px;}
+.cmp-add .ca-plus::after{width:2px;height:18px;}
+.cmp-hd{position:sticky;top:0;z-index:var(--z-sticky);align-items:start;min-height:calc(var(--h-btn) + var(--sp-4));padding:var(--sp-3) calc(var(--page-x) - var(--sp-2));background:var(--surface-card);border-bottom:1px solid var(--line);}
+.cmp-h-sp{display:none;}   /* PC 항목명 칸 자리(pc.css에서 표시) */
+.cmp-nm{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;min-width:0;padding:0 var(--sp-2);font-family:inherit;font-size:var(--fs-meta);line-height:var(--lh-title);font-weight:var(--fw-semi);color:var(--ink);overflow-wrap:anywhere;text-align:left;word-break:keep-all;}
+.cmp-nm-add{border:0;background:none;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
+.cmp-sum{padding:0 var(--page-x);border-bottom:1px solid var(--line);}
+.cmp-lead{margin:var(--sp-5) 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);text-wrap:pretty;}
+.cmp-lead + .cmp-lead{margin-top:var(--sp-2);}
+.cmp-lead b{font-weight:var(--fw-semi);}
+.cmp-sumnote{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-tools{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-5) 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-switch{flex:none;display:inline-flex;align-items:center;gap:var(--sp-2);border:0;background:none;font-family:inherit;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
+.cmp-switch i{position:relative;width:48px;height:32px;border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:inset 0 0 0 1px var(--ink-4);transition:background .2s;}   /* 토글 48×32(§6-2): 꺼짐 1px --ink-4 / 켜짐 --ink 채움 */
+.cmp-switch i::after{content:"";position:absolute;left:var(--sp-1);top:var(--sp-1);width:24px;height:24px;border-radius:50%;background:var(--ink-4);transition:left .2s, background .2s;}
+.cmp-switch.is-on i{background:var(--ink);box-shadow:none;}
+.cmp-switch.is-on i::after{left:calc(100% - 28px);background:var(--surface-card);}
+.cmp-grp{padding-top:var(--section-pt);}
+.cmp-grp + .cmp-grp{border-top:var(--sp-2) solid var(--surface-2);}   /* 큰 묶음 전환에만 8px 띠(§4-2) */
+.cmp-gt{margin:0;padding:0 var(--page-x);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+.cmp-gs{margin:var(--sp-1) 0 0;padding:0 var(--page-x);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-gt + .cmp-tr,.cmp-gs + .cmp-tr{margin-top:var(--head-gap);}
+.cmp-tr{padding:var(--sp-3) var(--page-x);border-top:1px solid var(--line);}
+.cmp-gt + .cmp-tr,.cmp-gs + .cmp-tr{border-top:0;}
+#cmp-root.is-diff-only .cmp-tr.is-same{display:none;}
+.cmp-k{margin-bottom:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-kn{margin-left:var(--sp-1);}
+.cmp-v{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);margin:0 calc(var(--sp-2) * -1);}
+.cmp-cell{min-width:0;padding:var(--sp-2);border-radius:var(--radius-chip);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);overflow-wrap:anywhere;word-break:keep-all;}   /* 글 행: 14/400, 3줄까지 */
+.cmp-cell b{font-weight:var(--fw-semi);}
+.cmp-tr.is-num .cmp-cell{font-size:var(--fs-body);font-weight:var(--fw-bold);}   /* 숫자 행(실망 확률·가격·평점·분석 리뷰): 16/700 */
+.cmp-tr.is-num .cmp-cell b{font-weight:var(--fw-bold);}
+.cmp-cell.is-best{background:var(--hl);}
+.cmp-cell.is-pad{background:none;}
+.cmp-best{display:block;margin-top:2px;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);}
+.cmp-sub{display:block;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
+.cmp-none{color:var(--ink-3);}
+.cmp-vd{display:flex;align-items:center;gap:6px;font-weight:var(--fw-semi);}
+.cmp-vd .sdot{flex:none;}
+.cmp-line{display:block;margin-top:2px;color:var(--ink-3);}
+.cmp-line b{display:block;font-weight:var(--fw-regular);color:var(--ink);white-space:nowrap;}
+.cmp-rk{display:block;}   /* '평균의'·'평균보다' 윗줄 고정 → 값은 항상 둘째 줄, 막대 높이 정렬 */
+.cmp-bar{display:block;height:var(--sp-1);margin-top:var(--sp-1);overflow:hidden;border-radius:var(--radius-pill);background:var(--surface);}
+.cmp-bar i{display:block;height:100%;}
+.cmp-bar i.is-safe{background:var(--safe);}
+.cmp-bar i.is-warning{background:var(--warning);}
+.cmp-bar i.is-danger{background:var(--danger);}
+.cmp-cell:has(> .cmp-tn){display:flex;flex-direction:column;}   /* 순위 행: 항목명이 한 칸만 2줄이 돼도 비율 숫자는 같은 높이(칸 아래)에 */
+.cmp-cell:has(> .cmp-tn) .cmp-tv{margin-top:auto;}
+.cmp-tn{display:block;}
+.cmp-tv{display:block;}
+.cmp-li{display:block;}   /* 실전정보 칸: 값마다 한 줄(좁은 3열에서 '무료 · / 체크인 전' 같은 매달림 방지) */
+.cmp-li + .cmp-li{margin-top:2px;}
+.cmp-note{margin:0;padding:var(--sp-6) var(--page-x) var(--sp-4);border-top:var(--sp-2) solid var(--surface-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-note a{color:var(--ink);text-decoration:underline;text-underline-offset:3px;}
+
+/* ── 최근 본(§7-5): 큰 제목 + 편집 알약 → '오늘/어제/이번 주/그 전' 묶음 → 그리드 카드 2열(1:1) ── */
+#recent{padding-bottom:var(--sp-12);}
+.rc-head{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-3);padding-right:var(--page-x);}
+.rc-head .page-title{margin-right:0;}
+.rc-edit{margin-top:calc(var(--sp-5) + var(--sp-1));}
+.rc-grp + .rc-grp{margin-top:var(--browse-gap);}
+.rc-gt{margin:0 var(--page-x) var(--browse-head);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-text);color:var(--ink);}
+.rc-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-6) var(--sp-3);margin:0;padding:0 var(--page-x);list-style:none;}
+.recent-li{position:relative;list-style:none;}
+.rc-x{display:none;position:absolute;z-index:2;top:var(--sp-1);left:var(--sp-1);width:var(--h-icon);height:var(--h-icon);padding:0;border:0;background:none;cursor:pointer;}
+.rc-x::before{content:"";position:absolute;left:50%;top:50%;width:24px;height:24px;margin:-12px 0 0 -12px;border-radius:50%;box-shadow:var(--shadow-badge);background:linear-gradient(45deg, transparent calc(50% - 1px), var(--ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) center / 10px 10px no-repeat, linear-gradient(-45deg, transparent calc(50% - 1px), var(--ink) calc(50% - 1px) calc(50% + 1px), transparent calc(50% + 1px)) center / 10px 10px no-repeat, var(--surface-card);}
+#recent.is-editing .rc-x{display:block;}
+#recent.is-editing .recent-li .hcard{pointer-events:none;}
+#recent.is-editing .recent-li .photo-badge{display:none;}   /* 편집 중엔 왼쪽 위를 X 원이 쓴다 */
+
 /* 결론 라벨('불만 많은 편')은 배지가 아니다 — 8px 점 + 14/600 --ink 글자(§3-3). 카드 사유 글줄·AI 조건 알약·메타성 라벨들 */
 .cat-verdict{flex:none;display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
 .cat-verdict::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
 .cat-verdict.is-danger::before{background:var(--danger);}
 .cat-verdict.is-warning::before{background:var(--warning);}
 .cat-verdict.is-safe::before{background:var(--safe);}
-#search .list .rec-li .rp{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 var(--sp-2) 0 6px;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}   /* 조건 충족 태그: 면은 회색, 의미는 체크/느낌표 원이 맡는다 */
 .q-lang,.rel-badge{margin-left:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;}   /* 알약 → 메타 글자('일본어 리뷰'·'11개월 전') */
 .rel-badge:empty{display:none;}
 .faq-chips{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* FAQ 키워드: '후기가 갈려요 · 가족여행 추천' 메타 한 줄 */
@@ -736,7 +921,6 @@ html.has-cmp #detail ~ #float{bottom:calc(var(--h-btn) + var(--h-float) + var(--
 
 /* 섹션형 빈 상태(§6-10): 18/700 제목 → 8 → 14 --ink-3 본문 2줄 이내 → 16 → 외곽선 버튼 36. 회색 상자 없음 — 검색 미지원 도시·AI 조건 미달 */
 .empty-sec{padding:var(--sp-8) 0 var(--sp-4);}
-#search .notice .empty-sec{padding-top:var(--sp-5);}
 .es-tit{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
 .es-txt{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);text-wrap:pretty;}
 .es-btns{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-4);}

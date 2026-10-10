@@ -1,5 +1,5 @@
 /* P5 호텔 비교함 — 로그인 없이 localStorage('cf_cmp')에 최대 3곳 [{id,n,img}].
-   - 담기 버튼: [data-cmp-id] (+ data-cmp-name, data-cmp-img). 상세·검색 카드 공용, 동적 렌더 카드도 위임 처리.
+   - 담기 버튼: [data-cmp-id] (+ data-cmp-name, data-cmp-img). 상세 .cmp-btn · 검색 카드 사진 위 비교 원 .hcard-cmp 공용, 동적 렌더 카드도 위임 처리.
    - 플로팅 비교함: .cmp-tray(자동 생성) = 링크(→ compare?ids=a,b,c, 공유 가능한 URL) + 닫기(×, 비교함 비우기·되돌리기 토스트)
    - html.has-cmp: 비교함이 있을 때(검색의 지도 버튼 등 겹침 회피용)
    - GA4: compare_add / compare_remove / compare_open / compare_clear / compare_undo */
@@ -35,7 +35,7 @@
       a.push({ id: id, n: btn.getAttribute('data-cmp-name') || '', img: btn.getAttribute('data-cmp-img') || '' });
       ev('compare_add', { hotel_id: id, count: a.length });
       set(a);   // 트레이를 먼저 그려야 토스트가 트레이 위로 뜬다(backnav.js liftPx)
-      if (a.length === 1) toast('비교함에 담았어요 · 1곳 더 담으면 비교할 수 있어요');
+      if (a.length === 1) toast('비교함에 담았어요');
       return;
     }
     set(a);

@@ -103,11 +103,11 @@
       var on = no.indexOf(m.code) >= 0;
       return '<button type="button" class="chip-filter rec-must' + (on ? ' on' : '') + '" data-must="' + m.code + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + m.label + '</button>';
     }).join('');
-    return hero(TITLES[0], '중요한 순서대로 최대 3개 골라주세요') +
+    return hero(TITLES[0], '중요한 순서대로 3개까지 골라 주세요') +
       '<div class="rec-grid">' + chips + '</div>' +
       '<div class="ov-sec rec-must-box">' +
-        '<h3 class="ov-sec-t">이건 1년 안에 한 번도 없어야 해요</h3>' +
-        '<p class="ov-sec-sub">최근 1년 리뷰에 한 번이라도 나온 곳은 빼드려요</p>' +
+        '<h3 class="ov-sec-t">1년 안에 한 번도 없어야 해요</h3>' +
+        '<p class="ov-sec-sub">한 번이라도 나온 곳은 빼요</p>' +
         '<div class="ov-chips rec-musts">' + musts + '</div>' +
       '</div>';
   }
@@ -177,7 +177,7 @@
       '<div class="rec-loading" role="status">' +
         '<div class="rec-loading-spin" aria-hidden="true"></div>' +
         '<div class="rec-loading-tit">조건에 맞는 호텔을 찾고 있어요</div>' +
-        '<div class="rec-loading-sub">리뷰 분석 결과로 딱 맞는 순서를 매기는 중이에요</div>' +
+        '<div class="rec-loading-sub">리뷰 분석 결과로 순서를 매기고 있어요</div>' +
       '</div>';
     setTimeout(function () { location.href = prefix + 'search.html?' + qs; }, 950);
   }

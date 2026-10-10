@@ -117,25 +117,30 @@
     .hcard--carousel .hcard-photo{aspect-ratio:4/3;}
     .hcard:hover .hcard-photo img{transform:scale(1.03);}
     #hub .hub-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}   /* 허브 와이드 카드: PC는 2열(900 칼럼에 4:3 전폭은 너무 큼) */
-    /* ════════ 검색: 상단 필터 바 → [목록 | 고정 지도] ════════ */
-    #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;background:var(--surface-card);height:auto;box-shadow:none;transform:none;}   /* PC는 sticky 아님 → iOS 이음매 보정 해제 */
-    #title .search{max-width:560px;}
-    #search{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);column-gap:var(--sp-6);align-items:start;padding:var(--sp-2) var(--pc-x) var(--sp-12);}
+    /* ════════ 검색: [목록 63% | 고정 지도 37%] — 상단 줄·칩 줄은 목록 위, 지도는 오른쪽 끝까지(v3 §7-2) ════════ */
+    body[data-page=search] .det-header{display:flex;}   /* 모바일에서 숨긴 헤더(로고·메뉴)는 PC에서 그대로 */
+    #title{position:static;max-width:none;margin:0;padding:var(--sp-5) var(--pc-x) 0;border-bottom:0;box-shadow:none;transform:none;}   /* PC는 sticky 아님 → iOS 이음매 보정 해제 */
+    .st-back{display:none;}
+    .st-row{justify-content:flex-start;min-height:0;}
+    #title .search{flex:0 1 560px;}
+    #title .search .ac-box{right:auto;width:min(560px, 100%);}
+    .f-bar{flex-wrap:wrap;margin:0;padding:var(--sp-3) 0 0;overflow:visible;}
+    html.rec-mode #title{display:none;}
+    #search{display:grid;grid-template-columns:minmax(0,63fr) minmax(0,37fr);column-gap:var(--sp-6);align-items:start;padding:var(--sp-2) 0 var(--sp-12) var(--pc-x);}
     #search > *{grid-column:1;min-width:0;}
-    #search .filters{flex-direction:row;flex-wrap:wrap;gap:var(--sp-3) var(--sp-5);padding:var(--sp-3) 0;}
-    #search .filters .f-row{overflow:visible;flex-wrap:wrap;}
-    #search .filters .f-more{width:auto;padding:0 var(--sp-5);}   /* 조건 더 보기: PC는 내용 폭 버튼 */
-    #search .filters .f-panel{flex-basis:100%;}
-    #search .total,#search .list-head{padding-left:0;padding-right:0;}
-    #search .list{padding:0;}
-    #search .list li{padding:var(--sp-5) var(--sp-3);margin:0 calc(var(--sp-3) * -1);border-radius:var(--radius-box);transition:background .15s;}
-    #search .list li:hover{background:var(--surface);}
-    #search .list li .thumb{width:168px;height:128px;border-radius:var(--radius-img);}
-    #search .list .cont .info .name{font-size:var(--fs-body-lg);line-height:1.35;}
-    #search > .map-wrap{grid-column:2;grid-row:1 / span 30;position:sticky;top:80px;margin:0;height:calc(100vh - 96px);border-radius:var(--radius-card);}
-    #search > .map-wrap #map{height:100%;}
-    #search > .map-hint,#search .map-toggle,html.has-cmp #search .map-toggle{display:none;}
+    #search .list-head{padding-left:0;padding-right:0;}
+    #search .list,#search .notice{padding:0;}
     #search .rec-header{padding-left:0;padding-right:0;}
+    #results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
+    #results > .rec-group,#results > .rec-more-wrap,#results > .rec-empty{grid-column:1 / -1;}
+    #results .hcard--wide .hcard-photo{aspect-ratio:20/19;}
+    #results .hcard:hover .hcard-photo img{transform:scale(1.03);}
+    #search > .map-wrap{grid-column:2;grid-row:1 / span 60;position:sticky;top:64px;margin:0;height:calc(100vh - 64px);border-radius:0;}   /* 헤더 아래 전체 높이, 오른쪽 끝까지 붙임 r0 */
+    #search > .map-wrap #map{height:100%;}
+    #search .map-toggle,html.has-cmp #search .map-toggle{display:none;}
+    .map-card{left:var(--sp-4);right:var(--sp-4);bottom:var(--sp-4);}
+    .rec-header .rh-chips{margin:var(--sp-3) 0 0;padding-left:0;padding-right:0;flex-wrap:wrap;overflow:visible;}
+
 
     /* ════════ 홈 ════════ */
     #main{max-width:var(--pc-max);margin:0 auto;background:var(--surface-card);}
@@ -165,21 +170,21 @@
     #main .slider-nav .sn-next::before{margin-left:-6px;transform:rotate(135deg);}
     #main .slider-nav button:hover:not(:disabled){background:var(--surface);}
     #main .slider-nav button:disabled{opacity:.35;cursor:default;}
-    /* ════════ 비교: 왼쪽 항목명 칸 + 호텔 칸 (Zillow Compare homes) ════════ */
+    /* ════════ 비교: 왼쪽 항목명 칸 200 + 호텔 칸 (Zillow Compare homes) — v3 §7-4 ════════ */
     #cmp{max-width:1080px;margin:0 auto;padding:0 var(--pc-x);background:var(--surface-card);min-height:100vh;}
-    #cmp .cmp-hd,#cmp .cmp-cta{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);padding-left:0;padding-right:0;}
-    #cmp .cmp-hd{top:64px;}
-    #cmp .cmp-h-sp{display:block;}
-    #cmp .cmp-sum{padding-left:0;padding-right:0;}
-    #cmp .cg-r{justify-content:flex-start;gap:var(--sp-6);}   /* 넓은 화면: 값을 호텔명 바로 옆에(오른쪽 끝으로 멀어지지 않게) */
-    #cmp .cmp-gt{padding-left:0;padding-right:0;}
-    #cmp .cmp-tr{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:center;gap:var(--sp-4);padding:var(--sp-4) 0;}
-    #cmp .cmp-k{margin:0;font-size:var(--fs-caption);color:var(--ink-2);}
-    #cmp .cmp-v{gap:var(--sp-4);}
-    #cmp .cmp-cell{font-size:var(--fs-body);}
-    #cmp .cmp-nm{font-size:var(--fs-body);}
-    #cmp .cmp-note{padding-left:0;padding-right:0;}
-    #cmp .cmp-empty{padding:96px 0;}
+    #cmp > .page-title{margin-left:0;margin-right:0;}
+    .cmp-top,.cmp-hd{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));padding-left:0;padding-right:0;}
+    .cmp-h-sp{display:block;}
+    .cmp-nm{font-size:var(--fs-body);}
+    .cmp-sum,.cmp-gt,.cmp-gs{padding-left:0;padding-right:0;}
+    .cmp-note{padding-left:0;padding-right:0;}
+    .cmp-tr{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:start;padding:var(--sp-4) 0;}
+    .cmp-k{margin:0;padding:var(--sp-2) var(--sp-4) 0 0;}
+    .cmp-v{margin:0;}
+    .cmp-cell{font-size:var(--fs-body);}
+    .cmp-line{font-size:var(--fs-meta);}
+    #cmp .page-empty{max-width:none;margin:0;padding:0 0 var(--sp-12);}
+
 
 
     /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════
@@ -230,8 +235,13 @@
     #about{max-width:800px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     .page-empty{max-width:800px;margin:0 auto;padding:var(--sp-5) var(--pc-x) var(--sp-12);}
     .page-empty .page-title,.page-empty .pe-txt,.page-empty .pe-btns{margin-left:0;margin-right:0;}
-    #cmp > .page-title{margin-left:0;margin-right:0;}
-    #main .hotel-list.recent-list .list ul{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
+    /* 최근 본(v3 §7-5): 4열 그리드, 간격 24 */
+    #recent{max-width:var(--pc-max);margin:0 auto;padding:0 var(--pc-x) var(--sp-12);}
+    #recent .page-title{margin-left:0;margin-right:0;}
+    #recent .page-empty{max-width:none;margin:0;padding:0 0 var(--sp-12);}
+    .rc-head{padding-right:0;}
+    .rc-gt{margin-left:0;}
+    .rc-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);padding:0;}
 
     /* 홈 재구성(HOME-CONCEPT §2.3): 히어로 칩 행 · 비교 카드 4열 */
     #main .sec-vs .home-vs{padding-left:var(--pc-x);padding-right:var(--pc-x);}
