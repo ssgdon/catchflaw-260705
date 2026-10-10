@@ -152,6 +152,8 @@ CF.rgba = function (name, a) {
     if (ent.o.onClose) try { ent.o.onClose(el); } catch (e) {}
     var op = ent.opener;
     if (op && op.focus && op !== doc.body && doc.contains(op)) { try { op.focus({ preventScroll: true }); } catch (e) {} }
+    // 연 버튼이 사라졌거나 비활성이 됐으면(신고 → '신고함') 아래 시트의 제목으로
+    if (top && !top.el.contains(doc.activeElement)) { var tt = top.el.querySelector('.ov-title'); if (tt && tt.offsetParent) { tt.setAttribute('tabindex', '-1'); tt.focus({ preventScroll: true }); } }
   }
   function close(el) {
     var ent = el ? entryOf(el) : stack[stack.length - 1];

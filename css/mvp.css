@@ -193,64 +193,6 @@
 #detail .trend-fold.is-open .trend-fold-body{display:block;}
 #detail .trend-fold .cat-trend{margin:0;padding:0;background:none;}
 
-/* ---------- 리뷰 바텀시트 ---------- */
-.review-sheet{position:fixed;z-index:300;inset:0;}
-.review-sheet .sheet-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);opacity:0;transition:opacity .3s;}
-.review-sheet .sheet-panel{position:absolute;bottom:0;left:50%;transform:translate(-50%,100%);width:var(--width);max-width:100%;max-height:82dvh;display:flex;flex-direction:column;border-radius:var(--radius-card) var(--radius-card) 0 0;background:var(--surface-card);transition:transform .3s;}
-.review-sheet.is-open .sheet-dim{opacity:1;}
-.review-sheet.is-open .sheet-panel{transform:translate(-50%,0);}
-.review-sheet .sheet-head{position:relative;flex:0 0 auto;padding:10px var(--page-x) var(--sp-3);border-bottom:1px solid var(--line);}
-.review-sheet .sheet-grab{margin:0 auto 14px;width:40px;height:4px;border-radius:4px;background:var(--line-strong);}
-.review-sheet .sheet-title{display:flex;align-items:center;gap:2px;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-.review-sheet .sheet-title .tit{padding:0 2px;}
-.review-sheet .sheet-title .cnt{color:var(--primary);}
-.review-sheet .sheet-nav{display:flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:28px;background:var(--surface);font-size:var(--fs-body);font-weight:700;color:var(--ink-2);line-height:1;}
-.review-sheet .sheet-nav:active{background:var(--primary-soft);color:var(--primary);}
-.review-sheet .sheet-close{position:absolute;top:22px;right:14px;display:flex;align-items:center;justify-content:center;width:32px;height:32px;font-size:var(--fs-body);color:var(--ink-2);}
-.review-sheet .sheet-chips{margin:var(--sp-3) 0 0;display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch;scrollbar-width:none;}
-.review-sheet .sheet-chips::-webkit-scrollbar{display:none;}
-.review-sheet .sheet-chip{flex:0 0 auto;display:flex;align-items:center;height:var(--h-chip);padding:0 12px;border-radius:32px;background:var(--primary-soft);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
-.review-sheet .sheet-chip.on{background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
-.review-sheet .sheet-sort{margin:8px 0 0;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);}
-.review-sheet .sheet-tools{margin:8px 0 0;display:flex;align-items:center;justify-content:space-between;gap:8px;}
-.review-sheet .sheet-tools .sheet-sort{margin:0;}
-.review-sheet .sheet-kr{flex:0 0 auto;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 12px;border-radius:30px;border:1.5px solid var(--primary);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);}
-.review-sheet .sheet-kr.is-on{background:var(--primary);color:var(--ink-inverse);}
-.review-sheet .sheet-list .item .item-info{flex-wrap:wrap;}
-.review-sheet .sheet-list{flex:1;overflow-y:auto;padding:var(--sp-4) var(--page-x) calc(var(--sp-8) + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:var(--sp-3);}
-.review-sheet .sheet-list .item{padding:20px;border-radius:var(--radius-card);border:1px solid var(--line);background:var(--surface-card);}
-.review-sheet .sheet-list .item .item-top{display:flex;align-items:center;justify-content:space-between;margin:0 0 6px;}
-.review-sheet .sheet-list .item .item-top .name{line-height:1.3;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
-.review-sheet .sheet-list .item .item-top .status-item{display:flex;align-items:center;justify-content:center;padding:0 9px;height:var(--h-badge);border-radius:var(--radius-chip);font-size:var(--fs-meta);font-weight:var(--fw-bold);}
-.review-sheet .sheet-list .item .item-top .status-item.danger{background:var(--danger-soft);color:var(--danger-text);}
-.review-sheet .sheet-list .item .item-top .status-item.warning{background:var(--warning-soft);color:var(--warning-text);}
-.review-sheet .sheet-list .item .item-info{display:flex;gap:8px;align-items:center;margin:0 0 8px;}
-.review-sheet .sheet-list .item .item-info .star{position:relative;width:82px;height:auto;aspect-ratio:68/12;background:url("../img/star_bg.svg") no-repeat left center / auto 100%;}
-.review-sheet .sheet-list .item .item-info .star i{position:absolute;top:0;left:0;bottom:0;background:url("../img/star_fill.svg") no-repeat left center / auto 100%;}
-.review-sheet .sheet-list .item .item-info .web{display:flex;align-items:center;gap:4px;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
-.review-sheet .sheet-list .item .item-bottom .text{line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
-.review-sheet .sheet-list .item .item-bottom .text span{color:var(--primary);font-weight:var(--fw-bold);}
-.review-sheet .sheet-list .item .item-bottom .date{margin:6px 0 0;line-height:1.3;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
-.review-sheet .sheet-list .item .item-bottom .text.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;}
-.review-sheet .sheet-list .item .item-foot{margin:12px 0 0;padding:12px 0 0;border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;}
-.review-sheet .sheet-list .item .item-foot .orig-link{display:flex;align-items:center;gap:4px;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);text-decoration:underline;text-underline-offset:2px;}
-.review-sheet .sheet-list .item .item-foot .expand-btn{display:flex;align-items:center;gap:6px;font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);}
-/* 리뷰 전체 더보기 (R2 지연 로딩) — 리스트 하단 풀폭 버튼 */
-.review-sheet .sheet-more{margin-top:var(--sp-2);}
-.review-sheet .sheet-more-btn{width:100%;height:var(--h-btn);border-radius:var(--radius-btn);border:1px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--primary-deep);}
-.review-sheet .sheet-more-btn:active{background:var(--primary-soft);}
-.review-sheet .sheet-more-btn[disabled]{color:var(--ink-3);}
-.review-sheet .sheet-list .item .item-foot .expand-btn i{font-style:normal;font-size:var(--fs-meta);transition:transform .3s;display:inline-block;}
-.review-sheet .sheet-list .item .item-foot .expand-btn.is-open i{transform:rotate(180deg);}
-.review-sheet .sheet-list .item .full{margin:12px 0 0;padding:14px;border-radius:12px;background:var(--surface);display:flex;flex-direction:column;gap:12px;}
-.review-sheet .sheet-list .item .full[hidden]{display:none;}
-.review-sheet .sheet-list .item .full .full-tit{display:inline-flex;align-items:center;height:24px;padding:0 8px;border-radius:var(--radius-chip);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);align-self:flex-start;}
-.review-sheet .sheet-list .item .full .full-txt{margin-top:-6px;line-height:1.6;font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-2);word-break:break-word;}
-.review-sheet .sheet-empty{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
-/* FAQ-LAZYLOAD: R2 faq_reviews fetch 중 로딩 표시 (스피너 + 안내문) */
-.review-sheet .sheet-loading{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);color:var(--ink-3);}
-.review-sheet .sheet-loading::before{content:'';display:block;width:22px;height:22px;margin:0 auto 10px;border:2.5px solid var(--line);border-top-color:var(--primary);border-radius:50%;animation:cf-sheet-spin .8s linear infinite;}
-@keyframes cf-sheet-spin{to{transform:rotate(360deg);}}
 
 #detail .analysis .stat-legend{display:flex;flex-wrap:wrap;align-items:center;gap:5px 12px;margin:2px 0 0;padding:12px 2px 0;border-top:1px solid var(--line);}
 #detail .analysis .stat-legend .lg{display:flex;align-items:center;gap:5px;font-size:var(--fs-micro);font-weight:600;color:var(--ink-2);}
@@ -345,9 +287,6 @@
 /* ---------- 리뷰 오분류 신고 (FEEDBACK-2610 §13 · js/report.js) — 눈에 띄지 않는 텍스트 버튼(시트는 ds.css §v3 .ov) ---------- */
 .rep-btn{display:inline-flex;align-items:center;min-height:32px;padding:0;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--line-strong);cursor:pointer;}
 .rep-btn.is-done{text-decoration:none;color:var(--ink-4);cursor:default;}
-.review-sheet .sheet-list .item .item-foot{flex-wrap:wrap;gap:var(--sp-2) var(--sp-3);}
-.review-sheet .sheet-list .item .item-foot .rep-btn{margin-left:auto;}
-.review-sheet .sheet-list .item .item-foot .rep-btn + .expand-btn{margin-left:0;}
 #detail .q-foot{display:flex;justify-content:flex-end;margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--line);}
 
 
@@ -455,14 +394,6 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 .social-blog .nb-card.nb-hidden{display:none;}
 .social-blog .nb-more{width:100%;height:var(--h-btn);margin-top:10px;border-radius:var(--radius-btn);border:1px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);}
 .social-blog .nb-more:active{background:var(--surface);}
-/* 블로그 바텀시트: 베이스(.review-sheet) 재사용, 높이만 풀팝업급으로 */
-.blog-sheet .sheet-panel{max-height:none;height:93dvh;}
-.blog-sheet .sheet-head{padding:10px var(--page-x) 12px;border-bottom:1px solid var(--line);}
-.blog-sheet .bs-title{margin-top:6px;padding-right:36px;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.blog-sheet .bs-body{flex:1;min-height:0;}
-.blog-sheet .bs-body iframe{width:100%;height:100%;border:0;display:block;background:var(--surface-card);}
-.blog-sheet .bs-foot{padding:10px var(--page-x) calc(10px + env(safe-area-inset-bottom));border-top:1px solid var(--line);text-align:center;}
-.blog-sheet .bs-foot a{font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-3);text-decoration:underline;text-underline-offset:2px;}
 /* 유튜브: lite-embed 가로 스와이프 카드 (일반 16:9 / 쇼츠 9:16) */
 .social-video .yt-slider{overflow:hidden;margin:0 calc(var(--page-x) * -1);padding:0 var(--page-x);}
 .social-video .swiper-wrapper{display:flex;}
@@ -691,15 +622,10 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #detail .faq .faq-ev .fe-date{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #detail .faq .faq-ev .fe-q{font-size:var(--fs-caption);font-weight:var(--fw-regular);line-height:1.45;color:var(--ink-2);}
 #detail .faq .faq-ev .fe-q b{font-weight:var(--fw-bold);color:var(--ink);}   /* F23: 토픽 키워드·숫자단위 하이라이트 */
-.review-sheet.faq-mode .sheet-list .item .text b{font-weight:var(--fw-bold);color:var(--ink);}
 #detail .faq .faq-ev .star{position:relative;display:inline-block;width:68px;aspect-ratio:68/12;background:url("../img/star_bg.svg") no-repeat left center / auto 100%;}
 #detail .faq .faq-ev .star i{position:absolute;top:0;left:0;bottom:0;background:url("../img/star_fill.svg") no-repeat left center / auto 100%;}
 #detail .faq .faq-more-btn{margin-top:10px;width:100%;height:var(--h-btn);border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary-deep);cursor:pointer;}
 #detail .faq .faq-more-btn:after{content:' ›';color:var(--primary);}
-/* FAQ 더보기 시트 모드 — 카테고리 nav·정렬/한국인 도구 숨김 (기존 #review-sheet 재사용) */
-.review-sheet.faq-mode .sheet-nav,
-.review-sheet.faq-mode .sheet-tools,
-.review-sheet.faq-mode .sheet-chips{display:none;}
 
 /* ── 진입점 점프 칩 (info-bottom 아래·1줄 고정) — F10 CTA + F14 3톤(위험 danger·질문 primary·전체 중립) ── */
 /* F4: 단일 줄 고정, 넘치면 가로 스크롤(스크롤바 숨김). F14: 우측 화이트 페이드. F19: 칩 위 마이크로 타이틀 */
@@ -1138,7 +1064,6 @@ html.is-scroll-down #float:has(.btn-airec){transform:translateX(-50%);opacity:1;
 html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 /* 근거 1줄(실망 리뷰 M건)은 버튼 — 링크 행과 같은 모양 */
 #detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink-2);cursor:pointer;}
-.review-sheet .sheet-chips .sheet-note{padding:var(--sp-1) 0;font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);white-space:normal;}
 
 /* 홈 신뢰 띠 (HOME-CONCEPT §4-3): 히어로 아래 한 줄 — 분석 규모·중립성·기준일 */
 #main .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:4px var(--sp-3);padding:var(--sp-3) var(--page-x);border-bottom:1px solid var(--line);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:1.5;color:var(--ink-3);text-align:center;}

@@ -280,7 +280,7 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 .ov[data-ov=dialog].ov-on > .ov-panel{opacity:1;transform:none;}
 /* 시트 위 시트: 위 시트의 딤만(이중 딤 금지), 아래 시트는 조금 작게 */
 .ov.ov-under > .ov-dim{opacity:0;}
-.ov.ov-on.ov-under > .ov-panel{transform:scale(.96);}
+.ov.ov-on.ov-under > .ov-panel{transform:translateY(-10px) scale(.96);transform-origin:50% 0;}   /* 위 끝이 위 시트 위로 살짝 보이게 */
 html.ov-lock{overflow:hidden;}
 
 /* 헤더 3형식 */
@@ -437,3 +437,54 @@ textarea.ov-input{height:96px;resize:none;}
 @keyframes cf-rec-spin{to{transform:rotate(360deg);}}
 .rec-loading-tit{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
 .rec-loading-sub{max-width:20em;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-3);}
+/* ⑧ 블로그 후기(A 페이지 시트 · H1 '네이버 블로그 후기' 고정 · F3 회색 '네이버에서 보기') */
+.bs-body{display:flex;padding:0;overflow:hidden;}
+.bs-body iframe{flex:1;display:block;width:100%;height:100%;border:0;background:var(--surface-card);}
+/* ⑨ 리뷰 근거(A 페이지 시트 · H1 '청결 리뷰 11건' — 실망 리뷰 H1 / FAQ 근거 H3 질문 2줄). 모바일: 항목 밑줄 탭 → 소분류 보기 전환 칩 → 도구 → 목록(상자 없이 32) */
+.rs .rs-info,.rs .rs-tp,.rs-side,.rs-h{display:none;}
+.rs.is-faq .rs-bar{display:none;}
+.rs.is-faq .rs-info{display:block;border-bottom:1px solid var(--line);}
+.rs-wrap{flex:1 1 auto;min-height:0;display:flex;}
+.rs-body{padding:0 var(--page-x) calc(var(--sp-8) + env(safe-area-inset-bottom));}
+.rs:not(.is-cat) .rs-body{padding-top:var(--sp-4);}
+.rs.is-faq .rs-top{display:none;}
+.rs-tabs{display:flex;overflow-x:auto;margin:0 calc(var(--page-x) * -1) var(--sp-4);padding:0 calc(var(--page-x) - 12px);border-bottom:1px solid var(--line);scrollbar-width:none;}
+.rs-tabs::-webkit-scrollbar{display:none;}
+.rs-tabs:empty{display:none;}
+.rs-tab{flex:none;height:var(--h-tab);padding:0 12px;border:0;border-bottom:2px solid transparent;background:none;font-size:var(--fs-body);line-height:1;font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;cursor:pointer;}
+.rs-tab.on{border-bottom-color:var(--ink);color:var(--ink);}
+.rs-chips{display:flex;gap:var(--sp-2);overflow-x:auto;margin:0 calc(var(--page-x) * -1);padding:0 var(--page-x);scrollbar-width:none;}
+.rs-chips::-webkit-scrollbar{display:none;}
+.rs-chips:empty{display:none;}
+.rs-note{margin:0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rs-tools{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-3);}
+.rs-sort{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rs-list{display:flex;flex-direction:column;gap:var(--sp-8);margin:var(--sp-6) 0 0;padding:0;list-style:none;}
+.rs.is-faq .rs-list{margin-top:var(--sp-2);}
+.rs-more .btn-gray{width:100%;}
+.rs-empty,.rs-loading{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-3);}
+.rs-loading::before{content:"";display:block;width:22px;height:22px;margin:0 auto var(--sp-3);border:2.5px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:cf-rec-spin .8s linear infinite;}
+/* 리뷰 항목(§6-5): 작성자 16/600 + 심각도 상태 태그(회색 알약 + 색 점) → 메타 14 → 본문 16/1.5(키워드 = 형광펜) → 날짜 14 → 텍스트 링크(터치 44) */
+.rv-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);}
+.rv-name{min-width:0;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
+.rv-tag{flex:none;display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 10px;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-bold);color:var(--ink);}
+.rv-tag::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--warning);}
+.rv-tag.is-danger::before{background:var(--danger);}
+.rv-meta{display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rv-meta > span + span::before{content:"·";margin-right:6px;}
+.rv-star{position:relative;display:inline-block;width:68px;aspect-ratio:68/12;background:url("../img/star_bg.svg") no-repeat left center / auto 100%;}
+.rv-star i{position:absolute;top:0;left:0;bottom:0;background:url("../img/star_fill.svg") no-repeat left center / auto 100%;}
+.rv-text{margin:var(--sp-3) 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);overflow-wrap:anywhere;}
+.rv-text.clamp{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;}
+.rv-text mark,.rv-text b{background:var(--hl);color:var(--ink);font-weight:var(--fw-semi);}
+.rv-date{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.rv-foot{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--sp-4);margin-top:var(--sp-1);}
+.rv-foot:empty{display:none;}
+.rv-act{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
+.rv-act.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
+.rv-more::after{content:"";display:inline-block;width:6px;height:6px;margin-left:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);}
+.rv-more.is-open::after{transform:translateY(1px) rotate(-135deg);}
+.rv-full{margin-top:var(--sp-2);padding-left:var(--sp-4);border-left:2px solid var(--line-strong);}
+.rv-full-t{margin:var(--sp-3) 0 var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+.rv-full-t:first-child{margin-top:0;}
+.rv-full-x{margin:0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);overflow-wrap:anywhere;}

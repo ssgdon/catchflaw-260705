@@ -2692,17 +2692,14 @@ def social_section(soc, name):
     return '\n'.join(out)
 
 
-BLOG_SHEET_HTML = '''<div class="review-sheet blog-sheet" id="blog-sheet" hidden>
-            <div class="sheet-dim"></div>
-            <div class="sheet-panel">
-                <div class="sheet-head">
-                    <div class="sheet-grab"></div>
-                    <div class="bs-title" id="bs-tit"></div>
-                    <button type="button" class="sheet-close" aria-label="닫기">✕</button>
-                </div>
-                <div class="bs-body"><iframe id="bs-frame" src="about:blank" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
-                <div class="bs-foot"><a id="bs-link" href="#" target="_blank" rel="noopener">네이버에서 보기 ↗</a></div>
-            </div>
+# 블로그 후기 시트(v3 §5-8 ⑧): A 페이지 시트 · H1 고정 문구(블로그 제목은 iframe이 보여 줌) · F3 회색 '네이버에서 보기'
+BLOG_SHEET_HTML = '''<div class="ov" data-ov="sheet" id="blog-sheet" role="dialog" aria-modal="true" aria-labelledby="blog-sheet-t" hidden>
+            <div class="ov-dim"></div>
+            <section class="ov-panel ov-w-lg">
+                <header class="ov-head ov-head--bar"><button type="button" class="ov-back" aria-label="이전" hidden></button><h2 class="ov-title" id="blog-sheet-t">네이버 블로그 후기</h2><button type="button" class="ov-close" aria-label="닫기"></button></header>
+                <div class="ov-body bs-body"><iframe id="bs-frame" title="네이버 블로그 후기" src="about:blank" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
+                <footer class="ov-foot ov-foot--f3"><a class="btn-gray" id="bs-link" href="#" target="_blank" rel="noopener">네이버에서 보기</a></footer>
+            </section>
         </div>'''
 
 
@@ -3335,26 +3332,32 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         {social_section(social, name)}
         {stars_block}
         {korean_card(kr_1y, h, kr_rank_pct, kr_dist, per)}
-        <div class="review-sheet" id="review-sheet" hidden role="dialog" aria-modal="true" aria-label="리뷰 근거">
-            <div class="sheet-dim"></div>
-            <div class="sheet-panel">
-                <aside class="sheet-side" id="sheet-side" aria-label="카테고리"></aside>
-                <div class="sheet-head">
-                    <div class="sheet-grab"></div>
-                    <div class="sheet-title">
-                        <button type="button" class="sheet-nav" id="sheet-prev" aria-label="이전 카테고리">‹</button>
-                        <span class="tit"><span id="sheet-cat"></span> 리뷰 <span class="cnt" id="sheet-cnt"></span></span>
-                        <button type="button" class="sheet-nav" id="sheet-next" aria-label="다음 카테고리">›</button>
-                    </div>
-                    <button type="button" class="sheet-close" aria-label="닫기">✕</button>
-                    <div class="sheet-chips" id="sheet-chips"></div>
-                    <div class="sheet-tools">
-                        <div class="sheet-sort">심각도 · 최신순</div>
-                        <button type="button" class="sheet-kr" id="sheet-kr">한국인 리뷰만</button>
+        <div class="ov rs is-cat" data-ov="sheet" id="review-sheet" role="dialog" aria-modal="true" aria-labelledby="rs-t" hidden>
+            <div class="ov-dim"></div>
+            <section class="ov-panel ov-w-xl">
+                <header class="ov-head ov-head--bar rs-bar">
+                    <button type="button" class="ov-back" aria-label="이전" hidden></button>
+                    <h2 class="ov-title" id="rs-t"><span class="rs-tm"><span id="sheet-cat"></span> 리뷰 <span id="sheet-cnt"></span></span><span class="rs-tp">리뷰 근거</span></h2>
+                    <button type="button" class="ov-close" aria-label="닫기"></button>
+                </header>
+                <header class="ov-head ov-head--info rs-info">
+                    <button type="button" class="ov-close" aria-label="닫기"></button>
+                    <h2 class="ov-title" id="rs-ft"></h2>
+                    <p class="ov-sub" id="rs-fs"></p>
+                </header>
+                <div class="rs-wrap">
+                    <aside class="rs-side" id="sheet-side" aria-label="항목"></aside>
+                    <div class="ov-body rs-body">
+                        <div class="rs-top">
+                            <div class="rs-tabs" id="rs-tabs" role="tablist" aria-label="항목"></div>
+                            <h3 class="rs-h" id="rs-h"></h3>
+                            <div class="rs-chips" id="sheet-chips"></div>
+                            <div class="rs-tools"><span class="rs-sort">심각도 · 최신순</span><button type="button" class="chip-filter rs-kr" id="sheet-kr" aria-pressed="false">한국인 리뷰만</button></div>
+                        </div>
+                        <ul class="rs-list" id="sheet-list"></ul>
                     </div>
                 </div>
-                <ul class="sheet-list" id="sheet-list"></ul>
-            </div>
+            </section>
         </div>
         {BLOG_SHEET_HTML if (social or {}).get('b') else ''}
         <script>
@@ -3534,13 +3537,15 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             // 서버 렌더된 FAQ 미리보기 뱃지 채우기 (동적 시트 카드는 렌더 시 inline 처리)
             $('.rel-badge[data-d]').each(function(){{ var s = window.CF_rel($(this).data('d')); if (s) $(this).text(s); }});
 
-            // ───── 리뷰 바텀시트 (심각도>최신순 정렬 데이터, 소분류 칩 필터) ─────
+            // ───── 리뷰 근거 시트 (v3 §5-8 ①: A 페이지 시트 · H1 '청결 리뷰 11건' · PC 1032 2단, ←/→ 항목 이동) ─────
+            //   모드 3개: is-cat(항목·소분류 칩) · is-dis(실망 리뷰 모아보기, PC 780) · is-faq(실전정보 근거, H3 질문 2줄, PC 780)
+            //   열기·닫기·뒤로가기·ESC·포커스는 CF.sheet(js/backnav.js). 정렬 데이터 = 심각도 > 최신순
             if (!window.QDATA) return;
-            var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false;
+            var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false, mode = 'cat';
             var qfull = false, qloading = false;   // R2 전체 인용문 로드 상태 (REVIEW-LAZYLOAD §C)
 
             function toast(msg){{ CF.toast(msg); }}   // 토스트 1벌(js/backnav.js)
-            // 첫 '더보기'/한국인필터 시 호텔 전체 인용문 JSON을 R2에서 1회 fetch → QDATA 교체(이후 탭 전환 즉시)
+            // 첫 '모두 보기'/한국인필터 시 호텔 전체 인용문 JSON을 R2에서 1회 fetch → QDATA 교체(이후 탭 전환 즉시)
             function loadFull(cb){{
                 if (qfull || !window.QFULL) {{ cb && cb(); return; }}
                 if (qloading) return;
@@ -3555,7 +3560,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
             function esc(s){{ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }}
             function subKo(s){{ return (window.QSUBKO && window.QSUBKO[s]) || s; }}   // '동네 분위기' → '밤길·동네 분위기' 등 화면 표기
-            function emph(s){{ return esc(s).replace(/\\*\\*(.+?)\\*\\*/g, '<span>$1</span>').replace(/\\*\\*/g, ''); }}
+            function catKo(c){{ return (window.CAT_KO && window.CAT_KO[c]) || c; }}    // 표시만 순화, curCat은 내부키 유지
+            function emph(s){{ return esc(s).replace(/\\*\\*(.+?)\\*\\*/g, '<mark>$1</mark>').replace(/\\*\\*/g, ''); }}   // 키워드 = 형광펜(--hl) + 잉크
             function langLabel(l){{
                 if (!l) return '';
                 var M = {{ko:'한국어', ja:'일본어', en:'영어'}};
@@ -3563,44 +3569,38 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 if (l.indexOf('zh') === 0) return '중국어';
                 return l.toUpperCase();
             }}
-
+            function fmtDate(d){{ d = String(d||'').slice(0,10); return d ? d.replace(/-/g,'. ') : ''; }}   // 'YYYY. MM. DD'(UI-STANDARDS §7) — FAQ 근거도 같은 표기
+            // 리뷰 항목(§6-5): 작성자 16/600 + 심각도 태그 → 메타 14(별점·출처·언어) → 본문 16/1.5 → 날짜·소분류·상대시간 14 → 텍스트 링크 줄. 상자 없이 여백 32
+            function item(o){{
+                var star = o.st ? '<span class="rv-star" role="img" aria-label="별점 ' + o.st + '점"><i style="width:' + (o.st*20) + '%"></i></span>' : '';
+                var lang = langLabel(o.l);
+                return '<li class="rv">'
+                    + '<div class="rv-top"><span class="rv-name">' + esc(o.n) + '</span>' + (o.g ? '<span class="rv-tag is-' + (o.g === '심각' ? 'danger' : 'warning') + '">' + o.g + '</span>' : '') + '</div>'
+                    + '<div class="rv-meta">' + star + '<span>' + esc(o.o) + '</span>' + (lang ? '<span>' + lang + ' 리뷰</span>' : '') + '</div>'
+                    + '<p class="rv-text clamp">' + o.text + '</p>'
+                    + '<div class="rv-date">' + esc(fmtDate(o.d)) + (o.s ? ' · ' + esc(subKo(o.s)) : '') + relSpan(o.d) + '</div>'
+                    + '<div class="rv-foot">' + origLink(o.u) + (o.rep || '') + (o.full ? '<button type="button" class="rv-act rv-more" aria-expanded="false">전체 리뷰</button>' : '') + '</div>'
+                    + (o.full ? '<div class="rv-full" hidden>' + o.full + '</div>' : '')
+                    + '</li>';
+            }}
             function card(q){{
-                var star = q.st ? '<div class="star"><i style="width:' + (q.st*20) + '%"></i></div>' : '';
-                var band = q.g === '심각' ? 'danger' : 'warning';
-                var hasFull = !!(q.tf || q.of);
                 var full = '';
-                if (hasFull) {{
-                    full = '<div class="full" hidden>'
-                        + (q.tf ? '<div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(q.tf) + '</div>' : '')
-                        + (q.of && q.of !== q.tf ? '<div class="full-tit">원문</div><div class="full-txt">' + esc(q.of) + '</div>' : '')
-                        + '</div>';
-                }}
-                var foot = '<div class="item-foot">'
-                    + origLink(q.o, q.u)
-                    + (q.f ? repBtn(q) : '')
-                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '')
-                    + '</div>';
-                return '<li><div class="item">'
-                    + '<div class="item-top"><div class="name">' + esc(q.n) + '</div>'
-                    + '<div class="status"><div class="status-item ' + band + '">' + q.g + '</div></div></div>'
-                    + '<div class="item-info">' + star + '<div class="web">' + esc(q.o) + '</div>' + (langLabel(q.l) ? '<span class="q-lang">' + langLabel(q.l) + '</span>' : '') + '</div>'
-                    + '<div class="item-bottom"><div class="text clamp">' + emph(q.q) + '</div>'
-                    + '<div class="date">' + esc((q.d||'').replace(/-/g,'. ')) + (q.s ? ' · ' + esc(subKo(q.s)) : '') + relSpan(q.d) + '</div></div>'
-                    + foot + full
-                    + '</div></li>';
+                if (q.tf) full += '<p class="rv-full-t">전체 리뷰 (번역)</p><p class="rv-full-x">' + esc(q.tf) + '</p>';
+                if (q.of && q.of !== q.tf) full += '<p class="rv-full-t">원문</p><p class="rv-full-x">' + esc(q.of) + '</p>';
+                return item({{n: q.n, g: q.g, st: q.st, o: q.o, l: q.l, text: emph(q.q), d: q.d, s: q.s, u: q.u, rep: q.f ? repBtn(q) : '', full: full}});
             }}
             // 오분류 신고 버튼 (FEEDBACK-2610 §13, js/report.js) — 대분류는 소분류에서(실망 모아보기는 여러 항목이 섞임)
             function repBtn(q){{
                 var c = (window.QSUBCAT && window.QSUBCAT[q.s]) || (curCat !== '__dis__' ? curCat : '');
-                return '<button type="button" class="rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
+                return '<button type="button" class="rv-act rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
             }}
             // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
-            function origLink(o, u){{
-                if (!u) return '<span></span>';
-                return '<a class="orig-link" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
+            function origLink(u){{
+                if (!u) return '';
+                return '<a class="rv-act" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
             }}
-            // F27: 시트 카드 날짜 옆 상대 뱃지 (동적 렌더 — 로드시점 계산)
-            function relSpan(d){{ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? '<span class="rel-badge">' + s + '</span>' : ''; }}
+            // F27: 날짜 옆 상대 시간 (동적 렌더 — 로드시점 계산)
+            function relSpan(d){{ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? ' · ' + s : ''; }}
 
             // 실망 리뷰만(근거 줄): 전 카테고리 카드 중 심각 또는 재방문·추천 거부(rf) 리뷰를 리뷰 단위(r)로 묶는다 — 근거 줄 M건과 같은 집합
             function disList(){{
@@ -3616,17 +3616,20 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 out.sort(function(a, b){{ return ((b.g === '심각') - (a.g === '심각')) || (b.d > a.d ? 1 : b.d < a.d ? -1 : 0); }});
                 return out;
             }}
+            function setMode(m){{
+                mode = m;
+                $sheet.removeClass('is-cat is-dis is-faq').addClass('is-' + m).attr('aria-labelledby', m === 'faq' ? 'rs-ft' : 'rs-t');
+            }}
             function renderDis(){{
                 var list = disList();
                 if (krOnly) list = list.filter(function(q){{ return q.l === 'ko'; }});
                 var M = (window.QDIS && window.QDIS.n) || 0;
                 $('#sheet-cat').text('실망');
                 $('#sheet-cnt').text(qloading ? '불러오는 중…' : (!krOnly && qfull && M && M !== list.length) ? M + '건 중 ' + list.length + '건' : list.length + '건');
-                $('#sheet-list').html(list.map(card).join('') || '<li class="sheet-empty">' + (qloading ? '리뷰를 불러오는 중…' : '실망 리뷰가 없어요') + '</li>');
-                $('#sheet-chips').html('<div class="sheet-note">심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰예요</div>');
-                $('#sheet-list').scrollTop(0);
-                $('#sheet-kr').toggleClass('is-on', krOnly);
-                renderSide();
+                $('#sheet-list').html(list.map(card).join('') || '<li class="rs-empty">' + (qloading ? '리뷰를 불러오는 중…' : '실망 리뷰가 없어요') + '</li>');
+                $('#sheet-chips').html('<p class="rs-note">심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰예요</p>');
+                $('#sheet-kr').toggleClass('on', krOnly).attr('aria-pressed', krOnly ? 'true' : 'false');
+                after();
             }}
             function render(){{
                 if (curCat === '__dis__') return renderDis();
@@ -3640,75 +3643,73 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     if (useReal) return sub ? (T.s[sub] || 0) : T.t;
                     return (sub ? list.filter(function(q){{ return q.s === sub; }}) : list).length;
                 }}
-                $('#sheet-cat').text((window.CAT_KO && window.CAT_KO[curCat]) || curCat);   // 표시만 순화, curCat은 내부키 유지
+                $('#sheet-cat').text(catKo(curCat));
                 $('#sheet-cnt').text(cnt(curSub) + '건');
+                $('#rs-h').text(catKo(curCat) + ' 리뷰 ' + cnt(curSub) + '건');
                 var cards = filtered.map(card).join('');
-                // 더보기: 아직 전체 로드 전이고 임베드가 실제 총건보다 적으면 리스트 하단에 노출
+                // 모두 보기: 아직 전체 로드 전이고 임베드가 실제 총건보다 적으면 목록 끝에 회색 버튼 '청결 리뷰 11건 모두 보기'
                 var more = '';
                 if (!qfull && T && base.length < T.t) {{
-                    var remain = cnt(curSub) - filtered.length;
-                    more = '<li class="sheet-more"><button type="button" class="sheet-more-btn"' + (qloading ? ' disabled' : '') + '>'
-                         + (qloading ? '불러오는 중…' : '리뷰 전체 보기' + (remain > 0 ? ' (+' + remain + '건)' : '')) + '</button></li>';
+                    more = '<li class="rs-more"><button type="button" class="btn-gray rs-more-btn"' + (qloading ? ' disabled' : '') + '>'
+                         + (qloading ? '불러오는 중…' : esc(curSub ? subKo(curSub) : catKo(curCat)) + ' 리뷰 ' + cnt(curSub) + '건 모두 보기') + '</button></li>';
                 }}
                 $('#sheet-list').html((cards ||
-                    '<li class="sheet-empty">' + (krOnly ? '이 카테고리엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>') + more);
+                    '<li class="rs-empty">' + (krOnly ? '이 항목엔 한국어 리뷰가 없어요' : '이 소분류의 인용 리뷰가 없어요') + '</li>') + more);
                 var subs = window.QSUBS[curCat] || [];
-                var chips = ['<button type="button" class="sheet-chip' + (!curSub ? ' on' : '') + '" data-sub="">전체 ' + cnt(null) + '</button>'];
+                var chips = ['<button type="button" class="chip-view rs-chip' + (!curSub ? ' on' : '') + '" data-sub="" aria-pressed="' + !curSub + '">전체 ' + cnt(null) + '</button>'];
                 subs.forEach(function(s){{
                     var n = cnt(s);
                     if (!n) return;
-                    chips.push('<button type="button" class="sheet-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '">' + esc(subKo(s)) + ' ' + n + '</button>');
+                    chips.push('<button type="button" class="chip-view rs-chip' + (curSub === s ? ' on' : '') + '" data-sub="' + esc(s) + '" aria-pressed="' + (curSub === s) + '">' + esc(subKo(s)) + ' ' + n + '</button>');
                 }});
                 $('#sheet-chips').html(chips.join(''));
-                $('#sheet-list').scrollTop(0);
-                $('#sheet-kr').toggleClass('is-on', krOnly);
-                renderSide();
+                $('#sheet-kr').toggleClass('on', krOnly).attr('aria-pressed', krOnly ? 'true' : 'false');
+                after();
             }}
-            // PC 팝업 왼쪽: 6개 카테고리(위험도·리뷰 수) — 누르면 그 카테고리 근거 리뷰로 전환 (Airbnb 리뷰 팝업 패턴)
+            function after(){{ renderTabs(); renderSide(); $sheet.find('.rs-body').scrollTop(0); CF.sheet.update($sheet[0]); }}
+            function catN(c){{ var T = window.QTOTAL && window.QTOTAL[c]; return T ? T.t : (window.QDATA[c] || []).length; }}
+            // 모바일 항목 전환 = 밑줄 탭 줄(옛 ‹ › 원형 버튼 대체). 리뷰가 있는 항목만
+            function renderTabs(){{
+                if (mode !== 'cat') {{ $('#rs-tabs').empty(); return; }}
+                $('#rs-tabs').html(Object.keys(window.QSUBS).filter(function(c){{ return c === curCat || catN(c); }}).map(function(c){{
+                    var on = c === curCat;
+                    return '<button type="button" class="rs-tab' + (on ? ' on' : '') + '" role="tab" aria-selected="' + on + '" data-cat="' + esc(c) + '">' + esc(catKo(c)) + '</button>';
+                }}).join(''));
+                var t = $('#rs-tabs .rs-tab.on')[0];
+                if (t) t.parentNode.scrollLeft = Math.max(0, t.offsetLeft - 24);
+            }}
+            // PC 왼쪽 열: 호텔명 + 항목 6행(점 + 이름 + 결론 + 건수) — 누르면 그 항목 리뷰로 (Airbnb 리뷰 팝업 패턴)
             function renderSide(){{
+                if (mode !== 'cat') return;
                 var Q = window.QCAT || {{}};
                 function vlab(v){{ return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }}   // cat_verdict와 같은 구간
                 var rows = Object.keys(window.QSUBS).map(function(c){{
-                    var T = window.QTOTAL && window.QTOTAL[c], n = T ? T.t : (window.QDATA[c] || []).length;
+                    var n = catN(c);
                     var sc = Q[c] || [0, 'safe'];
                     var chip = window.QCHIP && window.QCHIP[c];          // 칩 전용 대분류(안전): 점수 대신 심각 건수 문구
                     if (chip) sc = [0, chip[1] === 'alert' ? 'danger' : 'safe'];
-                    return '<button type="button" class="ss-cat' + (c === curCat ? ' is-on' : '') + '" data-cat="' + esc(c) + '"' + (n ? '' : ' disabled') + '>'
+                    return '<button type="button" class="ss-cat' + (c === curCat ? ' is-on' : '') + '" data-cat="' + esc(c) + '"' + (n ? '' : ' disabled') + ' aria-pressed="' + (c === curCat) + '">'
                         + '<span class="ss-dot is-' + sc[1] + '"></span>'
-                        + '<span class="ss-name">' + esc((window.CAT_KO && window.CAT_KO[c]) || c) + '</span>'
-                        + '<span class="ss-score is-' + sc[1] + '">' + (chip ? esc(chip[0]) : '불만 ' + vlab(sc[0])) + '</span>'
+                        + '<span class="ss-name">' + esc(catKo(c)) + '</span>'
+                        + '<span class="ss-score">' + (chip ? esc(chip[0]) : '불만 ' + vlab(sc[0])) + '</span>'
                         + '<span class="ss-cnt">' + n + '건</span></button>';
                 }}).join('');
                 var hn = (window.CF_HOTEL && window.CF_HOTEL.name) || '';
-                $('#sheet-side').html('<div class="ss-tit">리뷰 근거</div>' + (hn ? '<div class="ss-hotel">' + esc(hn) + '</div>' : '')
-                    + '<div class="ss-sub">항목을 고르면 ' + esc(window.QPER || '최근 1년') + ' 리뷰 중 그 불만이 언급된 리뷰만 보여드려요</div>'
+                $('#sheet-side').html((hn ? '<p class="ss-hotel">' + esc(hn) + '</p>' : '')
+                    + '<p class="ss-sub">항목을 고르면 ' + esc(window.QPER || '최근 1년') + ' 리뷰 중 그 불만이 언급된 리뷰만 보여드려요</p>'
                     + '<div class="ss-list">' + rows + '</div>'
-                    + '<div class="ss-note">불만 정도는 후쿠오카 호텔 평균과 비교한 결과예요 · 인용문은 리뷰 원문 발췌이며 작성자 이름은 가렸어요</div>');
+                    + '<p class="ss-note">불만 정도는 후쿠오카 호텔 평균과 비교한 결과예요 · 인용문은 리뷰 원문 발췌이며 작성자 이름은 가렸어요</p>');
             }}
-
-            function closeVisual(){{
-                $sheet.removeClass('is-open faq-mode');
-                $('body').css('overflow', '');
-                setTimeout(function(){{ $sheet.prop('hidden', true); }}, 300);
+            function show(opener){{
+                CF.sheet.open($sheet[0], {{opener: opener, focus: mode === 'faq' ? '#rs-ft' : '#rs-t',
+                    keys: function(d){{ if (mode === 'cat') shift(d); }}}});   // PC ←/→ 항목 이동(UI-STANDARDS §13)
             }}
-            // F28: FAQ 시트 카드 = 리스크 시트 카드 동형(이름·별점·출처·언어칩·인용·날짜+상대뱃지·원문링크·tf 토글). grade만 미해당→생략.
+            // F28: FAQ 근거 = 리뷰 항목과 같은 모양(이름·별점·출처·언어·인용·날짜+상대시간·원문링크·번역 펼치기). 심각도는 해당 없음
             function faqCard(e){{
-                var stw = parseInt(e.st, 10) || 0;
-                var star = stw ? '<div class="star"><i style="width:' + (stw*20) + '%"></i></div>' : '';
-                var d = String(e.d||'').slice(2,10).replace(/-/g,'.');   // YY.MM.DD
-                var hasFull = !!e.tf;
-                var full = hasFull ? '<div class="full" hidden><div class="full-tit">전체 리뷰 (번역)</div><div class="full-txt">' + esc(e.tf) + '</div></div>' : '';
-                var foot = '<div class="item-foot">' + origLink(e.o, e.u)
-                    + (hasFull ? '<button type="button" class="expand-btn">전체 리뷰 <i>▾</i></button>' : '') + '</div>';
-                return '<li><div class="item">'
-                    + '<div class="item-top"><div class="name">' + esc(e.n || '투숙객') + '</div></div>'
-                    + '<div class="item-info">' + star + '<div class="web">' + esc(e.o || 'Google') + '</div>' + (langLabel(e.l) ? '<span class="q-lang">' + langLabel(e.l) + '</span>' : '') + '</div>'
-                    + '<div class="item-bottom"><div class="text clamp">' + (e.qh || emph(e.q)) + '</div>'   // qh = 서버 하이라이트 HTML(F23)
-                    + '<div class="date">' + esc(d) + relSpan(e.d) + '</div></div>'
-                    + foot + full
-                    + '</div></li>';
+                return item({{n: e.n || '투숙객', st: parseInt(e.st, 10) || 0, o: e.o || 'Google', l: e.l, text: e.qh || emph(e.q), d: e.d, u: e.u,
+                             full: e.tf ? '<p class="rv-full-t">전체 리뷰 (번역)</p><p class="rv-full-x">' + esc(e.tf) + '</p>' : ''}});   // qh = 서버 하이라이트 HTML(F23)
             }}
-            // FAQ-LAZYLOAD: 더보기 시트 소스 = R2 faq_reviews/{{pid}}.json (토픽별 최근1년 매칭 전체, 토픽당 최대 60건).
+            // FAQ-LAZYLOAD: 근거 시트 소스 = R2 faq_reviews/{{pid}}.json (토픽별 최근1년 매칭 전체, 토픽당 최대 60건).
             // 전체 JSON 1회 fetch 후 캐싱(토픽 전환 시 재요청 없음). 실패/CORS 시 인라인 FAQEVID 폴백 — 빈 시트 금지.
             var faqFull = null, faqFetchP = null, faqSeq = 0;
             function maskName(s){{
@@ -3729,11 +3730,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     .catch(function(e){{ faqFetchP = null; return Promise.reject(e); }});
                 return faqFetchP;
             }}
+            // H3 정보형 머리: 질문(최대 2줄) + '리뷰 12건 · 최근 1년 투숙객 리뷰'
             function faqList(topic, q, cnt, cards){{
-                $('#sheet-cat').text(q || '');
-                $('#sheet-cnt').text(cnt ? cnt + '건' : '');
-                $('#sheet-list').html(cards || '<li class="sheet-empty">리뷰 근거가 없어요</li>');
-                $('#sheet-list').scrollTop(0);
+                $('#rs-ft').text(q || '');
+                $('#rs-fs').text(cnt ? '리뷰 ' + cnt + '건 · 최근 1년 투숙객 리뷰' : '');
+                $('#sheet-list').html(cards || '<li class="rs-empty">리뷰 근거가 없어요</li>');
+                $sheet.find('.rs-body').scrollTop(0);
+                CF.sheet.update($sheet[0]);
             }}
             function faqRender(topic, q){{
                 var t = faqFull && faqFull[topic];
@@ -3744,52 +3747,39 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     faqList(topic, q, list.length, list.map(faqCard).join(''));
                 }}
             }}
-            function faqOpen(topic, q){{
-                $sheet.addClass('faq-mode');
-                $('#sheet-chips').empty();
-                $sheet.prop('hidden', false);
-                requestAnimationFrame(function(){{ $sheet.addClass('is-open'); }});
-                $('body').css('overflow', 'hidden');
-                if (window.CFNav) CFNav.push(closeVisual);
+            function faqOpen(topic, q, opener){{
+                setMode('faq');
+                $('#sheet-chips').empty(); $('#rs-tabs').empty();
                 var seq = ++faqSeq;   // 로딩 중 토픽 전환/재오픈 시 낡은 응답 렌더 방지
-                if (faqFull) {{ faqRender(topic, q); return; }}
-                faqList(topic, q, 0, '<li class="sheet-loading">리뷰를 불러오는 중…</li>');
-                faqFetch()
-                    .then(function(){{ if (seq === faqSeq) faqRender(topic, q); }})
-                    .catch(function(){{ if (seq === faqSeq) faqRender(topic, q); }});
+                if (faqFull) faqRender(topic, q);
+                else {{
+                    faqList(topic, q, 0, '<li class="rs-loading">리뷰를 불러오는 중…</li>');
+                    faqFetch()
+                        .then(function(){{ if (seq === faqSeq) faqRender(topic, q); }})
+                        .catch(function(){{ if (seq === faqSeq) faqRender(topic, q); }});
+                }}
+                show(opener);
             }}
-            $(document).on('click', '.faq-more-btn', function(){{ faqOpen($(this).data('topic'), $(this).data('q')); }});
-            function open(cat, sub){{
+            $(document).on('click', '.faq-more-btn', function(){{ faqOpen($(this).data('topic'), $(this).data('q'), this); }});
+            function open(cat, sub, opener){{
+                setMode('cat');
                 curCat = cat; curSub = sub || null; krOnly = false;
                 render();
-                $sheet.prop('hidden', false);
-                void $sheet[0].offsetHeight;          // hidden 해제를 전환에 반영(백그라운드 탭에선 rAF가 안 불림)
-                $sheet.addClass('is-open');
-                $sheet.find('.sheet-close').trigger('focus');
-                $('body').css('overflow', 'hidden');
-                if (window.CFNav) CFNav.push(closeVisual);  // 뒤로가기로 시트만 닫힘
+                show(opener);
             }}
-            function openDis(){{
+            function openDis(opener){{
+                setMode('dis');
                 curCat = '__dis__'; curSub = null; krOnly = false;
                 if (!qfull) loadFull(render); else render();   // 임베드는 카테고리당 40건 상한 → 전체 파일 먼저
-                $sheet.prop('hidden', false);
-                void $sheet[0].offsetHeight;
-                $sheet.addClass('is-open');
-                $sheet.find('.sheet-close').trigger('focus');
-                $('body').css('overflow', 'hidden');
-                if (window.CFNav) CFNav.push(closeVisual);
+                show(opener);
             }}
-            $(document).on('click', '.ev-row[data-dis]', function(){{ openDis(); }});
-            function close(){{ if (window.CFNav) CFNav.pop(); else closeVisual(); }}
-
+            $(document).on('click', '.ev-row[data-dis]', function(){{ openDis(this); }});
             $(document).on('click', '.stat-count.has-reviews', function(){{
-                open($(this).data('cat'), $(this).data('sub'));
+                open($(this).data('cat'), $(this).data('sub'), this);
             }});
-            $(document).on('click', '.more-btn', function(){{ open($(this).data('cat')); }});
-            $sheet.on('click', '.sheet-more-btn', function(){{ loadFull(render); }});
-            $(document).on('click', '.sheet-chip', function(){{
-                curSub = $(this).data('sub') || null; render();
-            }});
+            $(document).on('click', '.more-btn', function(){{ open($(this).data('cat'), null, this); }});
+            $sheet.on('click', '.rs-more-btn', function(){{ loadFull(render); }});
+            $sheet.on('click', '.rs-chip', function(){{ curSub = $(this).data('sub') || null; render(); }});
             // 한국인 리뷰만: 정확한 한국어 총건 위해 미로드 상태면 전체 먼저 로드
             $sheet.on('click', '#sheet-kr', function(){{
                 krOnly = !krOnly;
@@ -3800,51 +3790,30 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var i = (CATLIST.indexOf(curCat) + dir + CATLIST.length) % CATLIST.length;
                 curCat = CATLIST[i]; curSub = null; render();
             }}
-            $('#sheet-prev').on('click', function(){{ shift(-1); }});
-            $('#sheet-next').on('click', function(){{ shift(1); }});
-            $sheet.on('click', '.ss-cat', function(){{ curCat = $(this).data('cat'); curSub = null; render(); }});
-            $(document).on('keydown', function(e){{   // 팝업이 열려 있을 때 ←/→ 로 카테고리 이동(FAQ 모드 제외)
-                if (!$sheet.hasClass('is-open') || $sheet.hasClass('faq-mode')) return;
-                if (e.key === 'ArrowLeft') shift(-1); else if (e.key === 'ArrowRight') shift(1);
-            }});
-            $sheet.on('click', '.expand-btn', function(){{
-                var $b = $(this), $full = $b.closest('.item').find('.full');
+            $sheet.on('click', '.ss-cat, .rs-tab', function(){{ curCat = $(this).data('cat'); curSub = null; render(); }});
+            $sheet.on('click', '.rv-more', function(){{
+                var $b = $(this), $li = $b.closest('.rv'), $full = $li.find('.rv-full');
                 var opened = !$full.prop('hidden');
                 $full.prop('hidden', opened);
-                $b.toggleClass('is-open', !opened);
-                $b.closest('.item').find('.text').toggleClass('clamp', opened);
+                $b.toggleClass('is-open', !opened).attr('aria-expanded', !opened);
+                $li.find('.rv-text').toggleClass('clamp', opened);
             }});
-            $sheet.on('click', '.sheet-close, .sheet-dim', close);
-            $(document).on('keydown', function(e){{ if (e.key === 'Escape') close(); }});
         }});
 
-        // ───── 소셜 후기 (SOCIAL): 네이버 블로그 바텀시트 + 유튜브 lite-embed ─────
+        // ───── 소셜 후기 (SOCIAL): 네이버 블로그 시트 + 유튜브 lite-embed ─────
         $(function(){{
-            // 블로그: 카드 탭 → 바텀시트 iframe (원본 그대로, X·딤·뒤로가기로 즉시 복귀)
-            var $bs = $('#blog-sheet');
-            function bsCloseVisual(){{
-                $bs.removeClass('is-open');
-                $('body').css('overflow', '');
-                setTimeout(function(){{ $bs.prop('hidden', true); $('#bs-frame').attr('src', 'about:blank'); }}, 300);
-            }}
+            // 블로그: 카드 탭 → 페이지 시트 iframe (원본 그대로, X·딤·뒤로가기로 즉시 복귀 — CF.sheet)
+            var bs = document.getElementById('blog-sheet');
             $(document).on('click', '.nb-card', function(){{
-                if (!$bs.length) return;
+                if (!bs) return;
                 var u = $(this).data('url'), t = $(this).data('title');
                 if (typeof gtag === 'function') {{
                     var hh = window.CF_HOTEL || {{}};
                     gtag('event', 'blog_open', {{hotel_name: hh.name || '', hotel_id: hh.pid || '', blog_url: u}});
                 }}
-                $('#bs-tit').text(t);
                 $('#bs-link').attr('href', u);
-                $('#bs-frame').attr('src', u);
-                $bs.prop('hidden', false);
-                void $bs[0].offsetHeight;               // 강제 reflow — hidden 해제가 transition에 반영되도록 (rAF는 백그라운드 탭에서 안 불림)
-                $bs.addClass('is-open');
-                $('body').css('overflow', 'hidden');
-                if (window.CFNav) CFNav.push(bsCloseVisual);
-            }});
-            $bs.on('click', '.sheet-close, .sheet-dim', function(){{
-                if (window.CFNav) CFNav.pop(); else bsCloseVisual();
+                CF.sheet.open(bs, {{opener: this, onClose: function(){{ setTimeout(function(){{ $('#bs-frame').attr('src', 'about:blank'); }}, 250); }}}});
+                $('#bs-frame').attr({{src: u, title: t || '네이버 블로그 후기'}});   // 시트를 연 뒤에(열 때 body 끝으로 옮기면 iframe이 다시 읽힘)
             }});
             // 블로그 더보기: 숨긴 카드 전체 펼침 (기본 3 → 최대 9)
             $(document).on('click', '.nb-more', function(){{
