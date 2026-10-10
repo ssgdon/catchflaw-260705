@@ -775,7 +775,7 @@ def vs_card(pa, pb, hotels_meta, H, depth=0):
         return f'<div class="vs-r">{val(pa, kind)}<span class="vs-k">{label}</span>{val(pb, kind)}</div>'
     box_cls = 'is-bad' if tone == 'bad' else 'is-ok'
     icon = VS_ICON_BAD if tone == 'bad' else VS_ICON_OK
-    return f'''<a class="vs-card" href="{root}compare?ids={pa},{pb}">
+    return f'''<a class="vs-card" data-ga="vs_card" href="{root}compare?ids={pa},{pb}">
         <div class="vs-topic">{E(vs_topic(pa, pb, hotels_meta))}</div>
         <div class="vs-pics">{pic(pa)}<span class="vs-x">VS</span>{pic(pb)}</div>
         <div class="vs-heads">{col(pa)}{col(pb)}</div>
@@ -818,7 +818,7 @@ def hotel_card(pid, meta, h, depth=0, extra=''):
     al = area_line_html(meta)
     pl = price_line_html(meta)
     return f'''<li class="swiper-slide">
-        <a href="{p}hotels/{pid}" class="item">
+        <a href="{p}hotels/{pid}" class="item" data-ga="home_card">
             <div class="thumb">
                 <div class="badge">{badge_html(h)}</div>
                 <div class="image"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" width="600" height="400" loading="lazy"></div>
@@ -863,8 +863,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
 
     def slider(title, desc, pids):
         cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
-        return f'''<div class="hotel-list init">
-            <div class="head"><div class="title">{title}</div><div class="desc">{desc}</div></div>
+        return f'''<div class="hotel-list init" data-ga-block>
+            <div class="head"><div class="title" data-ga-title>{title}</div><div class="desc">{desc}</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div>
         </div>'''
 
@@ -886,11 +886,11 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         for row, label in COL_ROWS:
             items = [(slug, name) for slug, name in col_index if COL_BY_SLUG.get(slug, {}).get('row') == row]
             if not items: continue
-            chips = ''.join(f'<a class="hub-home-chip" href="./{E(slug)}">{E(COL_BY_SLUG[slug].get("chip") or name)}</a>' for slug, name in items)
+            chips = ''.join(f'<a class="hub-home-chip" data-ga="collection_chip" href="./{E(slug)}">{E(COL_BY_SLUG[slug].get("chip") or name)}</a>' for slug, name in items)
             rows.append(f'<div class="hub-home-row"><span class="hh-label">{label}</span><div class="hub-home-chips">{chips}</div></div>')
         col_chips = f'''<article class="section sec-collections">
-                <div class="home-collections init">
-                    <div class="head"><div class="title"><em>동네</em>·<em>동행</em>별로 보기</div>
+                <div class="home-collections init" data-ga-block>
+                    <div class="head"><div class="title" data-ga-title><em>동네</em>·<em>동행</em>별로 보기</div>
                     <div class="desc">같은 조건끼리 추천순으로 모았어요</div></div>
                     {''.join(rows)}
                 </div>
@@ -901,13 +901,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     _gap = lambda pr: max(H[pr[0]]['p_crit'], H[pr[1]]['p_crit']) / max(min(H[pr[0]]['p_crit'], H[pr[1]]['p_crit']), 1e-6)
     vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in sorted(PAIRS[:4], key=_gap, reverse=True))
     vs_block = f'''<article class="section sec-vs">
-                <div class="home-vs init">
-                    <div class="head"><div class="title"><em>한국인</em>이 가장 많이 <em>비교</em>하는 숙소</div>
+                <div class="home-vs init" data-ga-block>
+                    <div class="head"><div class="title" data-ga-title><em>한국인</em>이 가장 많이 <em>비교</em>하는 숙소</div>
                     </div>
                     <div class="vs-list">{vs_cards}</div>
                 </div>
             </article>''' if vs_cards else ''
-    hero_chips = ''.join(f'<a class="hero-chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
+    hero_chips = ''.join(f'<a class="hero-chip" data-ga="hero_chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
     hero_chips_html = (f'<div class="hero-chips"><span class="hc-label">많이 찾는 호텔</span>{hero_chips}</div>'
                        if hero_chips else '')
     gems_slider = slider('<em>숨겨진 보석</em> 같은 곳', '한국인은 적게 가지만 실망 확률 낮고 평점 높아요', gems) if len(gems) >= 3 else ''
@@ -927,13 +927,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     <main id="container">
         <section id="main">
             <article class="section sec-1">
-                <div class="search-box init">
+                <div class="search-box init" data-ga-block>
                     <div class="text"><ul>
                         <li><div class="subject">직원이 불친절해요</div><div class="star"><i style="width:20%"></i></div></li>
                         <li><div class="subject">너무 시끄러워요</div><div class="star"><i style="width:40%"></i></div></li>
                         <li><div class="subject">침대에서 벌레가 나왔어요</div><div class="star"><i style="width:40%"></i></div></li>
                     </ul></div>
-                    <div class="title">
+                    <div class="title" data-ga-title>
                         <h1 class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
                         <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {ai_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
@@ -1053,11 +1053,11 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         }}
 
         // 홈 블록별 클릭 측정 (HOME-CONCEPT §6: 2주 뒤 블록 순서 재조정 근거)
-        $(document).on('click', '.hero-chip, .hero-cmp, .vs-card, .hotel-list .item, .hub-home-chip', function(){{
+        // 훅은 클래스가 아니라 속성에 건다(DESIGN-SYSTEM-V3 §6-1): data-ga=placement · data-ga-block=블록 · data-ga-title=블록 이름 글자
+        $(document).on('click', '[data-ga]', function(){{
             if (typeof gtag !== 'function') return;
-            var pl = this.classList.contains('hero-chip') ? 'hero_chip' : this.classList.contains('hero-cmp') ? 'hero_compare'
-                   : this.classList.contains('vs-card') ? 'vs_card' : this.classList.contains('hub-home-chip') ? 'collection_chip' : 'home_card';
-            var blk = $(this).closest('.hotel-list, .home-vs, .search-box, .home-collections').find('.title, .tit').first().text().trim();
+            var pl = this.getAttribute('data-ga');
+            var blk = $(this).closest('[data-ga-block]').find('[data-ga-title]').first().text().trim();
             gtag('event', 'home_click', {{placement: pl, block: blk.slice(0, 40), link_url: this.getAttribute('href') || ''}});
         }});
         // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행)
@@ -3378,7 +3378,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     pc_side = f'''<aside class="pc-side" aria-label="요약">
                     {_top_html}
                     <ul class="ps-rows">{_rows_html}</ul>
-                    <a class="btn-reservate ps-cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a>
+                    <a class="btn-reservate ps-cta" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a>
                     <div class="ps-actions">{cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn ps-cmp"') if cmp_btn else ''}<a href="javascript:;" class="btn-share ps-share">공유</a></div>
                     <p class="ps-note">공개 리뷰 기반 참고용 통계예요 · <a href="../about">산출 방법</a></p>
                 </aside>'''
@@ -3423,7 +3423,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {lowrev_html}
                     <div class="info-bottom">
-                        <a class="btn-link btn-google" href="{E(gmap)}" target="_blank" rel="noopener">
+                        <a class="btn-link btn-google" data-out="google" href="{E(gmap)}" target="_blank" rel="noopener">
                             <span class="ico"><img src="../img/google.svg" alt=""></span>
                             <span class="txt"><span class="label">구글 평점 {fmt_score(meta.get('total_score'))}</span><span class="count">({meta.get('reviews_count') or 0:,}개)</span></span>
                         </a>
@@ -3443,7 +3443,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {col_chip_block}
                 {'' if h['scored'] else similar_block}
             </div>
-            <div class="button"><a class="btn-reservate" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
+            <div class="button"><a class="btn-reservate" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
         </section>
         <section id="float">
             <div class="float">

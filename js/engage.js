@@ -154,19 +154,20 @@
       CFNav.push(function () { fbModal.classList.remove('is-open'); document.body.style.overflow = ''; });
     }
 
-    // 구글맵으로 나가는 3개 링크 가로채기 (세션당 1회만 피드백)
-    $(document).on('click', 'a.btn-google, a.btn-reservate, a.map-link', function (e) {
+    // 구글맵으로 나가는 링크 가로채기 (세션당 1회만 피드백)
+    // 훅은 클래스가 아니라 속성에 건다(DESIGN-SYSTEM-V3 §6-1): data-out="cta|google|map" — 버튼 클래스가 바뀌어도 GA4가 끊기지 않게
+    var OUT_PLACEMENT = { cta: 'floating_cta', google: 'google_rating', map: 'map_link' };
+    $(document).on('click', 'a[data-out]', function (e) {
       var url = this.getAttribute('href');
+      var kind = this.getAttribute('data-out');
       // GA4 전환 측정 — 피드백 모달 노출 여부와 무관하게 매 클릭 카운트
       if (typeof gtag === 'function') {
         var h = window.CF_HOTEL || {};
-        var isCta = this.classList.contains('btn-reservate');
-        gtag('event', isCta ? 'check_price_click' : 'outbound_google', {
+        gtag('event', kind === 'cta' ? 'check_price_click' : 'outbound_google', {
           hotel_name: h.name || '',
           hotel_id: h.pid || '',
           link_url: url || '',
-          placement: this.classList.contains('btn-reservate') ? 'floating_cta'
-            : this.classList.contains('btn-google') ? 'google_rating' : 'map_link'
+          placement: OUT_PLACEMENT[kind] || 'map_link'
         });
       }
       if (alreadyShown()) return;  // 이미 봤으면 정상 이동
