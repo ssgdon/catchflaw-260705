@@ -1159,18 +1159,19 @@ def build_404():
 
 # ───────────────────────── recent (F40) ─────────────────────────
 def build_recent(hotels_meta, H):
-    """F40-c: 최근 본 호텔 — localStorage(cf_recent, 최신순 pid 배열·기록은 js/engage.js) 기반 개인화 페이지.
-       카드 = hotel_card 동일 마크업(빌드시 전 호텔 숨김 풀 프리렌더 → JS가 기록 순서로 노출, 최대 20). sitemap 제외·noindex."""
-    pool = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=0, kind='grid') for p in hotels_meta if p in H)
+    """F40-c: 최근 본 호텔 — localStorage(cf_recent 최신순 pid 배열 + cf_recent_ts {pid: 본 시각}, 기록은 js/engage.js) 기반 개인화 페이지.
+       v3 §7-5: 큰 제목 + '편집' 알약 · '오늘/어제/이번 주/그 전' 묶음 · 그리드 카드 2열(1:1) · 편집 모드(카드 왼쪽 위 X → 지우면 '되돌리기' 스낵바).
+       카드 = hotel_card 그리드(빌드시 전 호텔 숨김 풀 프리렌더 → JS가 기록 순서로 노출, 최대 20). sitemap 제외·noindex."""
+    pool = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=0, kind='grid', li_cls='recent-li') for p in hotels_meta if p in H)
     return head('최근 본 호텔 | 캐치플로', depth=0,
-        extra_head='<meta name="robots" content="noindex">') + f'''
+        extra_head='<meta name="robots" content="noindex">') + site_header(0, back='./') + f'''
     <main id="container">
-        <section id="main">
-            {site_header(0, back='./')}
-            <div class="hotel-list recent-list">
-                <div class="head"><h1 class="page-title">최근 본 호텔</h1></div>
-                <div class="list"><ul id="recent-list"></ul></div>
+        <section id="recent">
+            <div class="rc-head">
+                <h1 class="page-title">최근 본 호텔</h1>
+                <button type="button" class="chip-view rc-edit" id="rc-edit" aria-pressed="false" hidden>편집</button>
             </div>
+            <div id="recent-groups"></div>
             <div class="page-empty recent-empty" id="recent-empty" hidden>
                 <p class="pe-txt">아직 본 호텔이 없어요</p>
                 <div class="pe-btns"><a class="btn-brand" href="./search">호텔 둘러보기</a></div>
@@ -1180,16 +1181,42 @@ def build_recent(hotels_meta, H):
     </main>
     <script>
     $(function(){{
-        var ids = [];
-        try {{ ids = JSON.parse(localStorage.getItem('cf_recent') || '[]'); }} catch (e) {{}}
-        if (!Array.isArray(ids)) ids = [];
-        var $list = $('#recent-list'), n = 0;
-        ids.slice(0, 20).forEach(function(pid){{
-            var $a = $('#recent-pool a[href="hotels/' + String(pid).replace(/[^\\w-]/g, '') + '"]');
-            if ($a.length) {{ $list.append($a.closest('li')); n++; }}
+        var KEY = 'cf_recent', TS = 'cf_recent_ts', LABELS = ['오늘', '어제', '이번 주', '그 전'];
+        function readIds(){{ var a = []; try {{ a = JSON.parse(localStorage.getItem(KEY) || '[]'); }} catch (e) {{}} return Array.isArray(a) ? a : []; }}
+        function readTs(){{ var o = {{}}; try {{ o = JSON.parse(localStorage.getItem(TS) || '{{}}'); }} catch (e) {{}} return (o && typeof o === 'object') ? o : {{}}; }}
+        function save(ids, ts){{ try {{ localStorage.setItem(KEY, JSON.stringify(ids)); localStorage.setItem(TS, JSON.stringify(ts)); }} catch (e) {{}} }}
+        var cards = {{}};   // pid → 카드 <li> 마크업 (빌드 때 만들어 둔 숨김 풀)
+        $('#recent-pool > li').each(function(){{
+            var m = ($(this).find('a.hcard').attr('href') || '').match(/hotels\\/([\\w-]+)/);
+            if (m) cards[m[1]] = this.outerHTML.replace(/<\\/li>\\s*$/, '<button type="button" class="rc-x" data-rm="' + m[1] + '" aria-label="최근 본 목록에서 지우기"></button></li>');
         }});
         $('#recent-pool').remove();
-        if (!n) {{ $('#recent-empty').prop('hidden', false); $('#recent-list').hide(); }}
+        var editing = false, $g = $('#recent-groups'), $edit = $('#rc-edit');
+        function dayStart(t){{ var d = new Date(t); d.setHours(0, 0, 0, 0); return d.getTime(); }}
+        function bucket(t){{ if (!t) return 3; var diff = Math.round((dayStart(Date.now()) - dayStart(t)) / 864e5); return diff <= 0 ? 0 : diff === 1 ? 1 : diff < 7 ? 2 : 3; }}
+        function render(){{
+            var ts = readTs(), items = readIds().slice(0, 20).filter(function(id){{ return cards[id]; }});
+            $('#recent').toggleClass('is-editing', editing && items.length > 0);
+            if (!items.length) {{ editing = false; $g.empty(); $edit.prop('hidden', true).text('편집').attr('aria-pressed', 'false').removeClass('on'); $('#recent-empty').prop('hidden', false); return; }}
+            $('#recent-empty').prop('hidden', true);
+            $edit.prop('hidden', false).text(editing ? '완료' : '편집').attr('aria-pressed', editing ? 'true' : 'false').toggleClass('on', editing);
+            var stamped = items.some(function(id){{ return ts[id]; }}), groups = [[], [], [], []];   // 본 시각이 하나도 없으면(예전 기록) 묶음 머리 없이 한 덩어리
+            items.forEach(function(id){{ groups[stamped ? bucket(ts[id]) : 3].push(id); }});
+            $g.html(groups.map(function(g, i){{
+                if (!g.length) return '';
+                return '<section class="rc-grp">' + (stamped ? '<h2 class="rc-gt">' + LABELS[i] + '</h2>' : '') + '<ul class="rc-grid">' + g.map(function(id){{ return cards[id]; }}).join('') + '</ul></section>';
+            }}).join(''));
+        }}
+        $edit.on('click', function(){{ editing = !editing; render(); }});
+        $g.on('click', '.rc-x', function(){{
+            var id = String($(this).data('rm')), ids = readIds(), ts = readTs(), at = ids.indexOf(id), t = ts[id];
+            if (at < 0) return;
+            ids.splice(at, 1); delete ts[id]; save(ids, ts); render();
+            CF.toast('최근 본 목록에서 지웠어요', {{action: {{label: '되돌리기', fn: function(){{
+                var a = readIds(), o = readTs(); a.splice(Math.min(at, a.length), 0, id); if (t) o[id] = t; save(a, o); render();
+            }}}}}});
+        }});
+        render();
     }});
     </script>''' + build_footer(0) + FOOT
 
@@ -1198,32 +1225,6 @@ def abs_img(pid, meta):
     if meta.get('r2_img'): return meta['r2_img']
     if meta.get('local_img'): return f'/img/hotels/{pid}.jpg'
     return ''
-
-def top_complaint(h):
-    """P1과 같은 기준의 대표 불만 1개: 주의·위험 소분류 & 최근 1년 3건+ & 비율 2%+ 중 위험도 최고.
-       반환 (소분류, band, 최근1년건수) 또는 None."""
-    best = None
-    for c in CATS:
-        for s in SUBS[c]:
-            sb = h['cats'][c]['subs'][s]
-            n1 = sb.get('count_1y', 0)
-            if (s not in RARE_SUBS and sb['band'] in ('warning', 'danger') and n1 >= 3
-                    and h['analyzed'] and n1 / h['analyzed'] >= 0.02):
-                if best is None or sb['score'] > best[0]:
-                    best = (sb['score'], s, sb['band'], n1)
-    return best[1:] if best else None
-
-def card_tags(h):
-    """P6 검색 카드 태그(최대 2): 가장 안전한 양호 카테고리 + 대표 불만. [[tone, text], ...] — 실측만."""
-    if not h['scored'] or not h['ranked']: return []   # 리뷰 적은 호텔은 '불만 적음' 같은 비교형 태그 생략
-    tags = []
-    tc = top_complaint(h)
-    tc_cat = next((c for c in CATS if tc and tc[0] in SUBS[c]), None)
-    safe = sorted((c for c in CATS if h['cats'][c]['band'] == 'safe' and c != tc_cat),
-                  key=lambda c: h['cats'][c]['score'])
-    if safe: tags.append(['safe', f'{cat_ko(safe[0])} 불만 적음'])
-    if tc: tags.append([tc[1], f'{SUB_PHRASE[tc[0]]} 불만'])
-    return tags
 
 # ── '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6.1) — 검색 인덱스 x·검색 필터·AI 추천이 같은 숫자를 쓴다 ──
 ROACH_RX = re.compile(r'바퀴|cockroach|roach|ゴキブリ|蟑螂', re.I)
@@ -1335,7 +1336,6 @@ def build_search_index(hotels_meta, H, quotes=None):
             'krr': KRR.get(pid),                 # 한국인 비율(%, 1년, 10건 이상만) — 사유줄 '(43%)'
             'cb': cb, 'cs': cs,
             'ai': abs_img(pid, meta),          # 비교함 썸네일(깊이 무관)
-            'tg': card_tags(h),                # P6 카드 태그
         })
     return items
 
@@ -1363,6 +1363,7 @@ def build_search_ac_index(hotels_meta, H):
         out.append({
             'id': pid,
             't': meta['title'],
+            'ar': area_tag(meta),            # 자동완성 컴팩트 행 메타 '나카스 · ● 실망 확률 4%'
             'p': pct(h['p_crit']) if h['scored'] else None,
             'band': h['badge'][0] if h['scored'] else None,
             'krn': KRN.get(pid, 0),          # 카드·사유줄과 같은 최근 1년 기준 (hotels_index의 krn은 전체 기간이라 숫자가 달라 보였음)
@@ -1374,94 +1375,692 @@ def build_search_ac_index(hotels_meta, H):
     out.sort(key=lambda x: -x['pop'])
     return json.dumps(out, ensure_ascii=False, separators=(',', ':'))
 
+SEARCH_JS = r"""(function(){
+    var CITY_KO = '@@CITY_KO@@', CITY_AVG = @@CITY_AVG@@;
+    var OTHER = @@KW@@;                       // 미지원 도시 검색어
+    var CATS = @@CATS@@;                      // 점수 대분류 6개 [{ko}]
+    var PRICE_LABEL = @@PRICES@@;             // {b1:'10만원 미만', …}
+    var BADGE_STATES = @@BADGE@@;             // generate.BADGE_STATES(정본)를 주입 — 배지 상태표 1벌
+    var AREAS = window.CF_AREAS || [];
+    function catName(k){ return (window.CAT_KO && window.CAT_KO[k]) || k; }
+    var MUSTS = (window.CFRec && window.CFRec.MUSTS) || [], MUST_BY = (window.CFRec && window.CFRec.mustBy) || {};
+    function normNo(a){ return (window.CFRec && window.CFRec.normNo) ? window.CFRec.normNo(a) : []; }
+    var $q = $('#q'), $res = $('#results'), $notice = $('#notice'), $lhead = $('#list-head'), $lcount = $('#lh-count');
+    var sp = new URLSearchParams(location.search);
+
+    // ───── 상태 ─────
+    var F = {area:'', price:'', cats:[], no:[]};   // 적용된 필터 (필터 시트 'N곳 보기'로 확정 · URL ?area=&price=&cat=&no=)
+    var sortBy = 'rs', sortCat = '';               // 정렬 (?sort=rs|p|krn|price|g|rc|cat:청결)
+    var SORT_LABEL = {rs:'추천순', p:'실망 확률 낮은 순', krn:'한국인 리뷰 많은 순', price:'가격 낮은 순', g:'구글 평점 높은 순', rc:'구글 리뷰 많은 순'};
+    var baseList = [];       // 검색+필터 결과 (지도 뷰포트 제외)
+    var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
+    var mapOpen = false;     // 지도 기본 접힘 — 열렸을 때만 '지도 영역 내' 연동
+    var lastQ = '';          // 검색어 측정 중복 방지
+    var recMode = false, recShown = [];
+    var CAT_KEYS = CATS.map(function(c){ return c.ko; });
+
+    function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
+    function km(a1,o1,a2,o2){ var R=6371,p1=a1*Math.PI/180,p2=a2*Math.PI/180,dp=(a2-a1)*Math.PI/180,dl=(o2-o1)*Math.PI/180;
+        var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }
+    function areaOf(code){ return AREAS.filter(function(x){ return x.code === code; })[0] || null; }
+    function imgSrc(h){ return h.img ? (h.img.indexOf('http') === 0 ? h.img : './' + h.img) : './img/placeholder.svg'; }
+    function ga(name, p){ if (typeof gtag === 'function') gtag('event', name, p || {}); }
+
+    // ───── 지도 ─────
+    var BAND_COLOR = {safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')};
+    var map = L.map('map', {scrollWheelZoom:false, zoomControl:true}).setView([33.5902,130.4017], 13);
+    L.tileLayer('https://{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}&hl=ko',
+        {maxZoom:19, subdomains:['mt0','mt1','mt2','mt3'], attribution:'&copy; Google'}).addTo(map);
+    map.on('click', function(){ map.scrollWheelZoom.enable(); hideCard(); });
+    var markers = L.layerGroup().addTo(map), markerById = {}, selId = '';
+    // 컨테이너 레이아웃 완료 후 크기 재계산 (초기 0폭 방지) + 리스트 재동기화
+    setTimeout(function(){
+        if (!mapOpen) return;             // 접힌 상태면 지도 그리기는 열 때(setMap)
+        map.invalidateSize();
+        if (recMode) return;              // rec 모드는 drawRecMap이 따로 처리
+        if (!baseList.length) return;
+        var a = areaOf(F.area);
+        if (a) { map.setView([a.lat, a.lng], 15, {animate:false}); drawMap(baseList, false); renderVisible(); }
+        else { drawMap(baseList, true); }
+    }, 80);
+    $(window).on('load', function(){ map.invalidateSize(); });
+
+    // 지도 위 떠 있는 카드(핀을 누르면 아래에 뜸) — 호텔 카드 글줄(§6-4)과 같은 문법
+    var $mc = $('#map-card'), $mw = $('#map-wrap');
+    function bandText(h){
+        var k = badgeKey(h), st = BADGE_STATES[k];
+        return (st.dot === null ? '' : '<i class="sdot' + (st.dot ? ' ' + st.dot : '') + '"></i>') + st.photo.replace('{p}', h.p);
+    }
+    function showCard(h, rank){
+        var rate = h.g ? '★ ' + h.g.toFixed(1) + ' (' + h.rc.toLocaleString() + ')' : '';
+        $mc.html('<a class="hcard hcard--map" href="./hotels/' + h.id + '">'
+            + '<div class="hcard-photo"><img src="' + imgSrc(h) + '" alt="" width="160" height="120"></div>'
+            + '<div class="hcard-body"><h3 class="hcard-name">' + (rank ? rank + '위 ' : '') + esc(h.name) + '</h3>'
+            + '<div class="hcard-meta">' + bandText(h) + '</div>'
+            + '<div class="hcard-meta">' + [rate, h.pt].filter(Boolean).map(function(t){ return '<span class="seg">' + t + '</span>'; }).join(WHY_SEP) + '</div></div></a>'
+            + '<button type="button" class="btn-icon btn-icon--photo mc-x" aria-label="닫기"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="m3.5 3.5 9 9m0-9-9 9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>').prop('hidden', false);
+        $mw.addClass('is-pop');
+        pick(h.id);
+    }
+    function hideCard(){ $mc.prop('hidden', true).empty(); $mw.removeClass('is-pop'); pick(''); }
+    function pick(id){   // 고른 핀은 크게 + 잉크 테두리
+        if (selId && markerById[selId] && markerById[selId].setStyle) markerById[selId].setStyle({radius:8, weight:2, color:CF.tok('--surface-card')});
+        selId = id;
+        var mk = id && markerById[id];
+        if (mk && mk.setStyle) { mk.setStyle({radius:12, weight:3, color:CF.tok('--ink')}); mk.bringToFront(); }
+    }
+    $mc.on('click', '.mc-x', hideCard);
+
+    // 화면 맞춤용 좌표: 중앙값에서 5km 밖 외곽 호텔(시카노시마 등)은 맞춤에서만 제외 — 도심이 작게 보이는 문제 방지
+    function fitPts(list){
+        var pts = list.filter(function(h){ return h.lat != null; }).map(function(h){ return [h.lat, h.lng]; });
+        if (pts.length < 5) return pts;
+        var med = function(a){ a = a.slice().sort(function(x,y){ return x-y; }); return a[Math.floor(a.length/2)]; };
+        var mLat = med(pts.map(function(p){ return p[0]; })), mLng = med(pts.map(function(p){ return p[1]; }));
+        var core = pts.filter(function(p){ return km(mLat, mLng, p[0], p[1]) <= 5; });
+        return core.length >= pts.length * 0.8 ? core : pts;
+    }
+    function drawMap(list, fit){
+        markers.clearLayers(); markerById = {}; selId = ''; hideCard();
+        list.forEach(function(h){
+            if (h.lat == null) return;
+            var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
+            var mk = L.circleMarker([h.lat,h.lng], {radius:8, color:CF.tok('--surface-card'), weight:2, fillColor:col, fillOpacity:0.95});
+            mk.on('click', function(e){ L.DomEvent.stopPropagation(e); showCard(h); });
+            markers.addLayer(mk); markerById[h.id] = mk;
+        });
+        var fp = fitPts(list);
+        if (fit && fp.length) { syncMap = false; map.once('moveend', function(){ syncMap = true; renderVisible(); }); map.fitBounds(fp, {padding:[28,28], maxZoom:15}); }
+    }
+
+    // ───── 정렬 ─────
+    function sortList(arr){
+        var a = arr.slice();
+        if (sortCat) {   // 항목별 걱정 적은 순 (해당 대분류 위험도 낮은 순)
+            a.sort(function(x,y){
+                var sx = (x.cs && x.cs[sortCat] != null) ? x.cs[sortCat] : 999;
+                var sy = (y.cs && y.cs[sortCat] != null) ? y.cs[sortCat] : 999;
+                return (x.lr?1:0)-(y.lr?1:0) || sx - sy;   // 리뷰 적은 호텔은 순위 정렬에서 뒤로
+            });
+        } else if (sortBy === 'price') a.sort(function(x,y){ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); });
+        else if (sortBy === 'rc') a.sort(function(x,y){ return (y.rc||0)-(x.rc||0); });
+        else if (sortBy === 'g') a.sort(function(x,y){ return (y.g||0)-(x.g||0); });
+        else if (sortBy === 'krn') a.sort(function(x,y){ return (y.krn||0)-(x.krn||0) || (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); });   // 한국인 리뷰 많은 순(최근 1년)
+        else if (sortBy === 'rs') a.sort(function(x,y){ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (y.rs||0)-(x.rs||0) || (x.p||0)-(y.p||0); });   // 추천순(기본): 실망 확률·한국인 리뷰·평점 복합, 리뷰 적은 호텔은 뒤로
+        else a.sort(function(x,y){ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (x.p||0)-(y.p||0); });   // 실망 확률 낮은 순 · 리뷰 적은 호텔은 뒤로
+        return a;
+    }
+    function sortText(){ return sortCat ? catName(sortCat) + ' 불만 적은 순' : (SORT_LABEL[sortBy] || '추천순'); }
+
+    // ───── 카드: 와이드 .hcard (generate.hotel_card kind='wide'와 같은 글줄) ─────
+    function badgeKey(h){ return !h.scored ? 'none' : (h.band === 'danger' && h.lr) ? 'lowdanger' : h.band; }
+    function photoBadge(h){   // 사진 위 배지 1개(점 + '실망 확률 7%' / '리뷰 적음' / '위험 · 리뷰 적음' / '분석 준비 중') — generate.badge_html과 같은 규칙
+        var st = BADGE_STATES[badgeKey(h)];
+        if (!st) return '';
+        return '<span class="photo-badge">' + (st.dot === null ? '' : '<i class="sdot' + (st.dot ? ' ' + st.dot : '') + '"></i>')
+            + (st.sr ? '<span class="blind">' + st.sr + '</span>' : '') + st.photo.replace('{p}', h.p) + '</span>';
+    }
+    var WHY_SEP = '<span class="dsep"> · </span>';
+    function whyHtml(h, noWorst){   // ③ 사유줄 — generate.why_line과 같은 규칙. 위험이면 '● 위험 · 주로 소음 불만', 아니면 '한국인 리뷰 202건 (37%) · 주로 소음 불만'
+        if (!h.scored) return '';
+        var parts = [], r = CITY_AVG ? h.p / CITY_AVG : 0, wc = null;
+        if (!noWorst && r >= 1.2 && h.cs) {
+            var best = null; CAT_KEYS.forEach(function(c){ if (h.cs[c] != null && (best == null || h.cs[c] > h.cs[best])) best = c; });
+            if (best && h.cb && (h.cb[best] === 'warning' || h.cb[best] === 'danger')) wc = best;
+        }
+        var k = badgeKey(h);
+        if (k === 'danger' || k === 'lowdanger') parts.push('<span class="seg"><i class="sdot is-danger"></i><b class="hcard-grade">위험</b></span>');
+        else if ((h.krn||0) >= 10) parts.push('<span class="seg">한국인 리뷰 ' + h.krn + '건' + (h.krr != null ? ' (' + h.krr + '%)' : '') + '</span>');
+        if (wc) parts.push('<span class="seg">주로 ' + catName(wc) + ' 불만</span>');
+        return parts.length ? '<div class="hcard-meta hcard-why">' + parts.slice(0,2).join(WHY_SEP) + '</div>' : '';
+    }
+    function boldMan(t){ return String(t).replace(/(\d[\d,]*만원)/, '<b>$1</b>'); }
+    function priceHtml(h){   // ④ 가격 — generate.price_card_html과 같은 규칙('1박' 없음): 평일 숫자만 굵게 + 주말(굵게 안 함, 넘치면 통째로 다음 줄)
+        if (!h.pt) return '';
+        if (recMode && recBw && h.ptw)   // AI 추천 '주말 기준': 주말 값을 앞에
+            return '주말 ' + boldMan(h.ptw) + ' <span class="seg hcard-we">· ' + h.pt + '</span>';
+        return boldMan(h.pt) + (h.ptw ? ' <span class="seg hcard-we">· 주말 ' + h.ptw + '</span>' : '');
+    }
+    function lineHtml(h){   // 카테고리 정렬·'한 번도 없어야' 켜짐: 해당 결론을 점 + 글자 한 줄로
+        var out = [];
+        if (sortCat && h.scored && h.cb && h.cb[sortCat] != null) {
+            var v = h.cs[sortCat], band = h.cb[sortCat];
+            var lab = v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음';   // cat_verdict와 같은 구간
+            out.push('<div class="hcard-meta"><span class="cat-verdict is-' + band + '">' + catName(sortCat) + ' 불만 ' + lab + '</span></div>');
+        }
+        var no = recMode ? [] : F.no;
+        if (no.length && h.x) out.push('<div class="hcard-meta"><span class="cat-verdict is-safe">' + no.map(function(k){ return NO_SHORT[k] || k; }).join('·') + ' 0건</span></div>');
+        return out.join('');
+    }
+    function cmpBtn(h){   // 사진 오른쪽 위 비교 원 (채점 호텔만) — js/compare.js가 [data-cmp-id]를 위임 처리
+        if (!h.scored) return '';
+        return '<button type="button" class="hcard-cmp hcard-saved" data-cmp-id="' + h.id + '" data-cmp-name="' + esc(h.name) + '" data-cmp-img="' + esc(h.ai || '') + '" aria-label="비교함에 담기" aria-pressed="false"><i class="cmp-ico"></i></button>';
+    }
+    function cardHtml(h, o){
+        o = o || {};
+        var sub = [h.st || h.ar, h.stars].filter(Boolean).join(' · ');
+        var rate = h.g ? '★ ' + h.g.toFixed(1) + ' (' + h.rc.toLocaleString() + ')' : '';
+        var price = priceHtml(h);
+        return '<li class="hres' + (o.cls ? ' ' + o.cls : '') + '" data-id="' + h.id + '">'
+            + '<a class="hcard hcard--wide" href="./hotels/' + h.id + '">'
+            + '<div class="hcard-photo"><img src="' + imgSrc(h) + '" alt="' + esc(h.name) + '" width="600" height="450" loading="' + (o.eager ? 'eager' : 'lazy') + '" decoding="async">' + photoBadge(h)
+            + (o.rank ? '<span class="cnt hres-rank">' + o.rank + '</span>' : '') + '</div>'
+            + '<div class="hcard-body">'
+            + (o.tag ? '<span class="tag hres-tag">' + o.tag + '</span>' : '')
+            + '<div class="hcard-head"><h3 class="hcard-name">' + esc(h.name) + '</h3><span class="hcard-rate">' + rate + '</span></div>'
+            + (sub ? '<div class="hcard-meta">' + esc(sub) + '</div>' : '')
+            + whyHtml(h, o.noWorst) + lineHtml(h)
+            + (price ? '<div class="hcard-price">' + price + '</div>' : '')
+            + (o.pills || '')
+            + '</div></a>' + cmpBtn(h) + '</li>';
+    }
+    function renderRows(list){
+        if (!list.length) { $res.html(''); return; }
+        $res.html(sortList(list).map(function(h, i){ return cardHtml(h, {eager: i < 3}); }).join(''));
+        if (window.CFCompare) window.CFCompare.render();   // 새로 그린 카드의 담김 상태 반영
+    }
+
+    // 지도 뷰포트 안의 호텔만 리스트에 (C-3)
+    function renderVisible(){
+        if (!mapOpen) {
+            $lcount.text(lead() + ' ' + baseList.length + '곳');
+            $lhead.toggle(baseList.length > 0);
+            renderRows(baseList);
+            return;
+        }
+        var b = map.getBounds();
+        var vis = baseList.filter(function(h){ return h.lat != null && b.contains([h.lat, h.lng]); });
+        $lcount.text('지도에 보이는 호텔 ' + vis.length + '곳');
+        $lhead.toggle(baseList.length > 0);
+        renderRows(vis);
+    }
+    function lead(){ var q = $q.val().trim(); return q ? '‘' + q + '’ 검색 결과' : CITY_KO + ' 호텔'; }
+
+    // ───── 필터 ─────
+    function passNo(h, no){   // '1년 안에 한 번도 없어야' — 심각 건수(h.x)가 1건이라도 있으면 제외. 데이터 없는(미채점) 호텔도 제외
+        if (!no.length) return true;
+        if (!h.x) return false;
+        for (var i = 0; i < no.length; i++) { if ((h.x[no[i]]||0) > 0) return false; }
+        return true;
+    }
+    function passFilters(h, f){
+        f = f || F;
+        if (f.price && h.pb !== f.price) return false;
+        if (f.area) {
+            var a = areaOf(f.area);
+            if (a) { if (h.lat == null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; }
+        }
+        for (var i = 0; i < f.cats.length; i++) { if (h.cb && h.cb[f.cats[i]] === 'danger') return false; }
+        return passNo(h, f.no);
+    }
+    function nFilters(f){ f = f || F; return (f.area ? 1 : 0) + (f.price ? 1 : 0) + f.cats.length + f.no.length; }
+    function matchQ(pool, q){   // 검색어 매칭: 별칭 인덱스(CF_IDX) 우선 → 이름 부분 문자열 폴백
+        var nq = norm(q), idSet = null;
+        if (window.CFAutocomplete && window.CF_IDX) { idSet = {}; window.CFAutocomplete.matchIds(q).forEach(function(id){ idSet[id] = 1; }); }
+        var byName = function(h){ return norm(h.name).indexOf(nq) >= 0 || norm(h.en).indexOf(nq) >= 0; };
+        var m = idSet ? pool.filter(function(h){ return idSet[h.id]; }) : pool.filter(byName);
+        if (idSet && !m.length) m = pool.filter(byName);
+        return m;
+    }
+    function countFor(f){   // 필터 시트 'N곳 보기' — 지금 검색어 + 시트에서 고른 조건
+        var pool = HOTELS.filter(function(h){ return passFilters(h, f); }), q = $q.val().trim();
+        return q ? matchQ(pool, q).length : pool.length;
+    }
+    function isOtherCity(q){ var n = norm(q); return OTHER.some(function(k){ return n.indexOf(norm(k)) >= 0; }); }
+
+    // 적용 조건마다 '하카타역 빼기' 칩 — 결과 0건에서 한 번에 풀 수 있게
+    function removeChips(){
+        var c = [];
+        if (F.area) c.push(['area', '', (areaOf(F.area)||{}).ko || F.area]);
+        if (F.price) c.push(['price', '', PRICE_LABEL[F.price]]);
+        F.cats.forEach(function(k){ c.push(['cat', k, catName(k) + ' 조건']); });
+        F.no.forEach(function(k){ c.push(['no', k, (MUST_BY[k]||{}).chip || k]); });
+        return c.map(function(x){ return '<button type="button" class="chip-filter chip-filter--sm" data-rm="' + x[0] + '" data-v="' + esc(x[1]) + '">' + esc(x[2]) + ' 빼기</button>'; }).join('');
+    }
+    function emptyView(tit, txt, extra, btns){
+        $lhead.hide(); $res.html('');
+        $notice.show().html('<div class="empty-sec"><div class="es-tit">' + tit + '</div>' + (txt ? '<div class="es-txt">' + txt + '</div>' : '') + (extra || '') + (btns ? '<div class="es-btns">' + btns + '</div>' : '') + '</div>');
+    }
+    function unsupported(q){
+        emptyView('아직 ' + CITY_KO + '만 지원해요', '‘' + esc(q) + '’ 지역은 준비 중이에요. ' + CITY_KO + ' 호텔부터 둘러보세요.', '',
+            '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 전체 보기</a>');
+    }
+    function noResult(q){   // 이름이 안 맞음 → '혹시 이 호텔인가요?' 비슷한 이름 + 분석 요청 / 조건 때문에 안 보이면 조건 빼기 칩
+        var ids = {}, all = q ? matchQ(HOTELS, q) : HOTELS;
+        var sug = [];
+        if (q && !all.length && window.CFAutocomplete && window.CFAutocomplete.suggest) {
+            window.CFAutocomplete.suggest(q, 3).forEach(function(it){ ids[it.id] = 1; });
+            sug = HOTELS.filter(function(h){ return ids[h.id]; });
+        }
+        var rm = nFilters() ? removeChips() : '';
+        if (q && all.length) {   // 이름은 있는데 조건 때문에 빠짐
+            emptyView('조건에 맞는 ‘' + esc(q) + '’ 호텔이 없어요', '', '', rm);
+        } else if (q) {
+            var list = sug.length ? '<div class="es-sug"><div class="es-sug-t">혹시 이 호텔인가요?</div><ul class="cp-list">' + sug.map(function(h){
+                return '<li><a class="cp-item" href="./hotels/' + h.id + '"><span class="cp-img"><img src="' + imgSrc(h) + '" alt="" loading="lazy"></span>'
+                    + '<span class="cp-info"><span class="cp-nm">' + esc(h.name) + '</span><span class="cp-meta">' + [h.ar, bandText(h)].filter(Boolean).join(' · ') + '</span></span></a></li>'; }).join('') + '</ul></div>' : '';
+            emptyView('‘' + esc(q) + '’ 호텔을 찾지 못했어요', sug.length ? '' : '아직 분석하지 않은 호텔일 수 있어요. 요청해 주시면 확인할게요.', list,
+                '<button type="button" class="btn-ink btn-sm" id="req-analysis">분석 요청하기</button>' + rm);
+        } else {
+            emptyView('조건에 맞는 호텔이 없어요', '아래 조건을 빼면 더 보여요.', '', rm);
+        }
+    }
+
+    function run(){
+        var q = $q.val().trim(), pool = HOTELS.filter(function(h){ return passFilters(h); }), list = pool, suggested = false;
+        $notice.hide().empty();
+        if (q) {
+            list = matchQ(pool, q);
+            // 매칭 0건일 때만 측정·안내 (§7-d). 비슷한 이름은 '혹시 이 호텔인가요?'로
+            if (q !== lastQ) {
+                var sIds = {}; if (!list.length && window.CFAutocomplete && window.CFAutocomplete.suggest) window.CFAutocomplete.suggest(q, 3).forEach(function(it){ sIds[it.id] = 1; });
+                suggested = !list.length && HOTELS.some(function(h){ return sIds[h.id]; });
+                ga('search', {search_term: q, results: suggested ? 0 : list.length});
+                if (!list.length || suggested) ga('search_no_result', {search_term: q});
+            }
+            lastQ = q;
+            if (!list.length) {
+                baseList = [];
+                if (isOtherCity(q)) unsupported(q); else noResult(q);
+                if (mapOpen) { drawMap(pool, true); }
+                return;
+            }
+        } else if (!pool.length) { baseList = []; noResult(''); if (mapOpen) drawMap([], false); return; }
+        baseList = list;
+        // 지역이 선택돼 있으면 지역 중심으로 고정 줌 (fitBounds는 가장자리 호텔로 뷰가 넓어짐)
+        var area = areaOf(F.area);
+        if (!mapOpen) { /* 지도는 열 때(setMap) 그린다 */ }
+        else if (area) { map.setView([area.lat, area.lng], 15, {animate:false}); drawMap(list, false); }   // 애니메이션 setView는 프로그래밍 호출 시 무시됨
+        else { drawMap(list, true); }
+        renderVisible();
+    }
+    $notice.on('click', '#req-analysis', function(){ if (window.CFAutocomplete) window.CFAutocomplete.requestAnalysis($q.val().trim()); });
+    $notice.on('click', '[data-rm]', function(){
+        var k = $(this).data('rm'), v = String($(this).data('v') || '');
+        if (k === 'area') F.area = ''; else if (k === 'price') F.price = '';
+        else if (k === 'cat') F.cats = F.cats.filter(function(c){ return c !== v; });
+        else if (k === 'no') F.no = F.no.filter(function(c){ return c !== v; });
+        applyFilters(true);
+    });
+
+    // ───── 이벤트: 지도 ─────
+    map.on('moveend', function(){ if (mapOpen && syncMap && !recMode) renderVisible(); });
+    // PC: 목록 카드에 마우스를 올리면 지도 핀을 키워 위치를 보여줌
+    $res.on('mouseenter', 'li[data-id]', function(){ var id = $(this).data('id'); if (mapOpen && markerById[id] && markerById[id].setStyle && id !== selId) { markerById[id].setStyle({radius:13, weight:3}); markerById[id].bringToFront(); } })
+        .on('mouseleave', 'li[data-id]', function(){ var id = $(this).data('id'); if (markerById[id] && markerById[id].setStyle && id !== selId) markerById[id].setStyle({radius:8, weight:2}); });
+
+    // 지도 토글: 열면 지도 위로 스크롤 + 크기 재계산 + 목록을 보이는 영역으로 연동, 닫으면 전체 목록
+    function mapToggleUi(open){
+        mapOpen = open;
+        $('#map-wrap').toggleClass('is-collapsed', !open);
+        $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록' : '지도');
+        $('html').toggleClass('map-open', open);
+        if (!open) hideCard();
+    }
+    function scrollToMap(){
+        var top = $('#map-wrap').offset().top - ($('#title').outerHeight() || 0) - 8;
+        window.scrollTo({top: Math.max(0, top), behavior: 'smooth'});
+    }
+    function setMap(open, noScroll){
+        mapToggleUi(open);
+        if (open) {
+            map.invalidateSize();   // 숨김 상태(0px)에서 초기화된 지도 크기 재계산
+            var a = areaOf(F.area);
+            if (a) map.setView([a.lat, a.lng], 15, {animate:false});
+            else { var pts = fitPts(baseList); if (pts.length) map.fitBounds(pts, {padding:[28,28], maxZoom:15, animate:false}); }   // 즉시 맞춤 → 아래 renderVisible이 바로 정확
+            drawMap(baseList, false);
+            if (!noScroll) scrollToMap();
+        }
+        renderVisible();
+    }
+    function setRecMap(open){
+        mapToggleUi(open);
+        if (open) { map.invalidateSize(); drawRecMap(recShown); scrollToMap(); }
+    }
+    $('#map-toggle').on('click', function(){
+        if (recMode) { setRecMap(!mapOpen); ga('map_toggle', {open: mapOpen, rec: true}); return; }
+        setMap(!mapOpen);
+        ga('map_toggle', {open: mapOpen});
+    });
+
+    // ───── 정렬: 모바일 = 가운데 다이얼로그 '정렬'(5개 + '항목별 걱정 적은 순 ›' 2단계 + '적용'), PC = 버튼 아래 팝오버(고르면 바로 적용) ─────
+    var sortBox = document.getElementById('sort-box'), sortDlg = null, draft = null, $sortBtn = $('#lh-sort-btn');
+    function sortHome(){ document.getElementById('lh-sort').appendChild(sortBox); }
+    function sortKey(){ return sortCat ? 'cat:' + sortCat : sortBy; }
+    function markSort(key){
+        $(sortBox).find('button[data-sort]').each(function(){ var on = String($(this).data('sort')) === key; $(this).toggleClass('on', on).attr('aria-pressed', on ? 'true' : 'false'); });
+        $(sortBox).find('.ls-more').toggleClass('on', key.indexOf('cat:') === 0);
+    }
+    function sortStep(step){   // 'main' | 'cat' — 모바일 2단계
+        $(sortBox).find('.ls-pane').removeClass('is-cur').filter('[data-pane="' + step + '"]').addClass('is-cur');
+        if (sortDlg) { sortDlg.querySelector('.ov-back').hidden = step === 'main'; CF.sheet.setTitle(sortDlg, step === 'main' ? '정렬' : '항목별 정렬'); sortDlg.querySelector('.ov-body').scrollTop = 0; }
+    }
+    function applySort(key){
+        if (key.indexOf('cat:') === 0) { sortCat = key.slice(4); sortBy = 'p'; } else { sortCat = ''; sortBy = key; }
+        $sortBtn.text(sortText());
+        $('#lh-sort').removeClass('open');
+        if (sortDlg && !CF.sheet.pc()) syncUrlAfterClose(); else syncUrl();
+        renderVisible();
+    }
+    $sortBtn.attr({'aria-haspopup': 'dialog'}).on('click', function(e){
+        e.stopPropagation();
+        if (CF.sheet.pc()) { sortHome(); markSort(sortKey()); sortStep('main'); $('#lh-sort').toggleClass('open'); return; }
+        if (!sortDlg) {
+            sortDlg = CF.sheet.make({id: 'ov-sort', type: 'dialog', w: 'sm', head: 'bar', back: true, title: '정렬', footType: 'f3',
+                foot: '<button type="button" class="btn-ink btn-block" id="sort-apply">적용</button>'});
+            $(sortDlg).find('.ov-back').on('click', function(){ sortStep('main'); });
+            $(sortDlg).find('#sort-apply').on('click', function(){ CF.sheet.close(sortDlg); applySort(draft); });
+        }
+        draft = sortKey(); markSort(draft); sortDlg.querySelector('.ov-body').appendChild(sortBox);
+        CF.sheet.open(sortDlg, {opener: this, focus: '.lh-sort-box button.on', onClose: function(){ setTimeout(sortHome, 250); }});
+        sortStep(draft.indexOf('cat:') === 0 ? 'cat' : 'main');
+    });
+    $(sortBox).on('click', '.ls-more', function(){ sortStep('cat'); });
+    $(sortBox).on('click', 'button[data-sort]', function(){
+        var key = String($(this).data('sort'));
+        if (CF.sheet.pc() || !sortDlg || !CF.sheet.isOpen(sortDlg)) { markSort(key); applySort(key); return; }   // PC 팝오버: 바로 적용
+        draft = key; markSort(key);   // 모바일 다이얼로그: '적용'을 눌러야 확정
+    });
+    $(document).on('click', function(){ $('#lh-sort').removeClass('open'); });
+    $(document).on('keydown', function(e){ if (e.key === 'Escape' && $('#lh-sort').hasClass('open')) { $('#lh-sort').removeClass('open'); $sortBtn.trigger('focus'); } });
+
+    // ───── 필터: 칩 한 줄 + 필터 시트(지역·가격·불만 적은 항목·한 번도 없어야) — '전체 해제' + 'N곳 보기'(실시간 결과 수) ─────
+    var fdlg = null, D = null;
+    function setUrlParam(u, k, v){ if (v) u.set(k, v); else u.delete(k); }
+    function syncUrl(){
+        var u = new URLSearchParams(location.search);
+        setUrlParam(u, 'area', F.area); setUrlParam(u, 'price', F.price);
+        setUrlParam(u, 'cat', F.cats.join(',')); setUrlParam(u, 'no', F.no.join(','));
+        setUrlParam(u, 'sort', sortCat ? 'cat:' + sortCat : (sortBy !== 'rs' ? sortBy : ''));
+        var qs = u.toString();
+        history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
+    }
+    function barLabel(k){   // 적용된 칩은 값을 보여 준다('하카타역' · '10~20만원' · '청결 · 소음' · '바퀴벌레 0건')
+        if (k === 'area') return F.area ? (areaOf(F.area)||{}).ko : '';
+        if (k === 'price') return F.price ? PRICE_LABEL[F.price] : '';
+        if (k === 'cat') return F.cats.length ? (F.cats.length > 2 ? catName(F.cats[0]) + ' 외 ' + (F.cats.length - 1) : F.cats.map(catName).join(' · ')) : '';
+        return F.no.length ? (F.no.length > 1 ? (MUST_BY[F.no[0]]||{}).label + ' 외 ' + (F.no.length - 1) : (MUST_BY[F.no[0]]||{}).chip) : '';
+    }
+    var BAR_DEF = {area:'지역', price:'가격', cat:'불만 적은 항목', no:'한 번도 없어야'};
+    function renderBar(){
+        $('#f-bar .chip-filter').each(function(){
+            var k = $(this).data('f'), v = barLabel(k);
+            $(this).toggleClass('on', !!v).text(v || BAR_DEF[k]);
+        });
+        var n = nFilters();
+        $('#st-filter-n').text(n).prop('hidden', !n);
+        $('#st-filter').attr('aria-label', n ? '필터, 조건 ' + n + '개 적용 중' : '필터');
+    }
+    // 시트를 닫으면 뒤로가기 버퍼를 소비(history.back)해 주소가 시트 열기 전 상태로 돌아간다 → 그 뒤에 주소를 맞춘다
+    function syncUrlAfterClose(){
+        var done = false;
+        function go(){ if (done) return; done = true; syncUrl(); }
+        window.addEventListener('popstate', function h(){ window.removeEventListener('popstate', h); setTimeout(go, 0); });
+        setTimeout(go, 400);
+    }
+    function applyFilters(scrollTop, fromSheet){
+        renderBar(); if (fromSheet) syncUrlAfterClose(); else syncUrl(); run();
+        if (scrollTop && !mapOpen) window.scrollTo({top: 0});
+    }
+    function filterBody(){
+        var chip = function(attr, v, label){ return '<button type="button" class="chip-filter" ' + attr + '="' + esc(v) + '" aria-pressed="false">' + esc(label) + '</button>'; };
+        return '<div class="ov-sec" data-sec="area"><h3 class="ov-sec-t">지역</h3><div class="ov-chips">' + AREAS.map(function(a){ return chip('data-fa', a.code, a.ko); }).join('') + '</div></div>'
+            + '<div class="ov-sec" data-sec="price"><h3 class="ov-sec-t">가격</h3><p class="ov-sec-sub">2인 1박 평일 기준</p><div class="ov-chips">' + Object.keys(PRICE_LABEL).map(function(k){ return chip('data-fp', k, PRICE_LABEL[k]); }).join('') + '</div></div>'
+            + '<div class="ov-sec" data-sec="cat"><h3 class="ov-sec-t">불만이 적었으면 하는 항목</h3><p class="ov-sec-sub">고른 항목이 ‘위험’인 호텔은 빼요 · 도시 평균 실망&nbsp;확률 ' + CITY_AVG + '%</p><div class="ov-chips">' + CATS.map(function(c){ return chip('data-fc', c.ko, catName(c.ko)); }).join('') + '</div></div>'
+            + '<div class="ov-sec" data-sec="no"><h3 class="ov-sec-t">1년 안에 한 번도 없어야 해요</h3><p class="ov-sec-sub">심각 리뷰만 세요. 주의 리뷰는 세지 않아요</p><div class="ov-chips">' + MUSTS.map(function(m){ return chip('data-fn', m.code, m.label); }).join('') + '</div></div>';
+    }
+    function drawFilter(){
+        $(fdlg).find('[data-fa]').each(function(){ var on = D.area === String($(this).data('fa')); $(this).toggleClass('on', on).attr('aria-pressed', on); });
+        $(fdlg).find('[data-fp]').each(function(){ var on = D.price === String($(this).data('fp')); $(this).toggleClass('on', on).attr('aria-pressed', on); });
+        $(fdlg).find('[data-fc]').each(function(){ var on = D.cats.indexOf(String($(this).data('fc'))) >= 0; $(this).toggleClass('on', on).attr('aria-pressed', on); });
+        $(fdlg).find('[data-fn]').each(function(){ var on = D.no.indexOf(String($(this).data('fn'))) >= 0; $(this).toggleClass('on', on).attr('aria-pressed', on); });
+        $(fdlg).find('#flt-apply').text(countFor(D) + '곳 보기');
+        $(fdlg).find('#flt-clear').prop('disabled', !nFilters(D));
+    }
+    function openFilter(sec, opener){
+        if (!fdlg) {
+            fdlg = CF.sheet.make({id: 'ov-filter', type: 'sheet', w: 'md', head: 'large', title: '필터', footType: 'f1', body: filterBody(),
+                foot: '<button type="button" class="btn-text" id="flt-clear">전체 해제</button><button type="button" class="btn-ink" id="flt-apply">0곳 보기</button>'});
+            var $f = $(fdlg);
+            $f.on('click', '[data-fa]', function(){ var v = String($(this).data('fa')); D.area = D.area === v ? '' : v; drawFilter(); });
+            $f.on('click', '[data-fp]', function(){ var v = String($(this).data('fp')); D.price = D.price === v ? '' : v; drawFilter(); });
+            $f.on('click', '[data-fc]', function(){ var v = String($(this).data('fc')), i = D.cats.indexOf(v); if (i >= 0) D.cats.splice(i, 1); else D.cats.push(v); drawFilter(); });
+            $f.on('click', '[data-fn]', function(){ var v = String($(this).data('fn')), i = D.no.indexOf(v); if (i >= 0) D.no.splice(i, 1); else D.no.push(v); D.no = normNo(D.no); drawFilter(); });
+            $f.on('click', '#flt-clear', function(){ D = {area:'', price:'', cats:[], no:[]}; drawFilter(); });
+            $f.on('click', '#flt-apply', function(){ F = {area: D.area, price: D.price, cats: D.cats.slice(), no: D.no.slice()}; CF.sheet.close(fdlg); applyFilters(true, true); });
+        }
+        D = {area: F.area, price: F.price, cats: F.cats.slice(), no: F.no.slice()};
+        drawFilter();
+        CF.sheet.open(fdlg, {opener: opener, onOpen: function(){
+            var b = fdlg.querySelector('.ov-body'), s = sec && fdlg.querySelector('[data-sec="' + sec + '"]');
+            b.scrollTop = s ? Math.max(0, s.getBoundingClientRect().top - b.getBoundingClientRect().top + b.scrollTop - 8) : 0;
+            CF.sheet.update(fdlg);
+        }});
+    }
+    $('#f-bar').on('click', '.chip-filter', function(){ openFilter($(this).data('f'), this); });
+    $('#st-filter').on('click', function(){ openFilter('', this); });
+
+    $('#btn-search').on('click', run);
+    $q.on('keyup', function(e){ if (e.key === 'Enter') run(); });
+    $q.on('input', function(){ if (!$q.val().trim()) run(); });
+    $('.st-back').on('click', function(e){   // 같은 사이트에서 왔으면 이전 화면으로
+        try { if (document.referrer && new URL(document.referrer).origin === location.origin && history.length > 1) { e.preventDefault(); history.back(); } } catch (x) {}
+    });
+
+    // 공용 자동완성 (별칭 인덱스 드롭다운). 선택 시 상세로 이동, 미매칭 시 분석 요청행.
+    if (window.CFAutocomplete) window.CFAutocomplete.attach($q.get(0), {hrefPrefix: './hotels/', areaHref: './search?area='});
+
+    // ═════════ AI 맞춤 추천 (rec) 모드 ═════════
+    var RC = (window.CFRec && window.CFRec.byCode) || {};   // code → {ko,label,chip}
+    // 정렬(2026-10-10 개편): 고른 항목이 모두 평균 이하(불만 점수 < 55)인 곳부터 → 같은 묶음 안에서는 추천순.
+    // 아쉬운 항목 수가 같으면 뒤 순위 항목에서 걸린 곳이 앞 (1순위에서 걸린 곳이 가장 뒤)
+    var REC_PASS = 55;
+    function catVal(h, ko){ return (h.cs && ko && h.cs[ko] != null) ? h.cs[ko] : 50; }
+    function recFails(h, pr){
+        var f = [];
+        for (var i = 0; i < pr.length; i++) { var ko = (RC[pr[i]]||{}).ko; if (catVal(h, ko) >= REC_PASS) f.push(i); }
+        return f;
+    }
+    function recCmp(pr){
+        return function(a, b){
+            var fa = recFails(a, pr), fb = recFails(b, pr);
+            if (fa.length !== fb.length) return fa.length - fb.length;
+            if (fa.length && fa[0] !== fb[0]) return fb[0] - fa[0];
+            return (b.rs||0) - (a.rs||0) || (a.p||0) - (b.p||0) || (b.rc||0) - (a.rc||0);
+        };
+    }
+    function verdictWord(v){ return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }
+    function recPills(h, pr){   // 고른 조건 충족 표시: 고른 순서대로, 평균 이하 = 충족(체크) · 초과 = 느낌표
+        return '<div class="rec-pills" aria-label="고른 조건">' + pr.map(function(c){
+            var ko = (RC[c]||{}).ko, v = catVal(h, ko), ok = v < REC_PASS;
+            return '<span class="rp ' + (ok ? 'is-ok' : 'is-bad') + '"><i aria-hidden="true"></i>' + catName(ko) + ' 불만 ' + verdictWord(v) + '</span>';
+        }).join('') + '</div>';
+    }
+    function recGroupHead(nf, cnt, total){
+        var t = nf === 0 ? (total > 1 ? '고른 조건 모두 충족' : '고른 조건 충족') : nf === 1 ? '1가지 아쉬움' : nf + '가지 아쉬움';
+        return '<li class="rec-group' + (nf === 0 ? ' is-pass' : '') + '"><span class="rg-t">' + t + '</span><span class="rg-n">' + cnt + '곳</span></li>';
+    }
+    function drawRecMap(top){
+        markers.clearLayers(); markerById = {}; selId = ''; hideCard();
+        var pts = [];
+        top.forEach(function(h, i){
+            if (h.lat == null) return;
+            var rank = i + 1, big = rank <= 3;
+            var icon = L.divIcon({className:'', html:'<div class="rec-marker ' + (big ? 'big' : 'small') + '">' + rank + '</div>', iconSize:[big?32:26, big?32:26], iconAnchor:[big?16:13, big?16:13]});
+            var mk = L.marker([h.lat,h.lng], {icon:icon, zIndexOffset: (11-rank)*10});
+            mk.on('click', function(e){ L.DomEvent.stopPropagation(e); showCard(h, rank); });
+            markers.addLayer(mk); pts.push([h.lat,h.lng]);
+        });
+        var a = areaOf(recArea);
+        if (a) map.setView([a.lat,a.lng], 15, {animate:false});
+        else if (pts.length) map.fitBounds(pts, {padding:[30,30], maxZoom:15});
+    }
+    var recPr = [], recBud = '', recArea = '', recNo = [], recBw = false;
+    function recCandidates(){
+        return HOTELS.filter(function(h){
+            if (!h.scored || h.lr) return false;   // 리뷰 적음(최근 1년 100건 미만)은 추천 모수에서 제외 (UI-STANDARDS §5)
+            if (recBud && (recBw ? h.pbw : h.pb) !== recBud) return false;   // 주말 기준이면 주말 가격대(없으면 제외)
+            if (!passNo(h, recNo)) return false;
+            if (recArea) { var a = areaOf(recArea); if (a) { if (h.lat == null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; } }
+            return true;
+        });
+    }
+    var NO_SHORT = {roach:'바퀴벌레', bedbug:'빈대', safe:'무단 출입'};
+    function renderRecHeader(){
+        var C = 'chip-filter chip-filter--sm';
+        var chips = recPr.map(function(c, i){ var ko = (RC[c]||{}).ko; return '<span class="' + C + ' on"><i class="rh-rank">' + (i+1) + '</i>' + catName(ko || '') + '</span>'; });
+        if (recBud) { var b = (window.CFRec.BUDGETS||[]).filter(function(x){ return x.code === recBud; })[0]; if (b) chips.push('<span class="' + C + '">' + b.label + (recBw ? '(주말)' : '') + '</span>'); }
+        if (recArea) { var a = areaOf(recArea); if (a) chips.push('<span class="' + C + '">' + a.ko + '</span>'); }
+        if (recNo.length) chips.push('<span class="' + C + '">' + recNo.map(function(k){ return NO_SHORT[k]||k; }).join('·') + ' 제외</span>');
+        return '<div class="rh-top"><h2 class="rh-tit">맞춤 추천</h2><a href="javascript:;" class="rec-reset btn-line btn-sm">조건 수정</a></div><div class="rh-chips">' + chips.join('') + '</div><div class="rh-sum" id="rh-sub"></div>';
+    }
+    function recUrl(over){
+        var pr = over.pr !== undefined ? over.pr : recPr.join(',');
+        var bud = over.bud !== undefined ? over.bud : recBud;
+        var area = over.area !== undefined ? over.area : recArea;
+        var no = over.no !== undefined ? over.no : recNo.join(',');
+        var qs = 'rec=1&pr=' + pr; if (bud) qs += '&bud=' + bud; if (bud && recBw) qs += '&bw=1'; if (area) qs += '&area=' + area; if (no) qs += '&no=' + no;
+        return './search?' + qs;
+    }
+    function initRec(){
+        recMode = true; $('html').addClass('rec-mode');   // 맞춤 추천 화면: 검색창·필터 대신 '뒤로 + 조건 수정'(답 먼저)
+        recPr = (sp.get('pr')||'').split(',').filter(function(c){ return RC[c]; });
+        recBud = sp.get('bud')||''; recArea = sp.get('area')||''; recBw = !!(recBud && sp.get('bw') === '1');
+        recNo = normNo((sp.get('no')||'').split(','));
+        window.CF_REC_PRESET = {pr:recPr, bud:recBud, area:recArea, no:recNo, bw:recBw};
+        $lhead.hide();
+        $('#rec-header').html(renderRecHeader()).prop('hidden', false);
+        var cands = recCandidates();
+        // 제외 조건이 실제로 뺀 곳 수 (같은 예산·지역 안에서)
+        var keepNo = recNo; recNo = []; var before = recCandidates().length; recNo = keepNo;
+        var cut = before - cands.length;
+        cands.sort(recCmp(recPr));
+        var nPass = cands.filter(function(h){ return !recFails(h, recPr).length; }).length, nPr = recPr.length;
+        var lead = nPass ? '<b>' + nPass + '곳</b>이 고른 ' + (nPr > 1 ? nPr + '가지를 모두' : '조건을') + ' 지켰어요'
+                         : '고른 ' + (nPr > 1 ? nPr + '가지를 모두' : '조건을') + ' 지킨 곳은 없어요. 아쉬운 게 적은 순이에요';
+        var note = (recNo.length && cut > 0) ? '<div class="rh-note">' + before + '곳 중 ' + recNo.map(function(k){ return NO_SHORT[k]||k; }).join('·') + ' 리뷰가 있는 ' + cut + '곳은 뺐어요</div>' : '';
+        var top3 = cands.slice(0, 3).map(function(h){ return h.id; });
+        var cmpL = top3.length >= 2 ? '<a class="rh-cmp btn-text btn-text--sm" href="./compare?ids=' + top3.join(',') + '">1~' + top3.length + '위 나란히 비교</a>' : '';
+        $('#rh-sub').html('<p class="rh-lead">' + lead + '</p>' + note + cmpL);
+        if (cands.length < 3) {
+            var relax = '';
+            if (recBud) relax += '<a class="btn-line btn-sm" href="' + recUrl({bud:''}) + '">예산 넓혀 다시 보기</a>';
+            if (recArea) relax += '<a class="btn-line btn-sm" href="' + recUrl({area:''}) + '">지역 넓혀 다시 보기</a>';
+            if (recNo.length) relax += '<a class="btn-line btn-sm" href="' + recUrl({no:''}) + '">‘한 번도 없어야’ 조건 풀기</a>';
+            $res.html('<li class="rec-empty"><div class="empty-sec"><div class="es-tit">' + (cands.length ? '조건에 맞는 곳이 ' + cands.length + '곳뿐이에요' : '조건에 맞는 곳이 없어요')
+                + '</div><div class="es-txt">' + (recNo.length ? '조건을 하나 풀면 더 보여 드려요' : '예산이나 지역을 넓히면 더 보여 드려요') + '</div><div class="es-btns">' + relax + '</div></div></li>');
+            recShown = cands;
+        } else {
+            // 묶음별로: 모두 괜찮은 곳 → 1가지 아쉬운 곳 (합쳐서 10곳까지 바로), 나머지와 2가지 이상 아쉬운 곳은 '더 보기'
+            var n = recPr.length, html = [], more = [], shown = 0, curNf = -1, rank = 0;
+            var counts = {}; cands.forEach(function(h){ var k = recFails(h, recPr).length; counts[k] = (counts[k]||0) + 1; });
+            recShown = [];
+            cands.forEach(function(h){
+                var nf = recFails(h, recPr).length, vis = nf <= 1 && shown < 10;
+                var target = vis ? html : more;
+                if (nf !== curNf && (vis || more.length < 30)) { target.push(recGroupHead(nf, counts[nf], n)); curNf = nf; }
+                rank++;
+                var o = {rank: rank, noWorst: true, pills: recPills(h, recPr), eager: rank <= 3, tag: (rank === 1 && nf === 0) ? '가장 잘 맞아요' : ''};
+                if (vis) { html.push(cardHtml(h, o)); recShown.push(h); shown++; }
+                else if (more.length < 30) more.push(cardHtml(h, o));
+            });
+            if (more.length) html.push('<li class="rec-more-wrap"><button type="button" class="btn-gray btn-block" id="rec-more">조건이 더 아쉬운 곳까지 보기</button></li>');
+            $res.html(html.join(''));
+            $('#rec-more').on('click', function(){ $(this).closest('li').replaceWith(more.join('')); if (window.CFCompare) window.CFCompare.render(); });
+        }
+        if (window.CFCompare) window.CFCompare.render();
+        // 지도: 모바일은 접고(결과 먼저) '지도'로 연다. PC는 오른쪽에 상시
+        var mqPc = window.matchMedia('(min-width:1100px)');
+        if (mqPc.matches) { mapToggleUi(true); setTimeout(function(){ map.invalidateSize(); drawRecMap(recShown); }, 80); }
+        else { mapToggleUi(false); }
+    }
+
+    // ═════════ 시작: URL 파라미터 ?rec= / ?q= / ?area= / ?price= / ?cat= / ?no= / ?sort= ═════════
+    if (sp.get('rec')) { initRec(); }
+    else {
+        var initQ = sp.get('q'), sq = sp.get('sort') || '';
+        F.area = areaOf(sp.get('area') || '') ? sp.get('area') : '';
+        F.price = PRICE_LABEL[sp.get('price') || ''] ? sp.get('price') : '';
+        F.cats = (sp.get('cat')||'').split(',').filter(function(c){ return CAT_KEYS.indexOf(c) >= 0; });
+        F.no = normNo((sp.get('no')||'').split(','));
+        if (sq.indexOf('cat:') === 0 && CAT_KEYS.indexOf(sq.slice(4)) >= 0) { sortCat = sq.slice(4); sortBy = 'p'; }
+        else if (SORT_LABEL[sq]) sortBy = sq;
+        $sortBtn.text(sortText());
+        renderBar();
+        if (initQ) $q.val(initQ);
+        run();
+        // PC: 지도 상시 표시(토글 숨김은 pc.css). 창 크기가 경계를 넘으면 따라 전환
+        var mqPc = window.matchMedia('(min-width:1100px)');
+        if (mqPc.matches) setMap(true, true);
+        var onMq = function(e){ setMap(e.matches, true); };
+        if (mqPc.addEventListener) mqPc.addEventListener('change', onMq); else mqPc.addListener(onMq);
+    }
+})();
+"""
+
+SEARCH_SORTS = [('rs', '추천순', REC_SORT_DESC), ('p', '실망 확률 낮은 순', ''), ('krn', '한국인 리뷰 많은 순', ''), ('price', '가격 낮은 순', ''), ('g', '구글 평점 높은 순', '')]
+SEARCH_CAT_SUB = {'청결': '머리카락·벌레·곰팡이', '냄새': '담배·하수구·곰팡내', '소음': '옆방·도로·기계음', '객실': '좁은 방·침대·온도·고장', '직원': '불친절·대기·대응', '위치': '역까지 거리·주변·밤길'}
+
+def search_sort_box():
+    """정렬 옵션 목록(모바일 '정렬' 다이얼로그·PC 팝오버가 같은 DOM을 옮겨 씀): 5개 + '항목별 걱정 적은 순 ›' 2단계(대분류 6개)."""
+    on = ' class="on"'
+    main = ''.join(
+        f'<button type="button" data-sort="{k}" data-label="{E(lab)}"{on if k == "rs" else ""}>{E(lab)}'
+        + (f'<span class="ls-sub">{E(sub)}</span>' if sub else '') + '</button>' for k, lab, sub in SEARCH_SORTS)
+    cats = ''.join(
+        f'<button type="button" data-sort="cat:{c}" data-label="{E(cat_ko(c))} 불만 적은 순">{E(cat_ko(c))}<span class="ls-sub">{E(SEARCH_CAT_SUB.get(c, ""))}</span></button>'
+        for c in CATS)
+    return (f'<div class="lh-sort-box" id="sort-box"><div class="ls-pane is-cur" data-pane="main">{main}'
+            '<button type="button" class="ls-more">항목별 걱정 적은 순<i class="ls-chev" aria-hidden="true"></i></button></div>'
+            f'<div class="ls-pane" data-pane="cat"><div class="ls-sep">항목별 걱정 적은 순</div>{cats}</div></div>')
+
 def build_search(city_avg_pct):
-    kw = json.dumps(UNSUPPORTED_KEYWORDS, ensure_ascii=False)
-    cats_js = json.dumps([{'ko': c, 'ico': CAT_ICON[c]} for c in CATS], ensure_ascii=False)
-    area_chips = ''.join(
-        f'<button type="button" class="chip-view f-chip" data-area="{a["code"]}">{a["ko"]}</button>' for a in AREAS)
+    js = (SEARCH_JS.replace('@@CITY_KO@@', CITY['ko']).replace('@@CITY_AVG@@', str(city_avg_pct))
+          .replace('@@KW@@', json.dumps(UNSUPPORTED_KEYWORDS, ensure_ascii=False))
+          .replace('@@CATS@@', json.dumps([{'ko': c} for c in CATS], ensure_ascii=False))
+          .replace('@@PRICES@@', json.dumps({code: label for code, label, _lo, _hi in PRICE_BANDS}, ensure_ascii=False))
+          .replace('@@BADGE@@', json.dumps(BADGE_STATES, ensure_ascii=False)))
+    f_chips = ''.join(f'<button type="button" class="chip-filter chip-filter--sm" data-f="{k}">{lab}</button>'
+                      for k, lab in (('area', '지역'), ('price', '가격'), ('cat', '불만 적은 항목'), ('no', '한 번도 없어야')))
     return head('캐치플로 — 검색',
         description=f'{CITY["ko"]} 호텔 전체를 실망 확률 순으로 비교하세요. '
                    f'도시 평균 실망 확률 {city_avg_pct}% 기준, 지역·가격대·위험 항목별 필터 제공.',
-        canonical=f'{BASE}/search') + f'''
+        canonical=f'{BASE}/search').replace('<body>', '<body data-page="search">') + f'''
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
         ''' + site_header(0, back='./', search=False) + f'''
         <h1 class="page-title blind">{CITY['ko']} 호텔 검색</h1>
         <section id="title">
-            <div class="search">
-                <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
-                <input type="text" id="q" placeholder="호텔명 또는 구글맵 링크" autocomplete="off">
-                <div class="ac-box" id="ac-box" hidden></div>
+            <div class="st-row">
+                <a class="btn-icon btn-icon--surface st-back" href="./" aria-label="뒤로가기"><img src="./img/back_b.svg" alt="" width="20" height="20"></a>
+                <div class="search">
+                    <button type="button" id="btn-search" aria-label="검색"><img src="./img/search_g.svg" alt="" width="20" height="20"></button>
+                    <input type="text" id="q" placeholder="호텔명 검색" autocomplete="off" enterkeyhint="search" aria-label="호텔 검색">
+                    <div class="ac-box" id="ac-box" hidden></div>
+                </div>
+                <button type="button" class="st-filter" id="st-filter" aria-label="필터" aria-haspopup="dialog"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5h6.5M13.5 5H16M2 13h2.5M9.5 13H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="5" r="2.2" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="13" r="2.2" stroke="currentColor" stroke-width="1.6"/></svg><b class="cnt" id="st-filter-n" hidden></b></button>
             </div>
+            <div class="f-bar" id="f-bar" role="group" aria-label="필터">{f_chips}</div>
         </section>
         <section id="search">
-            <div class="rec-header" id="rec-header" style="display:none"></div>
-            <div class="filters">
-                <div class="f-row" id="f-city">
-                    <span class="f-label">도시</span>
-                    <button type="button" class="chip-view f-chip on" data-v="fukuoka">{CITY['ko']}</button>
-                    <button type="button" class="chip-view f-chip disabled" title="준비 중">도쿄</button>
-                    <button type="button" class="chip-view f-chip disabled" title="준비 중">오사카</button>
-                    <button type="button" class="chip-view f-chip disabled" title="준비 중">교토</button>
-                </div>
-                <div class="f-row" id="f-area">
-                    <span class="f-label">지역</span>
-                    <button type="button" class="chip-view f-chip on" data-area="">전체</button>
-                    {area_chips}
-                </div>
-                <div class="f-row" id="f-price">
-                    <span class="f-label">가격</span>
-                    <button type="button" class="chip-view f-chip on" data-v="">전체</button>
-                    <button type="button" class="chip-view f-chip" data-v="b1">10만원 미만</button>
-                    <button type="button" class="chip-view f-chip" data-v="b2">10~20만원</button>
-                    <button type="button" class="chip-view f-chip" data-v="b3">20만원 이상</button>
-                </div>
-                <button type="button" class="f-more btn-gray btn-block" id="f-more" aria-expanded="false" aria-controls="f-panel"><span class="f-more-t">조건 더 보기</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 5 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-                <div class="f-panel" id="f-panel" hidden>
-                    <div class="fp-group">
-                        <div class="fp-tit">불만이 적었으면 하는 항목</div>
-                        <div class="fp-sub">고른 항목이 &lsquo;위험&rsquo; 등급인 호텔은 빼드려요</div>
-                        <div class="fp-chips" id="fp-cats"></div>
-                    </div>
-                    <div class="fp-group">
-                        <div class="fp-tit">1년 안에 한 번도 없어야 해요</div>
-                        <div class="fp-sub">심각 리뷰 기준 · 주의 리뷰는 세지 않아요</div>
-                        <div class="fp-chips" id="fp-no"></div>
-                    </div>
-                    <button type="button" class="fp-reset btn-text btn-text--sm" id="fp-reset">초기화</button>
-                </div>
-            </div>
+            <div class="rec-header" id="rec-header" hidden></div>
             <div class="map-wrap is-collapsed" id="map-wrap"><div id="map"></div>
                 <div class="map-legend">
                     <span class="lg safe">양호</span><span class="lg warning">주의</span><span class="lg danger">위험</span><span class="lg none">준비 중</span>
                 </div>
+                <div class="map-card" id="map-card" hidden></div>
             </div>
-            <div class="map-hint is-collapsed" id="map-hint"></div>
-            <div class="total" id="total"></div>
-            <div class="notice" id="notice" style="display:none"></div>
             <div class="list-head" id="list-head" style="display:none">
                 <div class="lh-count" id="lh-count"></div>
                 <div class="lh-sort" id="lh-sort">
                     <button type="button" class="chip-sort lh-sort-btn" id="lh-sort-btn">추천순</button>
-                    <div class="lh-sort-box">
-                        <button type="button" class="on" data-sort="rs" data-label="추천순">추천순<span class="ls-sub">{REC_SORT_DESC}</span></button>
-                        <button type="button" data-sort="p" data-label="실망 확률 낮은 순">실망 확률 낮은 순<span class="ls-sub">최근 1년 실망한 리뷰 비율이 낮은 곳부터</span></button>
-                        <button type="button" data-sort="krn" data-label="한국인이 많이 가는 순">한국인이 많이 가는 순<span class="ls-sub">최근 1년 한국인 리뷰가 많은 곳부터</span></button>
-                        <button type="button" data-sort="g" data-label="구글 평점 높은 순">구글 평점 높은 순<span class="ls-sub">별점만 보고 싶을 때</span></button>
-                        <button type="button" data-sort="rc" data-label="구글 리뷰 많은 순">구글 리뷰 많은 순<span class="ls-sub">크고 유명한 호텔부터</span></button>
-                        <button type="button" data-sort="price" data-label="1박 가격 낮은 순">1박 가격 낮은 순<span class="ls-sub">2인 1박 평일 가격 기준</span></button>
-                        <div class="lh-sort-sep">걱정되는 항목이 적은 곳부터</div>
-                        <button type="button" data-sort="cat:청결" data-label="청결 불만 적은 순">청결 불만 적은 순<span class="ls-sub">머리카락·벌레·곰팡이</span></button>
-                        <button type="button" data-sort="cat:냄새" data-label="냄새 불만 적은 순">냄새 불만 적은 순<span class="ls-sub">담배·하수구·곰팡내</span></button>
-                        <button type="button" data-sort="cat:소음" data-label="소음 불만 적은 순">소음 불만 적은 순<span class="ls-sub">옆방·도로·기계음</span></button>
-                        <button type="button" data-sort="cat:객실" data-label="객실 불만 적은 순">객실 불만 적은 순<span class="ls-sub">좁은 방·침대·온도·고장</span></button>
-                        <button type="button" data-sort="cat:직원" data-label="직원 불만 적은 순">직원 불만 적은 순<span class="ls-sub">불친절·대기·대응</span></button>
-                        <button type="button" data-sort="cat:위치" data-label="위치 불만 적은 순">위치 불만 적은 순<span class="ls-sub">역까지 거리·주변·밤길</span></button>
-                    </div>
+                    {search_sort_box()}
                 </div>
             </div>
+            <div class="notice" id="notice" style="display:none"></div>
             <div class="list"><ul id="results"></ul></div>
-            <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><span class="mt-t">지도로 보기</span></button>
+            <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg class="mt-ic mt-ic-map" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><svg class="mt-ic mt-ic-list" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="mt-t">지도</span></button>
         </section>
     </main>
     <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
@@ -1472,609 +2071,7 @@ def build_search(city_avg_pct):
     <script src="./js/search-ac.js?v={BUILD}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-    (function(){{
-        var CITY_KO = '{CITY['ko']}', CITY_AVG = {city_avg_pct};
-        var OTHER = {kw};
-        var CATS = {cats_js};
-        var AREAS = window.CF_AREAS || [];
-        var $q = $('#q'), $res = $('#results'), $total = $('#total'), $notice = $('#notice');
-        var $lhead = $('#list-head'), $lcount = $('#lh-count'), $hint = $('#map-hint');
-        var _sq = new URLSearchParams(location.search).get('sort');
-        var fPrice = '', fBand = '', fArea = '', fCats = [], fNo = [], sortCat = '';
-        var MUSTS = (window.CFRec && window.CFRec.MUSTS) || [], MUST_BY = (window.CFRec && window.CFRec.mustBy) || {{}};
-        function normNo(a){{ return (window.CFRec && window.CFRec.normNo) ? window.CFRec.normNo(a) : []; }}
-        function passNo(h, no){{  // '1년 안에 한 번도 없어야' — 심각 건수(h.x)가 1건이라도 있으면 제외. 데이터 없는(미채점) 호텔도 제외
-            if (!no.length) return true;
-            if (!h.x) return false;
-            for (var i=0;i<no.length;i++){{ if ((h.x[no[i]]||0) > 0) return false; }}
-            return true;
-        }}
-        var sortBy = (['rs','p','krn','price','rc','g'].indexOf(_sq) >= 0) ? _sq : 'rs';   // 기본 추천순, ?sort= 프리셋 허용
-        var CAT_ICON = {{'청결':'','냄새':'','소음':'','객실':'','직원':'','위치':'','안전':''}};
-        var baseList = [];       // 검색+지역+가격+카테고리 필터 결과 (지도 뷰포트 제외)
-        var syncMap = true;      // 지도 이동 시 리스트 연동 on/off
-        var mapOpen = false;     // P6: 지도 기본 접힘 — 열렸을 때만 '지도 영역 내' 연동
-        var lastQ = '';          // 검색어 측정 중복 방지
-
-        function norm(s){{ return (s||'').toLowerCase().replace(/\\s+/g,''); }}
-        function km(a1,o1,a2,o2){{ var R=6371,p1=a1*Math.PI/180,p2=a2*Math.PI/180,dp=(a2-a1)*Math.PI/180,dl=(o2-o1)*Math.PI/180;
-            var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }}
-
-        // ───── 지도 ─────
-        var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
-        var map = L.map('map', {{scrollWheelZoom:false}}).setView([33.5902,130.4017], 13);
-        // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
-        map.on('popupopen popupclose', function(e){{ var w = map.getContainer().closest('.map-wrap'); if (w) w.classList.toggle('is-pop', e.type === 'popupopen'); }});
-        L.tileLayer('https://{{s}}.google.com/vt/lyrs=m&x={{x}}&y={{y}}&z={{z}}&hl=ko',
-            {{maxZoom:19, subdomains:['mt0','mt1','mt2','mt3'], attribution:'&copy; Google'}}).addTo(map);
-        map.on('click', function(){{ map.scrollWheelZoom.enable(); }});
-        var markers = L.layerGroup().addTo(map);
-        // 컨테이너 레이아웃 완료 후 크기 재계산 (초기 0폭 방지) + 리스트 재동기화
-        // §6: 지역(fArea) 선택 진입 시엔 fitBounds(전체 뷰)로 되돌아가지 않고 지역 중심 줌 15 유지
-        setTimeout(function(){{
-            if (!mapOpen) return;             // P6: 접힌 상태면 지도 그리기는 열 때(openMap)
-            map.invalidateSize();
-            if (recMode) return;              // rec 모드는 drawRecMap이 별도 처리
-            if (!baseList.length) return;
-            var a = fArea ? AREAS.filter(function(x){{ return x.code === fArea; }})[0] : null;
-            if (a) {{ map.setView([a.lat, a.lng], 15, {{animate:false}}); drawMap(baseList, false); renderVisible(); }}
-            else {{ drawMap(baseList, true); }}
-        }}, 80);
-        $(window).on('load', function(){{ map.invalidateSize(); }});
-
-        function popupHtml(h){{
-            var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
-            var chip = h.p != null ? '<span class="tag"><i class="sdot" style="background:'+col+'"></i>실망 확률 '+h.p+'%</span>'
-                                   : '<span class="tag">분석 준비 중</span>';
-            return '<div class="map-pop"><b>'+h.name+'</b>'
-                + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'
-                + (h.pt?' · '+h.pt:'')+'</div>'+chip
-                + '<a class="pop-link" href="./hotels/'+h.id+'">상세 보기 →</a></div>';
-        }}
-        // 화면 맞춤용 좌표: 중앙값에서 5km 밖 외곽 호텔(시카노시마 등)은 맞춤에서만 제외 — 도심이 작게 보이는 문제 방지
-        function fitPts(list){{
-            var pts = list.filter(function(h){{ return h.lat != null; }}).map(function(h){{ return [h.lat, h.lng]; }});
-            if (pts.length < 5) return pts;
-            var med = function(a){{ a = a.slice().sort(function(x,y){{ return x-y; }}); return a[Math.floor(a.length/2)]; }};
-            var mLat = med(pts.map(function(p){{ return p[0]; }})), mLng = med(pts.map(function(p){{ return p[1]; }}));
-            var core = pts.filter(function(p){{ return km(mLat, mLng, p[0], p[1]) <= 5; }});
-            return core.length >= pts.length * 0.8 ? core : pts;
-        }}
-        var markerById = {{}};
-        function drawMap(list, fit){{
-            markers.clearLayers(); markerById = {{}};
-            var pts = [];
-            list.forEach(function(h){{
-                if (h.lat == null) return;
-                var col = (h.band && BAND_COLOR[h.band]) || CF.tok('--ink-3');
-                var mk = L.circleMarker([h.lat,h.lng], {{radius:8, color:CF.tok('--surface-card'), weight:2, fillColor:col, fillOpacity:0.95}});
-                mk.bindPopup(popupHtml(h));
-                markers.addLayer(mk); markerById[h.id] = mk;
-                pts.push([h.lat,h.lng]);
-            }});
-            var fp = fitPts(list);
-            if (fit && fp.length) {{ syncMap = false; map.once('moveend', function(){{ syncMap = true; renderVisible(); }}); map.fitBounds(fp, {{padding:[28,28], maxZoom:15}}); }}
-        }}
-
-        // ───── 정렬 ─────
-        var BAND_KO = {{safe:'양호', warning:'주의', danger:'위험'}};
-        function sortList(arr){{
-            var a = arr.slice();
-            if (sortCat){{  // 카테고리 안심순 (해당 카테고리 위험도 낮은 순)
-                a.sort(function(x,y){{
-                    var sx = (x.cs && x.cs[sortCat] != null) ? x.cs[sortCat] : 999;
-                    var sy = (y.cs && y.cs[sortCat] != null) ? y.cs[sortCat] : 999;
-                    return (x.lr?1:0)-(y.lr?1:0) || sx - sy;   // 리뷰 적은 호텔은 순위 정렬에서 뒤로
-                }});
-            }} else if (sortBy === 'price') a.sort(function(x,y){{ return (x.krw==null)-(y.krw==null) || (x.krw||0)-(y.krw||0); }});
-            else if (sortBy === 'rc') a.sort(function(x,y){{ return (y.rc||0)-(x.rc||0); }});
-            else if (sortBy === 'g') a.sort(function(x,y){{ return (y.g||0)-(x.g||0); }});
-            else if (sortBy === 'krn') a.sort(function(x,y){{ return (y.krn||0)-(x.krn||0) || (x.p==null)-(y.p==null) || (x.p||0)-(y.p||0); }});   // 한국인이 많이 가는 순(최근 1년 한국인 리뷰 수)
-            else if (sortBy === 'rs') a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (y.rs||0)-(x.rs||0) || (x.p||0)-(y.p||0); }});   // 추천순(기본): 실망 확률·한국인 리뷰·평점 복합, 리뷰 적은 호텔은 뒤로
-            else a.sort(function(x,y){{ return (x.p==null)-(y.p==null) || (x.lr?1:0)-(y.lr?1:0) || (x.p||0)-(y.p||0); }});  // 실망확률 낮은순(기본) · 리뷰 적은 호텔은 뒤로
-            return a;
-        }}
-
-        // ───── 리스트 렌더 ─────
-        var BADGE_STATES = {json.dumps(BADGE_STATES, ensure_ascii=False)};   // generate.BADGE_STATES(정본)를 주입 — 배지 상태표 1벌
-        function bandChip(h){{   // 글 속 상태 태그 1개(점 + '주의 · 실망 확률 7%' / '리뷰 적음' / '위험 · 리뷰 적음' / '분석 준비 중')
-            var k = !h.scored ? 'none' : (h.band === 'danger' && h.lr) ? 'lowdanger' : h.band, st = BADGE_STATES[k];
-            if (!st) return '';
-            return '<span class="tag">' + (st.dot === null ? '' : '<i class="sdot' + (st.dot ? ' ' + st.dot : '') + '"></i>') + st.tag.replace('{{p}}', h.p) + '</span>';
-        }}
-        function catChip(h){{  // 카테고리 정렬 시 해당 카테고리 등급을 카드에 표시
-            if (!sortCat || !h.scored || !h.cb || h.cb[sortCat]==null) return '';
-            var band = h.cb[sortCat], v = h.cs[sortCat];
-            var lab = v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음';   // cat_verdict와 같은 구간
-            return '<div class="cat-row is-'+band+'"><span class="ci">'+(CAT_ICON[sortCat]||'')+'</span>'
-                + '<span class="cn">'+sortCat+' 불만</span>'
-                + '<span class="cbadge">'+lab+'</span></div>';
-        }}
-        var WHY_SEP = '<span class="dsep"> · </span>';
-        function whyHtml(h){{  // 카드 사유줄 (HOME-CONCEPT §2.2) — generate.why_line과 같은 규칙
-            if (!h.scored) return '';
-            var parts = [];
-            if ((h.krn||0) >= 10) parts.push('<span class="seg">한국인 리뷰 '+h.krn+'건'+(h.krr!=null ? ' ('+h.krr+'%)' : '')+'</span>');
-            var r = CITY_AVG ? h.p / CITY_AVG : 0, wc = null;
-            if (r >= 1.2 && h.cs){{
-                var best = null; ['청결','냄새','소음','객실','직원','위치'].forEach(function(c){{ if (h.cs[c]!=null && (best==null || h.cs[c] > h.cs[best])) best = c; }});
-                if (best && h.cb && (h.cb[best]==='warning' || h.cb[best]==='danger')) wc = best;
-            }}
-            if (wc) parts.push('<span class="seg">주로 '+wc+' 불만</span>');
-            return parts.length ? '<div class="why">'+parts.slice(0,2).join(WHY_SEP)+'</div>' : '';
-        }}
-        function tagsHtml(h){{  // P6 리뷰 기반 태그(빌드 시 실측 산출). 좋은 쪽/나쁜 쪽이 색으로만 갈리지 않게 나쁜 쪽엔 '주의 ·'
-            var tg = (h.tg || []).slice();
-            var no = recMode ? recNo : fNo;   // '한 번도 없어야' 조건이 켜져 있으면 그 결과를 태그 1개로 맨 앞에(태그 2개 상한 안에서)
-            if (no.length && h.x) tg.unshift(['safe', String((MUST_BY[no[0]]||{{}}).chip||'')]);
-            tg = tg.slice(0, 2);
-            if (!tg.length) return '';
-            return '<div class="r-tags">'+tg.map(function(t){{ return '<span class="r-tag is-'+t[0]+'">'+(t[0]==='safe' ? '' : '주의 · ')+t[1]+'</span>'; }}).join('')+'</div>';
-        }}
-        function statLine(h){{  // 평점 · 성급 · 1박 가격 한 줄 (도시명 'JP'는 후쿠오카 전용 사이트라 생략)
-            var a = ['<span class="grade"><span class="ico"><img src="./img/star.svg" alt=""></span><span class="num">'+(h.g?h.g.toFixed(1):'-')+'</span><span class="txt">('+h.rc.toLocaleString()+')</span></span>'];
-            if (h.stars) a.push('<span class="si"><span class="dot"></span><span>'+h.stars+'</span></span>');   // 구분점은 뒤 항목에 붙여 줄 끝에 남지 않게
-            if (h.pt) a.push('<span class="si"><span class="dot"></span><span class="price">'+priceHtml(h)+'</span></span>');
-            return '<div class="stat">'+a.join('')+'</div>';
-        }}
-        function boldMan(t){{ return String(t).replace(/(\\d[\\d,]*만원)/, '<b>$1</b>'); }}
-        function priceHtml(h){{  // generate.price_card_html과 같은 규칙('1박' 없음): 평일 숫자만 굵게 + 주말(굵게 안 함, 넘치면 통째로 다음 줄)
-            if (!h.pt) return '';
-            if (recMode && recBw && h.ptw)   // AI 추천 '주말 기준': 주말 값을 앞에
-                return '주말 ' + boldMan(h.ptw) + ' <span class="seg pl-we">· ' + h.pt + '</span>';
-            return boldMan(h.pt) + (h.ptw ? ' <span class="seg pl-we">· 주말 '+h.ptw+'</span>' : '');
-        }}
-        function areaHtml(h){{  // 지역 + 역 도보 한 줄(메타 글자 — 지역 태그 알약은 없앴다)
-            var t = [h.ar, h.st].filter(Boolean).join(' · ');
-            return t ? '<div class="area-line"><span class="seg">'+t+'</span></div>' : '';
-        }}
-        function footHtml(h){{  // 태그 + 비교 담기: 오른쪽 칸이 아니라 카드 아래 전체 폭
-            var t = tagsHtml(h), c = cmpBtn(h);
-            return (t || c) ? '<div class="r-foot">'+t+c+'</div>' : '';
-        }}
-        function cmpBtn(h){{   // P5 비교 담기 (채점 호텔만)
-            if (!h.scored) return '';
-            return '<button type="button" class="r-cmp" data-cmp-id="'+h.id+'" data-cmp-name="'+String(h.name).replace(/"/g,'&quot;')+'" data-cmp-img="'+(h.ai||'')+'" data-off="비교" data-on="비교"><i></i><span class="cmp-t">비교</span></button>';
-        }}
-        function row(h){{
-            var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
-            return '<li data-id="'+h.id+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
-                + '<div class="thumb"><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
-                + '<div class="cont">'
-                + '<div class="info">'
-                + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
-                + '<div class="badge">'+bandChip(h)+'</div>'
-                + statLine(h)
-                + areaHtml(h)
-                + '</div>'
-                + whyHtml(h)
-                + catChip(h)
-                + '</div>'
-                + footHtml(h)
-                + '</div></li>';
-        }}
-        function renderRows(list){{
-            if (!list.length) {{ $res.html('<li class="sub-head">이 조건에 맞는 호텔이 없어요. 필터를 조정해 보세요.</li>'); return; }}
-            $res.html(sortList(list).map(row).join(''));
-            if (window.CFCompare) window.CFCompare.render();   // 새로 그린 카드의 담김 상태 반영
-        }}
-
-        // 지도 뷰포트 안의 호텔만 리스트에 (C-3)
-        function renderVisible(){{
-            if (!mapOpen) {{
-                $lcount.text('전체 ' + baseList.length + '곳');
-                $lhead.toggle(baseList.length > 0);
-                renderRows(baseList);
-                $hint.html('');
-                return;
-            }}
-            var b = map.getBounds();
-            var vis = baseList.filter(function(h){{ return h.lat != null && b.contains([h.lat, h.lng]); }});
-            $lcount.text('지도 영역 내 ' + vis.length + '곳');
-            $lhead.toggle(baseList.length > 0);
-            renderRows(vis);
-            $hint.html(baseList.length ? '지도를 움직이면 <b>보이는 영역</b>의 호텔만 아래 목록에 나와요' : '');
-        }}
-
-        // ───── 필터 적용 ─────
-        function passFilters(h){{
-            if (fPrice && h.pb !== fPrice) return false;
-            if (fBand && h.band !== fBand) return false;
-            if (fArea){{
-                var a = AREAS.filter(function(x){{ return x.code === fArea; }})[0];
-                if (a){{ if (h.lat == null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; }}
-            }}
-            if (fCats.length){{
-                for (var i=0;i<fCats.length;i++){{ if (h.cb && h.cb[fCats[i]] === 'danger') return false; }}
-            }}
-            if (!passNo(h, fNo)) return false;
-            return true;
-        }}
-        function filterLabel(){{
-            var t = [];
-            if (fArea){{ var a=AREAS.filter(function(x){{return x.code===fArea;}})[0]; if(a) t.push(a.ko); }}
-            if (fPrice) t.push($('#f-price .f-chip[data-v="'+fPrice+'"]').text());
-            if (fBand) t.push($('#f-band .f-chip[data-v="'+fBand+'"]').text());
-            if (fCats.length) t.push(fCats.length + '개 항목 안심');
-            if (fNo.length) t.push(fNo.map(function(k){{ return (MUST_BY[k]||{{}}).chip; }}).join(' · '));
-            return t.length ? ' · ' + t.join(' · ') : '';
-        }}
-        function unsupported(q){{
-            $total.html(''); $lhead.hide(); $hint.html('');
-            $notice.show().html(
-                '<div class="empty-sec">'
-                + '<div class="es-tit">아직 '+CITY_KO+'만 지원해요</div>'
-                + '<div class="es-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요. '+CITY_KO+' 호텔을 먼저 둘러보세요.</div>'
-                + '<div class="es-btns"><a class="btn-line btn-sm" href="./search">'+CITY_KO+' 호텔 전체 보기</a></div></div>');
-            $res.html('');
-        }}
-
-        function run(){{
-            var q = $q.val().trim();
-            $notice.hide();
-            var pool = HOTELS.filter(passFilters);
-            if (q){{
-                var nq = norm(q);
-                // 1) 별칭 인덱스(CF_IDX) 매칭 우선 — 이름 변형 검색을 목록에도 적용 (§7-d)
-                var idSet = null;
-                if (window.CFAutocomplete && window.CF_IDX) {{
-                    var ids = window.CFAutocomplete.matchIds(q);
-                    idSet = {{}}; ids.forEach(function(id){{ idSet[id] = 1; }});
-                }}
-                var matched = idSet
-                    ? pool.filter(function(h){{ return idSet[h.id]; }})
-                    : pool.filter(function(h){{ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; }});
-                // 인덱스 매칭 실패 시 부분 문자열 폴백 (인덱스에 없는 신규명 대비)
-                if (idSet && !matched.length) {{
-                    matched = pool.filter(function(h){{ return norm(h.name).indexOf(nq)>=0 || norm(h.en).indexOf(nq)>=0; }});
-                }}
-                var suggested = false;   // 그래도 0건이면 비슷한 이름 제안(자모 바이그램 유사도, FEEDBACK-2610 §15-4)
-                if (!matched.length && window.CFAutocomplete && window.CFAutocomplete.suggest) {{
-                    var sIds = {{}}; window.CFAutocomplete.suggest(q, 3).forEach(function(it){{ sIds[it.id] = 1; }});
-                    matched = pool.filter(function(h){{ return sIds[h.id]; }});
-                    suggested = matched.length > 0;
-                }}
-                // 2) 매칭 0건일 때만 타도시 안내 발동 (§7-d)
-                if (q !== lastQ && typeof gtag === 'function') {{
-                    gtag('event', 'search', {{search_term: q, results: suggested ? 0 : matched.length}});
-                    if (!matched.length || suggested) gtag('event', 'search_no_result', {{search_term: q}});
-                }}
-                lastQ = q;
-                if (!matched.length) {{ unsupported(q); if (mapOpen) drawMap(HOTELS.filter(passFilters), true); return; }}
-                pool = matched;
-                $total.html(suggested ? '&ldquo;<span>'+q+'</span>&rdquo; 와 같은 이름은 없어요 · 혹시 이 호텔인가요?'
-                                      : '&ldquo;<span>'+q+'</span>&rdquo; 검색 결과 <span class="highlight">'+pool.length+'건</span>'+filterLabel());
-            }} else {{
-                $total.html(CITY_KO+' 호텔 <span class="highlight">'+pool.length+'곳</span>'+filterLabel()+' · 도시 평균 실망&nbsp;확률 '+CITY_AVG+'%');
-            }}
-            baseList = pool;
-            // 지역이 선택돼 있으면 지역 중심으로 고정 줌 (fitBounds는 가장자리 호텔로 뷰가 넓어짐)
-            var area = fArea ? AREAS.filter(function(x){{ return x.code === fArea; }})[0] : null;
-            if (!mapOpen) {{
-                // P6: 지도 접힘 — 지도는 열 때(setMap) 그린다
-            }} else if (area) {{
-                map.setView([area.lat, area.lng], 15, {{animate:false}});  // 애니메이션 setView는 프로그래밍 호출 시 무시됨
-                drawMap(pool, false);
-            }} else {{
-                drawMap(pool, true);   // 전체일 때만 fitBounds
-            }}
-            renderVisible();
-        }}
-
-        // ───── 이벤트 ─────
-        map.on('moveend', function(){{ if (mapOpen && syncMap && !recMode) renderVisible(); }});
-
-        // PC: 목록 카드에 마우스를 올리면 지도 마커를 키워 위치를 보여줌(Tripadvisor·Airbnb 패턴)
-        $res.on('mouseenter', 'li[data-id]', function(){{
-            var mk = mapOpen && markerById[$(this).data('id')]; if (!mk) return;
-            mk.setStyle({{radius:13, weight:3}}); mk.bringToFront();
-        }}).on('mouseleave', 'li[data-id]', function(){{
-            var mk = markerById[$(this).data('id')]; if (mk) mk.setStyle({{radius:8, weight:2}});
-        }});
-
-        // P6 지도 토글: 열면 지도 위로 스크롤 + 크기 재계산 + 목록을 보이는 영역으로 연동, 닫으면 전체 목록
-        function setMap(open, noScroll){{
-            mapOpen = open;
-            $('#map-wrap, #map-hint').toggleClass('is-collapsed', !open);
-            $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록만 보기' : '지도로 보기');
-            $('html').toggleClass('map-open', open);
-            if (open) {{
-                map.invalidateSize();   // 숨김 상태(0px)에서 초기화된 지도 크기 재계산
-                var a = fArea ? AREAS.filter(function(x){{ return x.code === fArea; }})[0] : null;
-                if (a) map.setView([a.lat, a.lng], 15, {{animate:false}});
-                else {{
-                    var pts = fitPts(baseList);
-                    if (pts.length) map.fitBounds(pts, {{padding:[28,28], maxZoom:15, animate:false}});  // 즉시 맞춤 → 아래 renderVisible이 바로 정확
-                }}
-                drawMap(baseList, false);
-                if (!noScroll) {{
-                    var top = $('#map-wrap').offset().top - 64;
-                    window.scrollTo({{top: Math.max(0, top), behavior: 'smooth'}});
-                }}
-            }}
-            renderVisible();
-        }}
-        $('#map-toggle').on('click', function(){{
-            if (recMode) {{ setRecMap(!mapOpen); if (typeof gtag === 'function') gtag('event', 'map_toggle', {{open: mapOpen, rec: true}}); return; }}
-            setMap(!mapOpen);
-            if (typeof gtag === 'function') gtag('event', 'map_toggle', {{open: mapOpen}});
-        }});
-
-        $('#f-area').on('click', '.f-chip', function(){{
-            var $c = $(this); $('#f-area .f-chip').removeClass('on'); $c.addClass('on');
-            fArea = $c.data('area') || ''; run();
-        }});
-        $('#f-price').on('click', '.f-chip', function(){{
-            var $c = $(this); $('#f-price .f-chip').removeClass('on'); $c.addClass('on');
-            fPrice = $c.data('v') || ''; run();
-        }});
-        $('#f-city').on('click', '.f-chip.disabled', function(){{
-            alert('아직 '+CITY_KO+'만 지원해요. 다른 도시는 준비 중이에요!');
-        }});
-
-        // 정렬 드롭다운 (일반 + 카테고리 안심순)
-        if (sortBy !== 'rs'){{   // ?sort= 프리셋이면 버튼 상태 동기화
-            $('#lh-sort .lh-sort-box button').removeClass('on');
-            var $sb = $('#lh-sort .lh-sort-box button[data-sort="'+sortBy+'"]').addClass('on');
-            if ($sb.length) $('#lh-sort-btn').text($sb.data('label') || $sb.text());
-        }}
-        // 정렬(v3 §5-8 ⑭): 모바일 = 가운데 다이얼로그 '정렬'(CF.sheet — 뒤로가기·ESC·딤), PC = 버튼 앵커 팝오버(같은 옵션 목록을 옮겨 씀)
-        var sortBox = document.querySelector('#lh-sort .lh-sort-box'), sortDlg = null;
-        function sortHome(){{ document.getElementById('lh-sort').appendChild(sortBox); }}
-        $('#lh-sort-btn').attr({{'aria-haspopup': 'dialog'}}).on('click', function(e){{
-            e.stopPropagation();
-            if (CF.sheet.pc()) {{ sortHome(); $('#lh-sort').toggleClass('open'); return; }}
-            if (!sortDlg) sortDlg = CF.sheet.make({{id: 'ov-sort', type: 'dialog', w: 'sm', head: 'bar', title: '정렬'}});
-            sortDlg.querySelector('.ov-body').appendChild(sortBox);
-            CF.sheet.open(sortDlg, {{opener: this, focus: '.lh-sort-box button.on', onClose: function(){{ setTimeout(sortHome, 250); }}}});
-        }});
-        $(sortBox).on('click', 'button', function(){{
-            var v = String($(this).data('sort'));
-            if (v.indexOf('cat:') === 0) {{ sortCat = v.slice(4); sortBy = 'p'; }}
-            else {{ sortCat = ''; sortBy = v; }}
-            $(sortBox).find('button').removeClass('on').attr('aria-pressed', 'false'); $(this).addClass('on').attr('aria-pressed', 'true');
-            $('#lh-sort-btn').text($(this).data('label') || $(this).text());
-            $('#lh-sort').removeClass('open');
-            if (sortDlg && CF.sheet.isOpen(sortDlg)) CF.sheet.close(sortDlg);
-            renderVisible();
-        }});
-        $(document).on('click', function(){{ $('#lh-sort').removeClass('open'); }});
-        $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $('#lh-sort').hasClass('open')) {{ $('#lh-sort').removeClass('open'); $('#lh-sort-btn').trigger('focus'); }} }});
-
-        // ───── 조건 더 보기 패널 (FEEDBACK-2610 §14): 모달 대신 아래로 펼침, 칩을 누르면 바로 적용, URL ?cat=&no= 동기화 ─────
-        var $fp = $('#f-panel'), $fm = $('#f-more');
-        function renderPanel(){{
-            $('#fp-cats').html(CATS.map(function(c){{
-                var on = fCats.indexOf(c.ko) >= 0, koDisp = (window.CAT_KO && window.CAT_KO[c.ko]) || c.ko;   // data-cat은 내부키(c.ko)
-                return '<button type="button" class="chip-filter fp-chip'+(on?' on':'')+'" data-cat="'+c.ko+'" aria-pressed="'+on+'">'+koDisp+'</button>';
-            }}).join(''));
-            $('#fp-no').html(MUSTS.map(function(m){{
-                var on = fNo.indexOf(m.code) >= 0;
-                return '<button type="button" class="chip-filter fp-chip'+(on?' on':'')+'" data-no="'+m.code+'" aria-pressed="'+on+'">'+m.label+'</button>';
-            }}).join(''));
-            var n = fCats.length + fNo.length;
-            $fm.toggleClass('active', n > 0).find('.f-more-t').text(n ? '조건 '+n+'개 적용 중' : '조건 더 보기');
-        }}
-        function syncUrl(){{
-            var u = new URLSearchParams(location.search);
-            if (fCats.length) u.set('cat', fCats.join(',')); else u.delete('cat');
-            if (fNo.length) u.set('no', fNo.join(',')); else u.delete('no');
-            var qs = u.toString();
-            history.replaceState(history.state, '', location.pathname + (qs ? '?' + qs : '') + location.hash);
-        }}
-        function applyPanel(){{ renderPanel(); syncUrl(); run(); }}
-        $fm.on('click', function(){{
-            var open = $fp.prop('hidden');
-            $fp.prop('hidden', !open); $fm.attr('aria-expanded', open ? 'true' : 'false').toggleClass('is-open', open);
-        }});
-        $fp.on('click', '.fp-chip[data-cat]', function(){{
-            var c = String($(this).data('cat')), i = fCats.indexOf(c);
-            if (i >= 0) fCats.splice(i, 1); else fCats.push(c);
-            applyPanel();
-        }});
-        $fp.on('click', '.fp-chip[data-no]', function(){{
-            var c = String($(this).data('no')), i = fNo.indexOf(c);
-            if (i >= 0) fNo.splice(i, 1); else fNo.push(c);
-            fNo = normNo(fNo); applyPanel();
-        }});
-        $('#fp-reset').on('click', function(){{ fCats = []; fNo = []; applyPanel(); }});
-
-        $('#btn-search').on('click', run);
-        $q.on('keyup', function(e){{ if(e.key==='Enter') run(); }});
-        $q.on('input', function(){{ if(!$q.val().trim()) run(); }});
-
-        // 공용 자동완성 (별칭 인덱스 드롭다운). 선택 시 상세로 이동, 미매칭 시 분석 요청행.
-        if (window.CFAutocomplete) {{
-            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=' }});
-        }}
-
-        // ═════════ AI 맞춤 추천 (rec) 모드 ═════════
-        var recMode = false;
-        var RC = (window.CFRec && window.CFRec.byCode) || {{}};   // code → {{ko,label,chip}}
-        // ── AI 추천 정렬 (2026-10-10 개편): 고른 항목이 모두 평균 이하(불만 점수 < 55)인 곳부터 → 같은 묶음 안에서는 추천순.
-        //    점수를 섞던 방식(고른 항목 50%·실망 20%·평점 15%·한국인 15%)은 고른 조건을 어긴 곳이 1위가 될 수 있어 바꿨다.
-        //    아쉬운 항목 수가 같으면 뒤 순위 항목에서 걸린 곳이 앞 (1순위에서 걸린 곳이 가장 뒤)
-        var REC_PASS = 55;
-        function catVal(h, ko){{ return (h.cs && ko && h.cs[ko]!=null) ? h.cs[ko] : 50; }}
-        function recFails(h, pr){{
-            var f = [];
-            for (var i=0;i<pr.length;i++){{ var ko=(RC[pr[i]]||{{}}).ko; if (catVal(h, ko) >= REC_PASS) f.push(i); }}
-            return f;
-        }}
-        function recCmp(pr){{
-            return function(a, b){{
-                var fa = recFails(a, pr), fb = recFails(b, pr);
-                if (fa.length !== fb.length) return fa.length - fb.length;
-                if (fa.length && fa[0] !== fb[0]) return fb[0] - fa[0];
-                return (b.rs||0) - (a.rs||0) || (a.p||0) - (b.p||0) || (b.rc||0) - (a.rc||0);
-            }};
-        }}
-        function verdictWord(v){{ return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }}
-        function recPills(h, pr){{   // 고른 조건 충족 표시 (Shopee 숙소 목록의 체크·엑스 알약 패턴): 고른 순서대로, 평균 이하 = 충족
-            var items = pr.map(function(c){{
-                var ko = (RC[c]||{{}}).ko, v = catVal(h, ko), disp = (window.CAT_KO && window.CAT_KO[ko]) || ko, ok = v < REC_PASS;
-                return '<span class="rp '+(ok ? 'is-ok' : 'is-bad')+'"><i aria-hidden="true"></i>'+disp+' 불만 '+verdictWord(v)+'</span>';
-            }});
-            return '<div class="rec-pills" aria-label="고른 조건">'+items.join('')+'</div>';
-        }}
-        function recStat(h){{   // 평점 · 한국인 리뷰 한 줄 + 가격 한 줄
-            var a = ['<span class="grade"><span class="ico"><img src="./img/star.svg" alt=""></span><span class="num">'+(h.g?h.g.toFixed(1):'-')+'</span><span class="txt">('+h.rc.toLocaleString()+')</span></span>'];
-            var kr = (h.krn||0) >= 10 ? '<div class="stat rs-kr">한국인 리뷰 '+h.krn+'건'+(h.krr!=null ? ' ('+h.krr+'%)' : '')+'</div>' : '';
-            return '<div class="stat">'+a.join('')+'</div>' + kr + (h.pt ? '<div class="stat rs-price"><span class="price">'+priceHtml(h)+'</span></div>' : '');
-        }}
-        function recRow(h, rank, pr, hero){{
-            var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
-            return '<li data-id="'+h.id+'" class="rec-li'+(hero ? ' is-hero' : '')+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
-                + '<div class="thumb"><span class="rec-rank'+(rank<=3?' is-top':'')+'">'+(hero ? '가장 잘 맞아요' : rank)+'</span><a href="./hotels/'+h.id+'"><img src="'+img+'" width="'+(hero?640:200)+'" height="'+(hero?360:200)+'" loading="lazy"></a></div>'
-                + '<div class="cont">'
-                + '<div class="info">'
-                + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
-                + '<div class="badge">'+bandChip(h)+'</div>'
-                + recStat(h)
-                + areaHtml(h)
-                + '</div>'
-                + '</div>'
-                + recPills(h, pr)
-                + '<div class="r-foot">'+cmpBtn(h)+'</div>'
-                + '</div></li>';
-        }}
-        function recGroupHead(nf, cnt, total){{
-            var t = nf === 0 ? (total > 1 ? '고른 조건 모두 충족' : '고른 조건 충족') : nf === 1 ? '1가지 아쉬움' : nf+'가지 아쉬움';
-            return '<li class="rec-group'+(nf === 0 ? ' is-pass' : '')+'"><span class="rg-t">'+t+'</span><span class="rg-n">'+cnt+'곳</span></li>';
-        }}
-        var recShown = [];
-        function setRecMap(open){{
-            mapOpen = open;
-            $('#map-wrap, #map-hint').toggleClass('is-collapsed', !open);
-            $('#map-toggle').attr('aria-pressed', open ? 'true' : 'false').find('.mt-t').text(open ? '목록만 보기' : '지도로 보기');
-            $('html').toggleClass('map-open', open);
-            if (open) {{
-                map.invalidateSize(); drawRecMap(recShown);
-                var top = $('#map-wrap').offset().top - 64;
-                window.scrollTo({{top: Math.max(0, top), behavior: 'smooth'}});
-            }}
-        }}
-        function drawRecMap(top){{
-            markers.clearLayers();
-            var pts = [];
-            top.forEach(function(h, i){{
-                if (h.lat == null) return;
-                var rank = i+1, big = rank<=3;
-                var icon = L.divIcon({{className:'', html:'<div class="rec-marker '+(big?'big':'small')+'">'+rank+'</div>',
-                    iconSize:[big?32:26, big?32:26], iconAnchor:[big?16:13, big?16:13]}});
-                var mk = L.marker([h.lat,h.lng], {{icon:icon, zIndexOffset: (11-rank)*10}});
-                mk.bindPopup('<div class="map-pop"><b>'+rank+'위'+' '+h.name+'</b>'
-                    + '<div class="pop-meta">★ '+(h.g?h.g.toFixed(1):'-')+' ('+h.rc.toLocaleString()+')'+(h.pt?' · '+h.pt:'')+'</div>'
-                    + '<a class="pop-link" href="./hotels/'+h.id+'">상세 보기 →</a></div>');
-                markers.addLayer(mk); pts.push([h.lat,h.lng]);
-            }});
-            var a = recArea ? AREAS.filter(function(x){{return x.code===recArea;}})[0] : null;
-            if (a) map.setView([a.lat,a.lng], 15, {{animate:false}});
-            else if (pts.length) map.fitBounds(pts, {{padding:[30,30], maxZoom:15}});
-        }}
-        var recPr = [], recBud = '', recArea = '', recNo = [], recBw = false;
-        function recCandidates(){{
-            return HOTELS.filter(function(h){{
-                if (!h.scored || h.lr) return false;   // 리뷰 적음(최근 1년 100건 미만)은 추천 모수에서 제외 (UI-STANDARDS §5)
-                if (recBud && (recBw ? h.pbw : h.pb) !== recBud) return false;   // 주말 기준이면 주말 가격대(없으면 제외)
-                if (!passNo(h, recNo)) return false;
-                if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0];
-                    if (a){{ if (h.lat==null) return false; if (km(a.lat,a.lng,h.lat,h.lng) > a.r) return false; }} }}
-                return true;
-            }});
-        }}
-        var NO_SHORT = {{roach:'바퀴벌레', bedbug:'빈대', safe:'무단 출입'}};
-        function renderRecHeader(){{
-            var chips = recPr.map(function(c, i){{ var ko=(RC[c]||{{}}).ko; return '<span class="rh-chip is-pr"><span class="rh-rank">'+(i+1)+'</span>'+((window.CAT_KO && window.CAT_KO[ko]) || ko || '')+'</span>'; }});
-            if (recBud){{ var b=(window.CFRec.BUDGETS||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+b.label+(recBw ? '(주말)' : '')+'</span>'); }}
-            if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
-            if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 제외</span>');
-            return '<div class="rh-top"><div class="rh-tit">맞춤 추천</div><a href="javascript:;" class="rh-edit rec-reset btn-line btn-sm">조건 수정</a></div>'
-                + '<div class="rh-chips">'+chips.join('')+'</div>'
-                + '<div class="rh-sum" id="rh-sub"></div>';
-        }}
-        function initRec(){{
-            recMode = true; $('html').addClass('rec-mode');   // 맞춤 추천 화면에선 검색창 숨김(답 먼저)
-            recPr = (sp.get('pr')||'').split(',').filter(function(c){{ return RC[c]; }});
-            recBud = sp.get('bud')||''; recArea = sp.get('area')||''; recBw = !!(recBud && sp.get('bw') === '1');
-            recNo = normNo((sp.get('no')||'').split(','));
-            window.CF_REC_PRESET = {{pr:recPr, bud:recBud, area:recArea, no:recNo, bw:recBw}};
-            $('.filters, #list-head, #map-hint, #total').hide();
-            $('#rec-header').html(renderRecHeader()).show();
-            var cands = recCandidates();
-            // 제외 조건이 실제로 뺀 곳 수 (같은 예산·지역 안에서)
-            var keepNo = recNo; recNo = []; var before = recCandidates().length; recNo = keepNo;
-            var cut = before - cands.length;
-            cands.sort(recCmp(recPr));
-            var nPass = cands.filter(function(h){{ return !recFails(h, recPr).length; }}).length, nPr = recPr.length;
-            var lead = nPass ? '<b>'+nPass+'곳</b>이 고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지켰어요'
-                             : '고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지킨 곳은 없어요 · 아쉬운 게 적은 순이에요';
-            var note = (recNo.length && cut > 0) ? '<div class="rh-note">'+before+'곳 중 '+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 리뷰가 있는 '+cut+'곳은 뺐어요</div>' : '';
-            var top3 = cands.slice(0, 3).map(function(h){{ return h.id; }});
-            var cmpL = top3.length >= 2 ? '<a class="rh-cmp btn-text btn-text--sm" href="./compare?ids='+top3.join(',')+'">1~'+top3.length+'위 나란히 비교</a>' : '';
-            $('#rh-sub').html('<div class="rh-lead">'+lead+'</div>'+note+cmpL);
-            if (cands.length < 3){{
-                var relax = '';
-                if (recBud) relax += '<a class="btn-line btn-sm" href="'+recUrl({{bud:''}})+'">예산 넓혀 다시 보기</a> ';
-                if (recArea) relax += '<a class="btn-line btn-sm" href="'+recUrl({{area:''}})+'">지역 넓혀 다시 보기</a> ';
-                if (recNo.length) relax += '<a class="btn-line btn-sm" href="'+recUrl({{no:''}})+'">&lsquo;한 번도 없어야&rsquo; 조건 풀기</a>';
-                $('#results').html('<div class="empty-sec">'
-                    + '<div class="es-tit">'+(cands.length ? '조건에 맞는 곳이 '+cands.length+'곳뿐이에요' : '조건에 맞는 곳이 없어요')+'</div>'
-                    + '<div class="es-txt">'+(recNo.length ? '조건을 하나씩 풀면 더 보여드릴 수 있어요' : '예산이나 지역을 넓히면 더 보여드릴 수 있어요')+'</div>'
-                    + '<div class="es-btns">'+relax+'</div></div>');
-                recShown = cands;
-            }} else {{
-                // 묶음별로: 모두 괜찮은 곳 → 1가지 아쉬운 곳 (합쳐서 10곳까지 바로), 나머지와 2가지 이상 아쉬운 곳은 '더 보기'
-                var n = recPr.length, html = [], more = [], shown = 0, curNf = -1, rank = 0;
-                var counts = {{}}; cands.forEach(function(h){{ var k = recFails(h, recPr).length; counts[k] = (counts[k]||0) + 1; }});
-                recShown = [];
-                cands.forEach(function(h){{
-                    var nf = recFails(h, recPr).length, vis = nf <= 1 && shown < 10;
-                    var target = vis ? html : more;
-                    if (nf !== curNf && (vis || more.length < 30)) {{ target.push(recGroupHead(nf, counts[nf], n)); curNf = nf; }}
-                    rank++;
-                    if (vis) {{ html.push(recRow(h, rank, recPr, rank === 1 && nf === 0)); recShown.push(h); shown++; }}
-                    else if (more.length < 30) more.push(recRow(h, rank, recPr));
-                }});
-                if (more.length) html.push('<li class="rec-more-wrap"><button type="button" class="btn-gray btn-block" id="rec-more">조건이 더 아쉬운 곳까지 보기</button></li>');
-                $('#results').html(html.join(''));
-                $('#rec-more').on('click', function(){{ $(this).closest('li').replaceWith(more.join('')); if (window.CFCompare) window.CFCompare.render(); }});
-            }}
-            if (window.CFCompare) window.CFCompare.render();
-            // 지도: 모바일은 접고(결과 먼저) '지도로 보기'로 연다. PC는 오른쪽에 상시
-            var mqPc = window.matchMedia('(min-width:1100px)');
-            if (mqPc.matches) {{ mapOpen = true; $('#map-wrap, #map-hint').removeClass('is-collapsed'); setTimeout(function(){{ map.invalidateSize(); drawRecMap(recShown); }}, 80); }}
-            else {{ mapOpen = false; $('#map-wrap, #map-hint').addClass('is-collapsed'); $('#map-toggle').show(); }}
-        }}
-        function recUrl(over){{
-            var pr = over.pr!==undefined ? over.pr : recPr.join(',');
-            var bud = over.bud!==undefined ? over.bud : recBud;
-            var area = over.area!==undefined ? over.area : recArea;
-            var no = over.no!==undefined ? over.no : recNo.join(',');
-            var qs = 'rec=1&pr='+pr; if(bud) qs+='&bud='+bud; if(bud && recBw) qs+='&bw=1'; if(area) qs+='&area='+area; if(no) qs+='&no='+no;
-            return './search?'+qs;
-        }}
-
-        // URL 파라미터: ?rec= / ?area= / ?q=
-        var sp = new URLSearchParams(location.search);
-        if (sp.get('rec')){{ initRec(); }}
-        else {{
-            var initArea = sp.get('area'), initQ = sp.get('q');
-            if (initArea){{ fArea = initArea; $('#f-area .f-chip').removeClass('on'); $('#f-area .f-chip[data-area="'+initArea+'"]').addClass('on'); }}
-            var CAT_KEYS = CATS.map(function(c){{ return c.ko; }});
-            fCats = (sp.get('cat')||'').split(',').filter(function(c){{ return CAT_KEYS.indexOf(c) >= 0; }});
-            fNo = normNo((sp.get('no')||'').split(','));
-            renderPanel();
-            if (fCats.length || fNo.length) {{ $fp.prop('hidden', false); $fm.attr('aria-expanded', 'true').addClass('is-open'); }}   // 공유 URL로 들어오면 펼쳐서 보여줌
-            if (initQ){{ $q.val(initQ); }}
-            run();
-            // PC: 지도 상시 표시(토글 숨김은 pc.css). 창 크기가 경계를 넘으면 따라 전환
-            var mqPc = window.matchMedia('(min-width:1100px)');
-            if (mqPc.matches) setMap(true, true);
-            var onMq = function(e){{ setMap(e.matches, true); }};
-            if (mqPc.addEventListener) mqPc.addEventListener('change', onMq); else mqPc.addListener(onMq);
-        }}
-    }})();
+    {js}
     </script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── detail ─────────────────────────

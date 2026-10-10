@@ -16,7 +16,6 @@ body{color:var(--ink);}
 #header .header .logo a{height:17px;}
 
 /* ---------- 서브페이지 타이틀바 ---------- */
-#title{height:60px;gap:12px;padding:0 12px;}
 
 /* ---------- 섹션 공통 헤드 ---------- */
 #main .head .title{line-height:30px;font-size:var(--fs-h2);font-weight:800;color:var(--ink);}
@@ -129,18 +128,6 @@ body{color:var(--ink);}
 #detail ~ #float{bottom:84px;}
 
 /* ---------- 검색/위시/최근 리스트 ---------- */
-#search .total{padding:20px 20px 0;line-height:20px;font-size:var(--fs-body-sm);}
-#search .list li{padding:22px 0;}
-#search .list li .item{gap:14px;}
-#search .list li .thumb{width:92px;height:92px;border-radius:var(--radius-box);}
-#search .list .cont .info{margin:0 0 12px;}
-#search .list .cont .info .name{line-height:23px;font-size:var(--fs-h3);}
-#search .list .cont .info .name a{color:var(--ink);}
-#search .list .cont .info .meta{margin:6px 0 0;}
-#search .list .cont .info .meta span{line-height:17px;font-size:var(--fs-meta);}
-#search .list .cont .grade .num{font-size:var(--fs-body-sm);}
-#search .list .cont .grade .txt{font-size:var(--fs-meta);}
-#search .list .cont .request a{padding:8px 10px;border-radius:var(--radius-chip);font-size:var(--fs-meta);line-height:16px;}
 
 /* ---------- 리뷰 페이지 ---------- */
 #review .option{padding:12px 20px;}

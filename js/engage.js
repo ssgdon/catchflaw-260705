@@ -9,13 +9,19 @@
     if (!H) return;
 
     // ───────── 최근 본 호텔 기록 (F40) ─────────
-    // localStorage 'cf_recent' = 최신순 pid 배열(중복 제거, 최대 20) — recent 페이지(build_recent)가 동일 키로 읽음
+    // localStorage 'cf_recent' = 최신순 pid 배열(중복 제거, 최대 20) + 'cf_recent_ts' = {pid: 본 시각} — recent 페이지(build_recent)가 동일 키로 읽음
     try {
       var rec = JSON.parse(localStorage.getItem('cf_recent') || '[]');
       if (!Array.isArray(rec)) rec = [];
       rec = rec.filter(function (p) { return p !== H.pid; });
       rec.unshift(H.pid);
-      localStorage.setItem('cf_recent', JSON.stringify(rec.slice(0, 20)));
+      rec = rec.slice(0, 20);
+      localStorage.setItem('cf_recent', JSON.stringify(rec));
+      // 본 시각 {pid: ms} — recent 페이지의 '오늘/어제/이번 주/그 전' 묶음용. 목록에서 빠진 호텔의 시각은 같이 지운다
+      var ts = JSON.parse(localStorage.getItem('cf_recent_ts') || '{}'), keep = {};
+      ts[H.pid] = Date.now();
+      rec.forEach(function (p) { if (ts[p]) keep[p] = ts[p]; });
+      localStorage.setItem('cf_recent_ts', JSON.stringify(keep));
     } catch (e) {}
 
     // 카카오톡 인앱 브라우저 감지
