@@ -1843,36 +1843,36 @@ def build_search(city_avg_pct):
             }};
         }}
         function verdictWord(v){{ return v < 25 ? '거의 없음' : v < 45 ? '적은 편' : v < 55 ? '평균 수준' : v < 70 ? '많은 편' : '많음'; }}
-        function recCheck(h, pr){{   // 고른 항목 성적표: 고른 순서대로, 평균보다 많은 항목만 주의색
+        function recPills(h, pr){{   // 고른 조건 충족 표시 (Shopee 숙소 목록의 체크·엑스 알약 패턴): 고른 순서대로, 평균 이하 = 충족
             var items = pr.map(function(c){{
-                var ko = (RC[c]||{{}}).ko, v = catVal(h, ko), disp = (window.CAT_KO && window.CAT_KO[ko]) || ko;
-                return '<span class="seg rc-i'+(v >= REC_PASS ? ' is-bad' : '')+'">'+disp+' 불만 <b>'+verdictWord(v)+'</b></span>';
+                var ko = (RC[c]||{{}}).ko, v = catVal(h, ko), disp = (window.CAT_KO && window.CAT_KO[ko]) || ko, ok = v < REC_PASS;
+                return '<span class="rp '+(ok ? 'is-ok' : 'is-bad')+'"><i aria-hidden="true"></i>'+disp+' 불만 '+verdictWord(v)+'</span>';
             }});
-            return '<div class="rec-check">'+items.join(WHY_SEP)+'</div>';
+            return '<div class="rec-pills" aria-label="고른 조건">'+items.join('')+'</div>';
         }}
-        function krLine(h){{
-            if ((h.krn||0) < 10) return '';
-            return '<div class="why"><span class="seg">한국인 리뷰 '+h.krn+'건'+(h.krr!=null ? ' ('+h.krr+'%)' : '')+'</span></div>';
+        function recStat(h){{   // 평점 · 한국인 리뷰 한 줄 + 가격 한 줄
+            var a = ['<span class="grade"><span class="ico"><img src="./img/star.svg" alt=""></span><span class="num">'+(h.g?h.g.toFixed(1):'-')+'</span><span class="txt">('+h.rc.toLocaleString()+')</span></span>'];
+            var kr = (h.krn||0) >= 10 ? '<div class="stat rs-kr">한국인 리뷰 '+h.krn+'건'+(h.krr!=null ? ' ('+h.krr+'%)' : '')+'</div>' : '';
+            return '<div class="stat">'+a.join('')+'</div>' + kr + (h.pt ? '<div class="stat rs-price"><span class="price">'+priceHtml(h)+'</span></div>' : '');
         }}
-        function recRow(h, rank, pr){{
+        function recRow(h, rank, pr, hero){{
             var img = h.img ? (h.img.indexOf('http')===0 ? h.img : './'+h.img) : './img/placeholder.svg';
-            return '<li data-id="'+h.id+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
-                + '<div class="thumb"><span class="rec-rank'+(rank<=3?' is-top':'')+'">'+rank+'</span><a href="./hotels/'+h.id+'"><img src="'+img+'" width="200" height="200" loading="lazy"></a></div>'
+            return '<li data-id="'+h.id+'" class="rec-li'+(hero ? ' is-hero' : '')+'"><div class="item'+(h.scored?' with-cmp':'')+'">'
+                + '<div class="thumb"><span class="rec-rank'+(rank<=3?' is-top':'')+'">'+(hero ? '가장 잘 맞아요' : rank)+'</span><a href="./hotels/'+h.id+'"><img src="'+img+'" width="'+(hero?640:200)+'" height="'+(hero?360:200)+'" loading="lazy"></a></div>'
                 + '<div class="cont">'
                 + '<div class="info">'
                 + '<div class="name"><a href="./hotels/'+h.id+'">'+h.name+'</a></div>'
                 + '<div class="badge">'+bandChip(h)+'</div>'
-                + statLine(h)
+                + recStat(h)
                 + areaHtml(h)
                 + '</div>'
-                + recCheck(h, pr)
-                + krLine(h)
                 + '</div>'
-                + footHtml(h)
+                + recPills(h, pr)
+                + '<div class="r-foot">'+cmpBtn(h)+'</div>'
                 + '</div></li>';
         }}
         function recGroupHead(nf, cnt, total){{
-            var t = nf === 0 ? (total > 1 ? total+'가지 모두 괜찮은 곳' : '고른 조건이 괜찮은 곳') : nf === 1 ? '1가지가 아쉬운 곳' : nf+'가지가 아쉬운 곳';
+            var t = nf === 0 ? (total > 1 ? '고른 조건 모두 충족' : '고른 조건 충족') : nf === 1 ? '1가지 아쉬움' : nf+'가지 아쉬움';
             return '<li class="rec-group'+(nf === 0 ? ' is-pass' : '')+'"><span class="rg-t">'+t+'</span><span class="rg-n">'+cnt+'곳</span></li>';
         }}
         var recShown = [];
@@ -1916,18 +1916,18 @@ def build_search(city_avg_pct):
                 return true;
             }});
         }}
+        var NO_SHORT = {{roach:'바퀴벌레', bedbug:'빈대', safe:'무단 출입'}};
         function renderRecHeader(){{
-            var chips = recPr.map(function(c, i){{ return '<span class="rh-chip"><span class="rh-rank">'+(i+1)+'</span>'+((RC[c]||{{}}).chip||'')+'</span>'; }});
+            var chips = recPr.map(function(c, i){{ var ko=(RC[c]||{{}}).ko; return '<span class="rh-chip is-pr"><span class="rh-rank">'+(i+1)+'</span>'+((window.CAT_KO && window.CAT_KO[ko]) || ko || '')+'</span>'; }});
             if (recBud){{ var b=(window.CFRec.BUDGETS||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+b.label+(recBw ? '(주말)' : '')+'</span>'); }}
             if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
-            recNo.forEach(function(k){{ var m=(window.CFRec.mustBy||{{}})[k]; if (m) chips.push('<span class="rh-chip">'+m.chip+'</span>'); }});
-            return '<div class="rh-tit">내 조건 맞춤 추천</div>'
-                + '<div class="rh-sub" id="rh-sub"></div>'
+            if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 제외</span>');
+            return '<div class="rh-top"><div class="rh-tit">맞춤 추천</div><a href="javascript:;" class="rh-edit rec-reset">조건 수정</a></div>'
                 + '<div class="rh-chips">'+chips.join('')+'</div>'
-                + '<a href="javascript:;" class="rh-reset rec-reset">조건 다시 설정 ↻</a>';
+                + '<div class="rh-sum" id="rh-sub"></div>';
         }}
         function initRec(){{
-            recMode = true;
+            recMode = true; $('html').addClass('rec-mode');   // 맞춤 추천 화면에선 검색창 숨김(답 먼저)
             recPr = (sp.get('pr')||'').split(',').filter(function(c){{ return RC[c]; }});
             recBud = sp.get('bud')||''; recArea = sp.get('area')||''; recBw = !!(recBud && sp.get('bw') === '1');
             recNo = normNo((sp.get('no')||'').split(','));
@@ -1939,9 +1939,13 @@ def build_search(city_avg_pct):
             var keepNo = recNo; recNo = []; var before = recCandidates().length; recNo = keepNo;
             var cut = before - cands.length;
             cands.sort(recCmp(recPr));
-            var sub = '고른 항목이 모두 평균 이하인 곳부터 보여드려요';
-            if (recNo.length && cut > 0) sub += ' · ' + before + '곳 중 ' + recNo.map(function(k){{ return ((window.CFRec.mustBy||{{}})[k]||{{}}).label; }}).join('·') + ' 리뷰가 있는 ' + cut + '곳은 뺐어요';
-            $('#rh-sub').html(sub.replace(' · ', '<span class="dsep"> · </span>'));
+            var nPass = cands.filter(function(h){{ return !recFails(h, recPr).length; }}).length, nPr = recPr.length;
+            var lead = nPass ? '<b>'+nPass+'곳</b>이 고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지켰어요'
+                             : '고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지킨 곳은 없어요 · 아쉬운 게 적은 순이에요';
+            var note = (recNo.length && cut > 0) ? '<div class="rh-note">'+before+'곳 중 '+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 리뷰가 있는 '+cut+'곳은 뺐어요</div>' : '';
+            var top3 = cands.slice(0, 3).map(function(h){{ return h.id; }});
+            var cmpL = top3.length >= 2 ? '<a class="rh-cmp" href="./compare?ids='+top3.join(',')+'">1~'+top3.length+'위 나란히 비교 →</a>' : '';
+            $('#rh-sub').html('<div class="rh-lead">'+lead+'</div>'+note+cmpL);
             if (cands.length < 3){{
                 var relax = '';
                 if (recBud) relax += '<a class="notice-btn" href="'+recUrl({{bud:''}})+'">예산 넓혀 다시 보기</a> ';
@@ -1962,7 +1966,7 @@ def build_search(city_avg_pct):
                     var target = vis ? html : more;
                     if (nf !== curNf && (vis || more.length < 30)) {{ target.push(recGroupHead(nf, counts[nf], n)); curNf = nf; }}
                     rank++;
-                    if (vis) {{ html.push(recRow(h, rank, recPr)); recShown.push(h); shown++; }}
+                    if (vis) {{ html.push(recRow(h, rank, recPr, rank === 1 && nf === 0)); recShown.push(h); shown++; }}
                     else if (more.length < 30) more.push(recRow(h, rank, recPr));
                 }});
                 if (more.length) html.push('<li class="rec-more-wrap"><button type="button" class="rec-more" id="rec-more">조건이 더 아쉬운 곳까지 보기</button></li>');

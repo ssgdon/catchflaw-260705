@@ -1396,3 +1396,48 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #search .list .rec-more{display:flex;align-items:center;justify-content:center;width:100%;height:var(--h-btn);border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--ink-2);}
 #main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}
 
+/* ════════ AI 맞춤 추천 결과 화면 재구성 (2026-10-10) ════════
+   레퍼런스: Tripadvisor 결과(조건 칩 한 줄 + 결과 수) · Shopee 숙소 목록(조건 충족 체크/엑스 알약) · Yuka(색 점 + 짧은 판정)
+   ① 검색창 숨김 ② 큰 보라 상자 → 흰 바탕 제목·칩·요약 ③ 1위는 사진 큰 카드 ④ 조건 충족 알약은 카드 전체 폭 */
+html.rec-mode #title{display:none;}
+#search .rec-header{margin:0;padding:var(--sp-5) var(--page-x) var(--sp-4);border-radius:0;background:var(--surface-card);border-bottom:1px solid var(--line-strong);}
+#search .rec-header .rh-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);}
+#search .rec-header .rh-tit{font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
+#search .rec-header .rh-edit{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-pill);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);}
+#search .rec-header .rh-chips{flex-wrap:nowrap;gap:6px;margin:var(--sp-3) calc(var(--page-x) * -1) 0;padding:0 var(--page-x);overflow-x:auto;scrollbar-width:none;}
+#search .rec-header .rh-chips::-webkit-scrollbar{display:none;}
+#search .rec-header .rh-chip{flex:none;height:var(--h-chip-sm);padding:0 var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
+#search .rec-header .rh-chip.is-pr{border-color:var(--primary);color:var(--primary);font-weight:var(--fw-bold);}
+#search .rec-header .rh-chip.is-no{background:var(--surface-2);border-color:var(--surface-2);}
+#search .rec-header .rh-sum{margin-top:var(--sp-4);}
+#search .rec-header .rh-lead{font-size:var(--fs-body);font-weight:var(--fw-medium);line-height:1.5;color:var(--ink);}
+#search .rec-header .rh-lead b{font-weight:var(--fw-display);color:var(--primary);}
+#search .rec-header .rh-note{margin-top:2px;font-size:var(--fs-meta);line-height:1.5;color:var(--ink-3);}
+#search .rec-header .rh-cmp{display:inline-block;margin-top:var(--sp-3);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary);}
+/* 묶음 머리: 섹션 라벨 + 개수 알약 */
+#search .list .rec-group{padding:var(--sp-6) 0 var(--sp-1);}
+#search .list .rec-group .rg-t{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--warning-text);}
+#search .list .rec-group.is-pass .rg-t{color:var(--safe-text);}
+#search .list .rec-group .rg-n{display:inline-flex;align-items:center;height:22px;padding:0 var(--sp-2);border-radius:var(--radius-pill);background:var(--surface-2);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);}
+/* 조건 충족 알약 — 카드 전체 폭, 충족 = 초록 체크, 미충족 = 주황 느낌표 (아이콘은 CSS 도형, 이모지 아님) */
+#search .list .rec-li .rec-pills{flex-basis:100%;display:flex;flex-wrap:wrap;gap:6px;margin-top:var(--sp-3);}
+#search .list .rec-li .rp{display:inline-flex;align-items:center;gap:6px;height:var(--h-badge);padding:0 var(--sp-2) 0 6px;border-radius:var(--radius-chip);font-size:var(--fs-meta);font-weight:var(--fw-semi);white-space:nowrap;}
+#search .list .rec-li .rp.is-ok{background:var(--safe-soft);color:var(--safe-text);}
+#search .list .rec-li .rp.is-bad{background:var(--warning-soft);color:var(--warning-text);}
+#search .list .rec-li .rp i{position:relative;flex:none;width:16px;height:16px;border-radius:50%;}
+#search .list .rec-li .rp.is-ok i{background:var(--safe);}
+#search .list .rec-li .rp.is-ok i::before{content:"";position:absolute;left:5px;top:3px;width:4px;height:7px;border:solid var(--ink-inverse);border-width:0 2px 2px 0;transform:rotate(45deg);}
+#search .list .rec-li .rp.is-bad i{background:var(--warning);}
+#search .list .rec-li .rp.is-bad i::before{content:"";position:absolute;left:7px;top:3px;width:2px;height:6px;border-radius:1px;background:var(--ink-inverse);}
+#search .list .rec-li .rp.is-bad i::after{content:"";position:absolute;left:7px;top:11px;width:2px;height:2px;border-radius:1px;background:var(--ink-inverse);}
+#search .list .rec-li .rs-price{margin-top:2px;}
+#search .list .rec-li .r-foot{margin-top:var(--sp-3);justify-content:flex-end;}
+/* 1위 큰 카드: 사진을 위로 크게, 내용은 아래 전체 폭 */
+#search .list li.is-hero .item{flex-direction:column;}
+#search .list li.is-hero .thumb{width:100%;height:auto;aspect-ratio:16/9;border-radius:var(--radius-img);}
+#search .list li.is-hero .thumb .rec-rank{top:10px;left:10px;height:28px;padding:0 var(--sp-3);font-size:var(--fs-meta);}
+#search .list li.is-hero .cont{width:100%;}
+#search .list li.is-hero .cont .info .name{font-size:var(--fs-h2);}
+#search .list .rec-li .item{row-gap:0;}
+#search .list .rec-li .rs-kr{margin-top:2px;}
+
