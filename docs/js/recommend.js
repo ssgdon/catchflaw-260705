@@ -27,13 +27,14 @@
   var AREA_DESC = { hakata: '신칸센·공항 이동 편리', tenjin: '쇼핑·맛집 중심가', nakasu: '야타이·나이트라이프', gion: '조용한 구시가' };
   var AREA_REC = { hakata: 1, tenjin: 1 };   // '추천' 딱지 — 카페 1,000건 중 하카타 160·텐진 131건 (FEEDBACK-2610 §8)
   /* '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6) — 키는 검색 인덱스 h.x와 같고 URL no= 값. 심각 리뷰만 센다 */
-  // 2026-10-10: '벌레 전부'(날파리·모기 포함, 후보의 절반 제외) 삭제 → '빈대' 추가. '객실 보안·밤길'은 실제로 세는 객실 보안(무단 입실·잠금·사생활)에 맞춰 이름 변경
+  // 2026-10-10: '벌레 전부'(날파리·모기 포함, 후보의 절반 제외) 삭제 → '빈대' 추가.
+  // safe = 객실 보안 심각(무단 입실·잠금·사생활 + 대욕장·욕조 부상) — 상세·비교의 화면 이름 '보안·안전사고'와 같게(642ad44 이후)
   var MUSTS = [
     { code: 'roach',  label: '바퀴벌레', chip: '바퀴벌레 0건' },
     { code: 'bedbug', label: '빈대', chip: '빈대 0건' },
-    { code: 'safe',   label: '방 잠금·무단 출입', chip: '무단 출입·잠금 문제 0건' }
+    { code: 'safe',   label: '보안·안전사고', chip: '보안·안전사고 0건' }
   ];
-  var NO_SHORT = { roach: '바퀴벌레', bedbug: '빈대', safe: '무단 출입' };   // 접힌 카드 요약용 (검색 rec 헤더와 같은 말)
+  var NO_SHORT = { roach: '바퀴벌레', bedbug: '빈대', safe: '보안·안전사고' };   // 접힌 카드 요약용 (검색 rec 헤더와 같은 말). 이름 안에 '·'가 있어 잇는 건 ', '
   // 1단계 도시 — 검색 도시 필터(generate.py f-city)와 같은 목록. 후쿠오카만 고를 수 있다
   var CITIES = [
     { code: 'fukuoka', ko: '후쿠오카', on: true },
@@ -109,7 +110,7 @@
     if (n === 1) return [CITY.ko, ''];
     if (n === 2) return [S.area ? areaKo(S.area) : '어디든 좋아요', ''];
     if (n === 3) return [S.sel.map(function (c) { return catName(byCode[c]); }).join('·'),
-                         S.no.length ? S.no.map(function (k) { return NO_SHORT[k]; }).join('·') + ' 없는 곳만' : ''];
+                         S.no.length ? S.no.map(function (k) { return NO_SHORT[k]; }).join(', ') + ' 없는 곳만' : ''];
     return [S.bud ? (S.bw ? '주말 ' : '평일 ') + budLabel() : '상관없어요', ''];
   }
 

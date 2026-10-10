@@ -1191,10 +1191,10 @@ def card_tags(h):
 # ── '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6.1) — 검색 인덱스 x·검색 필터·AI 추천이 같은 숫자를 쓴다 ──
 ROACH_RX = re.compile(r'바퀴|cockroach|roach|ゴキブリ|蟑螂', re.I)
 BEDBUG_RX = re.compile(r'빈대|bed ?bugs?|トコジラミ|南京虫|臭虫', re.I)
-NO_KEYS = [('roach', '바퀴벌레'), ('bedbug', '빈대'), ('safe', '방 잠금·무단 출입')]   # URL no= 키 → 화면 라벨 (js/recommend.js MUSTS와 동일)
+NO_KEYS = [('roach', '바퀴벌레'), ('bedbug', '빈대'), ('safe', '보안·안전사고')]   # URL no= 키 → 화면 라벨 (js/recommend.js MUSTS와 동일)
 
 def rare_counts(pid, h, quotes):
-    """최근 1년 심각 리뷰 건수: bug = 벌레 소분류 심각(scoring crit_1y, 표시용), safe = 객실 보안 심각(무단 입실·잠금·사생활),
+    """최근 1년 심각 리뷰 건수: bug = 벌레 소분류 심각(scoring crit_1y, 표시용), safe = 객실 보안 심각(무단 입실·잠금·사생활·대욕장/욕조 부상, 화면 이름 '보안·안전사고'),
     roach·bedbug = 벌레 심각 인용(quotes.json, 호텔·카테고리별 40건 상한 — 하한값이지만 벌레 심각이 40건 넘는 호텔은 없다) 중
     본문에 바퀴벌레·빈대 언급. 동네 분위기는 심각 판정이 0건이라 '밤길'을 약속하지 않도록 safe에서 뺐다(2026-10-10). 채점 안 된 호텔은 None."""
     if not h.get('scored'): return None
@@ -1978,12 +1978,12 @@ def build_search(city_avg_pct):
                 return true;
             }});
         }}
-        var NO_SHORT = {{roach:'바퀴벌레', bedbug:'빈대', safe:'무단 출입'}};
+        var NO_SHORT = {{roach:'바퀴벌레', bedbug:'빈대', safe:'보안·안전사고'}};   // 이름 안에 '·'가 있어 여럿은 ', '로 잇는다
         function renderRecHeader(){{
             var chips = recPr.map(function(c, i){{ var ko=(RC[c]||{{}}).ko; return '<span class="rh-chip is-pr"><span class="rh-rank">'+(i+1)+'</span>'+((window.CAT_KO && window.CAT_KO[ko]) || ko || '')+'</span>'; }});
             if (recBud){{ var b=((recBw ? window.CFRec.BUDGETS_W : window.CFRec.BUDGETS)||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+(recBw ? '주말 ' : '평일 ')+b.label+'</span>'); }}
             if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
-            if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 제외</span>');
+            if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join(', ')+' 제외</span>');
             return '<div class="rh-top"><div class="rh-tit">맞춤 추천</div><a href="javascript:;" class="rh-edit rec-reset">조건 수정</a></div>'
                 + '<div class="rh-chips">'+chips.join('')+'</div>'
                 + '<div class="rh-sum" id="rh-sub"></div>';
@@ -2004,7 +2004,7 @@ def build_search(city_avg_pct):
             var nPass = cands.filter(function(h){{ return !recFails(h, recPr).length; }}).length, nPr = recPr.length;
             var lead = nPass ? '<b>'+nPass+'곳</b>이 고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지켰어요'
                              : '고른 '+(nPr > 1 ? nPr+'가지를 모두' : '조건을')+' 지킨 곳은 없어요 · 아쉬운 게 적은 순이에요';
-            var note = (recNo.length && cut > 0) ? '<div class="rh-note">'+before+'곳 중 '+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 리뷰가 있는 '+cut+'곳은 뺐어요</div>' : '';
+            var note = (recNo.length && cut > 0) ? '<div class="rh-note">'+before+'곳 중 '+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join(', ')+' 리뷰가 있는 '+cut+'곳은 뺐어요</div>' : '';
             var top3 = cands.slice(0, 3).map(function(h){{ return h.id; }});
             var cmpL = top3.length >= 2 ? '<a class="rh-cmp" href="./compare?ids='+top3.join(',')+'">1~'+top3.length+'위 나란히 비교 →</a>' : '';
             $('#rh-sub').html('<div class="rh-lead">'+lead+'</div>'+note+cmpL);
