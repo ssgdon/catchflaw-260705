@@ -1805,7 +1805,7 @@ SEARCH_JS = r"""(function(){
         if (CF.sheet.pc() || !sortDlg || !CF.sheet.isOpen(sortDlg)) { markSort(key); applySort(key); return; }   // PC 팝오버: 바로 적용
         draft = key; markSort(key);   // 모바일 다이얼로그: '적용'을 눌러야 확정
     });
-    $(document).on('click', function(){ $('#lh-sort').removeClass('open'); });
+    $(document).on('click', function(e){ if (!$(e.target).closest('#lh-sort').length) $('#lh-sort').removeClass('open'); });   // 바깥 클릭만 닫음('항목별 ›' 2단계 이동은 유지)
     $(document).on('keydown', function(e){ if (e.key === 'Escape' && $('#lh-sort').hasClass('open')) { $('#lh-sort').removeClass('open'); $sortBtn.trigger('focus'); } });
 
     // ───── 필터: 칩 한 줄 + 필터 시트(지역·가격·불만 적은 항목·한 번도 없어야) — '전체 해제' + 'N곳 보기'(실시간 결과 수) ─────
@@ -2074,19 +2074,19 @@ def build_search(city_avg_pct):
     <main id="container">
         ''' + site_header(0, back='./', search=False) + f'''
         <h1 class="page-title blind">{CITY['ko']} 호텔 검색</h1>
-        <section id="title">
-            <div class="st-row">
-                <a class="btn-icon btn-icon--surface st-back" href="./" aria-label="뒤로가기"><img src="./img/back_b.svg" alt="" width="20" height="20"></a>
-                <div class="search">
-                    <button type="button" id="btn-search" aria-label="검색"><img src="./img/search_g.svg" alt="" width="20" height="20"></button>
-                    <input type="text" id="q" placeholder="{CITY['ko']} 호텔명 검색" autocomplete="off" enterkeyhint="search" aria-label="호텔 검색">
-                    <div class="ac-box" id="ac-box" hidden></div>
-                </div>
-                <button type="button" class="st-filter" id="st-filter" aria-label="필터" aria-haspopup="dialog"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5h6.5M13.5 5H16M2 13h2.5M9.5 13H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="5" r="2.2" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="13" r="2.2" stroke="currentColor" stroke-width="1.6"/></svg><b class="cnt" id="st-filter-n" hidden></b></button>
-            </div>
-            <div class="f-bar" id="f-bar" role="group" aria-label="필터">{f_chips}</div>
-        </section>
         <section id="search">
+            <section id="title">
+                <div class="st-row">
+                    <a class="btn-icon btn-icon--surface st-back" href="./" aria-label="뒤로가기"><img src="./img/back_b.svg" alt="" width="20" height="20"></a>
+                    <div class="search">
+                        <button type="button" id="btn-search" aria-label="검색"><img src="./img/search_g.svg" alt="" width="20" height="20"></button>
+                        <input type="text" id="q" placeholder="{CITY['ko']} 호텔명 검색" autocomplete="off" enterkeyhint="search" aria-label="호텔 검색">
+                        <div class="ac-box" id="ac-box" hidden></div>
+                    </div>
+                    <button type="button" class="st-filter" id="st-filter" aria-label="필터" aria-haspopup="dialog"><svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden="true"><path d="M2 5h6.5M13.5 5H16M2 13h2.5M9.5 13H16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><circle cx="11" cy="5" r="2.2" stroke="currentColor" stroke-width="1.6"/><circle cx="7" cy="13" r="2.2" stroke="currentColor" stroke-width="1.6"/></svg><b class="cnt" id="st-filter-n" hidden></b></button>
+                </div>
+                <div class="f-bar" id="f-bar" role="group" aria-label="필터">{f_chips}</div>
+            </section>
             <div class="rec-header" id="rec-header" hidden></div>
             <div class="map-wrap is-collapsed" id="map-wrap"><div id="map"></div>
                 <div class="map-legend">
