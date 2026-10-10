@@ -14,12 +14,12 @@
     { code: 'svc',    ko: '직원', label: '불친절은 못 넘어가',        kw: '직원 응대·대기',          chip: '응대' },
     { code: 'locsaf', ko: '위치', label: '위치가 제일 중요해',        kw: '역까지 거리·밤길',        chip: '위치' }
   ];
-  var BUDGETS = [
-    { code: '',   label: '상관없어요' },
-    { code: 'b1', label: '10만원 미만' },
-    { code: 'b2', label: '10~20만원' },
-    { code: 'b3', label: '20만원 이상' }
-  ];
+  // 예산 구간 = generate.py PRICE_BANDS(평일 5)·PRICE_BANDS_WE(주말 4) — 빌드가 window.CF_PRICE_BANDS로 주입 (2026-10-10 분포 기준)
+  var PB = window.CF_PRICE_BANDS || { wd: [['b1', '10만원 미만'], ['b2', '10~12만원'], ['b3', '12~15만원'], ['b4', '15~20만원'], ['b5', '20만원 이상']],
+                                      we: [['w1', '30만원 미만'], ['w2', '30~40만원'], ['w3', '40~50만원'], ['w4', '50만원 이상']] };
+  var ANY = { code: '', label: '상관없어요' };
+  var BUDGETS = [ANY].concat(PB.wd.map(function (x) { return { code: x[0], label: x[1] }; }));
+  var BUDGETS_W = [ANY].concat(PB.we.map(function (x) { return { code: x[0], label: x[1] }; }));
   var AREA_DESC = { hakata: '신칸센·공항 이동 편리', tenjin: '쇼핑·맛집 중심가', nakasu: '야타이·나이트라이프', gion: '조용한 구시가' };
   var AREA_REC = { hakata: 1, tenjin: 1 };   // '추천' 딱지 — 카페 1,000건 중 하카타 160·텐진 131건 (FEEDBACK-2610 §8)
   /* '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6) — 키는 검색 인덱스 h.x와 같고 URL no= 값. 심각 리뷰만 센다 */
@@ -39,7 +39,7 @@
     return a.filter(function (c, i) { return a.indexOf(c) === i; });
   }
 
-  window.CFRec = { CATS: CATS, BUDGETS: BUDGETS, AREA_DESC: AREA_DESC, MUSTS: MUSTS, mustBy: mustBy, normNo: normNo, byCode: byCode, open: openWizard };
+  window.CFRec = { CATS: CATS, BUDGETS: BUDGETS, BUDGETS_W: BUDGETS_W, AREA_DESC: AREA_DESC, MUSTS: MUSTS, mustBy: mustBy, normNo: normNo, byCode: byCode, open: openWizard };
 
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
   function toast(msg) {
@@ -119,7 +119,7 @@
       '<div class="rec-btns"><button type="button" class="cf-btn cf-btn-primary rec-next"' + (sel.length ? '' : ' disabled') + '>다음 →</button></div>';
   }
   function stepBudget() {
-    var chips = BUDGETS.map(function (b) {
+    var chips = (bw ? BUDGETS_W : BUDGETS).map(function (b) {
       return '<button type="button" class="rec-opt' + (bud === b.code && bud !== '' ? ' on' : '') + '" data-bud="' + b.code + '">' +
         '<span class="rec-opt-label">' + b.label + '</span></button>';
     }).join('');
@@ -128,7 +128,7 @@
         '<button type="button" class="rec-seg-btn' + (bw ? '' : ' on') + '" data-bw="0" aria-pressed="' + (bw ? 'false' : 'true') + '">평일 기준</button>' +
         '<button type="button" class="rec-seg-btn' + (bw ? ' on' : '') + '" data-bw="1" aria-pressed="' + (bw ? 'true' : 'false') + '">주말(금·토) 기준</button>' +
       '</div>' +
-      '<div class="rec-sub">주말은 평일의 약 2.6배라 따로 골라요</div>' +
+      '<div class="rec-sub">' + (bw ? '금·토 밤 2인 1박 기준이에요' : '일~목 밤 2인 1박 기준이에요') + '</div>' +
       '<div class="rec-list">' + chips + '</div>';
   }
   function stepArea() {
@@ -163,7 +163,9 @@
       render();
     });
     body.on('click', '.rec-seg-btn', function () {
-      bw = String($(this).data('bw')) === '1';
+      var nbw = String($(this).data('bw')) === '1';
+      if (nbw !== bw) bud = '';            // 평일·주말 구간이 달라 고른 예산은 초기화
+      bw = nbw;
       render();
     });
     body.on('click', '.rec-next', function () {

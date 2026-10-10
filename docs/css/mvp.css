@@ -1441,3 +1441,10 @@ html.rec-mode #title{display:none;}
 #search .list .rec-li .item{row-gap:0;}
 #search .list .rec-li .rs-kr{margin-top:2px;}
 
+/* 홈 가격대별 추천 탭 (2026-10-10): 평일 구간 4개를 탭으로 — 슬라이더를 쌓지 않음 */
+#main .price-tabs .pt-tabs{display:flex;gap:var(--sp-2);margin:var(--head-gap) calc(var(--page-x) * -1) var(--sp-4);padding:0 var(--page-x);overflow-x:auto;scrollbar-width:none;}
+#main .price-tabs .pt-tabs::-webkit-scrollbar{display:none;}
+#main .price-tabs .pt-tab{flex:none;height:var(--h-chip);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
+#main .price-tabs .pt-tab.on{border-color:var(--ink);background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
+#main .price-tabs .pt-pane[hidden]{display:none;}
+

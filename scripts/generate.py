@@ -213,10 +213,21 @@ SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 FX = {'US$': 1400, '£': 1750, '€': 1500, 'SCR': 100, '₩': 1, 'KRW': 1, '¥': 9.5}
 PRICE_WINDOW_DAYS = 56          # 최근 8주 수집분만 사용
 WEEKEND_NIGHTS = (4, 5)         # 금·토 밤 (date.weekday)
+# 가격대 = 실제 분포에 맞춘 구간 (2026-10-10). 평일 20·40·60·80% 지점 9·11·13·17만원 → 5구간(43/35/37/27/24곳),
+# 주말(금·토 밤) 28·32·38·48만원 → 4구간(37/48/24/26곳). 예전 3구간은 평일 63%가 '10~20만원'에, 주말 96%가 '20만원 이상'에 몰렸다.
+# 코드 b1(10만원 미만)은 가성비 허브 FAQ 등이 그대로 쓴다. 주말 코드는 w1~w4 (AI 추천 '주말 기준' 예산)
+PRICE_BANDS_WE = [
+    ('w1', '30만원 미만', 0, 300_000),
+    ('w2', '30~40만원', 300_000, 400_000),
+    ('w3', '40~50만원', 400_000, 500_000),
+    ('w4', '50만원 이상', 500_000, 10**10),
+]
 PRICE_BANDS = [
     ('b1', '10만원 미만', 0, 100_000),
-    ('b2', '10~20만원', 100_000, 200_000),
-    ('b3', '20만원 이상', 200_000, 10**10),
+    ('b2', '10~12만원', 100_000, 120_000),
+    ('b3', '12~15만원', 120_000, 150_000),
+    ('b4', '15~20만원', 150_000, 200_000),
+    ('b5', '20만원 이상', 200_000, 10**10),
 ]
 
 def parse_price(price_str):
@@ -233,11 +244,11 @@ def parse_price(price_str):
     man = max(1, round(krw / 10_000))
     return krw, f'약 {man}만원'
 
-def price_band(krw):
+def price_band(krw, bands=None):
     """가격대는 화면에 보이는 만원 단위(반올림)로 정한다 — '약 10만원'이 '10만원 미만'에 들어가는 어긋남 방지."""
     if krw is None: return None
     shown = max(1, round(krw / 10_000)) * 10_000
-    for code, label, lo, hi in PRICE_BANDS:
+    for code, label, lo, hi in (bands or PRICE_BANDS):
         if lo <= shown < hi: return code, label
     return None
 
@@ -521,7 +532,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <script src="{p}js/common.js?v={BUILD}" defer></script>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="{p}js/swiper.js"></script>
-    <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
+    <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_PRICE_BANDS={json.dumps({'wd': [[c, l] for c, l, _, _ in PRICE_BANDS], 'we': [[c, l] for c, l, _, _ in PRICE_BANDS_WE]}, ensure_ascii=False)};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
     <script src="{p}js/engage.js?v={BUILD}" defer></script>
     <script src="{p}js/recommend.js?v={BUILD}"></script>
 </head>
@@ -901,16 +912,22 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div>
         </div>'''
 
-    # 가격대별 만족도: 각 밴드에서 실망 확률 낮은 순
-    price_parts = []
+    # 가격대별 추천: 구간이 5개로 늘어 슬라이더를 쌓지 않고 탭 하나로 (10만원 미만은 검색 가격 필터로 — 2026-10-10 사용자 결정 유지)
+    tabs, panes = [], []
     for code, label, lo, hi in PRICE_BANDS:
-        if code == 'b1': continue   # 홈은 가장 많이 찾는 10~20만원대부터 — 10만원 미만은 검색 가격 필터로(2026-10-10 사용자 결정)
+        if code == 'b1': continue
         pids = sorted((p for p in ranked if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code),
                       key=lambda p: -REC.get(p, 0))[:8]
-        if len(pids) >= 3:
-            price_parts.append(slider(f'<em>{label}</em> 추천',
-                f'2인 1박 평일 가격 기준 ({CITY["price_seen"]} 확인)', pids))
-    price_sliders = ''.join(price_parts)
+        if len(pids) < 3: continue
+        on = not tabs
+        tabs.append(f'<button type="button" class="pt-tab{" on" if on else ""}" data-pt="{code}" aria-pressed="{"true" if on else "false"}">{label}</button>')
+        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
+        panes.append(f'<div class="list hotel-slider pt-pane" data-pt="{code}"{"" if on else " hidden"}><ul class="swiper-wrapper">{cards}</ul></div>')
+    price_sliders = (f'''<div class="hotel-list price-tabs init">
+            <div class="head"><div class="title"><em>가격대별</em> 추천</div><div class="desc">2인 1박 평일 가격 기준 ({CITY["price_seen"]} 확인)</div></div>
+            <div class="pt-tabs" role="group" aria-label="평일 가격대">{''.join(tabs)}</div>
+            {''.join(panes)}
+        </div>''' if tabs else '')
 
     # 동네·동행·테마별 허브 칩 (FEEDBACK-2610 §3): 3줄(라벨 + 가로 스크롤 칩), 홈 마지막 블록. 생성된 허브만 노출 — 순서는 COLLECTIONS
     col_chips = ''
@@ -1001,6 +1018,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                 {slider('<em>냄새</em> 언급 많은 숙소', '하수구·곰팡내 언급이 많아요', cur2)}
                 <script>
                     $(function(){{
+                        $(document).on('click', '.price-tabs .pt-tab', function(){{   // 가격대 탭 전환
+                            var c = $(this).data('pt'), $w = $(this).closest('.price-tabs');
+                            $w.find('.pt-tab').removeClass('on').attr('aria-pressed', 'false'); $(this).addClass('on').attr('aria-pressed', 'true');
+                            $w.find('.pt-pane').prop('hidden', true).filter('[data-pt="'+c+'"]').prop('hidden', false);
+                            var sw = $w.find('.pt-pane[data-pt="'+c+'"]').get(0); if (sw && sw.swiper) sw.swiper.update();
+                            if (typeof gtag === 'function') gtag('event', 'price_tab', {{band: c}});
+                        }});
                         $('.hotel-slider').each(function(i, el){{
                             new Swiper(el, {{slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true}});
                         }});
@@ -1304,7 +1328,7 @@ def build_search_index(hotels_meta, H, quotes=None):
             'lat': float(meta['latitude']) if meta.get('latitude') else None,
             'lng': float(meta['longitude']) if meta.get('longitude') else None,
             'pb': meta['band'][0] if meta.get('band') else None,
-            'pbw': (price_band(meta['price_we']) or (None,))[0] if meta.get('price_we') else None,   # 주말 가격대(AI 추천 '주말 기준')
+            'pbw': (price_band(meta['price_we'], PRICE_BANDS_WE) or (None,))[0] if meta.get('price_we') else None,   # 주말 가격대 w1~w4 (AI 추천 '주말 기준')
             'x': rare_counts(pid, h, quotes or {}),   # 1년 심각 건수 {bug, roach, bedbug, safe} — '한 번도 없어야' 조건
             'pt': meta.get('price_txt') or '',
             'ptw': man_txt(meta.get('price_we')) if (meta.get('price_txt') or '').startswith('평일') else '',   # 주말 '약 34만원'
@@ -1392,9 +1416,7 @@ def build_search(city_avg_pct):
                 <div class="f-row" id="f-price">
                     <span class="f-label">가격</span>
                     <button type="button" class="f-chip on" data-v="">전체</button>
-                    <button type="button" class="f-chip" data-v="b1">10만원 미만</button>
-                    <button type="button" class="f-chip" data-v="b2">10~20만원</button>
-                    <button type="button" class="f-chip" data-v="b3">20만원 이상</button>
+                    {''.join(f'<button type="button" class="f-chip" data-v="{c}">{l}</button>' for c, l, _, _ in PRICE_BANDS)}
                 </div>
                 <button type="button" class="f-more" id="f-more" aria-expanded="false" aria-controls="f-panel"><span class="f-more-t">조건 더 보기</span><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="m3 5 4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
                 <div class="f-panel" id="f-panel" hidden>
@@ -1952,7 +1974,7 @@ def build_search(city_avg_pct):
         var NO_SHORT = {{roach:'바퀴벌레', bedbug:'빈대', safe:'무단 출입'}};
         function renderRecHeader(){{
             var chips = recPr.map(function(c, i){{ var ko=(RC[c]||{{}}).ko; return '<span class="rh-chip is-pr"><span class="rh-rank">'+(i+1)+'</span>'+((window.CAT_KO && window.CAT_KO[ko]) || ko || '')+'</span>'; }});
-            if (recBud){{ var b=(window.CFRec.BUDGETS||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+b.label+(recBw ? '(주말)' : '')+'</span>'); }}
+            if (recBud){{ var b=((recBw ? window.CFRec.BUDGETS_W : window.CFRec.BUDGETS)||[]).filter(function(x){{return x.code===recBud;}})[0]; if(b) chips.push('<span class="rh-chip">'+(recBw ? '주말 ' : '평일 ')+b.label+'</span>'); }}
             if (recArea){{ var a=AREAS.filter(function(x){{return x.code===recArea;}})[0]; if(a) chips.push('<span class="rh-chip">'+a.ko+'</span>'); }}
             if (recNo.length) chips.push('<span class="rh-chip is-no">'+recNo.map(function(k){{ return NO_SHORT[k]||k; }}).join('·')+' 제외</span>');
             return '<div class="rh-top"><div class="rh-tit">맞춤 추천</div><a href="javascript:;" class="rh-edit rec-reset">조건 수정</a></div>'
@@ -4118,8 +4140,8 @@ def collection_members(col, hotels_meta, H):
         return cand
 
     if kind == 'value':
-        # 하위 2밴드(b1·b2) × p_crit 낮은순
-        cand = [p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] in ('b1', 'b2')]
+        # 평일 20만원 미만(b1~b4) × 추천순
+        cand = [p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] in ('b1', 'b2', 'b3', 'b4')]   # 평일 20만원 미만
         cand.sort(key=lambda p: (not H[p]['ranked'], -REC.get(p, 0.0), H[p]['p_crit']))   # 추천순(rec_score), 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 
