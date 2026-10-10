@@ -18,6 +18,7 @@ generate.py가 빌드 시작 때 run()을 호출한다 → 위반이 있으면 �
   E5  css/에 새 파일 → 로드 순서(KNOWN_CSS)·CLAUDE.md·UI-STANDARDS 등록 후 사용
   E8  자간: --fs-meta·--fs-micro 규칙의 음수 letter-spacing, body·html·*의 letter-spacing 금지(em 자간이 px로 상속됨)
   E10 .ov-panel의 border-radius는 var(--radius-sheet) 또는 0만 (오버레이 해부도, UI-STANDARDS §17)
+  E10a 딤(마지막 클래스가 dim·scrim·backdrop) 면은 var(--ov-dim*)·var(--scrim-photo)만 (P1 오버레이에서 R-ovdim 0 → 승격)
   E11 .ov-close·.ov-back·.btn-icon의 width·height는 var(--h-icon)·var(--h-circle)만
   E15 var(--fs-card)(15px)는 호텔 카드(.hcard) 안에서만
   E14 페이지마다 <h1> 정확히 1개 + class ∩ {page-title, hero-title, name-ko, hub-h1, about-h1} — generate.py W()가 쓰기 직전 검사
@@ -26,7 +27,7 @@ generate.py가 빌드 시작 때 run()을 호출한다 → 위반이 있으면 �
   R-fslegacy (구) 토큰 사용(--fs-caption·--fs-body-sm·--fw-medium·--lh-head·--h-btn-lg·--section-y …) → 0이면 E7
   R-e6 제목 크기 규칙의 굵기가 var(--fw-bold)/var(--fw-display)가 아님 → 0이면 E6
   R-fw500 리터럴 font-weight:500
-  R-lhnum line-height가 var(--lh-*)·1이 아님(px 제외) → 0이면 E9 · R-ovdim 딤 면이 var(--ov-dim*)가 아님 → E10a
+  R-lhnum line-height가 var(--lh-*)·1이 아님(px 제외) → 0이면 E9
   R-z 고정·sticky 또는 10 이상 z-index가 var(--z-*)가 아님 · R-primary 보라(--primary*) 사용 · R-primarylink 링크 보라 글자
   R-ovlegacy 레거시 오버레이 클래스·CF.sheet 밖 is-open 토글 → 0이면 E13 · R-ink2 var(--ink-2) 사용 · R-jshex JS hex 색 문자열
 예외가 꼭 필요하면 해당 줄 끝에 /* ui-lint: allow 사유 */ 를 단다(사유 필수).
@@ -179,7 +180,7 @@ def lint_css(name, src, errs, counts):
                 bump('R-radius')
             if prop in ('background', 'background-color') and any(DIM_RE.search(c) for c in last_cls) \
                     and not re.fullmatch(r'var\(--(ov-dim[\w-]*|scrim-photo)\)|none|transparent', val):
-                bump('R-ovdim')
+                errs.append(f'E10a {where} → 딤 면은 var(--ov-dim)·var(--ov-dim-photo)·var(--scrim-photo)만 (R-ovdim 0 → 승격, UI-STANDARDS §17)')
             if prop == 'z-index' and not val.startswith('var(--z-'):
                 pos = decls.get('position', ('',))[0]
                 if pos in ('fixed', 'sticky') or (re.fullmatch(r'-?\d+', val) and int(val) >= 10):
