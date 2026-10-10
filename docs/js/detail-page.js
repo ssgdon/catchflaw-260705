@@ -95,9 +95,9 @@ $(function(){
             + '<div class="rv-meta">' + star + '<span>' + esc(o.o) + '</span>' + (lang ? '<span>' + lang + ' 리뷰</span>' : '') + '</div>'
             + '<p class="rv-text clamp">' + o.text + '</p>'
             + '<div class="rv-date">' + esc(fmtDate(o.d)) + (o.s ? ' · ' + esc(subKo(o.s)) : '') + relSpan(o.d) + '</div>'
-            // 아래 줄(2026-10-10): 왼쪽 '리뷰 원문 ⌄'(펼치면 전문 → 맨 아래 'Google에서 보기 ↗') · 오른쪽 끝 '분류가 이상해요'(회색, 보조 행동)
+            // 아래 줄(2026-10-10): 왼쪽 '분류가 이상해요'(회색, 보조 행동) · 오른쪽 끝 '리뷰 원문 ⌄'(펼치면 전문 → 맨 아래 'Google에서 보기 ↗')
             //   펼칠 전문이 없으면 왼쪽에 바로 '출처에서 보기 ↗'
-            + '<div class="rv-foot">' + (o.full ? '<button type="button" class="rv-act rv-more" aria-expanded="false">리뷰 원문</button>' : origLink(o.u, o.o)) + (o.rep || '') + '</div>'
+            + '<div class="rv-foot">' + (o.rep || '') + (o.full ? '<button type="button" class="rv-act rv-more rv-main" aria-expanded="false">리뷰 원문</button>' : origLink(o.u, o.o, 'rv-main')) + '</div>'
             + (o.full ? '<div class="rv-full" hidden>' + o.full + (o.u ? '<div class="rv-full-src">' + origLink(o.u, o.o) + '</div>' : '') + '</div>' : '')
             + '</li>';
     }
@@ -116,9 +116,9 @@ $(function(){
         return '<button type="button" class="rv-act rv-rep rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
     }
     // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
-    function origLink(u, src){   // 출처 사이트로 — 'Google에서 보기 ↗'(출처 이름이 없으면 '원래 사이트에서 보기')
+    function origLink(u, src, cls){   // 출처 사이트로 — 'Google에서 보기 ↗'(출처 이름이 없으면 '원래 사이트에서 보기')
         if (!u) return '';
-        return '<a class="rv-act rv-src" href="' + esc(u) + '" target="_blank" rel="noopener">' + (src ? esc(src) + '에서 보기' : '원래 사이트에서 보기') + ' ↗</a>';
+        return '<a class="rv-act rv-src' + (cls ? ' ' + cls : '') + '" href="' + esc(u) + '" target="_blank" rel="noopener">' + (src ? esc(src) + '에서 보기' : '원래 사이트에서 보기') + ' ↗</a>';
     }
     // F27: 날짜 옆 상대 시간 (동적 렌더 — 로드시점 계산)
     function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? ' · ' + s : ''; }

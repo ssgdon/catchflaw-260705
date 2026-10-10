@@ -586,7 +586,8 @@ textarea.ov-input{height:96px;resize:none;}
 .rv-foot:empty{display:none;}
 .rv-act{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
 .rv-act.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
-.rv-foot .rv-rep{margin-left:auto;font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* 보조 행동: 오른쪽 끝·회색·밑줄 없음(2026-10-10 톤 다운) */
+.rv-foot .rv-rep{font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* 보조 행동: 왼쪽·회색·밑줄 없음(2026-10-10 톤 다운) */
+.rv-foot .rv-main{margin-left:auto;}   /* '리뷰 원문 ⌄'·'출처에서 보기'는 오른쪽 끝(2026-10-10 자리 바꿈) */
 .rv-full-src{margin-top:var(--sp-2);}
 .rv-more::after{content:"";display:inline-block;width:6px;height:6px;margin-left:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);}
 .rv-more.is-open::after{transform:translateY(1px) rotate(-135deg);}
@@ -1000,9 +1001,9 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .kr-card .kr-serious b{font-weight:var(--fw-semi);color:var(--ink);}
 .kr-card .kr-count b{color:var(--ink);}
 
-/* 모바일·태블릿(≤1099): 헤더가 사진 위에 떠 있다가(투명 + 흰 원 버튼) 사진을 지나면 흰 바. 아래로 스크롤하면 숨고 탭이 맨 위로(--sticky-top 0) */
+/* 모바일·태블릿(≤1099): 헤더는 늘 흰 바(뒤로 · 로고 · 공유·비교) — 사진 위 투명 헤더와 스크롤 시 숨김은 2026-10-10 폐지('헤더가 날아간 것 같다'는 사용자 지적). 탭은 헤더 아래 고정 */
 @media (max-width:1099px){
-    #detail .det-header{display:grid;grid-template-columns:1fr auto 1fr;height:var(--h-header);margin-bottom:calc(var(--h-header) * -1);padding:0 calc(var(--sp-3) - var(--sp-1));transition:transform .2s,background-color .2s,border-color .2s;}   /* 헤더가 레이아웃 높이 0 → 사진이 화면 맨 위부터 */
+    #detail .det-header{display:grid;grid-template-columns:1fr auto 1fr;height:var(--h-header);padding:0 calc(var(--sp-3) - var(--sp-1));transition:transform .2s,background-color .2s,border-color .2s;}   /* 2026-10-10: 사진 위에 겹치지 않고 늘 흰 바(로고가 보이게) */
     #detail .det-header .dh-back{justify-self:start;width:var(--h-icon);height:var(--h-icon);margin:0;}
     #detail .det-header .dh-back img{width:20px;height:20px;}
     #detail .det-header .dh-logo{justify-self:center;transition:opacity .2s;}
@@ -1011,12 +1012,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
     #detail .dh-act .cmp-ico{width:var(--sp-4);height:var(--sp-4);}
     #detail .dh-act .cmp-ico::before{width:var(--sp-4);}
     #detail .dh-act .cmp-ico::after{height:var(--sp-4);}
-    #detail .det-header:not(.is-top) .btn-icon--photo::before{background:var(--surface);box-shadow:none;}
+    #detail .det-header .btn-icon--photo::before{background:var(--surface);box-shadow:none;}
     #detail .dh-act.is-on.cmp-saved::before{background:var(--primary-cta);box-shadow:none;}   /* 비교함에 담김 = 저장 상태(보라 역할 2) → 브랜드 채움 + 흰 체크 */
-    #detail .det-header.is-top{background:transparent;border-bottom-color:transparent;}
-    #detail .det-header.is-top .dh-logo{opacity:0;pointer-events:none;}
-    html.is-scroll-down #detail .det-header:not(.is-top){transform:translateY(-100%);}
-    html.is-scroll-down #detail{--sticky-top:0px;}
     #detail .det-tabs{transition:top .2s;}
     #detail .button.has-price{display:flex;align-items:center;gap:var(--sp-3);}   /* PC는 #detail > .button 숨김(pc.css) — 모바일에서만 flex */
 

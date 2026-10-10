@@ -435,7 +435,7 @@ def load():
 
 # ───────────────────────── 공통 조각 ─────────────────────────
 # P2 상세 섹션 탭 + 4A 상세 헤더 상태·앵커 이동. f-string 아님(JS 중괄호 보존). 모든 상세(채점 여부 무관)에 들어간다.
-#  · 헤더(v3 §6-7): 사진 위에서는 투명 + 떠 있는 원(is-top), 사진을 지나면 흰 바. 아래로 스크롤하면 숨고(--sticky-top 0) 탭 48만 남는다.
+#  · 헤더: 늘 흰 바(2026-10-10 — 사진 위 투명·스크롤 숨김 폐지). 탭 48은 헤더 아래 고정.
 #  · 이동(앵커·탭·아코디언·근거 줄) 오프셋 = 탭 높이 + (목적지가 아래면 0, 위면 헤더 높이). 헤더가 숨는/보이는 상태는 이동 전에 정해 두고
 #    CF_HOLD 동안 common.js의 스크롤 방향 감지를 멈춘다(탭을 눌렀는데 목적지가 56px 어긋나던 문제).  PC는 헤더가 늘 보임(sticky 64).
 DETAIL_TABS_JS = '''<script>
@@ -443,16 +443,14 @@ DETAIL_TABS_JS = '''<script>
     var root = document.documentElement, hd = document.querySelector('#detail .det-header'), vis = document.querySelector('#detail .visual');
     var nav = document.getElementById('det-tabs'), pcq = window.matchMedia('(min-width:1100px)');
     function hdH(){ return hd ? hd.offsetHeight : 0; }                       // 보이는 상태의 헤더 높이(transform으로 숨어도 같은 값)
-    function hdState(){ if (hd) hd.classList.toggle('is-top', !!vis && !pcq.matches && vis.getBoundingClientRect().bottom > hdH()); }
+    function hdState(){ if (hd) hd.classList.remove('is-top'); }   // 2026-10-10: 헤더는 늘 흰 바(사진 위 투명 상태 폐지)
     window.CF_hdState = hdState;
     window.addEventListener('scroll', hdState, {passive: true}); window.addEventListener('resize', hdState); hdState();
     // el 위치로 부드럽게 이동. pad = 목적지 위 추가 여백(예: 소분류 행 위 8)
     function jump(el, pad){
         var y0 = window.pageYOffset, ty = el.getBoundingClientRect().top + y0, navH = nav ? nav.offsetHeight : 0;
-        var down = !pcq.matches && ty > y0 + navH + hdH();
-        window.CF_HOLD = Date.now() + 800;
-        if (!pcq.matches) root.classList.toggle('is-scroll-down', down);
-        window.scrollTo({top: Math.max(0, ty - navH - (down ? 0 : hdH()) - (pad || 0) + 1), behavior: 'smooth'});
+        window.CF_HOLD = Date.now() + 800;   // 헤더는 숨지 않으므로 오프셋 = 헤더 + 탭(2026-10-10)
+        window.scrollTo({top: Math.max(0, ty - navH - hdH() - (pad || 0) + 1), behavior: 'smooth'});
     }
     window.CF_jump = jump;
     document.addEventListener('click', function(e){
@@ -617,7 +615,7 @@ def site_header(depth=1, back=None, search=True, is_home=False, menu=True, actio
                  if back else '<span class="dh-back dh-back-empty" aria-hidden="true"></span>')
     if not menu:
         # 상세(v3 §6-7, 4A): 뒤로 · 로고 · 공유·비교(actions). 햄버거·메뉴 시트 없음 — 로고가 홈, PC는 dh-nav
-        return f'''<div class="det-header det-header--detail is-top">
+        return f'''<div class="det-header det-header--detail">
                 {back_slot}
                 <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
                 {dh_search}
