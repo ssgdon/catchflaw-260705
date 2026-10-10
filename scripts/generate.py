@@ -1211,7 +1211,7 @@ def rare_counts(pid, h, quotes):
 # ───────────────────────── compare (P5) ─────────────────────────
 CMP_FAQ = [('luggage', '짐 보관'), ('breakfast', '조식'), ('bath', '대욕장·온천'), ('family', '아이 동반')]
 
-def build_compare_data(hotels_meta, H, faq_data, monthly=None):
+def build_compare_data(hotels_meta, H, faq_data, monthly=None, quotes=None):
     """비교 페이지 전용 데이터(window.CF_CMP = {pid: {...}}). 채점 호텔만. 숫자는 전부 실측."""
     out = {}
     for pid, meta in hotels_meta.items():
@@ -1227,6 +1227,12 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None):
                     subs.append((n1, sname))
         top = [[SUB_PHRASE[sn], round(n1 / h['analyzed'] * 100, 1), n1] for n1, sn in sorted(subs, reverse=True)[:3]]
         fq = {it.get('t'): ' · '.join((it.get('c') or [])[:2]) for it in (faq_data.get(pid) or []) if it.get('c')}
+        # 카테고리별 대표 불만(최근 1년 건수 최다 소분류) — 상단 '아쉬운 점'에 "주로 낡은 시설·고장"처럼 구체적으로
+        cw = {}
+        for c in CATS:
+            best = max(((h['cats'][c]['subs'][sn].get('count_1y', 0), sn) for sn in SUBS[c] if sn not in RARE_SUBS), default=(0, None))
+            cw[c] = SUB_PHRASE[best[1]] if best[0] > 0 else ''
+        rc = rare_counts(pid, h, quotes or {}) or {}
         out[pid] = {
             'n': meta['title'], 'img': abs_img(pid, meta),
             'p': pct(h['p_crit']), 'b': h['badge'][0], 'l': h['badge'][1],
@@ -1241,6 +1247,10 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None):
             'cs': {c: round(h['cats'][c]['score']) for c in CATS},
             'top': top,
             'fq': {k: fq.get(k, '') for k, _ in CMP_FAQ},
+            'sn': short_name(meta['title']),               # 상단 요약용 짧은 이름
+            'kn': KRN.get(pid, 0),                         # 최근 1년 한국인 리뷰 수
+            'cw': cw,
+            'x': {'bug': rc.get('bug', 0), 'safe': rc.get('safe', 0)},   # 최근 1년 심각 리뷰(벌레·객실 보안)
         }
     return out
 
@@ -1253,7 +1263,7 @@ def build_compare():
             <div id="cmp-root"><div class="cmp-empty">불러오는 중…</div></div>
         </section>
     </main>
-    <script>window.CF_CMP_FAQ = {json.dumps(CMP_FAQ, ensure_ascii=False)}; window.CF_CITY_KO = {json.dumps(CITY['ko'], ensure_ascii=False)};</script>
+    <script>window.CF_CMP_FAQ = {json.dumps(CMP_FAQ, ensure_ascii=False)}; window.CF_CITY_KO = {json.dumps(CITY['ko'], ensure_ascii=False)}; window.CF_CITY_AVG = {pct(CITY.get('crit') or 0)};</script>
     <script src="./data/compare.js?v={BUILD}"></script>
     <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
     <script src="./js/compare-page.js?v={BUILD}"></script>''' + build_footer(0) + FOOT
@@ -4633,7 +4643,7 @@ def main():
     idx = build_search_index(hotels_meta, H, quotes)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
-    W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data, monthly),
+    W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data, monthly, quotes),
                                                        ensure_ascii=False, separators=(',', ':')) + ';')
     W('compare.html', build_compare())   # P5: 개인화 페이지 — sitemap 제외·noindex
     open(os.path.join(OUT, '.nojekyll'), 'w').close()

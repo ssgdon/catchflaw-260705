@@ -173,7 +173,13 @@
     #cmp .cmp-hd{top:64px;}
     #cmp .cmp-h-sp{display:block;}
     #cmp .cmp-sum{padding-left:0;padding-right:0;}
-    #cmp .cg-r{justify-content:flex-start;gap:var(--sp-6);}   /* 넓은 화면: 값을 호텔명 바로 옆에(오른쪽 끝으로 멀어지지 않게) */
+    /* 한눈에 비교: 왼쪽 칸 = 차이 요약 한 줄, 호텔 칸 = 사진 바로 아래에 그 호텔의 나은 점·아쉬운 점 */
+    #cmp .cmp-picks{display:grid;grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);margin-top:var(--sp-2);}
+    #cmp .cpk-lead{padding-bottom:0;}
+    #cmp .cpk{padding:var(--sp-4) 0 0;}
+    #cmp .cpk.is-pad{display:block;border-top:0;}
+    #cmp .cpk li{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:var(--sp-2);}   /* 칸이 좁아 값은 라벨 아래 줄 */
+    #cmp .cpk-v{grid-column:2;max-width:none;text-align:left;}
     #cmp .cmp-gt{padding-left:0;padding-right:0;}
     #cmp .cmp-tr{display:grid;grid-template-columns:200px minmax(0,1fr);align-items:center;gap:var(--sp-4);padding:var(--sp-4) 0;}
     #cmp .cmp-k{margin:0;font-size:var(--fs-caption);color:var(--ink-2);}

@@ -65,28 +65,141 @@
   }
   function num(v, unit) { return { v: v, k: String(v), h: '<b>' + esc(v) + (unit || '') + '</b>' }; }
 
-  // 한 줄 비교 — 긴 문장 대신 "무엇 / 어느 호텔 / 값" 행으로(호텔명이 문장 중간에서 쪼개지지 않게).
-  function sumRow(k, names, v, bad) {
-    return '<li><span class="cg-k">' + glue(k) + '</span><span class="cg-r"><span class="cg-n">' + names + '</span>'
-      + (v ? '<b class="cg-v' + (bad ? ' is-bad' : '') + '">' + v + '</b>' : '') + '</span></li>';
+  // ── 한눈에 비교 (2026-10 재설계): '실망 확률 1등 한 곳'이 아니라 호텔마다 다른 곳보다 나은 점·아쉬운 점.
+  //    맨 위 한 줄 = 실제로 차이가 나는 항목("가장 큰 차이는 가격과 역 거리예요"), 그 아래 실망 확률 맥락 한 줄.
+  //    의미 있는 차이만 말한다(문턱 아래는 비슷한 것으로 보고 생략). 리뷰 적은 호텔은 실망 확률·불만·심각 리뷰 비교에서 뺀다.
+  var AVG = window.CF_CITY_AVG || 5;
+  function catKo(c) { return (window.CAT_KO && window.CAT_KO[c]) || c; }
+  function catVal(v) {   // 위험도 → 평균 대비 짧은 값 (cat_verdict 경계 45·55와 같음)
+    var r = v <= 50 ? v / 50 : 1 + (v - 50) / 25;
+    return v < 45 ? '평균보다 ' + Math.round((1 - r) * 100) + '% 적음' : v < 55 ? '평균 수준' : '평균의 ' + Math.max(r, 1.2).toFixed(1) + '배';
+  }
+  function sname(h) { return h.sn || h.n; }
+  // 비교 차원(우선순위 순). get: 값(null이면 비교 제외) · dir: -1 낮을수록 좋음, 1 높을수록 좋음 · gap: 의미 있는 차이인가
+  function dims() {
+    var L = [
+      { w: '실망 확률', get: function (h) { return h.lr ? null : h.p; }, dir: -1,
+        gap: function (a, b) { return Math.abs(a - b) >= Math.max(2, AVG * 0.3); },
+        good: function (h) { return ['실망 확률 가장 낮음', h.p + '%']; }, bad: function (h) { return ['실망 확률 가장 높음', h.p + '%']; } },
+      { w: '가격', get: function (h) { return h.krw != null ? Math.round(h.krw / 10000) : null; }, dir: -1,
+        gap: function (a, b) { return Math.abs(a - b) >= 2 && Math.abs(a - b) / Math.min(a, b) >= 0.15; },
+        good: function (h) { return ['가장 저렴', h.pt]; }, bad: function (h) { return ['가격 가장 높음', h.pt]; } },
+      { w: '역 거리', get: function (h) { return h.sm; }, dir: -1,
+        gap: function (a, b) { return Math.abs(a - b) >= 4; },
+        good: function (h) { return ['역에서 가장 가까움', h.st]; }, bad: function (h) { return ['역에서 가장 멂', h.st]; } }
+    ];
+    CATS.forEach(function (c) {
+      L.push({ w: catKo(c) + ' 불만', cat: true, get: function (h) { return h.lr ? null : h.cs[c]; }, dir: -1,
+        gap: function (a, b) { return Math.abs(a - b) >= 15; },
+        good: function (h) { return [catKo(c) + ' 불만 가장 적음', catVal(h.cs[c])]; },
+        bad: function (h) { return h.cs[c] >= 55 ? [catKo(c) + ' 불만 많은 편', catVal(h.cs[c]), h.cw && h.cw[c] ? '주로 ' + h.cw[c] : ''] : null; } });
+    });
+    L.push({ w: '구글 평점', get: function (h) { return h.g || null; }, dir: 1,
+      gap: function (a, b) { return Math.abs(a - b) >= 0.2; },
+      good: function (h) { return ['구글 평점 가장 높음', h.g.toFixed(1)]; }, bad: function (h) { return ['구글 평점 가장 낮음', h.g.toFixed(1)]; } });
+    L.push({ w: '한국인 리뷰', get: function (h) { return h.kn || 0; }, dir: 1,
+      gap: function (a, b) { var hi = Math.max(a, b), lo = Math.min(a, b); return hi >= 30 && hi >= lo * 1.5; },
+      good: function (h) { return ['한국인 리뷰 가장 많음', h.kn + '건']; }, bad: function () { return null; } });
+    return L;
+  }
+  // 심각 리뷰(벌레·객실 보안)는 '가장'이 아니라 있음/없음 — 호텔마다 한 줄로 합친다(1~2건은 주의 색, 3건+는 위험 색).
+  // 1~2건은 리뷰 수백 건 중 드문 사례라 '가장 큰 차이' 헤드라인에는 3건 이상일 때만 올린다(상세의 '예약 전 꼭 확인' 문턱과 같음).
+  var RARE = [['bug', '벌레'], ['safe', '객실 보안']];
+
+  function analyze(H) {
+    var out = H.map(function () { return { good: [], bad: [], rare: null }; }), hit = [];
+    var R = H.filter(function (h) { return !h.lr && h.x; });
+    var kinds = RARE.filter(function (r) {
+      return R.some(function (h) { return h.x[r[0]] > 0; }) && R.some(function (h) { return !h.x[r[0]]; });
+    });
+    if (kinds.length) {
+      var big = kinds.filter(function (r) { return R.some(function (h) { return h.x[r[0]] >= 3; }); });
+      if (big.length) hit.push({ w: big.map(function (r) { return r[1]; }).join('·') + ' 리뷰', o: 2.5 });
+      H.forEach(function (h, i) {
+        if (h.lr || !h.x) return;
+        var has = kinds.filter(function (r) { return h.x[r[0]] > 0; });
+        if (has.length) out[i].rare = { k: '최근 1년 심각 리뷰', t: has.some(function (r) { return h.x[r[0]] >= 3; }) ? 'danger' : 'warning',
+          v: has.map(function (r) { return r[1] + ' ' + h.x[r[0]] + '건'; }).join(' · ') };
+        else out[i].good.push({ k: '심각 리뷰 없음', s: kinds.map(function (r) { return r[1]; }).join('·') + ' · 최근 1년', v: '0건', o: 50 });
+      });
+    }
+    dims().forEach(function (d, di) {
+      var vals = H.map(function (h) { var v = d.get(h); return (v == null || isNaN(v)) ? null : v; });
+      var idx = vals.map(function (v, i) { return v == null ? -1 : i; }).filter(function (i) { return i >= 0; });
+      if (idx.length < 2) return;
+      var better = function (a, b) { return d.dir < 0 ? a < b : a > b; };
+      var s = idx.slice().sort(function (a, b) { return better(vals[a], vals[b]) ? -1 : better(vals[b], vals[a]) ? 1 : 0; });
+      var bi = s[0], wi = s[s.length - 1], used = false;
+      if (vals[s[1]] !== vals[bi] && d.gap(vals[bi], vals[s[1]])) {            // 좋은 점: 단독 1위 + 2위와 의미 있는 차이
+        var g = d.good(H[bi]); if (g && g[1]) { out[bi].good.push({ k: g[0], v: g[1], o: di }); used = true; }
+      }
+      if (vals[s[s.length - 2]] !== vals[wi] && d.gap(vals[wi], vals[bi])) {   // 아쉬운 점: 단독 꼴찌 + 1위와 의미 있는 차이
+        var b = d.bad(H[wi]);   // 항목 불만이 위험 등급(위험도 70+ = 평균 1.8배+)이면 다른 아쉬운 점보다 먼저
+        if (b && b[1]) { out[wi].bad.push({ k: b[0], v: b[1], s: b[2] || '', t: 'warning', o: d.cat && vals[wi] >= 70 ? -1 : di }); used = true; }
+      }
+      if (used) hit.push({ w: d.w, o: di });
+    });
+    H.forEach(function (h, i) {   // 상대적 강점이 없으면 절대 기준 하나(평균보다 실망 적음 / 가장 불만 적은 항목)
+      if (out[i].good.length || h.lr) return;
+      if (h.p <= AVG * 0.8) { out[i].good.push({ k: '실망 확률 평균보다 낮음', v: h.p + '%', o: 99 }); return; }
+      var c = CATS.slice().sort(function (a, b) { return h.cs[a] - h.cs[b]; })[0];
+      if (h.cs[c] < 45) out[i].good.push({ k: catKo(c) + ' 불만 적은 편', v: catVal(h.cs[c]), o: 99 });
+    });
+    out.forEach(function (o) {
+      o.good.sort(function (a, b) { return a.o - b.o; }); o.good = o.good.slice(0, 3);
+      o.bad.sort(function (a, b) { return a.o - b.o; }); o.bad = o.bad.slice(0, 2);   // 심각 리뷰 줄(o.rare)은 별도 칸 — 가격·역 거리 차이를 밀어내지 않게
+    });
+    return { per: out, hit: hit.sort(function (a, b) { return a.o - b.o; }) };
+  }
+
+  function lead(H, hit) {
+    var n = H.length === 2 ? '두' : '세', city = esc(window.CF_CITY_KO || '후쿠오카');
+    var ws = []; hit.forEach(function (x) { if (ws.indexOf(x.w) < 0) ws.push(x.w); });
+    ws = ws.slice(0, 2);
+    var t = !ws.length ? n + ' 곳이 대체로 비슷해요'
+      : '가장 큰 차이는 ' + ws.map(function (w, i) { return '<em>' + esc(w) + '</em>' + (i < ws.length - 1 ? josa(w, '과', '와') + ' ' : ''); }).join('')
+        + josa(ws[ws.length - 1], '이에요', '예요');
+    var R = H.filter(function (h) { return !h.lr; }), ctx = '';
+    if (R.length >= 2) {
+      var hi = R.filter(function (h) { return h.p >= AVG * 1.2; });
+      ctx = hi.length
+        ? hi.map(function (h) { return esc(sname(h)); }).join(', ') + josa(sname(hi[hi.length - 1]), '은', '는') + ' 실망 확률이 평균(' + AVG + '%)보다 높아요'
+        : '실망 확률은 모두 ' + city + ' 평균(' + AVG + '%) ' + (R.every(function (h) { return h.p <= AVG; }) ? '이하예요' : '수준이에요');
+      if (!ws.length) ctx += ' · 가격과 위치로 고르셔도 돼요';
+    }
+    return '<p class="cmp-lead">' + t + '</p>' + (ctx ? '<p class="cmp-ctx">' + ctx + '</p>' : '');
+  }
+  var ICON_OK = '<svg class="cpk-ic" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="m4.6 8.2 2.2 2.2 4.6-4.7" stroke="#fff" stroke-width="1.8" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  var ICON_NG = '<svg class="cpk-ic" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" fill="currentColor"/><path d="M8 4.2v4.6" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/><circle cx="8" cy="11.4" r="1.1" fill="#fff"/></svg>';
+  // 값에서 수식어(평균보다·평균의·평일 약·○○역 도보·벌레)는 가늘고 연하게, 숫자와 단위만 진하게 — '46% 적음'이 먼저 읽히게
+  function valHtml(v) {
+    return String(v).split(' · ').map(function (part) {
+      var m = /^(.*?)\s*(\d[\d.,]*\s*(?:%\s*적음|%|배|만원|분|건))$/.exec(part);
+      return m && m[1] ? '<span class="cpk-q">' + glue(esc(m[1])) + '</span> ' + glue(esc(m[2])) : glue(esc(part));
+    }).join('<span class="cpk-q"> · </span>');
+  }
+  function item(x, ok) {
+    return '<li class="' + (ok ? 'is-good' : 'is-' + x.t) + '">' + (ok ? ICON_OK : ICON_NG)
+      + '<span class="cpk-k">' + glue(esc(x.k)) + (x.s ? '<small>' + glue(esc(x.s)) + '</small>' : '') + '</span>'
+      + '<b class="cpk-v">' + valHtml(x.v) + '</b></li>';
   }
   function summary(H) {
-    var lows = H.filter(function (h) { return h.lr; });
-    var lowNote = lows.length ? '<p class="cg-note">' + lows.map(function (h) { return esc(h.n); }).join(', ')
-      + josa(lows[lows.length - 1].n, '은', '는') + ' 최근 1년 리뷰가 적어 순위 비교에서 뺐어요</p>' : '';
-    if (H.length < 2) return '<ul class="cmp-glance">' + sumRow('실망 확률', esc(H[0].n), H[0].p + '%') + '</ul>'
-      + '<p class="cg-note">호텔을 하나 더 추가하면 나란히 비교해 드려요</p>' + lowNote;
-    var R = H.filter(function (h) { return !h.lr; });              // 순위 비교는 리뷰 충분한 호텔끼리
-    if (R.length < 2) return '<p class="cmp-lead">리뷰가 충분한 호텔이 2곳 미만이라 순위를 매기지 않았어요</p>' + lowNote;
-    var minP = Math.min.apply(null, R.map(function (h) { return h.p; }));
-    var los = R.filter(function (h) { return h.p === minP; });     // 화면 값(정수 %)이 같으면 공동
-    var rows = los.length === R.length
-      ? sumRow('실망 확률', (R.length === 2 ? '두' : R.length === 3 ? '세' : R.length) + ' 곳 모두 비슷해요', minP + '%')
-      : sumRow('실망 확률 가장 낮음', los.map(function (h) { return esc(h.n); }).join('<br>'), minP + '%');
-    var hi = R.filter(function (h) { return h.top && h.top.length; })   // 불만 최다 항목도 리뷰 충분한 호텔끼리
-      .sort(function (a, b) { return b.top[0][1] - a.top[0][1]; })[0];
-    if (hi) rows += sumRow('불만이 가장 많은 항목', esc(hi.n) + '<span class="cg-s">' + esc(hi.top[0][0]) + ' 불만 비율</span>', hi.top[0][1] + '%', true);
-    return '<ul class="cmp-glance">' + rows + '</ul>' + lowNote;
+    if (H.length < 2) {
+      var h = H[0];
+      return '<div class="cpk-lead"><p class="cmp-lead">호텔을 하나 더 추가하면 차이를 정리해 드려요</p>'
+        + '<p class="cmp-ctx">' + esc(sname(h)) + ' 실망 확률 ' + h.p + '% · ' + esc(window.CF_CITY_KO || '후쿠오카') + ' 평균 ' + AVG + '%</p></div>';
+    }
+    var A = analyze(H);
+    return '<div class="cpk-lead">' + lead(H, A.hit) + '</div>' + H.map(function (h, i) {
+      var o = A.per[i];
+      var li = (o.rare && o.rare.t === 'danger' ? item(o.rare, false) : '')       // 심각 3건+는 맨 위
+        + o.good.map(function (x) { return item(x, true); }).join('')
+        + o.bad.map(function (x) { return item(x, false); }).join('')
+        + (o.rare && o.rare.t !== 'danger' ? item(o.rare, false) : '');
+      if (!li) li = '<li class="is-none">다른 곳과 크게 다르지 않아요</li>';
+      return '<div class="cpk"><a class="cpk-n" href="./hotels/' + h.id + '">' + esc(sname(h)) + '</a><ul>' + li + '</ul>'
+        + (h.lr ? '<p class="cpk-note">최근 1년 리뷰가 적어 실망 확률·불만 비교에서 뺐어요</p>' : '') + '</div>';
+    }).join('') + new Array(pad + 1).join('<div class="cpk is-pad" aria-hidden="true"></div>');
   }
 
   function addSlot() {
@@ -112,7 +225,7 @@
         return '<div class="cmp-h"><a href="./hotels/' + h.id + '"><span class="cmp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</span>'
           + '<span class="cmp-nm">' + esc(h.n) + '</span></a><button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="비교에서 빼기">×</button></div>';
       }).join('') + (canAdd ? addSlot() : '') + '</div>';
-    html += '<div class="cmp-sum"><div class="cmp-sum-box"><div class="cmp-eyebrow">한눈에 비교</div>' + summary(H) + '</div>'
+    html += '<div class="cmp-sum"><div class="cmp-eyebrow">한눈에 비교</div><div class="cmp-picks" style="' + cols + '">' + summary(H) + '</div>'
       + '<div class="cmp-tools"><span>보라색 = 가장 좋은' + NB + '곳</span>'
       + '<button type="button" class="cmp-switch' + (diffOnly ? ' is-on' : '') + '" id="cmp-diff"><i></i>차이 나는 항목만</button></div></div>';
 

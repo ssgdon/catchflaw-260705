@@ -1127,21 +1127,31 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-nm{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px;margin-top:var(--sp-2);font-size:var(--fs-caption);font-weight:var(--fw-bold);line-height:1.35;}
 #cmp .cmp-x{position:absolute;top:var(--sp-1);right:var(--sp-1);width:24px;height:24px;border:0;border-radius:50%;background:rgb(0 0 0 / 55%);color:var(--ink-inverse);font-size:var(--fs-caption);line-height:1;cursor:pointer;}
 #cmp .cmp-sum{padding:var(--sp-5) var(--page-x) 0;}
-#cmp .cmp-sum-box{padding:var(--sp-5);border-radius:var(--radius-card);background:var(--surface);}
-#cmp .cmp-eyebrow{font-size:var(--fs-caption);color:var(--ink-3);}
-#cmp .cmp-lead{margin-top:var(--sp-2);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:var(--lh-body);}
+#cmp .cmp-eyebrow{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary);}
+#cmp .cmp-lead{margin-top:var(--sp-1);font-size:var(--fs-h3);font-weight:var(--fw-bold);line-height:var(--lh-head);color:var(--ink);}
 #cmp .cmp-lead em{font-style:normal;color:var(--primary);}
-/* 한눈에 비교 — 행: 항목(캡션) / 호텔명 + 값. 호텔명은 단어 단위 줄바꿈, 값은 오른쪽 고정 */
-#cmp .cmp-glance{margin-top:var(--sp-2);}
-#cmp .cmp-glance li{padding:var(--sp-3) 0;border-top:1px solid var(--line-strong);}
-#cmp .cmp-glance li:first-child{border-top:0;padding-top:var(--sp-1);}
-#cmp .cg-k{display:block;font-size:var(--fs-meta);color:var(--ink-3);}
-#cmp .cg-r{display:flex;align-items:flex-start;justify-content:space-between;gap:var(--sp-3);margin-top:var(--sp-1);}
-#cmp .cg-n{min-width:0;font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:1.4;color:var(--ink);word-break:keep-all;}
-#cmp .cg-s{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-2);}
-#cmp .cg-v{flex:none;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);line-height:1.3;color:var(--primary);}
-#cmp .cg-v.is-bad{color:var(--ink);}   /* 보라색 = 가장 좋은 곳(범례) — 불만 최다 값은 중립색 */
-#cmp .cg-note{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);}
+#cmp .cmp-ctx{margin-top:var(--sp-1);font-size:var(--fs-caption);line-height:var(--lh-body);color:var(--ink-2);}
+/* 한눈에 비교 (2026-10 재설계) — 호텔마다 다른 곳보다 나은 점(보라 체크)·아쉬운 점(주의 주황 / 심각 빨강). 모바일은 위아래, PC는 사진 열에 맞춤(pc.css) */
+#cmp .cmp-picks{display:flex;flex-direction:column;}
+#cmp .cpk-lead{padding-bottom:var(--sp-4);}
+#cmp .cpk{padding:var(--sp-4) 0;border-top:1px solid var(--line);}
+#cmp .cpk.is-pad{display:none;}
+#cmp .cpk-n{display:block;font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:var(--lh-head);color:var(--ink);word-break:keep-all;}
+#cmp .cpk ul{display:flex;flex-direction:column;gap:var(--sp-2);margin-top:var(--sp-2);}
+#cmp .cpk li{display:flex;align-items:flex-start;gap:var(--sp-2);font-size:var(--fs-caption);line-height:var(--lh-body);}
+#cmp .cpk-ic{flex:none;margin-top:var(--sp-1);}
+#cmp .cpk li.is-good .cpk-ic{color:var(--primary);}
+#cmp .cpk li.is-warning .cpk-ic{color:var(--warning);}
+#cmp .cpk li.is-danger .cpk-ic{color:var(--danger);}
+#cmp .cpk-k{flex:1;min-width:0;color:var(--ink);word-break:keep-all;}
+#cmp .cpk-k small{display:block;font-size:var(--fs-meta);color:var(--ink-3);}
+#cmp .cpk-v{flex:none;max-width:55%;text-align:right;font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}
+#cmp .cpk li.is-good .cpk-v{color:var(--primary);}
+#cmp .cpk li.is-warning .cpk-v{color:var(--warning-text);}
+#cmp .cpk li.is-danger .cpk-v{color:var(--danger-text);}
+#cmp .cpk li.is-none{color:var(--ink-3);}
+#cmp .cpk-v .cpk-q{font-weight:var(--fw-regular);color:var(--ink-3);}   /* 값의 수식어(평균보다·평일 약·역 이름 도보) — 숫자만 진하게 */
+#cmp .cpk-note{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);}
 #cmp .cmp-tools{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-top:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
 #cmp .cmp-switch{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-2);border:0;background:none;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
 #cmp .cmp-switch i{position:relative;width:36px;height:20px;border-radius:var(--radius-pill);background:var(--line-strong);transition:background .2s;}
