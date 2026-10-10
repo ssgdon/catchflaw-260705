@@ -14,7 +14,7 @@
 
 ## 프론트 규칙
 
-- 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / hotels/{id}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
+- 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / recommend(맞춤 추천) / compare / hotels/{id}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
 - CSS 로드 순서: `tokens.css → common.css(리셋) → layout.css(원본) → swiper.css → uplift.css → mvp.css(오버라이드) → ds.css(디자인 시스템 v2 정규화) → pc.css(PC 전용, 미디어쿼리 안에서만)`. 모바일 규칙은 ds.css까지, PC(≥1100px) 레이아웃은 pc.css에만 쓴다.
 - **모든 화면 수정은 `UI-STANDARDS.md`를 따른다.** 색/폰트/간격은 `css/tokens.css` 변수만 사용. 이모지 미사용(제품 폴리시).
 - **⛔ UI를 추가·수정하기 전에 `UI-STANDARDS.md` §0(디자인 시스템 v2)·§3(글자 단계)·§14(강제 장치·체크리스트)를 먼저 읽는다 — 예외 없음.**

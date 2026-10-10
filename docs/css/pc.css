@@ -35,7 +35,7 @@
     .det-header .dh-search:focus-within{border-color:var(--primary);background:var(--surface-card);}
     .det-header .dh-nav{display:flex;align-items:center;gap:var(--sp-8);margin-left:auto;}
     .det-header .dh-nav a{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);}
-    .det-header .dh-nav a:hover{color:var(--primary);}
+    .det-header .dh-nav a:hover,.det-header .dh-nav a[aria-current="page"]{color:var(--primary);}
 
     /* ── 공통 푸터·플로팅 ── */
     #site-foot{max-width:var(--pc-max);margin:0 auto;padding-left:var(--pc-x);padding-right:var(--pc-x);border-top:1px solid var(--line);}
@@ -168,6 +168,19 @@
     #main .hotel-list .list .item .thumb .image img{transition:transform .3s;}
 
     /* ════════ 비교: 왼쪽 항목명 칸 + 호텔 칸 (Zillow Compare homes) ════════ */
+    /* ── 맞춤 추천 페이지: 가운데 720 칼럼 · 아래 막대는 칼럼 안 떠 있는 카드 ── */
+    #recp{padding:var(--sp-12) var(--pc-x) var(--sp-12);}
+    #recp .rw-head,#recp .rw-steps,#recp .rw-how{max-width:720px;margin-left:auto;margin-right:auto;}
+    #recp .rw-tit{font-size:var(--fs-pc-h1);}
+    #recp .rw-steps{margin-top:var(--sp-8);}
+    #recp .rw-step.is-open{padding:var(--sp-8);}
+    #recp .rw-row{padding:var(--sp-4) var(--sp-8);}
+    #recp .rw-opt{cursor:pointer;}
+    #recp .rw-opt:not(.is-off):hover .rw-opt-t{color:var(--primary);}
+    #recp .rw-bar{position:sticky;left:auto;bottom:var(--sp-6);transform:none;width:auto;max-width:720px;margin:var(--sp-6) auto 0;padding:var(--sp-4) var(--sp-6);border:0;border-radius:var(--radius-card);box-shadow:0 8px 28px rgb(0 0 0 / 14%);}
+    body[data-page="recommend"] #site-foot{padding-bottom:var(--sp-12);}
+    body[data-page="recommend"] .cf-toast{bottom:120px;}
+
     #cmp{max-width:1080px;margin:0 auto;padding:0 var(--pc-x);background:var(--surface-card);min-height:100vh;}
     #cmp .cmp-hd,#cmp .cmp-cta{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);padding-left:0;padding-right:0;}
     #cmp .cmp-hd{top:64px;}

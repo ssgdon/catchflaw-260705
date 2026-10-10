@@ -570,6 +570,7 @@ def site_header(depth=1, back=None, search=True):
                 {dh_search}
                 <nav class="dh-nav" aria-label="주요 메뉴">
                     <a href="{home}">홈</a>
+                    <a href="{p}recommend">맞춤 추천</a>
                     <a href="{p}search">호텔 검색</a>
                     <a href="{p}compare">호텔 비교</a>
                     <a href="{p}recent">최근 본 호텔</a>
@@ -583,6 +584,7 @@ def site_header(depth=1, back=None, search=True):
                     <button type="button" class="dd-close" aria-label="닫기">✕</button>
                     <nav class="dd-nav">
                         <a href="{home}">홈</a>
+                        <a href="{p}recommend">맞춤 추천</a>
                         <a href="{p}search">호텔 검색</a>
                         <a href="{p}recent">최근 본 호텔</a>
                         <a href="{p}about">산출 방법</a>
@@ -1034,7 +1036,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         </section>
         <section id="float">
             <div class="float">
-                <a href="javascript:;" class="btn-airec"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
+                <a href="./recommend" class="btn-airec"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
             </div>
         </section>
     </main>
@@ -1253,6 +1255,40 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None, quotes=None):
             'x': {'bug': rc.get('bug', 0), 'safe': rc.get('safe', 0)},   # 최근 1년 심각 리뷰(벌레·객실 보안)
         }
     return out
+
+def build_recommend(hotels_meta, H):
+    """맞춤 추천 페이지 (2026-10-10, 바텀시트 마법사 → 페이지 · UI-STANDARDS §8).
+       Airbnb 숙소 검색처럼 단계 카드가 쌓이고 지금 단계만 펼쳐진다: 1 도시(후쿠오카만, 나머지 준비 중) → 2 동네
+       → 3 못 참는 것(+1년 안 0건) → 4 1박 예산. 카드는 js/recommend.js가 #rw-steps에 그린다.
+       결과 = search.html?rec=1&pr=..(검색 rec 모드, URL 파라미터 불변). 아래 막대: 처음부터 · 추천 호텔 보기."""
+    n_live = sum(1 for p in hotels_meta if p in H)
+    desc = (f'못 참는 것과 동네·예산만 고르면 {CITY["ko"]} 호텔 {n_live}곳의 리뷰 분석으로 '
+            '나에게 맞는 호텔을 골라 드려요.')
+    hd = head(f'{CITY["ko"]} 호텔 맞춤 추천 | 캐치플로', depth=0, description=desc,
+              canonical=f'{BASE}/recommend').replace('<body>', '<body data-page="recommend">')
+    sh = site_header(0, back='./').replace('href="recommend">', 'href="recommend" aria-current="page">')
+    city_js = json.dumps({'code': CITY['code'], 'ko': CITY['ko'], 'n': n_live}, ensure_ascii=False)
+    return hd + sh + f'''
+    <main id="container">
+        <section id="recp">
+            <div class="rw-head">
+                <h1 class="rw-tit">맞춤 추천</h1>
+                <p class="rw-desc">네 가지만 고르면 리뷰 분석으로 <span class="nw">나에게 맞는 호텔을</span> 골라 드려요</p>
+            </div>
+            <ol class="rw-steps" id="rw-steps"></ol>
+            <p class="rw-how">고른 항목의 불만이 {CITY["ko"]} 평균보다 <span class="nw">적은 호텔부터</span> 보여 드려요</p>
+            <div class="rw-bar">
+                <button type="button" class="rw-reset-btn">처음부터</button>
+                <button type="button" class="rw-go-btn">추천 호텔 보기</button>
+            </div>
+            <div class="rw-loading" hidden>
+                <div class="rw-loading-spin" aria-hidden="true"></div>
+                <div class="rw-loading-t">조건에 맞는 호텔을 찾고 있어요</div>
+                <div class="rw-loading-d">리뷰 분석 결과로 순서를 매기는 중이에요</div>
+            </div>
+        </section>
+    </main>
+    <script>window.CF_REC_CITY = {city_js};</script>''' + build_footer(0) + FOOT
 
 def build_compare():
     """P5 비교 페이지 — ?ids=a,b,c(공유 URL) 또는 localStorage 비교함. 개인화·동적이라 noindex·sitemap 제외."""
@@ -4563,6 +4599,7 @@ def build_sitemap(detail_pids, collection_slugs=()):
     lastmod = CITY['asof'] or time.strftime('%Y-%m-%d')   # meta.json asof(YYYY-MM-DD), 없으면 빌드일
     rows = [(f'{BASE}/', 'daily', '1.0'),
             (f'{BASE}/search', 'daily', '0.9'),
+            (f'{BASE}/recommend', 'weekly', '0.8'),   # 맞춤 추천 (2026-10-10)
             (f'{BASE}/about', 'monthly', '0.5'),   # 소개·방법론 (LEGAL-SOFTEN §2-c)
             *[(f'{BASE}/{slug}', 'weekly', '0.9') for slug in collection_slugs],   # 허브 priority 0.9
             *[(f'{BASE}/hotels/{pid}', 'weekly', sv_priority(pid)) for pid in detail_pids]]
@@ -4646,6 +4683,7 @@ def main():
     W('data/compare.js', 'window.CF_CMP=' + json.dumps(build_compare_data(hotels_meta, H, faq_data, monthly, quotes),
                                                        ensure_ascii=False, separators=(',', ':')) + ';')
     W('compare.html', build_compare())   # P5: 개인화 페이지 — sitemap 제외·noindex
+    W('recommend.html', build_recommend(hotels_meta, H))   # 맞춤 추천 (메뉴·홈 버튼·검색 '조건 수정'이 여기로)
     open(os.path.join(OUT, '.nojekyll'), 'w').close()
 
     # 상세 컬렉션 칩용: pid → [(slug, name), ...] (가장 가까운 지역 1 + 동행·테마 매칭, 최대 3)
