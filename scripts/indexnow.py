@@ -16,6 +16,7 @@ from generate import INDEXNOW_KEY, BASE   # noqa: E402  (generate는 import만 �
 
 HOST = BASE.split('//', 1)[1].rstrip('/')
 ENDPOINT = 'https://api.indexnow.org/indexnow'
+UA = 'Mozilla/5.0 (compatible; catchflaw-indexnow/1.0; +https://catchflaw.com/about)'
 
 
 def main():
@@ -27,14 +28,15 @@ def main():
         return
     key_url = f'{BASE}/{INDEXNOW_KEY}.txt'
     try:
-        live = urllib.request.urlopen(key_url, timeout=20).read().decode().strip()
+        # Cloudflare가 파이썬 기본 User-Agent를 403으로 막아서 이름을 붙인다(검색엔진 봇은 그대로 통과)
+        live = urllib.request.urlopen(urllib.request.Request(key_url, headers={'User-Agent': UA}), timeout=20).read().decode().strip()
     except Exception as e:
         sys.exit(f'[indexnow] 키 파일을 못 읽음({key_url}): {e} — 배포가 라이브에 반영된 뒤 다시 실행')
     if live != INDEXNOW_KEY:
         sys.exit('[indexnow] 라이브 키 파일 내용이 다름 — 배포 반영 후 다시 실행')
     body = json.dumps({'host': HOST, 'key': INDEXNOW_KEY, 'keyLocation': key_url, 'urlList': urls}).encode()
     req = urllib.request.Request(ENDPOINT, data=body, method='POST',
-                                 headers={'Content-Type': 'application/json; charset=utf-8'})
+                                 headers={'Content-Type': 'application/json; charset=utf-8', 'User-Agent': UA})
     try:
         r = urllib.request.urlopen(req, timeout=30)
         print(f'[indexnow] 전송 완료 HTTP {r.status}')   # 200 = 접수, 202 = 접수(키 확인 대기)
