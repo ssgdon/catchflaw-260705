@@ -175,6 +175,10 @@
     #cmp > .page-title{margin-left:0;margin-right:0;}
     .cmp-top,.cmp-hd{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));padding-left:0;padding-right:0;}
     .cmp-h-sp{display:block;}
+    .cmp-img{max-width:240px;}   /* PC 칸이 넓어 사진은 240까지 */
+    .cmp-addbar{margin-left:0;margin-right:0;}
+    .cmp-viz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-12);align-items:start;}   /* 왼쪽 방사형 · 오른쪽 건수 표 + 가격 */
+    .cv-svg{max-width:420px;}
     .cmp-nm{font-size:var(--fs-body);}
     .cmp-sum,.cmp-gt,.cmp-gs{padding-left:0;padding-right:0;}
     .cmp-note{padding-left:0;padding-right:0;}
@@ -197,14 +201,6 @@
     body[data-page="recommend"] #site-foot{padding-bottom:var(--sp-12);}
     body[data-page="recommend"] .cf-toast{bottom:120px;}
 
-    /* 한눈에 비교: 왼쪽 칸 = 차이 요약 한 줄, 호텔 칸 = 사진 열 아래에 그 호텔의 나은 점·아쉬운 점 */
-    .cmp-picks{display:grid;grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));}   /* 사진 격자(.cmp-top)와 같은 칸 — 간격 없이 칸 안쪽 여백으로 */
-    .cpk-lead{padding:0 var(--sp-4) 0 0;}
-    .cpk{padding:var(--sp-5) var(--sp-4) 0 0;}
-    .cpk + .cpk{border-top:0;}
-    .cpk.is-pad{display:block;}
-    .cpk li{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:var(--sp-2);}   /* 칸이 좁아 값은 라벨 아래 줄 */
-    .cpk-v{grid-column:2;max-width:none;text-align:left;}
 
 
     /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════

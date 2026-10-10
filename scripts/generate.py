@@ -993,9 +993,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     total_reviews_txt = f"{round(_total/10000)}만"   # 동적: 수집 리뷰 총수 (별점만 리뷰 포함, 예: 6만)
     ai_reviews_txt = f"{round(ai_reviews_total()/10000)}만"   # AI가 읽은 글 리뷰 수 (예: 3만) — 'AI가 분석' 문구는 이 값
 
-    def worst_by_sub(mcat, scat, k=8):
-        cand = [p for p in ranked if H[p]['cats'][mcat]['subs'][scat]['count_1y'] >= 5]   # 점수와 같은 최근 1년 기준
-        return sorted(cand, key=lambda p: -H[p]['cats'][mcat]['subs'][scat]['score'])[:k]
 
     # 추천순(rec_score) — 실망 확률 단독 정렬은 한국인이 안 가는 조용한 호텔을 1위에 올렸다(RECOMMEND-PRICE-DESIGN §2.4).
     rec_pool = sorted((p for p in ranked if p in REC), key=lambda p: -REC[p])
@@ -1004,12 +1001,16 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     gems = [p for p in rec_pool if (KRN.get(p, 0) / max(H[p].get('text_1y') or 0, 1)) < 0.25 and H[p]['p_crit'] <= SAFE_MULT * (CITY.get('crit') or 0)
             and bayes_rating(hotels_meta[p].get('total_score'), hotels_meta[p].get('reviews_count')) >= 4.2][:8]   # 조용히 좋은 곳(인기 가중 상쇄)
     hot = sorted((p for p in scored), key=lambda p: (-SV.get(p, -1), -KRN.get(p, 0)))[:6]   # 히어로 칩: 네이버 검색량 순(없으면 한국인 리뷰 수). 판정 진입이라 위험도 포함
-    cur1 = worst_by_sub('청결', '벌레')
-    cur2 = worst_by_sub('냄새', '악취')
+    # 2026-10-10 '벌레·냄새 리뷰가 많은 숙소'(경고 목록) → 우리가 건수로 세는 안심 목록. 조건 = 최근 1년 0건(검색 '한 번도 없어야'와 같은 숫자),
+    # 순서 = 추천순(위험 배지 제외). 카드 아래에 근거 한 줄
+    _safe_pool = [p for p in rec_pool if H[p]['badge'][0] != 'danger']
+    _rcs = {p: (rare_counts(p, H[p], quotes) or {}) for p in _safe_pool}
+    no_roach = [p for p in _safe_pool if _rcs[p].get('roach', 1) == 0 and _rcs[p].get('bedbug', 1) == 0][:8]
+    no_mold = [p for p in _safe_pool if H[p]['cats'][SUB_CAT['곰팡이']]['subs']['곰팡이'].get('count_1y', 1) == 0][:8]
 
-    def slider(title, pids, href=None):
+    def slider(title, pids, href=None, note=''):   # note = 카드 아래 근거 한 줄(안심 목록)
         """홈 캐러셀 섹션 (v3 §6-6): 18/700 제목(+ href가 있으면 셰브론, 줄 전체가 링크) → 12 → 카드. 설명 없음."""
-        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
+        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], extra=(f'<div class="hcard-note">{note}</div>' if note else '')) for p in pids)
         t = (f'<a class="title head-link" href="{href}" data-ga="home_more" data-ga-title>{title}</a>' if href else
              f'<div class="title" data-ga-title>{title}</div>')
         return f'''<div class="hotel-list init" data-ga-block>
@@ -1113,8 +1114,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-2">
                 {price_sliders}
                 {gems_slider}
-                {slider('벌레 리뷰가 많은 숙소', cur1)}
-                {slider('냄새 리뷰가 많은 숙소', cur2)}
+                {slider('바퀴벌레 안심 숙소', no_roach, './search?no=roach,bedbug', '<span class="seg">바퀴벌레·빈대 0건</span> <span class="seg">최근 1년 기준</span>') if len(no_roach) >= 3 else ''}
+                {slider('곰팡이 제로 숙소', no_mold, None, '<span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span>') if len(no_mold) >= 3 else ''}
                 <script>
                     $(function(){{
                         $(document).on('click', '.price-tabs .pt-tab', function(){{   // 가격대 탭 전환
@@ -1344,6 +1345,9 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None, quotes=None):
             'n': meta['title'], 'img': abs_img(pid, meta),
             'p': pct(h['p_crit']), 'b': h['badge'][0], 'l': h['badge'][1],
             'pt': meta.get('price_txt') or '', 'krw': meta.get('krw'),
+            'pw': meta.get('price_we') if (meta.get('price_txt') or '').startswith('평일') else None,   # 주말(금·토 밤) 중앙값 — 가격 그래프
+            'rr': {s: [int(h['cats'][SUB_CAT[s]]['subs'][s].get('count_1y', 0) or 0),
+                       int(h['cats'][SUB_CAT[s]]['subs'][s].get('crit_1y', 0) or 0)] for s in RARE_SUBS} if h.get('scored') else None,   # 희소 4종 [최근 1년 리뷰, 심각]
             'g': float(meta.get('total_score') or 0), 'rc': meta.get('reviews_count') or 0, 'an': h['analyzed'],
             'lr': not h['ranked'],                          # 리뷰 적음(최근 1년 RANK_MIN 미만) — 순위 아닌 참고용
             'rs': round(REC.get(pid, 0.0), 3),              # 추천순 정렬값(추가 팝업 정렬용, 비노출)
@@ -1406,7 +1410,7 @@ def build_compare():
             <div id="cmp-root"><div class="cmp-empty">불러오는 중…</div></div>
         </section>
     </main>
-    <script>window.CF_CMP_FAQ = {json.dumps(CMP_FAQ, ensure_ascii=False)}; window.CF_CITY_KO = {json.dumps(CITY['ko'], ensure_ascii=False)}; window.CF_CITY_AVG = {pct(CITY.get('crit') or 0)};</script>
+    <script>window.CF_CMP_RARE = {json.dumps([[s, SUB_PHRASE[s]] for s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if s in RARE_SUBS], ensure_ascii=False)}; window.CF_CMP_FAQ = {json.dumps(CMP_FAQ, ensure_ascii=False)}; window.CF_CITY_KO = {json.dumps(CITY['ko'], ensure_ascii=False)}; window.CF_CITY_AVG = {pct(CITY.get('crit') or 0)};</script>
     <script src="./data/compare.js?v={BUILD}"></script>
     <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
     <script src="./js/compare-page.js?v={BUILD}"></script>''' + build_footer(0) + FOOT
