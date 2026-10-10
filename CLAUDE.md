@@ -15,6 +15,7 @@
 ## 프론트 규칙
 
 - 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / recommend(맞춤형 추천) / compare / hotels/{id}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
+- 상세 페이지 공용 스크립트(갤러리·리뷰 팝업·FAQ 시트·아코디언·차트)는 **`js/detail-page.js`** (2026-10-10 generate.py 인라인에서 분리 — 상세 HTML 경량화). 리뷰 팝업 임베드는 `docs/data/q/{pid}.json`, FAQ 폴백 근거는 `docs/data/fe/{pid}.json`(generate.py `SIDE_FILES`). 분석 준비 중 상세는 noindex·사이트맵 제외, 사이트맵 lastmod = 호텔별 최근 리뷰일, 배포 뒤 `python scripts/indexnow.py`(Bing 등 색인 알림).
 - CSS 로드 순서: `tokens.css → common.css(리셋) → layout.css(원본) → swiper.css → uplift.css → mvp.css(오버라이드) → ds.css(디자인 시스템 v2 정규화) → pc.css(PC 전용, 미디어쿼리 안에서만)`. 모바일 규칙은 ds.css까지, PC(≥1100px) 레이아웃은 pc.css에만 쓴다.
 - **모든 화면 수정은 `UI-STANDARDS.md`를 따른다.** 색/폰트/간격은 `css/tokens.css` 변수만 사용. 이모지 미사용(제품 폴리시).
 - **⛔ UI를 추가·수정하기 전에 `UI-STANDARDS.md` §0(디자인 시스템 v2)·§3(글자 단계)·§14(강제 장치·체크리스트)를 먼저 읽는다 — 예외 없음.**
