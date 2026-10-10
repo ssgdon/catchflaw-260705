@@ -214,10 +214,11 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 히어로 사진(2026-10-10, 레퍼런스: 제목 뒤 풍경이 흰 바탕으로 녹아드는 배치) — 제목 둘째 줄부터 검색창 위까지 사진 띠,
    왼쪽·위·아래를 흰색(--surface-card)으로 흐리게 덮어 글자는 흰 면 위에서 읽히고 오른쪽에만 건물·수영장이 보인다. 사진은 장식(aria 없음) */
 #main .search-box{position:relative;isolation:isolate;}
-#main .search-box::before{content:"";position:absolute;z-index:-1;left:0;right:0;top:calc(var(--sp-12) * 3 + var(--sp-6));height:calc(var(--h-search) * 4);pointer-events:none;   /* 부제목 바로 아래부터 — 사진 위쪽(건물 지붕)을 가리지 않게 */
-  background:linear-gradient(to right, var(--surface-card) 0%, transparent 45%),
-             linear-gradient(to bottom, var(--surface-card) 0%, transparent 18%, transparent 70%, var(--surface-card) 100%),
-             url(../img/home_hero.webp) right center / auto 100% no-repeat;}   /* 모바일: 오른쪽 = 나무·건물(지붕·모서리)·썬베드 */
+#main .search-box{background:radial-gradient(circle at 0% 0%, var(--hl), transparent 55%) var(--surface-card);}   /* 왼쪽 위 옅은 보라 톤 — 비어 보이지 않게 */
+#main .search-box::before{content:"";position:absolute;z-index:-1;left:45%;right:0;top:var(--sp-12);height:calc(var(--h-search) * 3.6);pointer-events:none;   /* 오른쪽 블록: 제목 둘째 줄 높이 ~ 검색창 */
+  background:linear-gradient(to right, var(--surface-card) 0%, transparent 38%),
+             linear-gradient(to bottom, transparent 0%, transparent 70%, var(--surface-card) 100%),
+             url(../img/home_hero.webp) right top / auto 100% no-repeat;}   /* 건물 지붕·유리 외벽·썬베드 */
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
@@ -657,7 +658,7 @@ textarea.ov-input{height:96px;resize:none;}
 
 /* ════════ §v3 컴포넌트 — 입력·떠 있는 컨트롤 (DESIGN-SYSTEM-V3 §6-9 · §6-11 · UI-STANDARDS §18) ════════ */
 /* 검색 알약(§6-9): 흰 면 + 1px --line-strong + --shadow-float. 홈 56(--h-search) · 결과 화면 48(--h-btn). 실행 원은 잉크(보라는 화면당 최종 행동 1개만) */
-#main .search-box .input{display:flex;align-items:center;gap:var(--sp-2);height:var(--h-search);margin-top:calc(var(--h-search) * 3);padding:0 var(--sp-2) 0 var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
+#main .search-box .input{display:flex;align-items:center;gap:var(--sp-2);height:var(--h-search);margin-top:var(--sp-10);padding:0 var(--sp-2) 0 var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-float);}
 #main .search-box .input::before{content:"";flex:none;width:20px;height:20px;background:url("../img/search.svg") no-repeat center / 20px;}
 #main .search-box .input input{flex:1;width:100%;min-width:0;height:100%;padding:0;border:0;font-size:var(--fs-body);color:var(--ink);background:none;}
 #main .search-box .input button{flex:none;width:var(--h-icon);height:var(--h-icon);border-radius:50%;background:var(--ink);}
