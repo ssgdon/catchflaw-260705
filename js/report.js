@@ -62,7 +62,7 @@
         }).join('') + '</div></div>'
         + '<div class="ov-sec"><label class="ov-sec-t" for="rp-comment">덧붙일 말 <span class="ov-opt-q">(선택, 200자)</span></label>'
         + '<textarea id="rp-comment" class="ov-input rp-comment" maxlength="200" placeholder="어떤 점이 이상한지 알려 주세요"></textarea>'
-        + '<p class="ov-note">검토 후 반영돼요 · 신고만으로 점수가 바로 바뀌지는 않아요</p></div>'
+        + '<p class="ov-note">검토 후 반영돼요 · 신고만으로 분류가 바로 바뀌지는 않아요</p></div>'
         + '<input type="text" class="rp-hp" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">',
       footType: 'f3',
       foot: '<p class="ov-foot-note rp-hint">이유를 하나 골라 주세요</p><button type="submit" class="btn-ink rp-submit" disabled>신고하기</button>'

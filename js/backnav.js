@@ -296,7 +296,7 @@ CF.rgba = function (name, a) {
       exitEl = make({
         id: 'cf-exit', type: 'dialog', w: 'sm', head: 'bar', cls: 'ov--confirm',
         title: '정말 나가시겠어요?',
-        body: '<p class="ov-text"><span class="seg">보던 호텔 분석은 저장되지 않아요.</span> <span class="seg">후쿠오카 호텔이 아직 많이 남아 있어요!</span></p>',
+        body: '<p class="ov-text">비교해 볼 후쿠오카 호텔이 아직 많이 남아 있어요</p>',
         footType: 'f1',
         foot: '<button type="button" class="btn-text" data-act="leave">나가기</button>'
           + '<button type="button" class="btn-ink" data-act="stay">계속 볼래요</button>'

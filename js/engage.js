@@ -83,14 +83,14 @@
     // B 바텀 시트 · H2 큰 제목 · F1('그냥 이동할게요' 링크 + 잉크 '보내고 이동')
     function buildFbModal() {
       var m = CF.sheet.make({
-        id: 'cf-feedback-modal', type: 'bottom', w: 'md', head: 'large', title: '이동 전에 딱 1초만!',
+        id: 'cf-feedback-modal', type: 'bottom', w: 'md', head: 'large', title: '이동 전에 잠깐만요',
         sub: '<span class="seg">어떤 기능이 있으면 좋을까요?</span> <span class="seg">불편한 점도 좋아요.</span>', footType: 'f1',
         body: '<div class="fb-body">'
-          + '<textarea id="fb-text" class="ov-input" placeholder="예) 지하철역까지 도보 시간도 알려주세요" aria-label="의견"></textarea>'
+          + '<textarea id="fb-text" class="ov-input" placeholder="예) 객실 사진이 더 많았으면 좋겠어요" aria-label="의견"></textarea>'
           + '<input type="tel" id="fb-phone" class="ov-input" placeholder="휴대폰 번호 (선택)" inputmode="numeric" aria-label="휴대폰 번호(선택)">'
-          + '<p class="ov-note"><span class="seg">정식 오픈하면 제일 먼저 알려드릴게요 ·</span> <span class="seg">번호는 안내 용도로만 써요</span></p>'
+          + '<p class="ov-note"><span class="seg">새 기능이 나오면 먼저 알려드릴게요 ·</span> <span class="seg">번호는 안내 용도로만 써요</span></p>'
           + '</div>'
-          + '<div class="fb-done" hidden><p class="fb-done-msg">소중한 의견 고마워요!</p></div>',
+          + '<div class="fb-done" hidden><p class="fb-done-msg">소중한 의견 고마워요</p></div>',
         foot: '<button type="button" class="btn-text" data-act="skip">그냥 이동할게요</button>'
           + '<button type="button" class="btn-ink" data-act="send">보내고 이동</button>'
       });
