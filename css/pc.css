@@ -233,9 +233,6 @@
     .review-sheet.faq-mode .sheet-head,.review-sheet.faq-mode .sheet-list{grid-column:1;}
     /* 블로그 후기(iframe) 팝업 */
     .blog-sheet .sheet-panel{width:min(960px, calc(100vw - 64px));height:90vh;}
-    /* 공유·피드백·항목별 필터 등 cf-modal 카드 */
-    .cf-modal .cf-modal-card{top:50%;bottom:auto;width:min(480px, calc(100vw - 64px));padding:var(--sp-8);border-radius:var(--radius-card);transform:translate(-50%,-50%);animation:cf-pop .2s ease;}
-    @keyframes cf-pop{from{opacity:0;transform:translate(-50%,-48%) scale(.98);}to{opacity:1;transform:translate(-50%,-50%);}}
 
     /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════
        폭 400(확인)·568(기본)·780(긴 목록)·1032(리뷰 근거 2단) · 위 40 · 최대 높이 100vh−80 · 헤더 64(--h-sheet-head) · 푸터 80 · 딤 40% */
