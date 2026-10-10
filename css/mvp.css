@@ -1383,3 +1383,16 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #main .hotel-list .list .item .info > :last-child,#detail .hotel .list .item .info > :last-child{margin-top:auto;}
 #main .hotel-list .list .item .info .why,#detail .hotel .list .item .info .why{padding-top:4px;}
 
+/* AI 추천 개편 (2026-10-10): 묶음 머리 · 고른 항목 성적표 · 더 보기 · 비교 카드 한국인 비율 */
+#search .list .rec-group{display:flex;align-items:baseline;gap:var(--sp-2);padding:var(--sp-5) 0 var(--sp-2);border-top:0;}
+#search .list .rec-group + li{border-top:0;}
+#search .list .rec-group .rg-t{font-size:var(--fs-body);font-weight:var(--fw-display);color:var(--warning-text);}
+#search .list .rec-group.is-pass .rg-t{color:var(--primary);}
+#search .list .rec-group .rg-n{font-size:var(--fs-caption);font-weight:var(--fw-medium);color:var(--ink-3);}
+#search .list .cont .rec-check{margin-top:var(--sp-2);padding:var(--sp-2) var(--sp-3);border-radius:var(--radius-chip);background:var(--primary-soft);font-size:var(--fs-meta);line-height:1.6;color:var(--ink-2);}
+#search .list .cont .rec-check b{font-weight:var(--fw-bold);color:var(--primary);}
+#search .list .cont .rec-check .is-bad b{color:var(--warning-text);}
+#search .list .rec-more-wrap{padding:var(--sp-4) 0;border-top:1px solid var(--line-strong);}
+#search .list .rec-more{display:flex;align-items:center;justify-content:center;width:100%;height:var(--h-btn);border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-body-sm);font-weight:var(--fw-bold);color:var(--ink-2);}
+#main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}
+

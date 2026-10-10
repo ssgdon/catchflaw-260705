@@ -23,17 +23,19 @@
   var AREA_DESC = { hakata: '신칸센·공항 이동 편리', tenjin: '쇼핑·맛집 중심가', nakasu: '야타이·나이트라이프', gion: '조용한 구시가' };
   var AREA_REC = { hakata: 1, tenjin: 1 };   // '추천' 딱지 — 카페 1,000건 중 하카타 160·텐진 131건 (FEEDBACK-2610 §8)
   /* '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6) — 키는 검색 인덱스 h.x와 같고 URL no= 값. 심각 리뷰만 센다 */
+  // 2026-10-10: '벌레 전부'(날파리·모기 포함, 후보의 절반 제외) 삭제 → '빈대' 추가. '객실 보안·밤길'은 실제로 세는 객실 보안(무단 입실·잠금·사생활)에 맞춰 이름 변경
   var MUSTS = [
-    { code: 'roach', label: '바퀴벌레', chip: '바퀴벌레 0건' },
-    { code: 'bug',   label: '벌레 전부', chip: '벌레 0건' },
-    { code: 'safe',  label: '객실 보안·밤길', chip: '객실 보안·밤길 0건' }
+    { code: 'roach',  label: '바퀴벌레', chip: '바퀴벌레 0건' },
+    { code: 'bedbug', label: '빈대', chip: '빈대 0건' },
+    { code: 'safe',   label: '방 잠금·무단 출입', chip: '무단 출입·잠금 문제 0건' }
   ];
   var byCode = {}; CATS.forEach(function (c) { byCode[c.code] = c; });
   var mustBy = {}; MUSTS.forEach(function (m) { mustBy[m.code] = m; });
-  // '벌레 전부'를 고르면 '바퀴벌레'는 자동 포함 — 정리된 목록(중복 roach 제거) 반환
+  // 정리된 목록 반환. 예전 공유 링크의 no=bug(벌레 전부)는 바퀴벌레+빈대로 바꿔 읽는다
   function normNo(arr) {
-    var a = (arr || []).filter(function (c) { return mustBy[c]; });
-    if (a.indexOf('bug') >= 0) a = a.filter(function (c) { return c !== 'roach'; });
+    var a = [];
+    (arr || []).forEach(function (c) { if (c === 'bug') a.push('roach', 'bedbug'); else a.push(c); });
+    a = a.filter(function (c) { return mustBy[c]; });
     return a.filter(function (c, i) { return a.indexOf(c) === i; });
   }
 
@@ -102,18 +104,16 @@
         '<span class="rec-chip-kw">' + c.kw + '</span>' +
       '</button>';
     }).join('');
-    var allBug = no.indexOf('bug') >= 0;
     var musts = MUSTS.map(function (m) {
-      var locked = m.code === 'roach' && allBug;           // 벌레 전부에 포함 — 켜진 상태로 잠금
-      var on = locked || no.indexOf(m.code) >= 0;
-      return '<button type="button" class="rec-must' + (on ? ' on' : '') + (locked ? ' is-locked' : '') + '" data-must="' + m.code + '" aria-pressed="' + (on ? 'true' : 'false') + '"' + (locked ? ' disabled' : '') + '>' + m.label + '</button>';
+      var on = no.indexOf(m.code) >= 0;
+      return '<button type="button" class="rec-must' + (on ? ' on' : '') + '" data-must="' + m.code + '" aria-pressed="' + (on ? 'true' : 'false') + '">' + m.label + '</button>';
     }).join('');
     return '<div class="rec-tit">여행할 때 이것만은 못 참아요</div>' +
       '<div class="rec-sub">중요한 순서대로 최대 3개 골라주세요</div>' +
       '<div class="rec-grid">' + chips + '</div>' +
       '<div class="rec-must-box">' +
         '<div class="rec-must-tit">이건 1년 안에 한 번도 없어야 해요</div>' +
-        '<div class="rec-must-sub">심각 리뷰 기준 · 주의 리뷰는 세지 않아요' + (allBug ? '<br>바퀴벌레는 벌레 전부에 포함돼요' : '') + '</div>' +
+        '<div class="rec-must-sub">최근 1년 리뷰에 한 번이라도 나온 곳은 빼드려요</div>' +
         '<div class="rec-musts">' + musts + '</div>' +
       '</div>' +
       '<div class="rec-btns"><button type="button" class="cf-btn cf-btn-primary rec-next"' + (sel.length ? '' : ' disabled') + '>다음 →</button></div>';
@@ -157,7 +157,6 @@
     });
     body.on('click', '.rec-must', function () {
       var code = String($(this).data('must'));
-      if (code === 'roach' && no.indexOf('bug') >= 0) return;   // 잠김
       var i = no.indexOf(code);
       if (i >= 0) no.splice(i, 1); else no.push(code);
       no = normNo(no);

@@ -33,6 +33,7 @@ REC_W = (0.4, 0.3, 0.3)
 REC_P_CAP = 0.15      # 실망 확률 15%에서 포화 (그 위는 전부 최저 안전 점수)
 BAYES_PRIOR = 4.0     # 베이지안 평점 사전 평균
 BAYES_K = 100         # 베이지안 평점 의사표본 (search rec 모드 bayes()와 동일)
+KR_PRIOR = 50         # 한국인 비율 보정 의사표본 — 글 리뷰가 적은 호텔의 비율을 도시 평균 쪽으로 당긴다
 GUARD_MIN = 5         # 소분류 불만 리뷰 최소 건수 (미만이면 상한 65)
 GUARD_CAP = 65
 MIN_REVIEWS = 30      # 점수 노출 최소 분석 리뷰 수
@@ -92,9 +93,23 @@ def bayes_rating(g, rc):
     """베이지안 구글 평점 (사전 4.0·100건). 리뷰 적은 호텔의 높은 평점을 평균 쪽으로 당긴다."""
     return (float(g or 0) * (rc or 0) + BAYES_PRIOR * BAYES_K) / ((rc or 0) + BAYES_K)
 
+def kr_demand(hotels, pool, kr_n):
+    """한국인 수요 신호 {pid: 순위 점수}. 절대 수만 쓰면 큰 호텔이(글 리뷰 수와 상관 0.73), 비율만 쓰면 작은 호텔이
+       튄다 → '한국인 리뷰 수' 순위와 '보정 비율((kr_n + KR_PRIOR·도시비율)/(글 리뷰 + KR_PRIOR))' 순위의 평균.
+       카페 인기 24곳 대조: 절대 수 상위30 14곳 / 비율 13곳 / 혼합 17곳 (2026-10-10). 클수록 한국인 수요가 큼."""
+    import math
+    tx = {p: hotels[p].get('text_1y') or 0 for p in pool}
+    tot = sum(tx.values())
+    r0 = (sum(kr_n.get(p, 0) or 0 for p in pool) / tot) if tot else 0.0
+    by_n = sorted(pool, key=lambda p: -math.log1p(kr_n.get(p, 0) or 0))
+    by_r = sorted(pool, key=lambda p: -((kr_n.get(p, 0) or 0) + KR_PRIOR * r0) / (tx[p] + KR_PRIOR))
+    ra = {p: i for i, p in enumerate(by_n)}
+    rb = {p: i for i, p in enumerate(by_r)}
+    return {p: -(ra[p] + rb[p]) / 2.0 for p in pool}
+
 def rec_scores(hotels, meta, kr_n):
     """추천순 점수 {pid: 0~1}. 모수 = 채점·순위 대상(ranked)·meta에 있는(사이트 노출) 호텔.
-       safe = minmax(−min(p, REC_P_CAP)) · trust = minmax(bayes 평점) · demand = minmax(log1p(한국인 리뷰 수)).
+       safe = minmax(−min(p, REC_P_CAP)) · trust = minmax(bayes 평점) · demand = minmax(kr_demand: 한국인 리뷰 수·비율 혼합).
        정렬 전용 — 화면에 숫자로 쓰지 않는다(HOME-CONCEPT-DESIGN §3.4). 모수 밖 호텔은 키 없음(정렬 시 뒤로)."""
     import math
     pool = [p for p, h in hotels.items() if h.get('scored') and h.get('ranked') and p in meta]
@@ -104,7 +119,8 @@ def rec_scores(hotels, meta, kr_n):
         return [(v - lo) / (hi - lo) if hi > lo else 0.0 for v in vals]
     safe = mm([-min(hotels[p]['p_crit'], REC_P_CAP) for p in pool])
     trust = mm([bayes_rating(meta[p].get('total_score'), meta[p].get('reviews_count')) for p in pool])
-    dem = mm([math.log1p(kr_n.get(p, 0) or 0) for p in pool])
+    kd = kr_demand(hotels, pool, kr_n)
+    dem = mm([kd[p] for p in pool])
     w = REC_W
     out = {}
     for i, p in enumerate(pool):
