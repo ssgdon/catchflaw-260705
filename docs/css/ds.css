@@ -214,11 +214,10 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 히어로 사진(2026-10-10, 레퍼런스: 제목 뒤 풍경이 흰 바탕으로 녹아드는 배치) — 제목 둘째 줄부터 검색창 위까지 사진 띠,
    왼쪽·위·아래를 흰색(--surface-card)으로 흐리게 덮어 글자는 흰 면 위에서 읽히고 오른쪽에만 건물·수영장이 보인다. 사진은 장식(aria 없음) */
 #main .search-box{position:relative;isolation:isolate;}
-#main .search-box{background:radial-gradient(circle at 0% 0%, var(--hl), transparent 55%) var(--surface-card);}   /* 왼쪽 위 옅은 보라 톤 — 비어 보이지 않게 */
-#main .search-box::before{content:"";position:absolute;z-index:-1;left:45%;right:0;top:var(--sp-12);height:calc(var(--h-search) * 3.6);pointer-events:none;   /* 오른쪽 블록: 제목 둘째 줄 높이 ~ 검색창 */
-  background:linear-gradient(to right, var(--surface-card) 0%, transparent 38%),
-             linear-gradient(to bottom, transparent 0%, transparent 70%, var(--surface-card) 100%),
-             url(../img/home_hero.webp) right top / auto 100% no-repeat;}   /* 건물 지붕·유리 외벽·썬베드 */
+#main .search-box::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;   /* 히어로 전체 = 세로 사진(보라 하늘·호텔·인피니티 풀) — 2026-10-10 */
+  background:linear-gradient(to right, var(--surface-card) 0%, transparent 55%),   /* 제목 쪽 하늘을 한 번 더 밝게 */
+             linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   /* 아래 칩 줄은 흰 면 */
+             url(../img/home_bg.jpg) center 62% / 100% auto no-repeat;}   /* 하늘 아래쪽~호텔~수영장이 보이는 자리 */
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}

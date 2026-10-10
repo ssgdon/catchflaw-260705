@@ -156,10 +156,11 @@
     #main .search-box .hero-chips{grid-area:chips;flex-wrap:wrap;max-width:560px;margin-left:0;margin-right:0;padding-left:0;padding-right:0;overflow:visible;}
     #main .search-box .hero-photo{display:none;}   /* 2026-10-10: 오른쪽 사진 카드 대신 히어로 전체 뒤 풍경(모바일과 같은 사진) */
     #main .search-box{background:var(--surface-card);}   /* 모바일의 왼쪽 위 보라 톤은 PC에선 빼고 사진 그라데이션만 */
-    #main .search-box::before{left:0;top:0;bottom:0;height:auto;
-      background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 30%, transparent 62%),
-                 linear-gradient(to bottom, var(--surface-card) 0%, transparent 18%, transparent 72%, var(--surface-card) 100%),
-                 url(../img/home_hero.webp) right center / auto calc(var(--h-search) * 7) no-repeat;}   /* 380 — 원본 높이 306에서 1.24배까지만 키워 산·야경·건물이 함께 보이게 */
+    body{overflow-x:clip;}   /* 히어로 사진을 화면 양끝까지(아래) 펼칠 때 스크롤바 폭만큼 가로 스크롤이 생기지 않게 — clip은 스크롤 상자를 만들지 않아 sticky 유지 */
+    #main .search-box::before{left:calc(50% - 50vw);right:calc(50% - 50vw);   /* 본문 폭(1120)에서 끊기지 않고 화면 끝까지 — '잘린 사각형' 느낌 제거 */
+      background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 28%, transparent 60%),
+                 linear-gradient(to bottom, transparent 0%, transparent 80%, var(--surface-card) 100%),
+                 url(../img/home_bg_pc.jpg) right 40% / cover no-repeat;}   /* PC: 같은 장면 가로형 1600×900 */
     #main .map-wrap #map{height:440px;}
     #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
     #main .hub-home-row .hh-label{font-size:var(--fs-h3);}
