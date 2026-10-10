@@ -82,7 +82,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #detail .disappear .head .eyebrow{font-size:var(--fs-body-sm);font-weight:var(--fw-medium);color:var(--ink-2);}
 #detail .disappear .head .pct{font-size:var(--fs-num-lg);font-weight:var(--fw-display);}
 #detail .disappear .head .vh{font-size:var(--fs-lead);font-weight:var(--fw-display);}
-#detail .verdict-why{font-size:var(--fs-body-sm);line-height:1.6;color:var(--ink-2);}
 
 /* 항목별로 보면: 색 상자 6개 → 구분선 목록 (결론 글자색만으로 의미 전달) */
 #detail .risk .radar-cats{gap:0;margin-top:var(--sp-5);}
@@ -166,7 +165,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
 #main .search-box .title .tit{line-height:1.3;font-size:var(--fs-display);font-weight:var(--fw-display);}
 #main .search-box .title .txt{margin-top:var(--sp-3);line-height:1.6;font-size:var(--fs-body-sm);}
 #main .search-box .input{height:56px;margin-top:var(--sp-6);border-radius:var(--radius-btn);}
-#main .search-box .scope-note{font-size:var(--fs-meta);}
 
 /* ════════ 검색 ════════ */
 #title .search{height:var(--h-btn-lg);border-radius:var(--radius-btn);}
@@ -220,7 +218,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-global);}
    - .seg : 의미 묶음 — 들어가면 한 줄, 넘치면 그 안에서만 줄바꿈 (예: "최근 1년 리뷰의 4.2% (3건)")
    - .nw  : 절대 안 끊김 — 짧은 라벨 전용 (예: "많은 편이에요")
    - .dsep: 문장 사이 구분점 ' · ' — 모바일에선 줄바꿈으로 바뀌어 줄 끝에 '·'가 매달리지 않음, PC는 그대로 */
-h1,h2,h3,.title,.tit,.hub-h1,.hub-h2,.name-ko,.head .desc,.gl-lead,.who-h,.vh,.verdict-why,.cmp-lead,.hc-txt,.about-lead,.kp-sub,.kr-serious,.factor,.keywords,.scope-note,.hr-label,.rc-sub,.cat-rank{text-wrap:balance;}
+h1,h2,h3,.title,.tit,.hub-h1,.hub-h2,.name-ko,.head .desc,.gl-lead,.who-h,.vh,.cmp-lead,.hc-txt,.about-lead,.kp-sub,.kr-serious,.factor,.keywords,.hr-label,.rc-sub,.cat-rank{text-wrap:balance;}
 p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-method{text-wrap:pretty;}
 .seg{display:inline-block;}
 .nw{white-space:nowrap;}

@@ -157,7 +157,6 @@
     #main .search-box .title .tit{font-size:var(--fs-num);line-height:1.3;}   /* PC 히어로 전용(상세 .pct 40px와 같은 단계) */
     #main .search-box .title .txt{font-size:var(--fs-body-lg);line-height:var(--lh-body);}
     #main .search-box .input{grid-area:input;max-width:560px;margin-top:var(--sp-6);padding:var(--sp-4) var(--sp-5);border-radius:var(--radius-btn);}
-    #main .search-box .scope-note{grid-area:note;align-self:start;}
     #main .map-wrap #map{height:440px;}
     #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
     /* 추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) */
