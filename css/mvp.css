@@ -159,8 +159,68 @@
    ============================================================ */
 
 
-
-
+/* ---------- 맞춤 추천 페이지 (recommend.html · 2026-10-10, 바텀시트 마법사 대체 · v3 병합: 잉크 선택·글자 단계) ----------
+   Airbnb 숙소 검색처럼 단계 카드가 쌓이고 지금 단계만 펼쳐진다. 카드 안 선택지는 선 구분 목록(상자 안 상자 금지). 화면은 js/recommend.js */
+#recp{padding:var(--sp-6) var(--page-x) var(--sp-12);background:var(--surface-2);}
+#recp .page-title{margin:0;}   /* 페이지 h1 공용(.page-title 32/700) — #recp가 여백을 준다 */
+#recp .rw-desc{margin-top:var(--sp-2);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-3);word-break:keep-all;}
+#recp .rw-steps{display:flex;flex-direction:column;gap:var(--sp-3);margin-top:var(--sp-6);}
+#recp .rw-step{border-radius:var(--radius-card);background:var(--surface-card);box-shadow:var(--shadow-badge);}
+#recp .rw-step.is-open{padding:var(--sp-6) var(--sp-5) var(--sp-5);box-shadow:var(--shadow-float);}
+#recp .rw-step.is-lock{box-shadow:none;}
+#recp .rw-step.is-lock .rw-row{opacity:.45;cursor:default;}
+#recp .rw-row{display:flex;align-items:center;gap:var(--sp-3);width:100%;min-height:64px;padding:var(--sp-4) var(--sp-5);text-align:left;}
+#recp .rw-num{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-badge);height:var(--h-badge);border-radius:50%;background:var(--surface);color:var(--ink-3);font-size:var(--fs-meta);font-weight:var(--fw-bold);}
+#recp .rw-num.is-on{background:var(--ink);color:var(--ink-inverse);}
+#recp .rw-num.is-done{background:var(--surface);color:var(--ink);}
+#recp .rw-label{flex:none;font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;}
+#recp .rw-val{flex:1;min-width:0;display:flex;flex-direction:column;align-items:flex-end;text-align:right;font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:var(--lh-ui);color:var(--ink);word-break:keep-all;}
+#recp .rw-val.is-empty{font-weight:var(--fw-regular);color:var(--ink-3);}
+#recp .rw-val-sub{margin-top:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
+#recp .rw-kicker{display:flex;align-items:center;gap:var(--sp-2);}
+#recp .rw-kicker .rw-label{color:var(--ink);font-weight:var(--fw-bold);}
+#recp .rw-q{margin-top:var(--sp-4);font-size:var(--fs-h2);font-weight:var(--fw-bold);line-height:var(--lh-title);letter-spacing:var(--ls-title);color:var(--ink);word-break:keep-all;}
+#recp .rw-sub{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);word-break:keep-all;}
+#recp .rw-opts{margin-top:var(--sp-3);}
+#recp .rw-opt{display:flex;align-items:center;gap:var(--sp-3);width:100%;min-height:64px;padding:var(--sp-4) 0;border-top:1px solid var(--line);text-align:left;}
+#recp .rw-opt:first-child{border-top:0;}
+#recp .rw-opt-txt{flex:1;min-width:0;display:flex;flex-direction:column;gap:var(--sp-1);}
+#recp .rw-opt-t{display:inline-flex;align-items:center;flex-wrap:wrap;gap:var(--sp-2);font-size:var(--fs-body);font-weight:var(--fw-semi);line-height:var(--lh-ui);color:var(--ink);word-break:keep-all;}
+#recp .rw-opt.is-on .rw-opt-t{font-weight:var(--fw-bold);}
+#recp .rw-opt-d{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);word-break:keep-all;}
+#recp .rw-opt.is-off{cursor:default;}
+#recp .rw-opt.is-off .rw-opt-t{color:var(--ink-4);}
+#recp .rw-radio{flex:none;width:24px;height:24px;border-radius:50%;border:2px solid var(--ink-4);background:var(--surface-card);transition:border .15s;}
+#recp .rw-radio.is-on{border:7px solid var(--ink);}
+#recp .rw-rank{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-badge);height:var(--h-badge);border-radius:50%;border:2px solid var(--ink-4);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-inverse);}
+#recp .rw-rank.is-on{border-color:var(--ink);background:var(--ink);}
+#recp .rw-soon-tag,#recp .rw-rec-tag{flex:none;display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--surface);font-size:var(--fs-micro);font-weight:var(--fw-bold);white-space:nowrap;}
+#recp .rw-soon-tag{color:var(--ink-3);}
+#recp .rw-rec-tag{color:var(--ink);}
+#recp .rw-must{margin-top:var(--sp-2);padding-top:var(--sp-5);border-top:1px solid var(--line);}
+#recp .rw-must-t{font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:var(--lh-ui);color:var(--ink);word-break:keep-all;}
+#recp .rw-must-d{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);word-break:keep-all;}
+#recp .rw-must-list{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-3);}
+#recp .rw-must-chip{display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-4);border-radius:var(--radius-pill);border:1px solid var(--line-strong);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
+#recp .rw-must-chip.is-on{border-color:var(--ink);background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
+#recp .rw-next-btn{display:flex;align-items:center;justify-content:center;width:100%;height:var(--h-btn);margin-top:var(--sp-6);border-radius:var(--radius-btn);background:var(--ink);color:var(--ink-inverse);font-size:var(--fs-body);font-weight:var(--fw-bold);white-space:nowrap;}
+#recp .rw-next-btn[aria-disabled="true"]{background:var(--surface);color:var(--ink-4);cursor:default;}
+#recp .rw-seg{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-1);margin-top:var(--sp-4);padding:var(--sp-1);border-radius:var(--radius-btn);background:var(--surface);}
+#recp .rw-seg-btn{height:var(--h-chip-sm);border-radius:var(--radius-chip);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;}
+#recp .rw-seg-btn.is-on{background:var(--surface-card);color:var(--ink);font-weight:var(--fw-bold);box-shadow:var(--shadow-badge);}
+#recp .rw-how{margin-top:var(--sp-5);font-size:var(--fs-meta);line-height:var(--lh-body);color:var(--ink-3);text-align:center;word-break:keep-all;}
+/* 아래 막대: 처음부터(텍스트) · 추천 호텔 보기(.btn-brand, 도시·못 참는 것을 고르기 전엔 회색 — 누르면 빠진 단계를 펼쳐 안내) */
+#recp .rw-bar{position:fixed;z-index:var(--z-float);left:50%;bottom:0;transform:translateX(-50%);width:var(--width);max-width:100%;display:flex;align-items:center;gap:var(--sp-4);padding:var(--sp-3) var(--page-x) calc(var(--sp-3) + env(safe-area-inset-bottom));background:var(--surface-card);border-top:1px solid var(--line);}
+#recp .rw-reset-btn{flex:none;height:var(--h-btn-sm);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;}
+#recp .rw-go-btn{flex:1;transition:background .2s;}
+#recp .rw-go-btn:not(.is-ready){background:var(--ink-4);}
+#recp .rw-loading{position:fixed;z-index:var(--z-full);inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-4);padding:0 var(--page-x);background:var(--surface-card);text-align:center;}
+#recp .rw-loading[hidden]{display:none;}
+#recp .rw-loading-spin{width:46px;height:46px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--ink);animation:cf-rec-spin .8s linear infinite;}
+#recp .rw-loading-t{font-size:var(--fs-h3);font-weight:var(--fw-bold);line-height:var(--lh-ui);color:var(--ink);}
+#recp .rw-loading-d{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-3);}
+body[data-page="recommend"] .cf-toast{bottom:calc(var(--h-btn) + var(--sp-8) + env(safe-area-inset-bottom));}
+body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--h-btn) + var(--sp-6) + env(safe-area-inset-bottom));}
 
 
 /* rec 지도 순위 마커 (divIcon) */
@@ -596,4 +656,11 @@ html.is-scroll-down .cmp-tray{transform:translate(-50%,130%);opacity:0;pointer-e
 
 /* AI 추천 개편 (2026-10-10): 묶음 머리 · 고른 항목 성적표 · 더 보기 · 비교 카드 한국인 비율 */
 
+
+/* 홈 가격대별 추천 탭 (2026-10-10): 평일 구간 4개를 탭으로 — 슬라이더를 쌓지 않음 */
+#main .price-tabs .pt-tabs{display:flex;gap:var(--sp-2);margin:var(--head-gap) calc(var(--page-x) * -1) var(--sp-4);padding:0 var(--page-x);overflow-x:auto;scrollbar-width:none;}
+#main .price-tabs .pt-tabs::-webkit-scrollbar{display:none;}
+#main .price-tabs .pt-tab{flex:none;height:var(--h-chip-sm);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
+#main .price-tabs .pt-tab.on{border-color:var(--ink);background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
+#main .price-tabs .pt-pane[hidden]{display:none;}
 

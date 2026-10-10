@@ -737,8 +737,12 @@ html.rec-mode #title .search,html.rec-mode .st-filter,html.rec-mode .f-bar{displ
 #lh-sort.open > .lh-sort-box{display:block;}
 .lh-sort-box .ls-pane{display:none;}
 .lh-sort-box .ls-pane.is-cur{display:block;}
-.lh-sort-box .ls-sep{display:none;}
-.lh-sort-box .ls-sep + button{border-top:0;}
+.lh-sort-box .ls-back{display:none;}   /* 모바일 '정렬' 다이얼로그는 머리의 ←가 뒤로 */
+.lh-sort-box .ls-back + button{border-top:0;}
+#lh-sort > .lh-sort-box .ls-back{display:flex;align-items:center;gap:var(--sp-2);min-height:var(--h-btn);padding:0;font-weight:var(--fw-semi);}   /* PC 팝오버 2단계: 맨 위 '‹ 항목별 걱정 적은 순' = 처음으로 */
+#lh-sort > .lh-sort-box .ls-back::after{content:none;}
+#lh-sort > .lh-sort-box .ls-back + button{border-top:1px solid var(--line);}
+.lh-sort-box .ls-chev-l{flex:none;width:8px;height:8px;margin-left:2px;border-left:2px solid var(--ink);border-bottom:2px solid var(--ink);transform:rotate(45deg);}
 .lh-sort-box .ls-more::after{width:8px;height:8px;margin-top:-4px;border:0;border-right:2px solid var(--ink);border-top:2px solid var(--ink);border-radius:0;transform:rotate(45deg);}   /* 2단계로 가는 행: 라디오 대신 꺾쇠 › */
 .lh-sort-box .ls-more.on::after{border:0;border-right:2px solid var(--ink);border-top:2px solid var(--ink);}
 
@@ -840,6 +844,30 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cmp-lead{margin:var(--sp-5) 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);text-wrap:pretty;}
 .cmp-lead + .cmp-lead{margin-top:var(--sp-2);}
 .cmp-lead b{font-weight:var(--fw-semi);}
+/* 한눈에 비교 (2026-10 재설계, v3 병합): 차이 요약 한 줄 → 호텔마다 다른 곳보다 나은 점(체크)·아쉬운 점(주의·위험). 모바일 위아래, PC는 사진 열에 맞춤(pc.css) */
+.cmp-eyebrow{margin-top:var(--sp-5);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+.cmp-eyebrow + .cmp-picks .cmp-lead{margin-top:var(--sp-1);}
+.cmp-lead em{font-style:normal;font-weight:var(--fw-bold);}
+.cmp-ctx{margin:var(--sp-1) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.cmp-picks{display:flex;flex-direction:column;}
+.cpk-lead{padding-bottom:var(--sp-4);}
+.cpk{padding:var(--sp-4) 0;border-top:1px solid var(--line);}
+.cpk.is-pad{display:none;}
+.cpk-n{display:block;font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:var(--lh-title);color:var(--ink);word-break:keep-all;}
+.cpk ul{display:flex;flex-direction:column;gap:var(--sp-2);margin:var(--sp-2) 0 0;padding:0;list-style:none;}
+.cpk li{display:flex;align-items:flex-start;gap:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);}
+.cpk-ic{flex:none;margin-top:2px;}
+.cpk li.is-good .cpk-ic{color:var(--ink);}
+.cpk li.is-warning .cpk-ic{color:var(--warning);}
+.cpk li.is-danger .cpk-ic{color:var(--danger);}
+.cpk-k{flex:1;min-width:0;color:var(--ink);word-break:keep-all;}
+.cpk-k small{display:block;font-size:var(--fs-meta);color:var(--ink-3);}
+.cpk-v{flex:none;max-width:55%;text-align:right;font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}
+.cpk li.is-warning .cpk-v{color:var(--warning-text);}
+.cpk li.is-danger .cpk-v{color:var(--danger-text);}
+.cpk li.is-none{color:var(--ink-3);}
+.cpk-v .cpk-q{font-weight:var(--fw-regular);color:var(--ink-3);}   /* 값의 수식어(평균보다·평일 약·역 이름 도보) — 숫자만 진하게 */
+.cpk-note{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .cmp-sumnote{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .cmp-tools{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-5) 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .cmp-switch{flex:none;display:inline-flex;align-items:center;gap:var(--sp-2);border:0;background:none;font-family:inherit;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}

@@ -32,9 +32,9 @@
     .det-header .dh-search input{flex:1;min-width:0;height:100%;border:0;background:transparent;font-size:var(--fs-caption);color:var(--ink);}
     .det-header .dh-search button{display:flex;align-items:center;justify-content:center;width:32px;height:32px;border:0;background:none;color:var(--ink-2);cursor:pointer;}
     .det-header .dh-search:focus-within{border-color:var(--primary);background:var(--surface-card);}
-    .det-header .dh-nav{display:flex;align-items:center;gap:var(--sp-8);margin-left:auto;}
-    .det-header .dh-nav a{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);}
-    .det-header .dh-nav a:hover{color:var(--primary);}
+    .det-header .dh-nav{display:flex;align-items:center;gap:var(--sp-8);margin-left:auto;flex:none;}   /* 메뉴 6개: 줄지 않고, 좁은 PC(1100~)에선 검색창이 대신 줄어든다 */
+    .det-header .dh-nav a{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);white-space:nowrap;}
+    .det-header .dh-nav a:hover,.det-header .dh-nav a[aria-current="page"]{color:var(--primary);}
 
     /* ── 공통 푸터·플로팅 ── */
     #site-foot{max-width:var(--pc-max);margin:0 auto;padding-left:var(--pc-x);padding-right:var(--pc-x);border-top:1px solid var(--line);}
@@ -185,6 +185,26 @@
     .cmp-line{font-size:var(--fs-meta);}
     #cmp .page-empty{max-width:none;margin:0;padding:0 0 var(--sp-12);}
 
+    /* ── 맞춤 추천 페이지: 가운데 720 칼럼 · 아래 막대는 칼럼 안 떠 있는 카드 ── */
+    #recp{padding:var(--sp-12) var(--pc-x) var(--sp-12);}
+    #recp .rw-head,#recp .rw-steps,#recp .rw-how{max-width:720px;margin-left:auto;margin-right:auto;}
+    #recp .rw-steps{margin-top:var(--sp-8);}
+    #recp .rw-step.is-open{padding:var(--sp-8);}
+    #recp .rw-row{padding:var(--sp-4) var(--sp-8);}
+    #recp .rw-opt{cursor:pointer;}
+    #recp .rw-opt:not(.is-off):hover .rw-opt-t{text-decoration:underline;text-underline-offset:3px;}
+    #recp .rw-bar{position:sticky;left:auto;bottom:var(--sp-6);transform:none;width:auto;max-width:720px;margin:var(--sp-6) auto 0;padding:var(--sp-4) var(--sp-6);border:0;border-radius:var(--radius-card);box-shadow:var(--shadow-pop);}
+    body[data-page="recommend"] #site-foot{padding-bottom:var(--sp-12);}
+    body[data-page="recommend"] .cf-toast{bottom:120px;}
+
+    /* 한눈에 비교: 왼쪽 칸 = 차이 요약 한 줄, 호텔 칸 = 사진 열 아래에 그 호텔의 나은 점·아쉬운 점 */
+    .cmp-picks{display:grid;grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));}   /* 사진 격자(.cmp-top)와 같은 칸 — 간격 없이 칸 안쪽 여백으로 */
+    .cpk-lead{padding:0 var(--sp-4) 0 0;}
+    .cpk{padding:var(--sp-5) var(--sp-4) 0 0;}
+    .cpk + .cpk{border-top:0;}
+    .cpk.is-pad{display:block;}
+    .cpk li{display:grid;grid-template-columns:16px minmax(0,1fr);column-gap:var(--sp-2);}   /* 칸이 좁아 값은 라벨 아래 줄 */
+    .cpk-v{grid-column:2;max-width:none;text-align:left;}
 
 
     /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════
