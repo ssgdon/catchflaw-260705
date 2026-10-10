@@ -26,7 +26,7 @@ SUB_PHRASE = {
     '온수·수압': '온수·수압', '와이파이·TV': '와이파이·TV',
     '불친절': '직원 응대', '대기·지연': '체크인·요청 대기', '대응 미흡': '문제 발생 시 대처',
     '역 거리': '역까지 거리', '주변 편의': '주변 편의시설', '동네 분위기': '밤길·동네 분위기',
-    '객실 보안': '객실 보안',
+    '객실 보안': '보안·안전사고',   # 무단 입실·잠금에 더해 대욕장·욕조 부상도 이 소분류(prompt_v5) — 화면 이름을 내용에 맞춤(2026-10-10)
 }
 assert set(SUB_PHRASE) == {s for v in SUBS.values() for s in v}, 'SUB_PHRASE ↔ scoring.SUBS 불일치'
 # P3 누구와 가세요(1단계): 일행 구성별로 관련 깊은 소분류·FAQ 토픽만 모아 보여줌. 구성별 실망 확률은 동행 추출(파이프라인) 후.
@@ -2804,7 +2804,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         for _cat, _scat, _slabel, _clabel in (('청결', '벌레', '벌레', '벌레 리뷰'),   # F43: 신고→리뷰 · 분류 v5 칩 4종
                                               ('청결', '곰팡이', '곰팡이', '곰팡이 리뷰'),
                                               ('위치', '동네 분위기', '밤길·동네 분위기', '밤길·동네 분위기 리뷰'),
-                                              ('안전', '객실 보안', '객실 보안', '객실 보안 리뷰')):
+                                              ('안전', '객실 보안', '객실 보안', '보안·안전사고 리뷰')):
             _sb = h['cats'][_cat]['subs'][_scat]
             _n, _n3 = _sb.get('crit_1y', 0), _sb.get('crit_3m', 0)   # 최근 1년 / 최근 3달(90일) 심각
             rare_crit[_scat] = _n
@@ -2936,7 +2936,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _rows.append(('ink', f'{per} 글 리뷰 <b>{h["text_1y"]:,}건</b> 중 <b>실망 리뷰 {crit_reviews_1y}건</b>',
                           '__dis__' if crit_reviews_1y else None))   # 누르면 그 M건만 팝업으로 (openDis)
         # 근거 2: 예약을 접을 만한 문제(희소·고위험 4종) 심각 리뷰 → 있으면 건수, 없으면 '없음'. 평균 이상 호텔은 대신 가장 잦은 불만
-        _RARE_KO = {'벌레': '벌레', '곰팡이': '곰팡이', '동네 분위기': '밤길·동네 분위기', '객실 보안': '객실 보안'}
+        _RARE_KO = {'벌레': '벌레', '곰팡이': '곰팡이', '동네 분위기': '밤길·동네 분위기', '객실 보안': '보안·안전사고'}
         _rare_hit = [(_RARE_KO.get(_sc, _sc), _n) for _sc, _n in rare_crit.items() if _n]
         _worst6 = max(SCORED_CATS, key=lambda c: h['cats'][c]['score'])
         if _rare_hit:
@@ -2948,7 +2948,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _rows.append(('warning', f'불만이 가장 많은 항목은 <b>{E(cat_ko(_worst6))}</b>{NB}({h["cats"][_worst6]["count_1y"]}건)',
                           f'#risk-{CATS.index(_worst6)}'))
         else:
-            _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
+            _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
         def _ev(tone, txt, href, sub=None):
             inner = f'<span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span>'
             if href == '__dis__':
@@ -3220,7 +3220,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 cnt_html = (f'<button type="button" class="stat-count has-reviews" data-cat="{E(c)}" data-sub="{E(s)}">{cnt}건</button>'
                             if cnt > 0 else '')
                 rows.append(f'''<li class="stat-row is-rare" data-sub="{E(s)}">
-                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{'danger' if _ctone == 'alert' else 'safe'}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
+                    <div class="stat-info"><div class="factor"><span class="sub-dot is-{'danger' if _ctone == 'alert' else 'safe'}"></span>{E(SUB_PHRASE.get(s, s))}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
                     <div class="rare-chip is-{_ctone}">{E(_clabel)}</div>
                     {cnt_html}
                 </li>''')
@@ -3355,7 +3355,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
                 <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
                 <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
+                <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         {similar_block}
@@ -4532,7 +4532,7 @@ def build_about(hotels_meta, H, city):
         '<li>청결·냄새·소음·객실·직원·위치 6개 항목을 불만의 양과 심각도로 점수화해요</li>'
         f'<li>{CITY["ko"]} 평균을 50으로 두고, 평균의 3배 이상이면 100이에요</li>'
         '<li>불만 리뷰가 5건 미만인 항목·소분류에는 위험 등급을 붙이지 않아요</li>'
-        '<li>벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
+        '<li>벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
         '</ul>')
     s3 = sect('데이터 출처와 한계',
         '<ul class="about-list">'
