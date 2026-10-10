@@ -213,7 +213,7 @@ SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsIn
 FX = {'US$': 1400, '£': 1750, '€': 1500, 'SCR': 100, '₩': 1, 'KRW': 1, '¥': 9.5}
 PRICE_WINDOW_DAYS = 56          # 최근 8주 수집분만 사용
 WEEKEND_NIGHTS = (4, 5)         # 금·토 밤 (date.weekday)
-# 가격대 = 실제 분포에 맞춘 구간 (2026-10-10). 평일 20·40·60·80% 지점 9·11·13·17만원 → 5구간(43/35/37/27/24곳),
+# 가격대 = 실제 분포에 맞춘 구간 (2026-10-10). 평일 20·40·60·80% 지점 9·11·13·17만원 → 4구간(43/72/27/24곳 — 5구간은 촘촘해 10~15 합침),
 # 주말(금·토 밤) 28·32·38·48만원 → 4구간(37/48/24/26곳). 예전 3구간은 평일 63%가 '10~20만원'에, 주말 96%가 '20만원 이상'에 몰렸다.
 # 코드 b1(10만원 미만)은 가성비 허브 FAQ 등이 그대로 쓴다. 주말 코드는 w1~w4 (AI 추천 '주말 기준' 예산)
 PRICE_BANDS_WE = [
@@ -224,10 +224,9 @@ PRICE_BANDS_WE = [
 ]
 PRICE_BANDS = [
     ('b1', '10만원 미만', 0, 100_000),
-    ('b2', '10~12만원', 100_000, 120_000),
-    ('b3', '12~15만원', 120_000, 150_000),
-    ('b4', '15~20만원', 150_000, 200_000),
-    ('b5', '20만원 이상', 200_000, 10**10),
+    ('b2', '10~15만원', 100_000, 150_000),   # 10~12·12~15를 합침 — 구간이 촘촘하면 고르기 어려움 (2026-10-10 사용자 결정)
+    ('b3', '15~20만원', 150_000, 200_000),
+    ('b4', '20만원 이상', 200_000, 10**10),
 ]
 
 def parse_price(price_str):
@@ -4102,8 +4101,8 @@ def collection_members(col, hotels_meta, H):
         return cand
 
     if kind == 'value':
-        # 평일 20만원 미만(b1~b4) × 추천순
-        cand = [p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] in ('b1', 'b2', 'b3', 'b4')]   # 평일 20만원 미만
+        # 평일 20만원 미만(b1~b3) × 추천순
+        cand = [p for p in scored if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] in ('b1', 'b2', 'b3')]   # 평일 20만원 미만
         cand.sort(key=lambda p: (not H[p]['ranked'], -REC.get(p, 0.0), H[p]['p_crit']))   # 추천순(rec_score), 리뷰 적은 호텔은 뒤로(순위 모수 밖)
         return cand
 

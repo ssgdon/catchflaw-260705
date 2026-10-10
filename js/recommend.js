@@ -14,8 +14,8 @@
     { code: 'svc',    ko: '직원', label: '불친절은 못 넘어가',        kw: '직원 응대·대기',          chip: '응대' },
     { code: 'locsaf', ko: '위치', label: '위치가 제일 중요해',        kw: '역까지 거리·밤길',        chip: '위치' }
   ];
-  // 예산 구간 = generate.py PRICE_BANDS(평일 5)·PRICE_BANDS_WE(주말 4) — 빌드가 window.CF_PRICE_BANDS로 주입 (2026-10-10 분포 기준)
-  var PB = window.CF_PRICE_BANDS || { wd: [['b1', '10만원 미만'], ['b2', '10~12만원'], ['b3', '12~15만원'], ['b4', '15~20만원'], ['b5', '20만원 이상']],
+  // 예산 구간 = generate.py PRICE_BANDS(평일 4)·PRICE_BANDS_WE(주말 4) — 빌드가 window.CF_PRICE_BANDS로 주입 (2026-10-10 분포 기준)
+  var PB = window.CF_PRICE_BANDS || { wd: [['b1', '10만원 미만'], ['b2', '10~15만원'], ['b3', '15~20만원'], ['b4', '20만원 이상']],
                                       we: [['w1', '30만원 미만'], ['w2', '30~40만원'], ['w3', '40~50만원'], ['w4', '50만원 이상']] };
   var ANY = { code: '', label: '상관없어요' };
   var BUDGETS = [ANY].concat(PB.wd.map(function (x) { return { code: x[0], label: x[1] }; }));
