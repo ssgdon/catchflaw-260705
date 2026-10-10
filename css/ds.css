@@ -866,6 +866,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cv-tbl thead .cv-dot{display:block;margin:0 auto var(--sp-1);}
 .cv-th{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;word-break:keep-all;}
 .cv-tbl tbody th{font-weight:var(--fw-semi);color:var(--ink);word-break:keep-all;}
+.cv-tbl tbody th,.cv-tbl tbody td{vertical-align:top;}   /* 숫자 'N건'끼리 같은 줄 · '심각 N'은 그 아래 — 가운데 정렬이면 한 줄짜리 칸이 두 줄 칸 사이에 떠 보였음 */
+.cv-tbl tbody th{padding-top:calc(var(--sp-3) + (var(--fs-body) - var(--fs-meta)) * var(--lh-ui) / 2);}   /* 행 이름(14)을 숫자 줄(16)의 가운데에 */
 .cv-tbl td b{display:block;font-size:var(--fs-body);font-weight:var(--fw-bold);}
 .cv-tbl td small{display:block;font-size:var(--fs-meta);font-weight:var(--fw-semi);}
 .cv-tbl td.is-zero{color:var(--ink-4);}
