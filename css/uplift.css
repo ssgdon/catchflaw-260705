@@ -115,7 +115,6 @@ body{color:var(--ink);}
 
 /* ---------- 상세: 하단 CTA ---------- */
 #detail .button{padding:12px 16px 16px;}
-#detail ~ #float{bottom:84px;}
 
 /* ---------- 검색/위시/최근 리스트 ---------- */
 

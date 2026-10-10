@@ -38,9 +38,8 @@
 
     /* ── 공통 푸터·플로팅 ── */
     #site-foot{max-width:var(--pc-max);margin:0 auto;padding-left:var(--pc-x);padding-right:var(--pc-x);border-top:1px solid var(--line);}
-    #float{left:auto;right:var(--pc-x);width:auto;transform:none;}
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
-    html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
+    html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
     #detail{--h-header:64px;--sticky-top:var(--h-header);}   /* 4A: 상세 PC 헤더 64 — sticky 오프셋(탭·결정 카드·앵커)이 이 토큰을 따른다 */
