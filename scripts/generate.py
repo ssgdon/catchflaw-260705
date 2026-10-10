@@ -556,9 +556,20 @@ def build_footer(depth=0):
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
 
+# 메뉴 시트 아이콘 24(선 1.75, DESIGN-SYSTEM-V3 §6-5 아이콘 행) — 이모지 대신 SVG
+_MI = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">{}</svg>'
+_MS = 'stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"'
+MENU_ICO = {
+    'home': _MI.format(f'<path d="M4 10.5 12 4l8 6.5V19a1 1 0 0 1-1 1h-4.5v-5.5h-5V20H5a1 1 0 0 1-1-1v-8.5Z" {_MS}/>'),
+    'search': _MI.format(f'<circle cx="11" cy="11" r="6.5" {_MS}/><path d="m16 16 4 4" {_MS}/>'),
+    'compare': _MI.format(f'<rect x="3.5" y="5" width="7" height="14" rx="1.5" {_MS}/><rect x="13.5" y="5" width="7" height="14" rx="1.5" {_MS}/>'),
+    'recent': _MI.format(f'<circle cx="12" cy="12" r="8" {_MS}/><path d="M12 7.5V12l3 2" {_MS}/>'),
+    'about': _MI.format(f'<circle cx="12" cy="12" r="8" {_MS}/><path d="M12 11v5M12 8h.01" {_MS}/>'),
+}
+
 def site_header(depth=1, back=None, search=True):
-    """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+드로어 4링크.
-    back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 드로어 JS는 jQuery 비의존 vanilla."""
+    """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+메뉴 바텀 시트(PC 가로 메뉴와 같은 5링크, v3 §5-8 ⑨).
+    back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 메뉴 JS는 jQuery 비의존(CF.sheet, backnav.js)."""
     p = '../' * depth
     home = p or './'
     # PC 전용 헤더 검색(pc.css에서만 표시) — 상세·비교·허브 등에서 바로 다른 호텔을 찾게(Tripadvisor·Klook 헤더 패턴)
@@ -579,33 +590,31 @@ def site_header(depth=1, back=None, search=True):
                     <a href="{p}recent">최근 본 호텔</a>
                     <a href="{p}about">산출 방법</a>
                 </nav>
-                <button type="button" class="dh-menu" aria-label="전체메뉴"><span></span><span></span><span></span></button>
+                <button type="button" class="dh-menu" aria-label="전체메뉴" aria-haspopup="dialog" aria-controls="site-menu"><span></span><span></span><span></span></button>
             </div>
-            <div class="det-drawer" hidden>
-                <div class="dd-dim"></div>
-                <div class="dd-panel">
-                    <button type="button" class="dd-close" aria-label="닫기">✕</button>
-                    <nav class="dd-nav">
-                        <a href="{home}">홈</a>
-                        <a href="{p}search">호텔 검색</a>
-                        <a href="{p}recent">최근 본 호텔</a>
-                        <a href="{p}about">산출 방법</a>
+            <div class="ov" data-ov="bottom" id="site-menu" role="dialog" aria-modal="true" aria-labelledby="site-menu-t" hidden>
+                <div class="ov-dim"></div>
+                <section class="ov-panel ov-w-md">
+                    <header class="ov-head ov-head--info"><button type="button" class="ov-close" aria-label="닫기"></button><h2 class="ov-title" id="site-menu-t">메뉴</h2></header>
+                    <nav class="ov-body ov-menu" aria-label="전체 메뉴">
+                        <a href="{home}">{MENU_ICO["home"]}<span>홈</span></a>
+                        <a href="{p}search">{MENU_ICO["search"]}<span>호텔 검색</span></a>
+                        <a href="{p}compare">{MENU_ICO["compare"]}<span>호텔 비교</span></a>
+                        <a href="{p}recent">{MENU_ICO["recent"]}<span>최근 본 호텔</span></a>
+                        <a href="{p}about">{MENU_ICO["about"]}<span>산출 방법</span></a>
                     </nav>
-                </div>
+                </section>
             </div>
             <script>
             (function(){{
-                var drawer = document.querySelector('.det-drawer'),
-                    menu = document.querySelector('.dh-menu');
-                if (!drawer || !menu) return;
-                function open(){{ drawer.hidden = false; void drawer.offsetWidth; drawer.classList.add('is-open'); }}
-                function close(){{ drawer.classList.remove('is-open'); setTimeout(function(){{ drawer.hidden = true; }}, 300); }}
-                menu.addEventListener('click', function(e){{ e.preventDefault(); open(); }});
-                drawer.addEventListener('click', function(e){{
-                    if (e.target.closest('.dd-dim') || e.target.closest('.dd-close')) {{ e.preventDefault(); close(); }}
-                }});
-                document.addEventListener('keydown', function(e){{
-                    if (e.key === 'Escape' && drawer.classList.contains('is-open')) close();
+                var m = document.getElementById('site-menu'), b = document.querySelector('.dh-menu');
+                if (!m || !b) return;
+                b.addEventListener('click', function(e){{ e.preventDefault(); CF.sheet.open(m, {{opener: b}}); }});
+                // 메뉴에서 다른 페이지로: 시트가 쌓은 뒤로가기 버퍼를 새 페이지로 바꿔 끼움(뒤로가기 = 이 페이지)
+                m.addEventListener('click', function(e){{
+                    var a = e.target.closest('a[href]');
+                    if (!a || e.metaKey || e.ctrlKey || e.shiftKey) return;
+                    e.preventDefault(); location.replace(a.href);
                 }});
             }})();
             </script>'''
@@ -3491,7 +3500,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 new Swiper(el, {{slidesPerView:'auto', spaceBetween:10, observer:true, observeParents:true}});
             }});
 
-            // F36 드로어 JS는 site_header() 공통 컴포넌트에 포함 (상세·recent 공유)
+            // F36 메뉴(바텀 시트) JS는 site_header() 공통 컴포넌트에 포함
 
             // ───── 플로팅: 공유 / 맨 위로 ─────
             $(window).on('scroll', function(){{

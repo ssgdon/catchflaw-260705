@@ -228,6 +228,13 @@ CF.rgba = function (name, a) {
     }
   });
 
+  // 시트를 연 채 다른 페이지로 갔다가 뒤로 돌아오면(bfcache) 시트가 열린 채 복원된다 → 조용히 닫는다
+  window.addEventListener('pageshow', function (e) {
+    if (!e.persisted || !stack.length) return;
+    stack.slice().reverse().forEach(finish);
+    closers.length = 0;
+  });
+
   CF.sheet = {
     open: open, close: close, make: make, update: update, setTitle: setTitle,
     isOpen: function (el) { return el ? !!entryOf(el) : stack.length > 0; },

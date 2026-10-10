@@ -388,3 +388,7 @@ textarea.ov-input{height:96px;resize:none;}
 .rp-cats{padding:0 0 var(--sp-4);}
 .rp-cats[hidden]{display:none;}
 .rp-hp{position:absolute;left:-9999px;width:1px;height:1px;opacity:0;}
+/* ⑤ 메뉴(B 바텀 시트 · H3 '메뉴'): 아이콘 행 56(아이콘 24 + 14 + 16), 선 없음. PC는 가로 메뉴(.dh-nav)라 열리지 않음 */
+.ov-menu{display:flex;flex-direction:column;}
+.ov-menu a{display:flex;align-items:center;gap:14px;min-height:56px;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);}
+.ov-menu a svg{flex:none;}

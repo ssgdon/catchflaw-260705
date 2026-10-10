@@ -888,14 +888,6 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 .det-header .dh-menu{display:flex;flex-direction:column;justify-content:center;gap:5px;width:40px;height:40px;margin-right:-8px;padding:8px;background:none;border:0;cursor:pointer;}
 .det-header .dh-menu span{display:block;width:20px;height:2px;border-radius:2px;background:var(--ink);}
 /* F36 드로어 — 우측 슬라이드, tokens·시트 규격 재사용 */
-.det-drawer{position:fixed;z-index:2000;inset:0;}
-.det-drawer .dd-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);opacity:0;transition:opacity .3s;}
-.det-drawer .dd-panel{position:absolute;top:0;right:0;bottom:0;width:74%;max-width:300px;transform:translateX(100%);transition:transform .3s;background:var(--surface-card);padding:calc(env(safe-area-inset-top) + 16px) var(--page-x) 24px;}
-.det-drawer.is-open .dd-dim{opacity:1;}
-.det-drawer.is-open .dd-panel{transform:translateX(0);}
-.det-drawer .dd-close{display:flex;align-items:center;justify-content:center;width:32px;height:32px;margin:0 -8px 12px auto;font-size:var(--fs-lead);color:var(--ink-2);background:none;border:0;cursor:pointer;}
-.det-drawer .dd-nav{display:flex;flex-direction:column;}
-.det-drawer .dd-nav a{display:flex;align-items:center;height:52px;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);border-bottom:1px solid var(--line);}
 
 /* F40: 최근 본 호텔 페이지 — hotel_card 2열 그리드 + 빈 상태 */
 #main .hotel-list.recent-list .list ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px 12px;}
