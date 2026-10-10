@@ -124,6 +124,19 @@
 #detail .analysis .risk-acc-body .stat-list{display:flex;flex-direction:column;}
 #detail .analysis .risk-acc-body .stat-row{display:flex;align-items:center;gap:10px;padding:13px 0;}
 #detail .analysis .risk-acc-body .stat-row + .stat-row{border-top:1px dashed var(--line);}
+/* 사진 확대 보기 (js/lightbox.js) — 전체 화면, 이전/다음, 장수. 시트(300)·모달(400) 위 */
+.cf-lightbox{position:fixed;z-index:500;inset:0;display:none;}
+.cf-lightbox.is-open{display:block;}
+.cf-lightbox .lb-dim{position:absolute;inset:0;background:rgb(0 0 0 / 92%);}
+.cf-lightbox .lb-stage{position:absolute;inset:var(--sp-12) var(--sp-4) var(--sp-12);display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.cf-lightbox .lb-img{display:block;max-width:100%;max-height:100%;object-fit:contain;border-radius:var(--radius-card);pointer-events:auto;}
+.cf-lightbox .lb-close,.cf-lightbox .lb-prev,.cf-lightbox .lb-next{position:absolute;z-index:2;display:flex;align-items:center;justify-content:center;width:var(--h-btn);height:var(--h-btn);border:0;border-radius:var(--radius-pill);background:rgb(255 255 255 / 16%);color:var(--ink-inverse);font-size:var(--fs-h2);line-height:1;cursor:pointer;}
+.cf-lightbox .lb-close{top:var(--sp-4);right:var(--sp-4);font-size:var(--fs-body);}
+.cf-lightbox .lb-prev{left:var(--sp-3);top:50%;transform:translateY(-50%);}
+.cf-lightbox .lb-next{right:var(--sp-3);top:50%;transform:translateY(-50%);}
+.cf-lightbox .lb-count{position:absolute;left:50%;bottom:var(--sp-6);transform:translateX(-50%);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;}
+#detail .visual .hotel-gallery .swiper-slide,#detail .visual > img{cursor:zoom-in;}
+#detail .analysis .risk-acc-body .stat-row.is-flash{background:var(--primary-soft);transition:background .5s;}   /* 근거 줄에서 점프했을 때 잠시 강조 */
 #detail .analysis .risk-acc-body .stat-info{flex:0 0 106px;min-width:0;}
 #detail .analysis .risk-acc-body .stat-info .factor{line-height:1.4;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
 #detail .analysis .risk-acc-body .stat-info .keywords{margin:3px 0 0;line-height:1.5;font-size:var(--fs-meta);font-weight:var(--fw-medium);color:var(--ink-3);}

@@ -2373,7 +2373,7 @@ def pc_gallery_html(meta, name, fallback):
     cells = ''
     for i, u in enumerate(imgs):
         lazy = '' if i == 0 else ' loading="lazy"'
-        cells += f'<div class="pg-cell pg-{i}"><img src="{E(u)}" alt="{E(name)} 사진 {i + 1}" width="960" height="640"{lazy}></div>'
+        cells += f'<div class="pg-cell pg-{i}" data-i="{i}" role="button" tabindex="0" aria-label="사진 {i + 1} 크게 보기"><img src="{E(u)}" alt="{E(name)} 사진 {i + 1}" width="960" height="640"{lazy}></div>'
     more = f'<span class="pg-count">사진 {len(meta.get("r2_imgs") or [])}장</span>' if len(meta.get('r2_imgs') or []) > 1 else ''
     return f'<div class="pc-gallery g{n}">{cells}{more}</div>'
 
@@ -2384,7 +2384,7 @@ def gallery_html(meta, name, fallback):
         return f'<div class="visual"><img src="{E(imgs[0] if imgs else fallback)}" alt="{E(name)}" width="800" height="600"></div>'
     # 히어로 갤러리: 첫 장 즉시(LCP), 나머지는 lazy 대신 그냥 로드(Swiper 오프스크린+native lazy 충돌 회피)
     slides = ''.join(
-        f'<div class="swiper-slide"><img src="{E(u)}" alt="{E(name)}" width="800" height="600"'
+        f'<div class="swiper-slide" data-i="{i}"><img src="{E(u)}" alt="{E(name)}" width="800" height="600"'
         + (' fetchpriority="high"' if i == 0 else ' decoding="async"') + '></div>'
         for i, u in enumerate(imgs))
     return (f'<div class="visual"><div class="swiper hotel-gallery">'
@@ -2827,16 +2827,19 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         if _rare_hit:
             _txt = ' · '.join(f'<b>{E(k)} {n}건</b>' for k, n in _rare_hit)
             _call = '예약 전 꼭 확인하세요' if sum(n for _, n in _rare_hit) >= 3 else '리뷰를 확인해 보세요'   # 3건 미만은 경고 톤을 낮춤
-            _rows.append(('danger', f'{per} 심각 리뷰 {_txt}{DSEP}{_call}', '#risk-detail'))
+            _first_sc = next(_sc for _sc, _n in rare_crit.items() if _n)     # 첫 희소 소분류(벌레 등) → 그 카테고리 아코디언을 열고 그 행으로
+            _rows.append(('danger', f'{per} 심각 리뷰 {_txt}{DSEP}{_call}', f'#risk-{CAT_INDEX[SUB_CAT[_first_sc]]}', _first_sc))   # 안전(객실 보안·동네 분위기)은 CATS 밖이라 CAT_INDEX
         elif v_tone in ('warning', 'danger') and h['cats'][_worst6]['count_1y']:
             _rows.append(('warning', f'불만이 가장 많은 항목은 <b>{E(cat_ko(_worst6))}</b>{NB}({h["cats"][_worst6]["count_1y"]}건)',
                           f'#risk-{CATS.index(_worst6)}'))
         else:
             _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
-        def _ev(tone, txt, href):
+        def _ev(tone, txt, href, sub=None):
             inner = f'<span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span>'
             if href == '__dis__':
                 return f'<button type="button" class="ev-row" data-dis="1">{inner}<span class="ev-arrow"></span></button>'
+            if href and href.startswith('#risk-'):   # 아코디언을 열고 스크롤(JS .ev-row[data-target]) — 단순 앵커는 안 열리고 헤더에 가려짐
+                return f'<a class="ev-row" href="{href}" data-target="{href[1:]}"{(" data-sub=" + chr(34) + E(sub) + chr(34)) if sub else ""}>{inner}<span class="ev-arrow"></span></a>'
             if href:
                 return f'<a class="ev-row" href="{href}">{inner}<span class="ev-arrow"></span></a>'
             return f'<div class="ev-row">{inner}</div>'
@@ -3006,7 +3009,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     rdot = 'danger' if _ctone == 'alert' else 'safe'
                     chip = f'<div class="rare-chip is-{_ctone}">{E(_clabel)}</div>'
                     rare_btn = cnt_html if cnt > 0 else ''      # 우측 "N건" 전체보기 링크 현행 유지
-                    rows.append(f'''<li class="stat-row is-rare">
+                    rows.append(f'''<li class="stat-row is-rare" data-sub="{E(s)}">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{rdot}"></span>{E(SUB_PHRASE.get(s, s))}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
                     {chip}
                     {rare_btn}
@@ -3016,7 +3019,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 n1y = sub.get('count_1y', 0)
                 cap_1y = (f'{per} 리뷰의 {round(n1y / h["analyzed"] * 100, 1)}%'
                           if n1y > 0 and h['analyzed'] else f'{per} 없음')
-                rows.append(f'''<li class="stat-row is-{sub['band']}">
+                rows.append(f'''<li class="stat-row is-{sub['band']}" data-sub="{E(s)}">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{sub['band']}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
                     <div class="stat-track" title="{E(cat_verdict(sub['score'])[1])}"><div class="stat-fill" style="width:{sc}%"><i class="bubble" aria-hidden="true"></i></div></div>
                     {cnt_html}
@@ -3101,7 +3104,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 tones.append(_ctone)
                 cnt_html = (f'<button type="button" class="stat-count has-reviews" data-cat="{E(c)}" data-sub="{E(s)}">{cnt}건</button>'
                             if cnt > 0 else '')
-                rows.append(f'''<li class="stat-row is-rare">
+                rows.append(f'''<li class="stat-row is-rare" data-sub="{E(s)}">
                     <div class="stat-info"><div class="factor"><span class="sub-dot is-{'danger' if _ctone == 'alert' else 'safe'}"></span>{E(s)}</div><div class="keywords">{E(SUB_KEYWORDS.get(s, '').replace(' · ', ', '))}</div></div>
                     <div class="rare-chip is-{_ctone}">{E(_clabel)}</div>
                     {cnt_html}
@@ -3345,6 +3348,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 og_image=og_img, extra_head=_extra_head) + f'''
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
     <script src="../js/report.js?v={BUILD}" defer></script>
+    <script>window.CF_IMGS={json.dumps(meta.get('r2_imgs') or [], ensure_ascii=False)};</script>
+    <script src="../js/lightbox.js?v={BUILD}" defer></script>
     <main id="container">
         <section id="detail">
             {site_header(1, back='../search')}
@@ -3873,6 +3878,20 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             }}
             $('.radar-cats').on('click', '.radar-cat', function(){{
                 openAndScroll($(this).data('target'));
+            }});
+            // 실망 확률 근거 줄('심각 리뷰 벌레 3건' 등) → 해당 카테고리 아코디언을 열고 그 소분류 행으로 스크롤·잠시 강조
+            $('#detail').on('click', '.ev-row[data-target]', function(e){{
+                e.preventDefault();
+                var t = String($(this).data('target') || ''), sub = String($(this).data('sub') || '');
+                var $item = $('#' + t); if (!$item.length) return;
+                $item.addClass('is-open'); initCatTrend($item);
+                var $row = sub ? $item.find('.stat-row').filter(function(){{ return $(this).attr('data-sub') === sub; }}).first() : $();
+                var $to = $row.length ? $row : $item;
+                setTimeout(function(){{   // 본문(display:none → block)이 그려진 뒤에 위치를 재야 행 좌표가 맞는다
+                    // html{{scroll-behavior:smooth}}와 jQuery animate(scrollTop)가 충돌해 제자리에 머무는 일이 있어 브라우저 기본 스크롤 사용
+                    window.scrollTo({{top: Math.max(0, $to.offset().top - ($row.length ? 72 : 8)), behavior: 'smooth'}});
+                    if ($row.length) {{ $row.addClass('is-flash'); setTimeout(function(){{ $row.removeClass('is-flash'); }}, 2200); }}
+                }}, 60);
             }});
             // 점프 칩(진입점·위치 섹션 공용): risk-* → 아코디언 오픈, faq-* → 해당 카드로 스크롤, hotel-faq → 섹션 앵커
             $('#detail').on('click', '.fj-btn', function(){{

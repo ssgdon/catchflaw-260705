@@ -72,6 +72,7 @@
     #detail .pc-gallery .pg-cell{position:relative;min-height:0;overflow:hidden;background:var(--surface);}
     #detail .pc-gallery img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s;}
     #detail .pc-gallery .pg-cell:hover img{transform:scale(1.03);}
+    #detail .pc-gallery .pg-cell,#detail .pc-gallery .pg-count{cursor:zoom-in;}
     #detail .pc-gallery.g1{grid-template-columns:1fr;}
     #detail .pc-gallery.g2{grid-template-columns:2fr 1fr;}
     #detail .pc-gallery.g3{grid-template-columns:2fr 1fr;grid-template-rows:1fr 1fr;}
