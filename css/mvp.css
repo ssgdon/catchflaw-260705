@@ -55,7 +55,7 @@
 .map-wrap .map-legend .lg.warning:before{background:var(--warning);}
 .map-wrap .map-legend .lg.danger:before{background:var(--danger);}
 .map-wrap .map-legend .lg.none:before{background:var(--ink-3);}
-#main .home-map{padding:48px 20px 8px;overflow:hidden;}
+#main .home-map{padding:var(--browse-gap) var(--page-x) var(--sp-2);overflow:hidden;}
 .map-pop{min-width:170px;font-family:inherit;}
 .map-pop b{display:block;margin:0 0 4px;font-size:var(--fs-caption);line-height:1.35;}
 .map-pop .pop-meta{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-2);}
@@ -652,12 +652,12 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #detail ~ #float.is-active{opacity:1;visibility:visible;}
 
 /* ---------- 홈: 지역·테마 컬렉션 칩 그리드 ---------- */
-#main .sec-collections{padding:var(--section-y) var(--page-x);margin-top:var(--sp-8);border-top:1px solid var(--line);}   /* 홈 마지막 블록(FEEDBACK-2610 §3) */
+#main .sec-collections{padding:var(--browse-gap) var(--page-x) var(--sp-12);}   /* 홈 마지막 블록(FEEDBACK-2610 §3) — 탐색 리듬: 선 없이 24 */
 #main .home-collections .head .title{line-height:1.35;font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
 #main .home-collections .head .desc{margin:6px 0 0;line-height:1.4;font-size:var(--fs-caption);color:var(--ink-2);}
 /* 3줄(동네별·동행별·테마별): 라벨 + 칩 가로 스크롤 */
 #main .hub-home-row{display:flex;align-items:center;gap:var(--sp-3);margin-top:var(--sp-4);}
-#main .home-collections .head + .hub-home-row{margin-top:var(--head-gap);}
+#main .home-collections .head + .hub-home-row{margin-top:var(--browse-head);}
 #main .hub-home-row .hh-label{flex:none;width:52px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);white-space:nowrap;}
 #main .hub-home-chips{display:flex;flex-wrap:nowrap;gap:var(--sp-2);min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #main .hub-home-chips::-webkit-scrollbar{display:none;}
@@ -699,7 +699,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #hub .hub-dev-none{font-size:var(--fs-caption);color:var(--ink-2);}
 
 /* 섹션 공통 */
-#hub .hub-sect{margin-top:var(--sp-10);}
+#hub .hub-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬: 아래 20 + 1px 선 + 위 28 */
 #hub .hub-h2{line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
 #hub .hub-sub{margin:6px 0 var(--sp-4);line-height:1.4;font-size:var(--fs-caption);color:var(--ink-2);}
 
@@ -765,7 +765,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #about{padding:var(--sp-6) var(--page-x) var(--sp-8);}
 #about .about-h1{line-height:var(--lh-title);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);color:var(--ink);letter-spacing:var(--ls-title);}
 #about .about-lead{margin-top:8px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
-#about .about-sect{margin-top:var(--sp-8);}
+#about .about-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬 */
 #about .about-sect .head .title{line-height:var(--lh-title);letter-spacing:var(--ls-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);color:var(--ink);}
 #about .about-body{margin-top:10px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 #about .about-body b{color:var(--ink);font-weight:var(--fw-bold);}
@@ -1084,7 +1084,7 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #cmp .cmp-switch i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--surface-card);transition:left .2s;}
 #cmp .cmp-switch.is-on i{background:var(--primary);}
 #cmp .cmp-switch.is-on i::after{left:18px;}
-#cmp .cmp-grp{padding-top:var(--sp-6);}
+#cmp .cmp-grp{padding-top:var(--section-pt);}
 #cmp .cmp-gt{padding:0 var(--page-x) var(--sp-2);font-size:var(--fs-h2);line-height:var(--lh-title);letter-spacing:var(--ls-title);font-weight:var(--fw-display);}
 #cmp .cmp-gt span{margin-left:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #cmp .cmp-tr{padding:var(--sp-3) var(--page-x);border-top:1px solid var(--line);}
@@ -1222,8 +1222,8 @@ html.has-cmp #search .map-toggle{bottom:76px;}
 #main .search-box .hero-chip{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-3);border-radius:var(--radius-pill);border:1px solid rgb(255 255 255 / 35%);background:rgb(255 255 255 / 14%);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-semi);white-space:nowrap;}
 /* 블록 2 비교 카드: 가로 스냅 스크롤, 카드는 선 하나(상자 안 상자 금지) · 행은 선 구분 */
 #main .sec-vs{background:var(--surface-2);}   /* 회색 섹션 위에 흰 카드 — 카드 경계가 또렷하게 */
-#main .home-vs{padding:var(--section-y) var(--page-x) var(--sp-6);}
-#main .home-vs .vs-list{display:flex;align-items:flex-start;gap:var(--sp-3);margin-top:var(--head-gap);padding-bottom:var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
+#main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-6);}
+#main .home-vs .vs-list{display:flex;align-items:flex-start;gap:var(--sp-3);margin-top:var(--browse-head);padding-bottom:var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
 #main .home-vs .vs-list::-webkit-scrollbar{display:none;}
 #main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);color:var(--ink);}
 #main .vs-card .vs-topic{display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);margin-bottom:var(--sp-3);border-radius:var(--radius-chip);background:var(--primary-soft);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);}

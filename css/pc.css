@@ -21,7 +21,7 @@
 
 /* ══════════════════════ PC (≥1100px) ══════════════════════ */
 @media (min-width:1100px){
-    :root{--width:560px;--pc-max:1200px;--pc-x:32px;--fs-num-xl:72px;--fs-hero:48px;}   /* PC 전용 2단계: 히어로 숫자 72·홈 히어로 48 (v3 §2-1) */
+    :root{--width:560px;--pc-max:1200px;--pc-x:32px;--fs-num-xl:72px;--fs-hero:48px;--section-pt:48px;--section-pb:48px;--head-gap:24px;}   /* PC 전용: 히어로 숫자 72·홈 히어로 48(v3 §2-1), 문서 리듬 48/48·제목→내용 24(§4-2) */
     body,#wrapper{background:var(--surface-card);}
     #wrapper{width:100%;}
 
@@ -113,7 +113,7 @@
     .pc-side .ps-note a{color:var(--ink-2);text-decoration:underline;}
 
     /* 본문(왼쪽 칼럼): 섹션 구분은 얇은 선 + 넉넉한 위 여백 */
-    #detail .content > .sect{padding:var(--sp-10) 0;}
+    #detail .content > .sect{padding:var(--section-pt) 0 var(--section-pb);}
     #detail .content > .sect::before{left:0 !important;right:0 !important;}   /* ds.css 구분선: PC 본문 칼럼은 좌우 여백이 없으므로 끝까지 */
     #detail .content > .sect.glance{padding:var(--sp-6) 0;}
     #detail .det-tabs{top:64px;padding:0;}

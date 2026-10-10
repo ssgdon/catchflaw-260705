@@ -19,11 +19,11 @@ p{word-break:keep-all;overflow-wrap:break-word;}   /* common.css p{break-all}이
 h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 
 /* ════════ ② 섹션 틀 — 상세 ════════ */
-#detail .sect{padding:var(--section-y) var(--page-x);}
+#detail .sect{padding:var(--section-pt) var(--page-x) var(--section-pb);}   /* 문서 리듬(v3 §4-2): 위 28 / 아래 20 + 1px 선 */
 #detail .sect + .sect{border-top:0;}
 #detail .content > .sect + .sect::before,
 #detail .content > .det-tabs + .sect::before{content:"";position:absolute;top:0;left:var(--page-x);right:var(--page-x);height:1px;background:var(--line);}
-#detail .content > .det-tabs + .sect::before,#detail .content > .sect.glance::before,#detail .content > .sect.glance + .sect.who::before{display:none;}
+#detail .content > .det-tabs + .sect::before,#detail .content > .sect.glance::before{display:none;}
 #detail .sect .head{margin:0 0 var(--head-gap);}
 #detail .sect .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .sect .head .desc{margin:var(--sp-1) 0 0;line-height:var(--lh-ui);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}   /* 섹션 설명 = 14 메타, 최대 2줄(v3 §2-5) */
@@ -161,7 +161,8 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* ════════ 홈 ════════ */
 #main .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
 #main .head .desc{margin:6px 0 0;line-height:1.55;font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);}
-#main .hotel-list{padding:var(--section-y) var(--page-x) var(--sp-2);}
+#main .hotel-list{padding:var(--browse-gap) var(--page-x) var(--sp-2);}   /* 탐색 리듬(v3 §4-2): 섹션 사이 24, 선 없음 */
+#main .hotel-list .head,#main .home-map .head{margin-bottom:var(--browse-head);}   /* 제목 → 카드 12 */
 #main .search-box{padding:var(--sp-10) var(--page-x) var(--sp-8);}
 /* 히어로 배경 (FEEDBACK-2610 §2.1): 사용자 지정 풀장 이미지(세로). 밝은 파스텔이라 흰 글자 대비용 어두운 그라데이션 필수 — 검색창·칩이 있는 아래쪽을 더 어둡게. layout.css의 search_bg.jpg를 덮어씀 */
 #main .search-box{background:linear-gradient(180deg, rgb(10 14 28 / 42%), rgb(10 14 28 / 66%)), url(../img/home_bg.jpg) center / cover no-repeat;}
@@ -253,6 +254,8 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 /* 페이지 제목(§4-1): 페이지마다 h1 1개. 상단 바 아래 20 → 32 제목 → 24 → 내용, 좌 24 */
 .page-title{margin:var(--sp-5) var(--page-x) var(--sp-6);line-height:var(--lh-title);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);text-wrap:balance;}
 .head > .page-title{margin:0;}
+/* 문서 리듬: 전폭 버튼으로 끝나는 섹션은 버튼 → 선 32(§4-2) */
+#detail .content > .sect > .btn-gray:last-child{margin-bottom:var(--sp-3);}
 /* 페이지형 빈 상태(§6-10): 32 제목 → 16 본문 → 24 → 버튼 */
 .page-empty{padding:0 0 var(--sp-12);}
 .page-empty .pe-txt{margin:0 var(--page-x);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
