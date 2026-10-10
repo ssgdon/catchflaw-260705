@@ -488,3 +488,26 @@ textarea.ov-input{height:96px;resize:none;}
 .rv-full-t{margin:var(--sp-3) 0 var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
 .rv-full-t:first-child{margin-top:0;}
 .rv-full-x{margin:0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);overflow-wrap:anywhere;}
+/* 예외 — 전체 화면 사진 보기(.cf-lightbox, data-ov=photo): 검정 92% · 모서리 없음 · X 오른쪽 위 흰 글리프(터치 44) · 카운터 = 사진 위 알약 */
+.ov[data-ov=photo]{z-index:var(--z-full);}
+.ov[data-ov=photo] > .ov-dim{background:var(--ov-dim-photo);}
+.ov[data-ov=photo] .ov-close{position:absolute;top:calc(var(--sp-3) + env(safe-area-inset-top));right:var(--sp-3);color:var(--ink-inverse);}
+.ov[data-ov=photo] .ov-close::before,.ov[data-ov=photo] .ov-close::after{width:20px;}
+.lb-stage{position:absolute;inset:var(--sp-12) var(--sp-4);display:flex;align-items:center;justify-content:center;pointer-events:none;}
+.lb-img{display:block;max-width:100%;max-height:100%;object-fit:contain;pointer-events:auto;}
+.lb-prev,.lb-next{position:absolute;top:50%;width:var(--h-icon);height:var(--h-icon);margin-top:calc(var(--h-icon) / -2);padding:0;border:0;background:none;color:var(--ink-inverse);cursor:pointer;}
+.lb-prev{left:var(--sp-2);}
+.lb-next{right:var(--sp-2);}
+.lb-prev[hidden],.lb-next[hidden]{display:none;}
+.lb-prev::before,.lb-next::before{content:"";position:absolute;left:50%;top:50%;width:12px;height:12px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;}
+.lb-prev::before{transform:translate(-30%,-50%) rotate(45deg);}
+.lb-next::before{transform:translate(-70%,-50%) rotate(-135deg);}
+.lb-count{position:absolute;left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));display:inline-flex;align-items:center;height:var(--h-badge);padding:0 10px;border-radius:var(--radius-chip);background:var(--scrim-photo);transform:translateX(-50%);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-semi);color:var(--ink-inverse);font-variant-numeric:tabular-nums;}
+/* ⑭ 정렬(모바일 C 다이얼로그 '정렬' / PC 앵커 팝오버 280): 행 56 + 1px, 라디오 24 오른쪽, 선택 행 600. 옵션 12개·2단계 정리는 페이지 단계(P2) */
+.lh-sort-box button{position:relative;display:block;width:100%;min-height:56px;padding:var(--sp-3) 40px var(--sp-3) 0;border:0;border-top:1px solid var(--line);border-radius:0;background:none;text-align:left;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink);white-space:normal;cursor:pointer;}
+.lh-sort-box button:first-child,.lh-sort-sep + button{border-top:0;}
+.lh-sort-box button::after{content:"";position:absolute;right:0;top:50%;width:24px;height:24px;margin-top:-12px;border:1px solid var(--ink-4);border-radius:50%;box-sizing:border-box;}
+.lh-sort-box button.on{font-weight:var(--fw-semi);}
+.lh-sort-box button.on::after{border:7px solid var(--ink);}
+.lh-sort-box .ls-sub{display:block;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink-3);}
+.lh-sort-sep{margin-top:var(--sp-2);padding:var(--sp-4) 0 var(--sp-1);border-top:1px solid var(--line);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}

@@ -1793,17 +1793,28 @@ def build_search(city_avg_pct):
             var $sb = $('#lh-sort .lh-sort-box button[data-sort="'+sortBy+'"]').addClass('on');
             if ($sb.length) $('#lh-sort-btn').text($sb.data('label') || $sb.text());
         }}
-        $('#lh-sort-btn').on('click', function(e){{ e.stopPropagation(); $('#lh-sort').toggleClass('open'); }});
-        $('#lh-sort .lh-sort-box button').on('click', function(){{
+        // 정렬(v3 §5-8 ⑭): 모바일 = 가운데 다이얼로그 '정렬'(CF.sheet — 뒤로가기·ESC·딤), PC = 버튼 앵커 팝오버(같은 옵션 목록을 옮겨 씀)
+        var sortBox = document.querySelector('#lh-sort .lh-sort-box'), sortDlg = null;
+        function sortHome(){{ document.getElementById('lh-sort').appendChild(sortBox); }}
+        $('#lh-sort-btn').attr({{'aria-haspopup': 'dialog'}}).on('click', function(e){{
+            e.stopPropagation();
+            if (CF.sheet.pc()) {{ sortHome(); $('#lh-sort').toggleClass('open'); return; }}
+            if (!sortDlg) sortDlg = CF.sheet.make({{id: 'ov-sort', type: 'dialog', w: 'sm', head: 'bar', title: '정렬'}});
+            sortDlg.querySelector('.ov-body').appendChild(sortBox);
+            CF.sheet.open(sortDlg, {{opener: this, focus: '.lh-sort-box button.on', onClose: function(){{ setTimeout(sortHome, 250); }}}});
+        }});
+        $(sortBox).on('click', 'button', function(){{
             var v = String($(this).data('sort'));
             if (v.indexOf('cat:') === 0) {{ sortCat = v.slice(4); sortBy = 'p'; }}
             else {{ sortCat = ''; sortBy = v; }}
-            $('#lh-sort .lh-sort-box button').removeClass('on'); $(this).addClass('on');
+            $(sortBox).find('button').removeClass('on').attr('aria-pressed', 'false'); $(this).addClass('on').attr('aria-pressed', 'true');
             $('#lh-sort-btn').text($(this).data('label') || $(this).text());
             $('#lh-sort').removeClass('open');
+            if (sortDlg && CF.sheet.isOpen(sortDlg)) CF.sheet.close(sortDlg);
             renderVisible();
         }});
         $(document).on('click', function(){{ $('#lh-sort').removeClass('open'); }});
+        $(document).on('keydown', function(e){{ if (e.key === 'Escape' && $('#lh-sort').hasClass('open')) {{ $('#lh-sort').removeClass('open'); $('#lh-sort-btn').trigger('focus'); }} }});
 
         // ───── 조건 더 보기 패널 (FEEDBACK-2610 §14): 모달 대신 아래로 펼침, 칩을 누르면 바로 적용, URL ?cat=&no= 동기화 ─────
         var $fp = $('#f-panel'), $fm = $('#f-more');
@@ -2693,10 +2704,10 @@ def social_section(soc, name):
 
 
 # 블로그 후기 시트(v3 §5-8 ⑧): A 페이지 시트 · H1 고정 문구(블로그 제목은 iframe이 보여 줌) · F3 회색 '네이버에서 보기'
-BLOG_SHEET_HTML = '''<div class="ov" data-ov="sheet" id="blog-sheet" role="dialog" aria-modal="true" aria-labelledby="blog-sheet-t" hidden>
+BLOG_SHEET_HTML = '''<div class="ov" data-ov="sheet" id="ov-blog" role="dialog" aria-modal="true" aria-labelledby="ov-blog-t" hidden>
             <div class="ov-dim"></div>
             <section class="ov-panel ov-w-lg">
-                <header class="ov-head ov-head--bar"><button type="button" class="ov-back" aria-label="이전" hidden></button><h2 class="ov-title" id="blog-sheet-t">네이버 블로그 후기</h2><button type="button" class="ov-close" aria-label="닫기"></button></header>
+                <header class="ov-head ov-head--bar"><button type="button" class="ov-back" aria-label="이전" hidden></button><h2 class="ov-title" id="ov-blog-t">네이버 블로그 후기</h2><button type="button" class="ov-close" aria-label="닫기"></button></header>
                 <div class="ov-body bs-body"><iframe id="bs-frame" title="네이버 블로그 후기" src="about:blank" referrerpolicy="no-referrer-when-downgrade"></iframe></div>
                 <footer class="ov-foot ov-foot--f3"><a class="btn-gray" id="bs-link" href="#" target="_blank" rel="noopener">네이버에서 보기</a></footer>
             </section>
@@ -3332,7 +3343,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         {social_section(social, name)}
         {stars_block}
         {korean_card(kr_1y, h, kr_rank_pct, kr_dist, per)}
-        <div class="ov rs is-cat" data-ov="sheet" id="review-sheet" role="dialog" aria-modal="true" aria-labelledby="rs-t" hidden>
+        <div class="ov rs is-cat" data-ov="sheet" id="ov-review" role="dialog" aria-modal="true" aria-labelledby="rs-t" hidden>
             <div class="ov-dim"></div>
             <section class="ov-panel ov-w-xl">
                 <header class="ov-head ov-head--bar rs-bar">
@@ -3541,7 +3552,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             //   모드 3개: is-cat(항목·소분류 칩) · is-dis(실망 리뷰 모아보기, PC 780) · is-faq(실전정보 근거, H3 질문 2줄, PC 780)
             //   열기·닫기·뒤로가기·ESC·포커스는 CF.sheet(js/backnav.js). 정렬 데이터 = 심각도 > 최신순
             if (!window.QDATA) return;
-            var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false, mode = 'cat';
+            var $sheet = $("#ov-review"), curCat = null, curSub = null, krOnly = false, mode = 'cat';
             var qfull = false, qloading = false;   // R2 전체 인용문 로드 상태 (REVIEW-LAZYLOAD §C)
 
             function toast(msg){{ CF.toast(msg); }}   // 토스트 1벌(js/backnav.js)
@@ -3803,7 +3814,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         // ───── 소셜 후기 (SOCIAL): 네이버 블로그 시트 + 유튜브 lite-embed ─────
         $(function(){{
             // 블로그: 카드 탭 → 페이지 시트 iframe (원본 그대로, X·딤·뒤로가기로 즉시 복귀 — CF.sheet)
-            var bs = document.getElementById('blog-sheet');
+            var bs = document.getElementById("ov-blog");
             $(document).on('click', '.nb-card', function(){{
                 if (!bs) return;
                 var u = $(this).data('url'), t = $(this).data('title');

@@ -1,26 +1,27 @@
 /* 캐치플로 사진 확대 보기 (상세 페이지) — FEEDBACK-2610 후속
    window.CF_IMGS(전체 사진 URL 배열)를 PC 1+4 그리드(.pc-gallery .pg-cell / .pg-count)·모바일 히어로 Swiper(.hotel-gallery .swiper-slide)에서
-   눌렀을 때 전체 화면으로 열고 이전/다음(버튼·키보드·스와이프)·닫기(✕·배경·Esc·뒤로가기). 의존: backnav.js(CFNav, 선택) */
+   눌렀을 때 전체 화면으로 열고 이전/다음(버튼·키보드·스와이프)·닫기(X·배경·Esc·뒤로가기). 의존: backnav.js(CF.sheet) */
 (function () {
   'use strict';
   var imgs = window.CF_IMGS || [];
   if (!imgs.length) return;
   var box = null, cur = 0;
 
+  // 예외 그릇: 전체 화면 사진 보기(v3 §5-1) — 검정 92% · 모서리 없음 · X 오른쪽 위(흰 글리프, 터치 44). 동작은 CF.sheet(뒤로가기·ESC·←/→·포커스)
   function build() {
     box = document.createElement('div');
-    box.className = 'cf-lightbox';
+    box.className = 'ov cf-lightbox';
+    box.setAttribute('data-ov', 'photo');
     box.setAttribute('role', 'dialog'); box.setAttribute('aria-modal', 'true'); box.setAttribute('aria-label', '호텔 사진');
+    box.hidden = true;
     box.innerHTML =
-      '<div class="lb-dim"></div>' +
-      '<button type="button" class="lb-close" aria-label="닫기">✕</button>' +
-      '<button type="button" class="lb-prev" aria-label="이전 사진">‹</button>' +
-      '<button type="button" class="lb-next" aria-label="다음 사진">›</button>' +
+      '<div class="ov-dim"></div>' +
       '<div class="lb-stage"><img class="lb-img" alt=""></div>' +
-      '<div class="lb-count"></div>';
+      '<button type="button" class="lb-prev" aria-label="이전 사진"></button>' +
+      '<button type="button" class="lb-next" aria-label="다음 사진"></button>' +
+      '<div class="lb-count" aria-live="polite"></div>' +
+      '<button type="button" class="ov-close" aria-label="닫기"></button>';
     document.body.appendChild(box);
-    box.querySelector('.lb-dim').addEventListener('click', close);
-    box.querySelector('.lb-close').addEventListener('click', close);
     box.querySelector('.lb-prev').addEventListener('click', function () { go(-1); });
     box.querySelector('.lb-next').addEventListener('click', function () { go(1); });
     // 스와이프
@@ -44,40 +45,21 @@
   }
   function go(d) { show(cur + d); }
 
-  function onKey(e) {
-    if (e.key === 'Escape') { e.preventDefault(); close(); }
-    else if (e.key === 'ArrowRight') { e.preventDefault(); go(1); }
-    else if (e.key === 'ArrowLeft') { e.preventDefault(); go(-1); }
-  }
-  var viaNav = false;
-  function closeVisual() {
-    if (!box) return;
-    box.classList.remove('is-open');
-    document.body.style.overflow = '';
-    document.removeEventListener('keydown', onKey);
-  }
-  function close() {
-    if (viaNav && window.CFNav) { viaNav = false; CFNav.pop(); }   // CFNav.pop → closeVisual
-    else closeVisual();
-  }
-  function open(i) {
+  function close() { if (box) CF.sheet.close(box); }
+  function open(i, opener) {
     if (!box) build();
     show(i || 0);
-    box.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-    document.addEventListener('keydown', onKey);
-    box.querySelector('.lb-close').focus();
-    if (window.CFNav) { viaNav = true; CFNav.push(function () { viaNav = false; closeVisual(); }); }
+    CF.sheet.open(box, { focus: '.ov-close', opener: opener, keys: go });   // ←/→ = 이전/다음 사진
     if (typeof gtag === 'function') gtag('event', 'gallery_open', { index: i || 0, total: imgs.length });
   }
 
   // 진입점: PC 그리드 셀·장수 배지, 모바일 히어로 슬라이드(loop 복제 슬라이드도 data-i를 그대로 가짐)
   document.addEventListener('click', function (e) {
     var cell = e.target.closest('.pc-gallery .pg-cell');
-    if (cell) { e.preventDefault(); open(parseInt(cell.getAttribute('data-i') || '0', 10)); return; }
+    if (cell) { e.preventDefault(); open(parseInt(cell.getAttribute('data-i') || '0', 10), cell); return; }
     if (e.target.closest('.pc-gallery .pg-count')) { e.preventDefault(); open(0); return; }
     var slide = e.target.closest('.hotel-gallery .swiper-slide');
-    if (slide) { e.preventDefault(); open(parseInt(slide.getAttribute('data-i') || '0', 10)); return; }
+    if (slide) { e.preventDefault(); open(parseInt(slide.getAttribute('data-i') || '0', 10), slide); return; }
     var single = e.target.closest('#detail .visual > img');
     if (single) { e.preventDefault(); open(0); }
   });
