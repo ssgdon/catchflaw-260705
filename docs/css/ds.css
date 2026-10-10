@@ -53,11 +53,19 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}   /* '걸리는 점·괜찮은 점' 18/700(2026-10-10: 14 회색이라 안 보였음) */
 #detail .glance .gl-rare{margin-top:var(--sp-6);}
 #detail .glance .gl-rs{margin:0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
-#detail .glance .gl-tbl{margin-top:var(--sp-2);}
-#detail .glance .gl-tbl th{width:auto;}
-#detail .glance .gl-tbl td{text-align:right;padding-right:0;}
-#detail .glance .gl-tbl tr:last-child th,#detail .glance .gl-tbl tr:last-child td{border-bottom:0;}
-#detail .glance .gl-rv{display:inline-flex;flex-direction:column;align-items:flex-end;min-height:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-decoration:underline;text-underline-offset:3px;cursor:pointer;}   /* 건수 = 그 소분류 리뷰 시트 */
+#detail .glance .gl-rg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin:var(--sp-3) 0 0;padding:0;list-style:none;border-top:1px solid var(--line);}   /* 2×2 칸, 선으로만 나눔(상자 없음) */
+#detail .glance .gl-rg li{display:flex;border-bottom:1px solid var(--line);}
+#detail .glance .gl-rg li:nth-child(odd){border-right:1px solid var(--line);}
+#detail .glance .gl-rg li > b,#detail .glance .gl-rg li > span,#detail .glance .gl-rv > b,#detail .glance .gl-rv > span{display:block;}
+#detail .glance .gl-rg li,#detail .glance .gl-rv{flex-direction:column;gap:2px;padding:var(--sp-4);text-align:left;}
+#detail .glance .gl-rv{flex:1;min-width:0;margin:calc(var(--sp-4) * -1);border:0;background:none;font:inherit;color:inherit;cursor:pointer;}   /* 칸 전체가 버튼 */
+#detail .glance .gl-rg b{font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
+#detail .glance .gl-rg span{font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);word-break:keep-all;}
+#detail .glance .gl-rg li.is-zero b{color:var(--ink-4);font-weight:var(--fw-semi);}
+#detail .glance .gl-rg li.is-zero span{color:var(--ink-3);font-weight:var(--fw-regular);}
+#detail .glance .gl-rg li.is-warning b{color:var(--warning-text);}
+#detail .glance .gl-rg li.is-danger b{color:var(--danger-text);}
+#detail .glance .gl-rv b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:4px;}
 #detail .glance li{padding:var(--sp-2) 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .glance li b{font-weight:var(--fw-semi);}
 #detail .glance li .seg{display:block;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}

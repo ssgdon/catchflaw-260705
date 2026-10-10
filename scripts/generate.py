@@ -3174,17 +3174,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             else:
                 _lead = '<em>두드러진 불만이 없는</em> 호텔이에요.'
             # 드물지만 치명적인 리뷰(2026-10-10): 벌레·곰팡이·밤길·보안 — 최근 1년 리뷰 건수 + 심각. 비교 화면 표와 같은 숫자·색
-            def _rare_row(_s):
-                _sb = h['cats'][SUB_CAT[_s]]['subs'][_s]
-                _cr = int(_sb.get('crit_1y', 0) or 0)   # 2026-10-10: 심각 판정만 센다(주의 포함 건수·'심각 N' 둘째 줄 삭제 — 사용자 요청)
+            # 드물지만 치명적인 리뷰(2026-10-10): 큰 숫자 위 · 항목 이름 바로 아래 칸 4개(모바일 2×2, PC 4칸) — 상단 요약 숫자 줄과 같은 읽는 순서.
+            #   표(이름 왼쪽 끝 ↔ 숫자 오른쪽 끝)는 둘을 잇기 어려웠음(사용자 지적). 심각 판정만, 1건 이상은 누르면 그 소분류 리뷰 시트
+            def _rare_cell(_s):
+                _cr = int(h['cats'][SUB_CAT[_s]]['subs'][_s].get('crit_1y', 0) or 0)
                 _tone = 'danger' if _cr >= 3 else 'warning' if _cr else 'zero'
-                _v = f'<b>{_cr}건</b>'
-                _v = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" aria-label="{E(SUB_PHRASE[_s])} 심각 리뷰 {_cr}건 보기">{_v}</button>'
-                      if _cr else _v)
-                return f'<tr><th scope="row">{E(SUB_PHRASE[_s])}</th><td class="is-{_tone}">{_v}</td></tr>'
+                _in = f'<b>{_cr}건</b><span>{E(SUB_PHRASE[_s])}</span>'
+                if _cr:
+                    _in = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" '
+                           f'aria-label="{E(SUB_PHRASE[_s])} 심각 리뷰 {_cr}건 보기">{_in}</button>')
+                return f'<li class="is-{_tone}">{_in}</li>'
             _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 동안 심각했던 경험만 셌어요</p>'
-                         '<table class="cv-tbl gl-tbl"><tbody>' + ''.join(_rare_row(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS)
-                         + '</tbody></table></div>')
+                         '<ul class="gl-rg">' + ''.join(_rare_cell(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS) + '</ul></div>')
             _col = lambda tit, items: (f'<div class="gl-col"><div class="gl-h">{tit}</div><ul>'
                                        + ''.join(f'<li><span class="gl-dot is-{d}"></span><span>{t}</span></li>' for d, t in items)
                                        + '</ul></div>')

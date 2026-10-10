@@ -174,6 +174,9 @@
     #cmp > .page-title{margin-left:0;margin-right:0;}
     .cmp-top,.cmp-hd{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));padding-left:0;padding-right:0;}
     .cmp-h-sp{display:block;}
+    #detail .glance .gl-rg{grid-template-columns:repeat(4,minmax(0,1fr));}   /* PC: 치명적 리뷰 4칸 한 줄 */
+    #detail .glance .gl-rg li:nth-child(odd){border-right:0;}
+    #detail .glance .gl-rg li:not(:last-child){border-right:1px solid var(--line);}
     .cmp-img{max-width:240px;}   /* PC 칸이 넓어 사진은 240까지 */
     .cmp-addbar{margin-left:0;margin-right:0;}
     .cmp-viz{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--sp-12);align-items:start;}   /* 왼쪽 방사형 · 오른쪽 건수 표 + 가격 */
