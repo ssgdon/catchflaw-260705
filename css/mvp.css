@@ -46,11 +46,13 @@
 /* ---------- 상세: 리스크 상세 분석 — 축 라벨 (아코디언 본문) ----------
    좌 116px = stat-info 106px + gap 10px · 우 50px = stat-count 40px + gap 10px */
 #detail .analysis .risk-acc-body .stat-axis{display:flex;align-items:center;justify-content:space-between;margin:10px 50px 0 116px;}
-#detail .analysis .risk-acc-body .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1;font-size:var(--fs-micro);font-weight:var(--fw-display);}
+#detail .analysis .risk-acc-body .stat-axis .ax{display:flex;flex-direction:column;align-items:center;gap:1px;line-height:1.1;font-size:var(--fs-micro);font-weight:var(--fw-display);color:var(--ink);}   /* 글자는 잉크, 의미 색은 표식(▼)만(§3-3) */
 #detail .analysis .risk-acc-body .stat-axis .ax:after{content:'▼';font-size:8px;line-height:1;}
-#detail .analysis .risk-acc-body .stat-axis .ax.safe{color:var(--safe);transform:translateX(-50%);}
-#detail .analysis .risk-acc-body .stat-axis .ax.avg{color:var(--ink-4);}
-#detail .analysis .risk-acc-body .stat-axis .ax.danger{color:var(--danger);transform:translateX(50%);}
+#detail .analysis .risk-acc-body .stat-axis .ax.safe{transform:translateX(-50%);}
+#detail .analysis .risk-acc-body .stat-axis .ax.safe:after{color:var(--safe);}
+#detail .analysis .risk-acc-body .stat-axis .ax.avg:after{color:var(--ink-4);}
+#detail .analysis .risk-acc-body .stat-axis .ax.danger{transform:translateX(50%);}
+#detail .analysis .risk-acc-body .stat-axis .ax.danger:after{color:var(--danger);}
 
 /* ---------- 상세: 리스크 상세 분석 — 소분류 게이지 행 (아코디언 본문) ----------
    구조: .risk-acc-body > .stat-list > li.stat-row.is-{band}
@@ -67,7 +69,7 @@
 #detail .analysis .risk-acc-body .stat-fill{position:absolute;top:0;left:0;bottom:0;min-width:8px;border-radius:var(--radius-pill);}
 /* 위치 표시 손잡이: 숫자를 넣지 않으므로 슬라이더 손잡이 크기(16) — 중심이 채움 끝에 오도록 */
 #detail .analysis .risk-acc-body .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(50%,-50%);display:block;width:16px;height:16px;border-radius:50%;background:var(--surface-card);border:3px solid;box-shadow:0 1px 3px rgb(0 0 0 / 16%);font-style:normal;}
-#detail .analysis .risk-acc-body .stat-count{flex:0 0 40px;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
+#detail .analysis .risk-acc-body .stat-count{flex:0 0 40px;text-align:right;font-size:var(--fs-meta);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
 #detail .analysis .risk-acc-body .stat-count.has-reviews{color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
 #detail .analysis .risk-acc-body .stat-count.zero{color:var(--ink-3);opacity:.6;}
 #detail .analysis .risk-acc-body .stat-row.is-danger .stat-fill{background:linear-gradient(90deg,var(--danger-tint) 0%,var(--danger) 100%);}
@@ -80,7 +82,7 @@
 /* ---------- 상세: 아코디언 본문 — 인용 리뷰 / 전체보기 (구 .cat-group 재스코프) ---------- */
 #detail .analysis .risk-acc-body .review{margin:var(--sp-3) -4px 0;overflow:hidden;}
 #detail .analysis .risk-acc-body .review .list li{width:270px;}
-#detail .analysis .risk-acc-body .no-quote{margin:var(--sp-3) 0 var(--sp-2);padding:var(--sp-3);border-radius:12px;background:var(--safe-soft);text-align:center;line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--safe-text);}
+#detail .analysis .risk-acc-body .no-quote{margin:var(--sp-3) 0 var(--sp-2);padding:var(--sp-3);border-radius:12px;background:var(--safe-soft);text-align:center;line-height:1.5;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--safe-text);}
 #detail .analysis .risk-acc-body .more{margin:var(--sp-3) 0 var(--sp-2);}
 
 /* ── 상세: 월별 위험 리뷰 흐름 (라인 트렌드) — 아코디언 카테고리 + 실망확률 전체 통합 공용 ── */
@@ -178,15 +180,15 @@
 /* 헤더: 제목(좌, 카테고리별 위험도와 동일 크기) + 건수(우, 같은 줄) */
 .kr-card .kr-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin-bottom:16px;}
 .kr-card .kr-head .title{flex:0 1 auto;}
-.kr-card .kr-count{flex:0 0 auto;font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums;}
+.kr-card .kr-count{flex:0 0 auto;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;font-variant-numeric:tabular-nums;}
 .kr-card .kr-count b{color:var(--primary);font-weight:var(--fw-bold);}
 /* §2-a 한국인 비중 분포 — 전체 호텔 중 위치 강조 막대 차트(지니 분포 톤) */
 .kr-card .kr-dist{margin:0 0 16px;padding:16px 14px 14px;border-radius:var(--radius-box);background:var(--surface);text-align:center;}
 .kr-card .kd-chart{display:flex;align-items:flex-end;justify-content:center;gap:3px;height:76px;margin:12px 0 14px;}
 .kr-card .kd-bar{position:relative;flex:1 1 0;min-width:0;max-width:13px;border-radius:3px 3px 0 0;background:var(--line-strong);}
 .kr-card .kd-bar.is-hl{background:var(--primary);}
-.kr-card .kd-val{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);padding:2px 7px;border-radius:var(--radius-chip);background:var(--primary);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-bold);line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums;}
-.kr-card .kd-val:after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--primary);}
+.kr-card .kd-val{position:absolute;bottom:calc(100% + 5px);left:50%;transform:translateX(-50%);padding:2px 7px;border-radius:var(--radius-chip);background:var(--primary-cta);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-bold);line-height:1.3;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.kr-card .kd-val:after{content:"";position:absolute;top:100%;left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:var(--primary-cta);}
 .kr-card .kp-cap{line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-regular);color:var(--ink-2);}
 .kr-card .kp-cap b{font-weight:var(--fw-display);color:var(--primary-deep);}
 .kr-card .kp-sub{margin-top:4px;font-size:var(--fs-caption);color:var(--ink-3);line-height:1.45;}
@@ -197,7 +199,7 @@
 .kr-card .kv-tit{min-height:2.6em;margin-bottom:10px;display:flex;align-items:center;justify-content:center;text-align:center;line-height:1.3;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);}
 .kr-card .kv-bars{display:flex;justify-content:center;gap:14px;}
 .kr-card .kv-col{display:flex;flex-direction:column;align-items:center;}
-.kr-card .kv-val{margin-bottom:5px;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-3);font-variant-numeric:tabular-nums;}
+.kr-card .kv-val{margin-bottom:5px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);font-variant-numeric:tabular-nums;}
 .kr-card .kv-val-ko{color:var(--primary-deep);}
 .kr-card .kv-track{width:34px;height:72px;display:flex;align-items:flex-end;}
 .kr-card .kv-fill{width:100%;min-height:4px;border-radius:8px 8px 0 0;background:var(--line-strong);}
@@ -583,7 +585,7 @@
 /* 순위 문장은 잘리지 않게 둘째 줄로: [항목명 · 결론 칩 ········ ▼] / [후쿠오카 호텔 86%보다 나아요] */
 #detail .analysis .risk-acc-head{flex-wrap:wrap;row-gap:var(--sp-1);}
 #detail .analysis .risk-acc-head .risk-arrow{margin-left:auto;}
-#detail .analysis .risk-acc-head .cat-rank{order:5;flex:1 0 100%;padding-left:var(--sp-5);font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);text-align:left;}
+#detail .analysis .risk-acc-head .cat-rank{order:5;flex:1 0 100%;padding-left:var(--sp-5);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);text-align:left;}
 
 /* 상세 상단 '리뷰 적음' 주의 문구 (최근 1년 리뷰 100개 미만) — 2026-10 표본 공정성 */
 #detail .information .lowrev-note{display:flex;flex-direction:column;gap:var(--sp-1);margin-top:var(--sp-4);padding:var(--sp-3) var(--sp-4);border-radius:var(--radius-box);background:var(--warning-soft);color:var(--ink-2);font-size:var(--fs-meta);line-height:var(--lh-body);word-break:keep-all;}

@@ -1,19 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 360">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#EEEAF6"/>
-      <stop offset="1" stop-color="#E0E4EE"/>
-    </linearGradient>
-  </defs>
-  <rect width="480" height="360" fill="url(#bg)"/>
-  <g fill="#C9C2DC">
+  <!-- 중립 회색: 바탕 = --surface #F2F2F2 · 건물 = --line-strong · 창 = --surface · 글자 = --ink-3 #6A6A6A (tokens.css 값) -->
+  <rect width="480" height="360" fill="#F2F2F2"/>
+  <g fill="#DDDDDD">
     <rect x="176" y="128" width="128" height="128" rx="6"/>
     <rect x="150" y="256" width="180" height="10" rx="5"/>
   </g>
-  <g fill="#EEEAF6">
+  <g fill="#F2F2F2">
     <rect x="192" y="144" width="20" height="20" rx="3"/><rect x="230" y="144" width="20" height="20" rx="3"/><rect x="268" y="144" width="20" height="20" rx="3"/>
     <rect x="192" y="178" width="20" height="20" rx="3"/><rect x="230" y="178" width="20" height="20" rx="3"/><rect x="268" y="178" width="20" height="20" rx="3"/>
     <rect x="222" y="216" width="36" height="40" rx="3"/>
   </g>
-  <text x="240" y="296" text-anchor="middle" font-family="sans-serif" font-size="13" font-weight="600" fill="#A8A2BC">이미지 준비 중</text>
+  <text x="240" y="296" text-anchor="middle" font-family="sans-serif" font-size="14" font-weight="400" fill="#6A6A6A">이미지 준비 중</text>
 </svg>

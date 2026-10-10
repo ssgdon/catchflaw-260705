@@ -20,7 +20,7 @@ body{color:var(--ink);}
 /* ---------- 섹션 공통 헤드 ---------- */
 #main .head .title{line-height:30px;font-size:var(--fs-h2);font-weight:800;color:var(--ink);}
 #main .head .desc{margin:8px 0 0;line-height:21px;font-size:var(--fs-body-sm);font-weight:500;color:var(--ink-3);}
-#main{padding:0 0 64px;}
+#main{padding:0;}   /* 예전 떠 있는 버튼 자리(64) 제거 — 마지막 섹션(.sec-collections)이 아래 48을 가진다 */
 
 /* ---------- 호텔 카드 리스트(슬라이더) ---------- */
 #main .hotel-list{padding:48px 20px 8px;}
@@ -51,7 +51,7 @@ body{color:var(--ink);}
 #detail .disappear .head .tit{line-height:26px;font-size:var(--fs-h2);font-weight:700;color:var(--ink-2);}
 #detail .disappear .head .num{line-height:48px;font-size:var(--fs-num);font-weight:800;}
 #detail .disappear .head .txt{margin:10px 0 0;line-height:22px;font-size:var(--fs-body-sm);}
-#detail .disappear .gauge .label span{font-size:var(--fs-caption);}
+#detail .disappear .gauge .label span{font-size:var(--fs-meta);}
 #detail .disappear .result{margin:36px 0 0;padding:22px;border-radius:var(--radius-card);background:var(--surface);}
 #detail .disappear .result .text{line-height:27px;font-size:var(--fs-h3);}
 #detail .disappear .result .tags .tags-item{padding:0 12px;height:32px;border-radius:10px;font-size:var(--fs-meta);background:#fff;color:var(--ink-2);}

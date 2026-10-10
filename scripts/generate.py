@@ -445,7 +445,7 @@ DETAIL_TABS_JS = '''<script>
         if (!a || a.hasAttribute('data-target') || e.defaultPrevented) return;
         var el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
         e.preventDefault(); jump(el);
-        if (a.closest('#det-tabs') && typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
+        if (a.closest('#det-tabs') && typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent.replace(/\u2060/g, '').replace(/\s+/g, ' ').trim()});
     });
     // 가격 기준 시트(하단 바 가격 탭)
     document.addEventListener('click', function(e){
@@ -1151,7 +1151,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         $(document).on('click', '[data-ga]', function(){{
             if (typeof gtag !== 'function') return;
             var pl = this.getAttribute('data-ga');
-            var blk = $(this).closest('[data-ga-block]').find('[data-ga-title]').first().text().trim();
+            // 라벨 정규화: 줄바꿈·연속 공백 → 한 칸, 단어 결합자(U+2060, polish_breaks) 제거
+            var blk = $(this).closest('[data-ga-block]').find('[data-ga-title]').first().text().replace(/\u2060/g, '').replace(/\s+/g, ' ').trim();
             gtag('event', 'home_click', {{placement: pl, block: blk.slice(0, 40), link_url: this.getAttribute('href') || ''}});
         }});
         // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행)
@@ -1606,6 +1607,7 @@ SEARCH_JS = r"""(function(){
 
     // 지도 뷰포트 안의 호텔만 리스트에 (C-3)
     function renderVisible(){
+        $('#map-toggle').prop('hidden', false);
         if (!mapOpen) {
             $lcount.text(lead() + ' ' + baseList.length + '곳');
             $lhead.toggle(baseList.length > 0);
@@ -1663,6 +1665,7 @@ SEARCH_JS = r"""(function(){
     }
     function emptyView(tit, txt, extra, btns){
         $lhead.hide(); $res.html('');
+        if (!mapOpen) $('#map-toggle').prop('hidden', true);   // 결과 0건(미지원 도시·검색 0건·조건 0건)엔 '지도' 알약 숨김 — 지도를 연 상태면 '목록'으로 닫을 수 있게 둔다
         $notice.show().html('<div class="empty-sec"><div class="es-tit">' + tit + '</div>' + (txt ? '<div class="es-txt">' + txt + '</div>' : '') + (extra || '') + (btns ? '<div class="es-btns">' + btns + '</div>' : '') + '</div>');
     }
     function unsupported(q){
@@ -2013,6 +2016,7 @@ SEARCH_JS = r"""(function(){
             $('#rec-more').on('click', function(){ $(this).closest('li').replaceWith(more.join('')); if (window.CFCompare) window.CFCompare.render(); });
         }
         if (window.CFCompare) window.CFCompare.render();
+        $('#map-toggle').prop('hidden', !recShown.length);   // 조건에 맞는 곳 0곳이면 '지도' 알약 숨김
         // 지도: 모바일은 접고(결과 먼저) '지도'로 연다. PC는 오른쪽에 상시
         var mqPc = window.matchMedia('(min-width:1100px)');
         if (mqPc.matches) { mapToggleUi(true); setTimeout(function(){ map.invalidateSize(); drawRecMap(recShown); }, 80); }
@@ -4228,7 +4232,7 @@ def collection_stats(pids, hotels_meta, H, city):
     # 항목별로 보면: 컬렉션 평균 카테고리 점수 vs 도시평균(=50). 편차 상위 2~3개.
     cat_avg = {c: sum(H[p]['cats'][c]['score'] for p in base) / nb for c in CATS} if nb else {c: 50 for c in CATS}
     devs = sorted(((c, cat_avg[c] - 50.0) for c in CATS), key=lambda kv: -abs(kv[1]))
-    top_dev = [(c, d) for c, d in devs if abs(d) >= 3.0][:3]   # 의미 있는 편차만
+    top_dev = [(c, d) for c, d in devs if 50 + d < 45 or 50 + d >= 55][:3]   # 의미 있는 편차만 — ratio_text 경계(45·55)와 같게('평균과 비슷해요' 행 방지)
     worst_cat = max(CATS, key=lambda c: cat_avg[c]) if n else CATS[0]
     return {'n': n, 'reviews': reviews, 'avg_p': avg_p, 'city_p': city_p,
             'cat_avg': cat_avg, 'top_dev': top_dev, 'worst_cat': worst_cat}

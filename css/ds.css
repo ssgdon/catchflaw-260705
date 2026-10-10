@@ -21,9 +21,8 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* ════════ ② 섹션 틀 — 상세 ════════ */
 #detail .sect{padding:var(--section-pt) var(--page-x) var(--section-pb);}   /* 문서 리듬(v3 §4-2): 위 28 / 아래 20 + 1px 선 */
 #detail .sect + .sect{border-top:0;}
-#detail .content > .sect + .sect::before,
-#detail .content > .det-tabs + .sect::before{content:"";position:absolute;top:0;left:var(--page-x);right:var(--page-x);height:1px;background:var(--line);}
-#detail .content > .det-tabs + .sect::before,#detail .content > .sect.glance::before{display:none;}
+#detail .content > .sect ~ .sect::before{content:"";position:absolute;top:0;left:var(--page-x);right:var(--page-x);height:1px;background:var(--line);}
+#detail .content > .det-tabs + .sect::before,#detail .content > .sect.glance::before{display:none;}   /* ~ : 사이에 낀 script·#sec-rev·#ov-review가 있어도 선이 끊기지 않게. 탭 바로 아래·한눈에 보기는 선 없음 */
 #detail .sect .head{margin:0 0 var(--head-gap);}
 #detail .sect .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .sect .head .desc{margin:var(--sp-1) 0 0;line-height:var(--lh-ui);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}   /* 섹션 설명 = 14 메타, 최대 2줄(v3 §2-5) */
@@ -57,7 +56,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .glance .gl-foot{align-items:center;margin-top:var(--sp-3);padding-top:0;border-top:0;font-size:var(--fs-meta);}
 
 /* 누구와 가세요: 보기 전환 칩 36 → 패널 상자 해체. 인용은 왼쪽 2px 선 + 들여쓰기 16(§7-3) */
-#detail .who .who-chips{gap:var(--sp-2);}
+#detail .who .who-chips{gap:var(--sp-2);margin-inline:calc(var(--page-x) * -1);padding-inline:var(--page-x);}   /* 가로 스크롤 칩은 화면 끝까지(.hero-chips와 같게) — 24 여백에서 잘리지 않게 */
 #detail .who .who-panel{margin-top:var(--sp-5);padding:0;border:0;border-radius:0;background:none;}
 #detail .who .who-h{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);}
 #detail .who .who-h em{color:inherit;}   /* 항목명 보라 강조 삭제(§3-2) */
@@ -101,14 +100,15 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .risk-acc-item:last-child{border-bottom:0;}
 #detail .analysis .risk-acc-head{padding:var(--sp-5) 0;border-radius:0 !important;background:transparent;border-bottom:0 !important;}
 #detail .analysis .risk-acc-head .cat-name{font-size:var(--fs-h3);font-weight:var(--fw-display);}
-#detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-caption);}
+#detail .analysis .risk-acc-head .cat-rank{font-size:var(--fs-meta);}
 /* 펼친 소분류 = 하위 단계: 대분류 점(●) 중심에서 내려오는 세로 안내선 + 대분류 이름 위치(20)까지 들여쓰기.
    점 10px 중심 5 = 선 4~6px, 내용 시작 4+2+14 = 20 = .cat-rank 들여쓰기. 열린 머리는 아래 여백을 줄여 하위와 붙임 */
 #detail .analysis .risk-acc-item.is-open > .risk-acc-head{padding-bottom:var(--sp-3);}
 #detail .analysis .risk-acc-body{margin:0 0 var(--sp-6) var(--sp-1);padding:0 0 0 calc(var(--sp-4) - 2px);border-left:2px solid var(--line);}
-#detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:var(--fs-body);font-weight:var(--fw-bold);}
+#detail .analysis .risk-acc-body .stat-row .stat-info .factor{display:flex;align-items:flex-start;gap:6px;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}   /* 점은 flex 항목 — 좁은 칸에서 점만 한 줄에 남지 않게 */
+#detail .analysis .risk-acc-body .stat-row .stat-info .factor .sub-dot{margin:calc(var(--lh-ui) * .5em - 3px) 0 0;}   /* 첫 줄 가운데 */
 #detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:var(--fs-meta);color:var(--ink-3);}
-#detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
+#detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-meta);}
 /* 인용 리뷰 카드: 테두리·면 없음 + 카드 사이 세로 1px 선, 4줄 말줄임 + 밑줄 '더 보기'(넘칠 때만, 펼치면 전문) — v3 §7-3 */
 #detail .analysis .review .list .item{padding:0 var(--sp-3);border:0;border-radius:0;background:none;}
 #detail .analysis .review .list li:first-child .item{padding-left:0;}
@@ -432,6 +432,7 @@ html.ov-lock{overflow:hidden;}
 .chip-view,.chip-go{background:var(--surface);}
 .chip-view.on,.chip-view.is-on{background:var(--ink);color:var(--ink-inverse);}
 .chip-view.disabled{opacity:.4;pointer-events:none;}
+.chip-filter[hidden],.chip-view[hidden],.chip-go[hidden],.chip-sort[hidden]{display:none;}   /* [hidden]이 inline-flex에 지지 않게(최근 본 빈 상태 '편집') */
 .chip-go:active,.chip-view:active{background:var(--line);}
 .chip-sort{border:1px solid var(--line-strong);background:var(--surface-card);}
 .chip-sort::after{content:"";width:8px;height:8px;margin:-4px 0 0 2px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);transition:transform .2s;}
@@ -776,6 +777,8 @@ html.rec-mode #title .search,html.rec-mode .st-filter,html.rec-mode .f-bar{displ
 .map-card .hcard-name{padding-right:var(--sp-5);}
 .map-card .hcard-meta{white-space:normal;}
 .map-card .mc-x{position:absolute;top:var(--sp-1);right:var(--sp-1);}
+.map-toggle[hidden]{display:none;}   /* 결과 0건 */
+html.rec-mode #search .map-legend{display:none;}   /* AI 추천 지도 핀 = 잉크 순위 원(양호·주의·위험 색 아님) */
 .map-toggle .mt-ic-list{display:none;}
 .map-toggle[aria-pressed=true] .mt-ic-map{display:none;}
 .map-toggle[aria-pressed=true] .mt-ic-list{display:block;}
