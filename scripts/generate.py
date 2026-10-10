@@ -988,7 +988,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {ai_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
-                        <input type="text" name="q" id="hero-q" placeholder="{CITY['ko']} 호텔명 또는 구글맵 링크 붙여넣기">
+                        <input type="text" name="q" id="hero-q" placeholder="{CITY['ko']} 호텔 이름으로 검색">
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
@@ -1078,37 +1078,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     $(function(){{
         var $q = $('#hero-q'), $box = $('#ac-box');
         function norm(s){{ return (s||'').toLowerCase().replace(/\\s+/g,''); }}
-        function isUrl(v){{ return /^https?:\\/\\//.test(v) || v.indexOf('maps.app.goo.gl') >= 0 || v.indexOf('google.') >= 0; }}
-
-        function resolveUrl(input){{
-            // 구글맵 URL → place_id / 좌표 / 장소명으로 우리 호텔 매칭
-            var m = input.match(/place_id[:=]([A-Za-z0-9_-]+)/) || input.match(/(ChIJ[A-Za-z0-9_-]{{10,}})/);
-            if (m) {{
-                var hit = HOTELS.filter(function(h){{ return h.id === m[1]; }})[0];
-                if (hit) return hit;
-            }}
-            var c = input.match(/@(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)/) || input.match(/[?&]q=(-?\\d+\\.\\d+),(-?\\d+\\.\\d+)/);
-            if (c) {{
-                var la = parseFloat(c[1]), lo = parseFloat(c[2]), best = null, bd = 1e9;
-                HOTELS.forEach(function(h){{
-                    if (h.lat == null) return;
-                    var d = Math.pow(h.lat - la, 2) + Math.pow(h.lng - lo, 2);
-                    if (d < bd) {{ bd = d; best = h; }}
-                }});
-                if (best && bd < 0.00001) return best;   // 약 300m 이내
-            }}
-            var pm = input.match(/\\/place\\/([^\\/@?]+)/);
-            if (pm) {{
-                var name = norm(decodeURIComponent(pm[1]).replace(/\\+/g, ' '));
-                var hit2 = HOTELS.filter(function(h){{
-                    return norm(h.name).indexOf(name) >= 0 || name.indexOf(norm(h.name)) >= 0
-                        || (h.en && (norm(h.en).indexOf(name) >= 0 || name.indexOf(norm(h.en)) >= 0));
-                }})[0];
-                if (hit2) return hit2;
-            }}
-            return null;
-        }}
-
         // 홈 블록별 클릭 측정 (HOME-CONCEPT §6: 2주 뒤 블록 순서 재조정 근거)
         $(document).on('click', '.hero-chip, .hero-cmp, .vs-card, .hotel-list .item, .hub-home-chip', function(){{
             if (typeof gtag !== 'function') return;
@@ -1119,29 +1088,16 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         }});
         // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행)
         if (window.CFAutocomplete) {{
-            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=', isUrl: isUrl }});
+            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=' }});
         }}
-
-        // URL 입력 시엔 자동완성 대신 링크 해석 안내
-        $q.on('input', function(){{
-            var v = $q.val().trim();
-            if (isUrl(v)) {{
-                var hit = resolveUrl(v);
-                if (hit) {{
-                    $box.prop('hidden', false).html('<div class="ac-section">호텔</div><a class="ac-item" href="./hotels/' + hit.id + '"><span class="ac-main"><span class="ac-name">' + hit.name + '</span></span></a>');
-                }} else {{
-                    $box.prop('hidden', false).html('<div class="ac-none">링크에서 호텔을 찾지 못했어요. 호텔 이름으로 검색해 보세요!</div>');
-                }}
-            }}
-        }});
 
         $q.closest('form').on('submit', function(e){{
             var v = $q.val().trim();
-            if (isUrl(v)) {{
+            // 구글맵 링크: 공용 해석기(js/search-ac.js). 못 읽으면 검색 페이지로 넘기지 않고 드롭다운 안내 유지
+            if (window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(v)) {{
                 e.preventDefault();
-                var hit = resolveUrl(v);
-                if (hit) location.href = './hotels/' + hit.id;
-                else location.href = './search?q=' + encodeURIComponent(v);
+                var r = window.CFAutocomplete.resolveUrl(v);
+                if (r.hit) location.href = './hotels/' + r.hit.id;
             }}
         }});
     }});
@@ -1394,7 +1350,7 @@ def build_search(city_avg_pct):
         <section id="title">
             <div class="search">
                 <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
-                <input type="text" id="q" placeholder="{CITY['ko']} 호텔명 검색 또는 구글맵 링크" autocomplete="off">
+                <input type="text" id="q" placeholder="{CITY['ko']} 호텔 이름으로 검색" autocomplete="off">
                 <div class="ac-box" id="ac-box" hidden></div>
             </div>
         </section>
@@ -1710,6 +1666,12 @@ def build_search(city_avg_pct):
 
         function run(){{
             var q = $q.val().trim();
+            // 구글맵 링크는 목록 검색어가 아님 — 호텔로 바로 이동, 못 읽으면 드롭다운 안내만(분석 요청으로 보내지 않음)
+            if (q && window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(q)) {{
+                var r = window.CFAutocomplete.resolveUrl(q);
+                if (r.hit) location.href = './hotels/' + r.hit.id;
+                return;
+            }}
             $notice.hide();
             var pool = HOTELS.filter(passFilters);
             if (q){{

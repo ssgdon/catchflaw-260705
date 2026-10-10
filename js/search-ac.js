@@ -155,6 +155,48 @@
     return ok && keyOk;
   }
 
+  /* ── 구글맵 링크 → 우리 호텔 (2026-10-10, 홈·검색 공용) ──
+     읽는 순서: ① 장소 ID(ChIJ…) ② 링크 속 장소 좌표 !3d·!4d (80m 이내) ③ 장소 이름(/place/이름, ?q=이름 — 이름 검색 엔진으로)
+     ④ 지도 화면 중심 @좌표는 40m 이내일 때만 — 화면 중심은 장소와 수백 m 어긋나 밀집지역에서 옆 호텔을 고르던 문제.
+     휴대폰 공유 짧은 링크(maps.app.goo.gl)·cid 링크에는 장소 정보가 없어 읽을 수 없음 → kind:'short' */
+  function isMapsUrl(v) {
+    return /^https?:\/\//i.test(v) || /maps\.app\.goo\.gl|goo\.gl\/maps|google\.[a-z.]+\/maps|maps\.google\./i.test(v);
+  }
+  function distM(la1, lo1, la2, lo2) {
+    var dy = (la1 - la2) * 111000, dx = (lo1 - lo2) * 111000 * Math.cos(la1 * Math.PI / 180);
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  function nearest(la, lo, maxM) {
+    var best = null, bd = 1e12;
+    (window.HOTELS || []).forEach(function (h) {
+      if (h.lat == null || h.lng == null) return;
+      var d = distM(la, lo, +h.lat, +h.lng);
+      if (d < bd) { bd = d; best = h; }
+    });
+    return best && bd <= maxM ? best : null;
+  }
+  function byId(id) {
+    var H = window.HOTELS || [];
+    for (var i = 0; i < H.length; i++) if (H[i].id === id) return { id: H[i].id, t: H[i].name };
+    return null;
+  }
+  function resolveUrl(v) {
+    var s = String(v || '').trim(), m, h;
+    if (/maps\.app\.goo\.gl|goo\.gl\/maps|[?&]cid=\d/i.test(s)) return { kind: 'short' };
+    if ((m = s.match(/(ChIJ[A-Za-z0-9_-]{10,})/)) && (h = byId(m[1]))) return { hit: h };
+    if ((m = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 80))) return { hit: { id: h.id, t: h.name } };
+    var name = null;
+    if ((m = s.match(/\/place\/([^\/@?#]+)/))) name = m[1];
+    else if ((m = s.match(/[?&](?:q|query)=([^&#]+)/)) && !/^-?\d+\.\d+,-?\d+\.\d+$/.test(decodeURIComponent(m[1]))) name = m[1];
+    if (name) {
+      try { name = decodeURIComponent(name.replace(/\+/g, ' ')); } catch (e) { name = name.replace(/\+/g, ' '); }
+      var top = match(name, 1)[0];
+      if (top) return { hit: { id: top.id, t: top.t } };
+    }
+    if ((m = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 40))) return { hit: { id: h.id, t: h.name } };
+    return { kind: 'none' };
+  }
+
   function attach(input, opts) {
     opts = opts || {};
     var $input = $(input);
@@ -241,11 +283,25 @@
     }
 
     $input.on('focus', function () { if (!$input.val().trim()) showAreas(); });
+    // 링크 입력: 해석 결과 1행(호텔) 또는 안내 — 링크를 호텔 이름으로 오해해 '분석 요청'을 띄우지 않는다
+    function renderUrl(v) {
+      var r = resolveUrl(v);
+      lastList = [];
+      if (r.hit) {
+        $box.prop('hidden', false).html('<div class="ac-section">링크의 호텔</div>' + hotelRow({ id: r.hit.id, t: r.hit.t, p: null, band: null }, 0).replace('<span class="ac-p dim">분석 준비 중</span>', ''));
+        sel = 0; highlight();
+      } else {
+        $box.prop('hidden', false).html('<div class="ac-none">' + (r.kind === 'short'
+          ? '공유 링크는 아직 읽지 못해요. 호텔 이름으로 검색해 주세요'
+          : '링크에서 호텔을 찾지 못했어요. 호텔 이름으로 검색해 주세요') + '</div>');
+        sel = -1;
+      }
+    }
+
     $input.on('input', function () {
       var v = $input.val().trim();
-      // 구글맵 링크/URL은 각 페이지의 기존 핸들러에 위임 (여기선 무시)
-      if (opts.isUrl && opts.isUrl(v)) return;
       if (!v) { showAreas(); return; }
+      if (isMapsUrl(v)) { renderUrl(v); return; }
       render(v);
     });
 
@@ -271,5 +327,6 @@
     return { render: render, showAreas: showAreas, hide: hide, matchIds: matchIds };
   }
 
-  window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest };
+  window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest,
+                            isMapsUrl: isMapsUrl, resolveUrl: resolveUrl };
 })();
