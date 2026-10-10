@@ -41,7 +41,6 @@
     #float{left:auto;right:var(--pc-x);width:auto;transform:none;}
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
     html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
-    html.is-scroll-down #float:has(.btn-airec){transform:none;}   /* 홈 추천 버튼은 PC에서도 항상 표시 */
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
     #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}
@@ -142,17 +141,32 @@
 
     /* ════════ 홈 ════════ */
     #main{max-width:var(--pc-max);margin:0 auto;background:var(--surface-card);}
-    /* 히어로: 둥근 배너 · 왼쪽 카피+검색 / 오른쪽 리뷰 말풍선. 배경은 PC용 가로 사진이 준비될 때까지 브랜드 그라데이션
-       (현행 search_bg.jpg는 720×828 세로라 PC 폭에서 흐려지고 잘림) */
-    #main .sec-1{margin:var(--sp-6) var(--pc-x) 0;}
-    #main .search-box{display:grid;grid-template-columns:minmax(0,1fr) 400px;grid-template-areas:"title text" "input text" "chips text" "note text";column-gap:var(--sp-12);align-items:center;padding:64px 72px;border-radius:var(--radius-card);background:linear-gradient(90deg, rgb(10 14 28 / 68%) 0%, rgb(10 14 28 / 45%) 55%, rgb(10 14 28 / 20%) 100%), url(../img/home_bg_pc.jpg) center / cover no-repeat;}   /* FEEDBACK-2610 §2.1 가로 이미지 + 왼쪽(카피·검색) 쪽을 더 어둡게 */
-    #main .search-box .text{grid-area:text;margin:0;}
+    /* 히어로(v3 §7-1): 왼쪽 글(제목 48·검색 알약·보라 CTA·이동 칩) + 오른쪽 사진 1장(r20). 흰 바탕 */
+    #main .sec-1{margin:0 var(--pc-x);}
+    #main .search-box{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,480px);grid-template-areas:"title photo" "input photo" "cta photo" "chips photo";grid-template-rows:auto auto auto auto;align-content:center;column-gap:var(--sp-12);padding:var(--sp-8) 0 var(--sp-6);}
     #main .search-box .title{grid-area:title;align-self:end;}
     #main .search-box .title .tit{font-size:var(--fs-hero);line-height:var(--lh-title);}   /* PC 홈 히어로 48 */
-    #main .search-box .title .txt{font-size:var(--fs-body-lg);line-height:var(--lh-body);}
+    #main .search-box .title .txt{margin-top:var(--sp-3);font-size:var(--fs-body);line-height:var(--lh-body);}
     #main .search-box .input{grid-area:input;max-width:560px;margin-top:var(--sp-6);}
+    #main .search-box .btn-airec{grid-area:cta;max-width:560px;}
+    #main .search-box .hero-chips{grid-area:chips;flex-wrap:wrap;max-width:560px;margin-left:0;margin-right:0;padding-left:0;padding-right:0;overflow:visible;}
+    #main .search-box .hero-photo{display:block;grid-area:photo;align-self:center;aspect-ratio:3/2;border-radius:var(--radius-card);background:url(../img/home_bg_pc.jpg) center / cover no-repeat;}
+    #main .trust-band{padding:var(--sp-2) var(--pc-x) 0;}
     #main .map-wrap #map{height:440px;}
     #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
+    #main .head .title{font-size:var(--fs-h2);}   /* PC 홈 섹션 제목 22 */
+    #main .hub-home-row .hh-label{font-size:var(--fs-h3);}
+    /* 홈 캐러셀(§7-1): 행마다 5장 한 줄 가로 스크롤 + 제목 오른쪽 원형 이전·다음 32, 사진 20:19, 카드 간격 24 */
+    #main .hotel-slider{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}
+    #main .hotel-slider::-webkit-scrollbar{display:none;}
+    #main .hotel-slider .swiper-wrapper{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:calc((100% - var(--sp-6) * 4) / 5);gap:0 var(--sp-6);}
+    #main .hcard--carousel .hcard-photo{aspect-ratio:20/19;}
+    #main .slider-nav{display:inline-flex;gap:var(--sp-2);}
+    #main .slider-nav button{position:relative;width:32px;height:32px;border:1px solid var(--line-strong);border-radius:50%;background:var(--surface-card);cursor:pointer;}
+    #main .slider-nav button::before{content:"";position:absolute;left:50%;top:50%;width:8px;height:8px;margin:-4px 0 0 -2px;border-top:2px solid var(--ink);border-left:2px solid var(--ink);transform:rotate(-45deg);}
+    #main .slider-nav .sn-next::before{margin-left:-6px;transform:rotate(135deg);}
+    #main .slider-nav button:hover:not(:disabled){background:var(--surface);}
+    #main .slider-nav button:disabled{opacity:.35;cursor:default;}
     /* ════════ 비교: 왼쪽 항목명 칸 + 호텔 칸 (Zillow Compare homes) ════════ */
     #cmp{max-width:1080px;margin:0 auto;padding:0 var(--pc-x);background:var(--surface-card);min-height:100vh;}
     #cmp .cmp-hd,#cmp .cmp-cta{grid-template-columns:200px repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-4);padding-left:0;padding-right:0;}
@@ -222,11 +236,10 @@
     #main .hotel-list.recent-list .list ul{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
 
     /* 홈 재구성(HOME-CONCEPT §2.3): 히어로 칩 행 · 비교 카드 4열 */
-    #main .search-box .hero-chips{grid-area:chips;max-width:560px;}
     #main .sec-vs .home-vs{padding-left:var(--pc-x);padding-right:var(--pc-x);}
     #main .home-vs .vs-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-5);overflow:visible;align-items:stretch;}   /* 모바일 flex의 align-items:flex-start를 풀어 4장 높이 통일 */
     #main .vs-card{flex:auto;display:flex;flex-direction:column;}
     #main .vs-card .vs-topic{align-self:flex-start;}
-    #main .vs-card .vs-box{margin-top:auto;}   /* 결론 상자가 1줄·2줄로 달라도 카드 아래에 붙음 */
+    #main .vs-card .vs-end{margin-top:auto;}   /* 결론이 1줄·2줄로 달라도 카드 아래에 붙음 */
     #main .vs-card .vs-rows{margin-bottom:var(--sp-3);}
 }

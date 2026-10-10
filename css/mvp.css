@@ -13,7 +13,7 @@
 #main .sec-1{position:relative;z-index:30;}
 #main .search-box{overflow:visible;}
 #main .search-box .input{position:relative;}
-#main .search-box .ac-box{position:absolute;z-index:50;top:calc(100% + 6px);left:0;right:0;max-height:56vh;overflow-y:auto;border-radius:var(--radius-box);background:var(--surface-card);box-shadow:0 12px 32px rgb(0 0 0 / 22%);}
+#main .search-box .ac-box{position:absolute;z-index:50;top:calc(100% + 6px);left:-1px;right:-1px;max-height:56vh;overflow-y:auto;border-radius:var(--radius-box);background:var(--surface-card);box-shadow:0 12px 32px rgb(0 0 0 / 22%);}
 #main .search-box .ac-box .ac-item{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;font-size:var(--fs-body);color:var(--ink);}
 #main .search-box .ac-box .ac-item + .ac-item{border-top:1px solid var(--line);}
 #main .search-box .ac-box .ac-item:active{background:var(--primary-soft);}
@@ -220,11 +220,6 @@
    AI 맞춤 추천 (recommend.js) — 플로팅 버튼 (마법사 시트는 ds.css §v3 .ov)
    ============================================================ */
 
-/* ---------- 플로팅 "AI 추천받기" pill (메인, 항상 표시) ---------- */
-/* 2026-10-10: 메인 주 버튼처럼 전체폭 사각형, 스크롤해도 항상 따라다님(아래 is-scroll-down 예외) */
-#float .float:has(.btn-airec){align-items:stretch;}
-body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 검색 자동완성이 열려 있으면 떠 있는 추천 버튼을 숨긴다(목록 아래를 가림, P0a) */
-#float .float a.btn-airec{width:100%;pointer-events:all;box-shadow:var(--shadow-float);}   /* 홈 추천 버튼 = .btn-brand(§6-1), 떠 있어서 그림자만 */
 
 
 
@@ -383,85 +378,70 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #detail .button{z-index:30;padding-bottom:calc(16px + env(safe-area-inset-bottom));}
 
 /* ---------- 홈: 지역·테마 컬렉션 칩 그리드 ---------- */
-#main .sec-collections{padding:var(--browse-gap) var(--page-x) var(--sp-12);}   /* 홈 마지막 블록(FEEDBACK-2610 §3) — 탐색 리듬: 선 없이 24 */
-#main .home-collections .head .title{line-height:1.35;font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
-#main .home-collections .head .desc{margin:6px 0 0;line-height:1.4;font-size:var(--fs-caption);color:var(--ink-2);}
 /* 3줄(동네별·동행별·테마별): 라벨 + 칩 가로 스크롤 */
-#main .hub-home-row{display:flex;align-items:center;gap:var(--sp-3);margin-top:var(--sp-4);}
-#main .home-collections .head + .hub-home-row{margin-top:var(--browse-head);}
-#main .hub-home-row .hh-label{flex:none;width:52px;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);white-space:nowrap;}
-#main .hub-home-chips{display:flex;flex-wrap:nowrap;gap:var(--sp-2);min-width:0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-#main .hub-home-chips::-webkit-scrollbar{display:none;}
 
 /* ---------- 상세: 소속 컬렉션 칩 ---------- */
 #detail .hub-detail-cols .det-col-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--sp-4);}
 
 /* ============================================================
-   컬렉션 허브 (#hub) — 지역·테마 페이지. 기존 카드/칩/sect 톤 재사용.
+   컬렉션 허브 (#hub) — DESIGN-SYSTEM-V3 §7-6 · v3 4B home
+   제목(눈썹 + 32) → 부제 → 요약 → 숫자 3칸(세로 선) → 문서 리듬 섹션(28/20 + 1px 선, 제목→내용 16). 회색 상자 없음.
    ============================================================ */
 #hub{padding:var(--sp-5) var(--page-x) var(--sp-12);}
 #hub .hub-crumb{font-size:var(--fs-meta);color:var(--ink-3);line-height:1.5;}
 #hub .hub-crumb a{color:var(--ink-3);}
-#hub .hub-crumb span{color:var(--ink-2);font-weight:var(--fw-semi);}
+#hub .hub-crumb span{color:var(--ink-3);font-weight:var(--fw-semi);}
 #hub .hub-h1{margin:var(--sp-3) 0 var(--sp-3);line-height:var(--lh-title);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);color:var(--ink);letter-spacing:var(--ls-title);}
 #hub .hub-summary{line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
-#hub .hub-stat-strip{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--sp-4);}
-#hub .hub-stat-strip .hs-item{flex:1 1 auto;min-width:0;padding:12px 10px;border-radius:var(--radius-box);background:var(--surface);text-align:center;font-size:var(--fs-meta);color:var(--ink-2);white-space:nowrap;}
-#hub .hub-stat-strip .hs-item b{display:block;margin-bottom:2px;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-
-/* 리스크 리포트 카드 */
-#hub .hub-risk{margin-top:var(--sp-6);padding:var(--sp-5);border-radius:var(--radius-card);background:var(--surface);}
-#hub .hub-risk-top{display:flex;gap:12px;}
-#hub .hub-risk-top .hr-block{flex:1;text-align:center;}
-#hub .hr-label{display:block;font-size:var(--fs-meta);color:var(--ink-3);}
-#hub .hr-num{display:block;margin-top:4px;font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink);}
-#hub .hr-num.is-good{color:var(--safe-text);}
-#hub .hr-num.is-bad{color:var(--danger-text);}
-#hub .hub-risk-prof{margin-top:var(--sp-4);padding-top:var(--sp-4);border-top:1px solid var(--line);}
-#hub .hr-prof-tit{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);margin-bottom:8px;}
-#hub .hub-devs{display:flex;flex-direction:column;gap:6px;}
-#hub .hub-dev{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:var(--fs-caption);}
-#hub .hub-dev .hd-cat{font-weight:var(--fw-bold);color:var(--ink);}
-#hub .hub-dev .hd-val{color:var(--ink-2);}
-#hub .hub-dev.is-up .hd-val{color:var(--danger-text);}
-#hub .hub-dev.is-down .hd-val{color:var(--safe-text);}
-#hub .hub-dev-none{font-size:var(--fs-caption);color:var(--ink-2);}
+/* 숫자 3칸: 세로 1px 선으로만 나눈다(상자 3개 아님) */
+#hub .hub-stat-strip{display:flex;margin-top:var(--sp-5);}
+#hub .hub-stat-strip .hs-item{flex:1 1 auto;display:flex;flex-direction:column;gap:2px;min-width:0;padding:0 var(--sp-4);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);white-space:nowrap;}
+#hub .hub-stat-strip .hs-item:first-child{padding-left:0;}
+#hub .hub-stat-strip .hs-item:last-child{padding-right:0;}
+#hub .hub-stat-strip .hs-item + .hs-item{border-left:1px solid var(--line);}
+#hub .hub-stat-strip .hs-item b{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
 
 /* 섹션 공통 */
 #hub .hub-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬: 아래 20 + 1px 선 + 위 28 */
-#hub .hub-h2{line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-#hub .hub-sub{margin:6px 0 var(--sp-4);line-height:1.4;font-size:var(--fs-caption);color:var(--ink-2);}
+#hub .hub-h2{margin:0 0 var(--head-gap);}
+#hub .hub-h2:has(+ .hub-sub){margin-bottom:var(--sp-1);}
+#hub .hub-sub{margin:0 0 var(--head-gap);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
 
-/* 랭킹 리스트 — 검색 리스트 카드와 픽셀 동일(레이아웃은 #search .list 셀렉터 병기, layout/uplift/mvp).
-   여기선 허브 고유 요소(순위 배지·역거리·시설 칩)만 정의. */
+/* 항목별 편차: 행 목록(1px 선) — 색은 8px 점이 맡고 글자는 잉크 */
+#hub .hub-devs{display:flex;flex-direction:column;margin:0;padding:0;list-style:none;}
+#hub .hub-dev{display:flex;align-items:center;gap:var(--sp-2);min-height:56px;font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);}
+#hub .hub-dev + .hub-dev{border-top:1px solid var(--line);}
+#hub .hub-dev .hd-cat{font-weight:var(--fw-semi);}
+#hub .hub-dev .hd-val{margin-left:auto;color:var(--ink-3);text-align:right;}
+
+/* 랭킹 리스트 = 와이드 카드(.hcard--wide). 순위 원은 사진 왼쪽 위, 배지는 그 오른쪽 */
 #hub .hub-list{margin:0;padding:0;list-style:none;}
 #hub .hub-row{list-style:none;}
+#hub .hub-list + .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}   /* 섹션 끝 전폭 회색 버튼: 위 32, 아래 12(§6-6) */
+#hub .hcard-photo .cnt{left:var(--sp-3);right:auto;top:calc(var(--sp-3) + 1px);}
+#hub .hcard-photo:has(.cnt) .photo-badge{left:calc(var(--sp-3) + 36px);}
 
-/* 가격대별 베스트 */
-#hub .hub-pb{display:flex;flex-direction:column;gap:10px;}
-#hub .hub-pb-band{padding:12px 14px;border-radius:var(--radius-box);background:var(--surface);}
-#hub .pb-label{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);margin-bottom:6px;}
-#hub .hub-pb-band ul{display:flex;flex-direction:column;gap:4px;}
-#hub .hub-pb-item a{display:flex;justify-content:space-between;gap:8px;font-size:var(--fs-caption);}
-#hub .pb-name{color:var(--ink-2);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-#hub .pb-p{flex:0 0 auto;font-weight:var(--fw-bold);color:var(--primary-deep);}
+/* 가격대별: 그룹 머리 18 + 캐러셀 카드 */
+#hub .hub-pb{display:flex;flex-direction:column;gap:var(--sp-6);}
+#hub .pb-label{margin-bottom:var(--sp-3);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
 
-/* 조심 구간 */
-#hub .hub-caution{margin-top:var(--sp-8);padding:var(--sp-5);border-radius:var(--radius-card);background:var(--danger-soft);}
-#hub .hc-tit{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--danger-text);}
-#hub .hc-txt{margin:6px 0 0;line-height:var(--lh-body);font-size:var(--fs-caption);color:var(--ink-2);}
-#hub .hc-txt b{color:var(--ink);font-weight:var(--fw-bold);}
+/* 조심 구간: 전체 폭 안내 띠(soft 면) — 글자는 잉크, 뜻은 점이 맡는다 */
+#hub .hub-caution{margin-top:var(--sp-8);padding:var(--sp-4);border-radius:var(--radius-box);background:var(--danger-soft);}
+#hub .hc-tit{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
+#hub .hc-txt{margin:var(--sp-1) 0 0;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
+#hub .hc-txt b{font-weight:var(--fw-bold);}
 
-/* FAQ */
-#hub .hub-faqs{display:flex;flex-direction:column;gap:10px;}
-#hub .hub-faq-item{padding:14px 16px;border-radius:var(--radius-box);background:var(--surface);}
-#hub .hf-q{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
-#hub .hf-a{margin-top:6px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
+/* FAQ: 행 목록(질문 16/600 · 답 16, 행마다 1px 선) */
+#hub .hub-faqs{display:flex;flex-direction:column;}
+#hub .hub-faq-item{padding:var(--sp-4) 0;}
+#hub .hub-faq-item + .hub-faq-item{border-top:1px solid var(--line);}
+#hub .hub-faq-item:first-child{padding-top:0;}
+#hub .hf-q{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
+#hub .hf-a{margin-top:var(--sp-2);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 #hub .hf-a b{color:var(--ink);font-weight:var(--fw-bold);}
 
-/* 상호 링크 + 방법론 */
-#hub .hub-xlinks{display:flex;flex-wrap:wrap;gap:8px;}
-#hub .hub-xlink{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 16px;border-radius:38px;background:var(--primary-soft);font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--primary-deep);}
+/* 상호 링크(이동 칩 .chip-go) + 방법론 */
+#hub .hub-xlinks{display:flex;flex-wrap:wrap;gap:var(--sp-2);}
 #hub .hub-method{margin-top:var(--sp-5);line-height:1.5;font-size:var(--fs-meta);color:var(--ink-3);}
 
 /* ── 상세 히어로 사진 갤러리 (Swiper) ── */
@@ -488,10 +468,10 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #about .about-lead{margin-top:8px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 #about .about-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬 */
 #about .about-sect .head .title{line-height:var(--lh-title);letter-spacing:var(--ls-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);color:var(--ink);}
-#about .about-body{margin-top:10px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
+#about .about-body{margin-top:var(--head-gap);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 #about .about-body b{color:var(--ink);font-weight:var(--fw-bold);}
-#about .about-body a{color:var(--primary-deep);font-weight:var(--fw-semi);text-decoration:underline;}
-#about .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;}
+#about .about-body a{color:var(--ink);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}   /* 텍스트 링크 = 잉크 + 밑줄(v3 §3-2) */
+#about .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:var(--sp-2);}
 #about .about-list li{list-style:disc;}
 
 /* ── 희소·고위험 소분류 칩 (심각 리뷰 캐스케이드 — F33+F43) — TAXONOMY v4 §3-c. 시맨틱 3색 규칙 준수 ── */
@@ -801,43 +781,8 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 
 /* ════════ 홈 재구성 (2026-10 · HOME-CONCEPT-DESIGN §2) ════════ */
 /* 블록 1 히어로: '지금 많이 찾는 호텔' 칩(한국인 리뷰 수 상위) + 두 곳 비교 링크 */
-#main .search-box .hero-chips{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-4) 0 0;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-#main .search-box .hero-chips::-webkit-scrollbar{display:none;}
-#main .search-box .hero-chips .hc-label{flex:none;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:rgb(255 255 255 / 80%);white-space:nowrap;}
-#main .search-box .hero-chip{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-3);border-radius:var(--radius-pill);border:1px solid rgb(255 255 255 / 35%);background:rgb(255 255 255 / 14%);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-semi);white-space:nowrap;}
 /* 블록 2 비교 카드: 가로 스냅 스크롤, 카드는 선 하나(상자 안 상자 금지) · 행은 선 구분 */
-#main .sec-vs{background:var(--surface-2);}   /* 회색 섹션 위에 흰 카드 — 카드 경계가 또렷하게 */
-#main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-6);}
-#main .home-vs .vs-list{display:flex;align-items:flex-start;gap:var(--sp-3);margin-top:var(--browse-head);padding-bottom:var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;}
-#main .home-vs .vs-list::-webkit-scrollbar{display:none;}
-#main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);color:var(--ink);}
 /* FEEDBACK-2610 §2.2: 사진 2장 + 가운데 겹친 VS 원 → 이름·평점 2열 → 행(A값 | 라벨 | B값) → 결론 상자. 색 면은 결론 상자에만(이긴 쪽은 글자색만) */
-#main .vs-card .vs-pics{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);}
-#main .vs-card .vs-pic{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius-box);background:var(--surface);}
-#main .vs-card .vs-pic img{width:100%;height:100%;object-fit:cover;}
-#main .vs-card .vs-x{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);display:flex;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;background:var(--surface-card);box-shadow:0 2px 8px rgb(0 0 0 / 12%);font-size:var(--fs-meta);font-weight:var(--fw-display);color:var(--ink-3);}
-#main .vs-card .vs-heads{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin-top:var(--sp-3);}
-#main .vs-card .vs-col{display:flex;flex-direction:column;gap:var(--sp-1);min-width:0;}
-#main .vs-card .vs-col + .vs-col{align-items:flex-end;text-align:right;}
-#main .vs-card .vs-n{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:1.35;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}
-#main .vs-card .vs-g{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
-#main .vs-card .vs-g img{width:14px;height:14px;}
-#main .vs-card .vs-rows{margin-top:var(--sp-3);border-top:1px solid var(--line);}
-#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:40px;padding:var(--sp-1) 0;}
-#main .vs-card .vs-r + .vs-r{border-top:1px solid var(--line);}
-#main .vs-card .vs-r > :last-child{text-align:right;}
-#main .vs-card .vs-k{text-align:center;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;}
-#main .vs-card .vs-v{font-size:var(--fs-caption);font-weight:var(--fw-semi);color:var(--ink-2);font-variant-numeric:tabular-nums;}
-#main .vs-card .vs-p{font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
-#main .vs-card .vs-none{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
-#main .vs-card .is-win{color:var(--primary);}
-#main .vs-card .vs-box{display:flex;align-items:flex-start;gap:var(--sp-2);margin-top:var(--sp-3);padding:var(--sp-3);border-radius:var(--radius-box);background:var(--primary-soft);}
-#main .vs-card .vs-box.is-bad{background:var(--danger-soft);}
-#main .vs-card .vs-ico{flex:none;display:flex;color:var(--primary);}
-#main .vs-card .vs-box.is-bad .vs-ico{color:var(--danger);}
-#main .vs-card .vs-bt{display:flex;flex-direction:column;gap:2px;min-width:0;line-height:1.45;}
-#main .vs-card .vs-verdict{font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink);}
-#main .vs-card .vs-sub{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-2);}
 /* 카드 사유줄 — '한국인 리뷰 N건 · 주로 소음 불만' (홈·상세 슬라이더·검색·허브 공통, 실망 확률 숫자는 배지에만) */
 #search .list .cont .why{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:1.5;font-weight:var(--fw-regular);color:var(--ink-2);}
 /* 상세 '함께 고민하는 호텔' 나란히 비교 링크 */
@@ -863,12 +808,10 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #search .list .thumb{position:relative;}
 #search .list .thumb .rec-rank{position:absolute;z-index:2;top:6px;left:6px;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:var(--radius-chip);background:var(--ink);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-display);}
 /* 홈 섹션 제목의 키워드 강조 (문구 압축 규칙: 제목 짧게 + 핵심어 1~2개 색) */
-#main .head .title em{font-style:normal;color:var(--primary);}
 
 /* 떠 있는 버튼: 아래로 스크롤 중 숨김 (common.js가 html.is-scroll-down 토글). 모바일은 가운데 정렬 translateX(-50%) 유지 */
 #float,.cmp-tray{transition:transform .25s ease,opacity .25s ease;}
 html.is-scroll-down #float,html.is-scroll-down .cmp-tray{transform:translate(-50%,130%);opacity:0;pointer-events:none;}
-html.is-scroll-down #float:has(.btn-airec){transform:translateX(-50%);opacity:1;}   /* 홈 추천 버튼은 숨기지 않음 */
 /* 상세는 '#detail ~ #float{opacity:1;visibility:visible}'(id 2개)가 위 규칙을 이겨 버튼 윗부분이 화면 아래에 걸려 보였다 → 같은 무게로 덮어씀 */
 #detail ~ #float{transition:transform .25s ease,opacity .25s ease,visibility .25s;}
 html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
@@ -876,16 +819,8 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);cursor:pointer;}
 
 /* 홈 신뢰 띠 (HOME-CONCEPT §4-3): 히어로 아래 한 줄 — 분석 규모·중립성·기준일 */
-#main .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:4px var(--sp-3);padding:var(--sp-3) var(--page-x);border-bottom:1px solid var(--line);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:1.5;color:var(--ink-3);text-align:center;}
-#main .trust-band .tb-i{white-space:nowrap;}
-#main .trust-band .tb-i + .tb-i::before{content:"·";margin-right:var(--sp-3);color:var(--ink-4);}
 
 /* 히어로 가독성(2026-10): 사진이 밝아도 제목·설명·칩이 읽히게 — 어두운 오버레이 + 글자 그림자. 모바일·PC 공통 */
-#main .search-box::before{content:"";position:absolute;inset:0;z-index:0;background:linear-gradient(180deg, rgb(0 0 0 / 58%) 0%, rgb(0 0 0 / 38%) 55%, rgb(0 0 0 / 58%) 100%);pointer-events:none;}
-#main .search-box > *{position:relative;z-index:1;}
-#main .search-box > .input{z-index:3;}   /* 검색 자동완성(.ac-box)이 아래 칩·문구 위에 그려지게 — 같은 z-index면 뒤 형제가 위로 옴 */
-#main .search-box .title .tit,#main .search-box .title .txt,#main .search-box .hero-chips .hc-label{text-shadow:0 1px 2px rgb(0 0 0 / 65%), 0 2px 14px rgb(0 0 0 / 45%);}
-#main .search-box .title .tit span{text-shadow:0 0 1px rgb(0 0 0 / 75%), 0 2px 4px rgb(0 0 0 / 60%), 0 4px 18px rgb(0 0 0 / 50%);}
 
 /* 슬라이더·그리드 카드 높이 맞춤(2026-10): 한 줄의 카드는 같은 높이, 이름·가격은 2줄 자리를 고정, 마지막 블록(사유줄·비교 상자)은 바닥 정렬 */
 
@@ -895,7 +830,6 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #search .list .rec-group .rg-t{font-size:var(--fs-body);font-weight:var(--fw-display);color:var(--warning-text);}
 #search .list .rec-group .rg-n{font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);}
 #search .list .rec-more-wrap{padding:var(--sp-4) 0;border-top:1px solid var(--line);}
-#main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 
 /* ════════ AI 맞춤 추천 결과 화면 재구성 (2026-10-10) ════════
    레퍼런스: Tripadvisor 결과(조건 칩 한 줄 + 결과 수) · Shopee 숙소 목록(조건 충족 체크/엑스 알약) · Yuka(색 점 + 짧은 판정)

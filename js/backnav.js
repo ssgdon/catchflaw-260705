@@ -253,7 +253,7 @@ CF.rgba = function (name, a) {
     var lift = 0, vh = window.innerHeight;
     var top = stack.length ? stack[stack.length - 1].el : null;
     if (top && !top.querySelector('.ov-foot:not([hidden])')) top = null;   // 푸터 없는 시트가 닫히는 중이면 페이지 기준
-    var sels = top ? ['.ov-foot'] : ['#detail > .button', '.cmp-tray', '#float .btn-airec', '#map-toggle'];
+    var sels = top ? ['.ov-foot'] : ['#detail > .button', '.cmp-tray', '#map-toggle'];
     sels.forEach(function (s) {
       [].forEach.call((top || doc).querySelectorAll(s), function (n) {
         if (n.hidden || !(n.offsetWidth || n.offsetHeight)) return;

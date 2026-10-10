@@ -33,25 +33,6 @@
 #main .head{margin:0 0 20px;}
 #main .head .title{line-height:24px;font-size:var(--fs-h2);font-weight:700;}
 #main .head .desc{margin:8px 0 0;line-height:17px;font-size:var(--fs-caption);font-weight:500;color:#919191;}
-#main .search-box{position:relative;padding:37px 20px;background:url("../img/search_bg.jpg") no-repeat center / cover;overflow:hidden;}
-#main .search-box .text{position:relative;margin: 0 0 23px;width:100%;height:auto;aspect-ratio:32/14.6;}
-#main .search-box .text li{position:absolute;padding:10px;border-radius:10px;background:#fff;display:flex;flex-direction:column;gap:8px;}
-#main .search-box .text li:before{content:'';position:absolute;top:0;right:-10px;width:20px;height:20px;border-top:10px solid #fff;border-right:10px solid transparent;border-bottom:10px solid transparent;border-left:10px solid #fff;box-sizing:border-box;}
-#main .search-box .text li:nth-child(1){top:0;right:0;border-radius:10px 0 10px 10px;}
-#main .search-box .text li:nth-child(2){top:50%;left:0;transform:translateY(-50%);border-radius:0 10px 10px 10px;}
-#main .search-box .text li:nth-child(2):before{border-left:10px solid transparent;border-right:10px solid #fff;left:-10px;right:unset;}
-#main .search-box .text li:nth-child(3){bottom:0;right:0;border-radius:10px 0 10px 10px;}
-#main .search-box .text .subject{line-height:17px;font-size:var(--fs-caption);font-weight:700;}
-#main .search-box .text .star{position:relative;width:68px;height:auto;aspect-ratio:68/12;background:url("../img/star_bg.svg") no-repeat left center / auto 100%;}
-#main .search-box .text .star i{position:absolute;top:0;left:0;bottom:0;background:url("../img/star_fill.svg") no-repeat left center / auto 100%;}
-#main .search-box .title{}
-#main .search-box .title .tit{line-height: 33px;font-size:var(--fs-display);font-weight: 700;color: #fff;}
-#main .search-box .title .tit span{color:var(--primary-color);}
-#main .search-box .title .txt{margin: 10px 0 0;line-height: 24px;font-size:var(--fs-body);font-weight: 500;color: #ccc;}
-#main .search-box .title .txt span{color:#fff;}
-#main .search-box .input{margin:20px 0 0;padding:10px 16px;display:flex;align-items:center;border-radius:10px;background:#fff;}
-#main .search-box .input input{flex:1;width: 100%;height:24px;font-size:var(--fs-body);color: #232323;border:0;background:#fff;}
-#main .search-box .input button{flex: 0 0 auto;width:24px;height:24px;display:flex;align-items:center;justify-content:center;}
 #main .hotel-list{padding: 40px 20px 20px;overflow:hidden;}
 
 #detail{}

@@ -554,7 +554,7 @@ MENU_ICO = {
     'about': _MI.format(f'<circle cx="12" cy="12" r="8" {_MS}/><path d="M12 11v5M12 8h.01" {_MS}/>'),
 }
 
-def site_header(depth=1, back=None, search=True):
+def site_header(depth=1, back=None, search=True, is_home=False):
     """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+메뉴 바텀 시트(PC 가로 메뉴와 같은 5링크, v3 §5-8 ⑨).
     back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 메뉴 JS는 jQuery 비의존(CF.sheet, backnav.js)."""
     p = '../' * depth
@@ -566,7 +566,8 @@ def site_header(depth=1, back=None, search=True):
                  if search else '')
     back_slot = (f'<a class="dh-back" href="{back}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>'
                  if back else '<span class="dh-back dh-back-empty" aria-hidden="true"></span>')
-    return f'''<div class="det-header">
+    if is_home: back_slot = ''   # 홈(v3 §6-7): 왼쪽 로고 + 오른쪽 메뉴 원 — 뒤로 자리 없음(.dh-home)
+    return f'''<div class="det-header{' dh-home' if is_home else ''}">
                 {back_slot}
                 <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
                 {dh_search}
@@ -748,14 +749,9 @@ def vs_topic(pa, pb, hotels_meta):
     parts = [x for x in (area, band) if x]
     return (' · '.join(parts) + ' 숙소') if parts else '숙소 비교'
 
-VS_ICON_OK = ('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/>'
-              '<path d="m6 10.2 2.6 2.6L14 7.4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>')
-VS_ICON_BAD = ('<svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true"><circle cx="10" cy="10" r="10" fill="currentColor"/>'
-               '<path d="M10 5.5v5.5" stroke="white" stroke-width="2.2" stroke-linecap="round"/><circle cx="10" cy="14.3" r="1.3" fill="white"/></svg>')
-
 def vs_card(pa, pb, hotels_meta, H, depth=0):
-    """홈 비교 카드 1장 (FEEDBACK-2610 §2.2): 주제 칩 · 사진 2장 + VS · 이름·평점 2열 · 실망 확률 / 한국인 리뷰 / 1박 평일 행
-    (A값 | 라벨 | B값) · 결론 상자(아이콘 + 굵은 결론 + 보조 문장) → compare 프리셋 링크. 색 면은 결론 상자에만."""
+    """홈 비교 카드 1장 (v3 §7-1): 주제(메타 글자) · 사진 2장 + VS · 이름·평점 2열 · 실망 확률 / 한국인 리뷰 / 1박 평일 행
+    (A값 | 라벨 | B값) · 1px 선 아래 결론 16/600 + 보조 문장 14 → compare 프리셋 링크. 상자 안 상자 없음 — 이긴 쪽 '실망 확률' 값만 형광펜(--hl)."""
     root = '../' * depth
     verdict, win = vs_verdict(pa, pb, hotels_meta, H)
     sub, tone = vs_sub(pa, pb, win, hotels_meta, H)
@@ -765,32 +761,31 @@ def vs_card(pa, pb, hotels_meta, H, depth=0):
         return f'<span class="vs-pic"><img src="{img_path(p, m, depth)}" alt="{E(m["title"])}" width="300" height="225" loading="lazy"></span>'
     def col(p):
         m = hotels_meta[p]
-        return (f'<span class="vs-col"><span class="vs-n{w(p)}">{E(short_name(m["title"]))}</span>'
+        return (f'<span class="vs-col"><span class="vs-n">{E(short_name(m["title"]))}</span>'
                 f'<span class="vs-g"><img src="{root}img/star.svg" alt="" width="14" height="14">{fmt_score(m.get("total_score"))} ({m.get("reviews_count") or 0:,})</span></span>')
     def val(p, kind):
         h, m = H[p], hotels_meta[p]
         if kind == 'p': return f'<b class="vs-v vs-p{w(p)}">{pct(h["p_crit"])}%</b>'
         if kind == 'kr':
             n = KRN.get(p, 0)
-            return (f'<span class="vs-v{w(p)}">{n}건{("<span class=vs-r>" + str(KRR[p]) + "%</span>") if p in KRR else ""}</span>'
+            return (f'<span class="vs-v">{n}건{("<span class=vs-r>" + str(KRR[p]) + "%</span>") if p in KRR else ""}</span>'
                     if n >= 10 else '<span class="vs-v vs-none">리뷰 10건 미만</span>')
         pt = m.get('price_txt') or ''
         if not pt: return '<span class="vs-v vs-none">가격 정보 없음</span>'
-        return f'<span class="vs-v{w(p)}">{E(pt[3:] if pt.startswith("평일 ") else pt)}</span>'
+        return f'<span class="vs-v">{E(pt[3:] if pt.startswith("평일 ") else pt)}</span>'
     def row(label, kind):
         return f'<div class="vs-r">{val(pa, kind)}<span class="vs-k">{label}</span>{val(pb, kind)}</div>'
-    box_cls = 'is-bad' if tone == 'bad' else 'is-ok'
-    icon = VS_ICON_BAD if tone == 'bad' else VS_ICON_OK
+    end_cls = ' is-bad' if tone == 'bad' else ''
     return f'''<a class="vs-card" data-ga="vs_card" href="{root}compare?ids={pa},{pb}">
         <div class="vs-topic">{E(vs_topic(pa, pb, hotels_meta))}</div>
-        <div class="vs-pics">{pic(pa)}<span class="vs-x">VS</span>{pic(pb)}</div>
+        <div class="vs-pics">{pic(pa)}<span class="vs-badge">VS</span>{pic(pb)}</div>
         <div class="vs-heads">{col(pa)}{col(pb)}</div>
         <div class="vs-rows">
             {row('실망 확률', 'p')}
             {row('한국인 리뷰', 'kr')}
             {row('1박 평일', 'pr')}
         </div>
-        <div class="vs-box {box_cls}"><span class="vs-ico">{icon}</span><span class="vs-bt"><b class="vs-verdict">{verdict}</b>{f'<span class="vs-sub">{sub}</span>' if sub else ''}</span></div>
+        <div class="vs-end{end_cls}"><b class="vs-verdict">{verdict}</b>{f'<span class="vs-sub">{sub}</span>' if sub else ''}</div>
     </a>'''
 
 def stars_label(meta):
@@ -910,10 +905,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     cur1 = worst_by_sub('청결', '벌레')
     cur2 = worst_by_sub('냄새', '악취')
 
-    def slider(title, desc, pids):
+    def slider(title, pids, href=None):
+        """홈 캐러셀 섹션 (v3 §6-6): 18/700 제목(+ href가 있으면 셰브론, 줄 전체가 링크) → 12 → 카드. 설명 없음."""
         cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
+        t = (f'<a class="title head-link" href="{href}" data-ga="home_more" data-ga-title>{title}</a>' if href else
+             f'<div class="title" data-ga-title>{title}</div>')
         return f'''<div class="hotel-list init" data-ga-block>
-            <div class="head"><div class="title" data-ga-title>{title}</div><div class="desc">{desc}</div></div>
+            <div class="head">{t}<span class="slider-nav"><button type="button" class="sn-prev" aria-label="이전 호텔"></button><button type="button" class="sn-next" aria-label="다음 호텔"></button></span></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div>
         </div>'''
 
@@ -924,8 +922,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         pids = sorted((p for p in ranked if hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code),
                       key=lambda p: -REC.get(p, 0))[:8]
         if len(pids) >= 3:
-            price_parts.append(slider(f'<em>{label}</em> 추천',
-                f'2인 1박 평일 가격 기준 ({CITY["price_seen"]} 확인)', pids))
+            price_parts.append(slider(f'평일 {label} 추천', pids))   # 가격 기준(평일)을 제목에 — 설명줄 삭제
     price_sliders = ''.join(price_parts)
 
     # 동네·동행·테마별 허브 칩 (FEEDBACK-2610 §3): 3줄(라벨 + 가로 스크롤 칩), 홈 마지막 블록. 생성된 허브만 노출 — 순서는 COLLECTIONS
@@ -936,11 +933,10 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             items = [(slug, name) for slug, name in col_index if COL_BY_SLUG.get(slug, {}).get('row') == row]
             if not items: continue
             chips = ''.join(f'<a class="chip-go hub-home-chip" data-ga="collection_chip" href="./{E(slug)}">{E(COL_BY_SLUG[slug].get("chip") or name)}</a>' for slug, name in items)
-            rows.append(f'<div class="hub-home-row"><span class="hh-label">{label}</span><div class="hub-home-chips">{chips}</div></div>')
+            rows.append(f'<div class="hub-home-row"><div class="hh-label">{label}</div><div class="hub-home-chips">{chips}</div></div>')
         col_chips = f'''<article class="section sec-collections">
                 <div class="home-collections init" data-ga-block>
-                    <div class="head"><div class="title" data-ga-title><em>동네</em>·<em>동행</em>별로 보기</div>
-                    <div class="desc">같은 조건끼리 추천순으로 모았어요</div></div>
+                    <div class="head"><div class="title" data-ga-title>동네·동행별로 보기</div></div>
                     {''.join(rows)}
                 </div>
             </article>'''
@@ -951,15 +947,15 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in sorted(PAIRS[:4], key=_gap, reverse=True))
     vs_block = f'''<article class="section sec-vs">
                 <div class="home-vs init" data-ga-block>
-                    <div class="head"><div class="title" data-ga-title><em>한국인</em>이 가장 많이 <em>비교</em>하는 숙소</div>
+                    <div class="head"><div class="title" data-ga-title>한국인이 가장 많이 비교하는 숙소</div>
                     </div>
                     <div class="vs-list">{vs_cards}</div>
                 </div>
             </article>''' if vs_cards else ''
-    hero_chips = ''.join(f'<a class="hero-chip" data-ga="hero_chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
+    hero_chips = ''.join(f'<a class="chip-go hero-chip" data-ga="hero_chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
     hero_chips_html = (f'<div class="hero-chips"><span class="hc-label">많이 찾는 호텔</span>{hero_chips}</div>'
                        if hero_chips else '')
-    gems_slider = slider('<em>숨겨진 보석</em> 같은 곳', '한국인은 적게 가지만 실망 확률 낮고 평점 높아요', gems) if len(gems) >= 3 else ''
+    gems_slider = slider('숨겨진 보석 같은 곳', gems) if len(gems) >= 3 else ''
 
     n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
     home_ld = _jsonld({'@context':'https://schema.org','@type':'WebSite','name':'캐치플로','alternateName':'CATCHFLAW',
@@ -970,38 +966,34 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드립니다. '
                     '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
-    <link rel="preload" as="image" href="./img/home_bg.jpg" media="(max-width:1099px)" fetchpriority="high">
     <link rel="preload" as="image" href="./img/home_bg_pc.jpg" media="(min-width:1100px)" fetchpriority="high">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False) + f'''
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False, is_home=True) + f'''
     <main id="container">
         <section id="main">
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
-                    <div class="text"><ul>
-                        <li><div class="subject">직원이 불친절해요</div><div class="star"><i style="width:20%"></i></div></li>
-                        <li><div class="subject">너무 시끄러워요</div><div class="star"><i style="width:40%"></i></div></li>
-                        <li><div class="subject">침대에서 벌레가 나왔어요</div><div class="star"><i style="width:40%"></i></div></li>
-                    </ul></div>
                     <div class="title" data-ga-title>
-                        <h1 class="tit hero-title">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
-                        <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {ai_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
+                        <h1 class="tit hero-title">잠깐, 그 호텔 <br><span class="hero-key">최악의 리뷰</span>는요?</h1>
+                        <div class="txt">리뷰 {ai_reviews_txt} 개에서 치명적인 단점만 찾아요</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
                         <input type="text" name="q" id="hero-q" placeholder="호텔명 또는 구글맵 링크">
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
+                    <a href="javascript:;" class="btn-airec btn-brand btn-block" role="button"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
                     {hero_chips_html}
+                    <div class="hero-photo" aria-hidden="true"></div>
                 </div>
             </article>
             <div class="trust-band"><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
             {vs_block}
             <article class="section sec-2 sec-rec">
-                {slider('<em>한국인</em>이 찾고 <em>실망</em>은 적은 숙소', '한국인 리뷰 많고 평점 높고 실망 확률 낮은 순', best)}
+                {slider('한국인이 찾고 실망은 적은 숙소', best, href='./search')}
             </article>
             <article class="section sec-map">
                 <div class="home-map init">
-                    <div class="head"><div class="title"><em>지도</em>로 한눈에</div>
+                    <div class="head"><div class="title">지도로 한눈에</div>
                     </div>
                     <div class="map-wrap"><div id="map"></div>
                         <div class="map-legend">
@@ -1013,22 +1005,25 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-2">
                 {price_sliders}
                 {gems_slider}
-                {slider('<em>벌레</em> 언급 많은 숙소', '예약 전에 꼭 확인하세요', cur1)}
-                {slider('<em>냄새</em> 언급 많은 숙소', '하수구·곰팡내 언급이 많아요', cur2)}
+                {slider('벌레 리뷰가 많은 숙소', cur1)}
+                {slider('냄새 리뷰가 많은 숙소', cur2)}
                 <script>
                     $(function(){{
                         $('.hotel-slider').each(function(i, el){{
                             new Swiper(el, {{slidesPerView:'auto', spaceBetween:12, observer:true, observeParents:true}});
                         }});
+                        // PC(≥1100): 슬라이더가 가로 스크롤 줄이라 제목 오른쪽 이전·다음 원이 한 화면 폭만큼 넘긴다 (모바일은 버튼 숨김·터치 스와이프)
+                        $('.hotel-list').each(function(){{
+                            var $l = $(this), el = $l.find('.hotel-slider')[0], $p = $l.find('.sn-prev'), $n = $l.find('.sn-next');
+                            if (!el || !$p.length) return;
+                            function upd(){{ $p.prop('disabled', el.scrollLeft < 4); $n.prop('disabled', el.scrollLeft + el.clientWidth > el.scrollWidth - 4); }}
+                            $p.add($n).on('click', function(){{ el.scrollBy({{left: (this === $n[0] ? 1 : -1) * el.clientWidth * 0.8, behavior: 'smooth'}}); }});
+                            $(el).on('scroll', upd); $(window).on('resize', upd); upd();
+                        }});
                     }});
                 </script>
             </article>
             {col_chips}
-        </section>
-        <section id="float">
-            <div class="float">
-                <a href="javascript:;" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
-            </div>
         </section>
     </main>
     <script src="./data/index.js?v={BUILD}"></script>
@@ -1150,10 +1145,10 @@ def build_404():
         extra_head='<meta name="robots" content="noindex">') + site_header(0, back='./') + f'''
     <main id="container"><section class="page-empty">
         <h1 class="page-title">페이지를 찾을 수 없어요</h1>
-        <p class="pe-txt">주소가 바뀌었거나 없는 페이지예요.<br>{CITY['ko']} 호텔 분석은 아래에서 계속 볼 수 있어요.</p>
+        <p class="pe-txt">주소가 바뀌었거나 없는 페이지예요.</p>
         <div class="pe-btns">
-            <a class="btn-brand" href="/">캐치플로 홈으로</a>
-            <a class="btn-ink" href="/search">호텔 전체 보기</a>
+            <a class="btn-brand" href="/">홈으로</a>
+            <a class="btn-line" href="/search">호텔 검색</a>
         </div>
     </section></main>''' + build_footer(0) + FOOT
 
@@ -4004,16 +3999,16 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 COLLECTIONS = [
     # ── 동네별 (홈 블록 1줄째) — FEEDBACK-2610 §3. 순서 = 홈 칩·상호 링크·sitemap 순서(동네 4 → 동행 4 → 테마 4) ──
     {'slug': 'area/hakata', 'kind': 'area', 'area': 'hakata', 'min': 10, 'row': 'area',
-     'name': '하카타역', 'h1': '하카타역 숙소 — 리뷰 위험도로 고른 안심 호텔',
+     'name': '하카타역', 'h1': '후쿠오카 하카타역 호텔 — 리뷰 위험도로 고른 안심 숙소',
      'title': '하카타역 호텔 TOP | 캐치플로'},
     {'slug': 'area/tenjin', 'kind': 'area', 'area': 'tenjin', 'min': 10, 'row': 'area',
      'name': '텐진', 'h1': '후쿠오카 텐진 호텔 — 리뷰 위험도로 고른 안심 숙소',
      'title': '후쿠오카 텐진 호텔 TOP | 캐치플로'},
     {'slug': 'area/nakasu', 'kind': 'area', 'area': 'nakasu', 'min': 10, 'row': 'area',
-     'name': '나카스·캐널시티', 'h1': '나카스·캐널시티 호텔 — 리뷰 위험도 비교',
+     'name': '나카스·캐널시티', 'h1': '후쿠오카 나카스·캐널시티 호텔 — 리뷰 위험도 비교',
      'title': '나카스·캐널시티 호텔 TOP | 캐치플로'},
     {'slug': 'area/gion', 'kind': 'area', 'area': 'gion', 'min': 10, 'row': 'area',
-     'name': '기온·오호리', 'h1': '기온·오호리 호텔 — 리뷰 위험도 비교',
+     'name': '기온·오호리', 'h1': '후쿠오카 기온·오호리 호텔 — 리뷰 위험도 비교',
      'title': '기온·오호리 호텔 TOP | 캐치플로'},
     # ── 동행별 — 소분류는 WHO_GROUPS(상세 '누구와 가세요')와 같은 정의를 쓴다(상수 한 곳) ──
     {'slug': 'best/solo', 'kind': 'who', 'who': 'solo', 'min': 8, 'row': 'who', 'chip': '혼자',
@@ -4194,36 +4189,28 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     stats = collection_stats(pids, hotels_meta, H, city)
     n, reviews, avg_p, city_p = stats['n'], stats['reviews'], stats['avg_p'], stats['city_p']
     worst_first = stats['worst_cat'].split(' ')[0]
-    cmp_word = '낮아요' if avg_p <= city_p else '높아요'
+    cmp_phrase = (f'{CITY["ko"]} 평균과 같고' if avg_p == city_p else
+                  f'{CITY["ko"]} 평균({city_p}%)보다 {"낮고" if avg_p < city_p else "높고"}')
 
     # ── 1. breadcrumb + H1 + 요약 2문장 ──
     summary = (f'{CITY["ko"]} {col["name"]} 지역 호텔 {n}곳의 최근 1년 리뷰 {reviews:,}건을 분석했어요. '
                if col['kind'] == 'area' else
                f'{col["h1"].split(" — ")[0]}, 총 {n}곳의 최근 1년 리뷰 {reviews:,}건을 분석했어요. ')
-    summary2 = (f'평균 실망 확률은 {avg_p}%로 {CITY["ko"]} 평균({city_p}%)보다 {cmp_word}. '
+    summary2 = (f'평균 실망 확률은 {avg_p}%로 {cmp_phrase}, '
                 f'가장 많이 지적된 항목은 {worst_first}이에요.')
     summary_full = summary + summary2
 
-    # ── 2. 리스크 리포트 카드 ──
+    # ── 2. 항목별 편차 (v3 §7-6: 회색 상자 → 섹션 22 + 행 목록. 평균 수치는 숫자 3칸·요약 문단이 이미 말하므로 중복 삭제) ──
     dev_rows = []
     for c, d in stats['top_dev']:
         word = c.split(' ')[0]
-        # §13 결론 먼저: 점수 차(…점 낮아요) 대신 평균 대비 문장 (d = 컬렉션 평균 위험도 - 50)
-        dev_rows.append(f'<li class="hub-dev is-{"up" if d>0 else "down"}"><span class="hd-cat">{E(word)} 불만</span>'
+        # §13 결론 먼저: 점수 차(…점 낮아요) 대신 평균 대비 문장 (d = 컬렉션 평균 위험도 - 50). 색은 점이 맡고 글자는 잉크(§3-3)
+        dev_rows.append(f'<li class="hub-dev"><i class="sdot {"is-danger" if d > 0 else "is-safe"}"></i><span class="hd-cat">{E(word)} 불만</span>'
                         f'<span class="hd-val">{E(ratio_text(50 + d))}</span></li>')
-    dev_html = f'<ul class="hub-devs">{"".join(dev_rows)}</ul>' if dev_rows else \
-               '<div class="hub-dev-none">카테고리별로 도시 평균과 큰 차이가 없어요</div>'
-    p_cmp_cls = 'is-good' if avg_p <= city_p else 'is-bad'
-    risk_card = f'''<div class="hub-risk">
-        <div class="hub-risk-top">
-            <div class="hr-block"><span class="hr-label">이 컬렉션 평균 실망 확률</span><span class="hr-num {p_cmp_cls}">{avg_p}%</span></div>
-            <div class="hr-block"><span class="hr-label">{CITY['ko']} 평균</span><span class="hr-num">{city_p}%</span></div>
-        </div>
-        <div class="hub-risk-prof">
-            <div class="hr-prof-tit">항목별로 보면</div>
-            {dev_html}
-        </div>
-    </div>'''
+    risk_card = (f'''<div class="hub-sect hub-risk">
+        <div class="hub-h2">평균과 크게 다른 항목</div>
+        <ul class="hub-devs">{"".join(dev_rows)}</ul>
+    </div>''' if dev_rows else '')
 
     # ── 3. 랭킹 리스트 TOP 10~15 ──
     is_all = col['kind'] in ('capsule',)     # 전부 비교 컬렉션
@@ -4252,38 +4239,36 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         low_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], '–', depth, chips_of(p)) for p in low_p)
         rank_block += f'''<div class="hub-sect">
         <div class="hub-h2">리뷰가 적은 호텔 {len(low_p)}곳</div>
-        <div class="hub-sub">최근 1년 리뷰가 {RANK_MIN}개 미만이라 순위 없이 참고용으로 보여드려요</div>
+        <div class="hub-sub">최근 1년 리뷰 {RANK_MIN}건 미만이라 순위 없이 보여드려요</div>
         <ul class="hub-list">{low_cards}</ul>
         {'' if top else search_link}
     </div>'''
 
-    # ── 4. 가격대별 베스트 (지역 컬렉션만) ──
+    # ── 4. 가격대별 베스트 (지역 컬렉션만) — v3 §7-6: 회색 띠 → 그룹 머리 18 + 캐러셀 카드 ──
     price_block = ''
     if col['kind'] == 'area':
         parts = []
         for code, label, lo, hi in PRICE_BANDS:
             band_pids = [p for p in pids if H[p]['ranked'] and hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code][:2]
             if band_pids:
-                items = ''.join(
-                    f'<li class="hub-pb-item"><a href="{"../" * depth}hotels/{p}">'
-                    f'<span class="pb-name">{E(hotels_meta[p]["title"])}</span>'
-                    f'<span class="pb-p">실망 {pct(H[p]["p_crit"])}%</span></a></li>'
-                    for p in band_pids)
-                parts.append(f'<div class="hub-pb-band"><div class="pb-label">{E(label)}</div><ul>{items}</ul></div>')
+                cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=depth) for p in band_pids)
+                parts.append(f'<div class="hub-pb-band"><div class="pb-label">{E(label)}</div>'
+                             f'<div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div></div>')
         if parts:
             price_block = f'''<div class="hub-sect">
                 <div class="hub-h2">가격대별 안심 숙소</div>
-                <div class="hub-sub">가격대마다 실망 확률이 가장 낮은 곳이에요{DSEP}<span class="seg">2인 1박 평일 가격 기준({CITY["price_seen"]} 확인)</span></div>
+                <div class="hub-sub">가격대별 추천순 2곳 · 평일 2인 1박 기준</div>
                 <div class="hub-pb">{''.join(parts)}</div>
-            </div>'''
+            </div>
+            <script>$(function(){{ $('.hub-pb .hotel-slider').each(function(i, el){{ new Swiper(el, {{slidesPerView: 'auto', spaceBetween: 12}}); }}); }});</script>'''
 
     # ── 5. 조심 구간 ──
     n_danger = sum(1 for p in pids if H[p]['badge'][0] == 'danger')
     caution_block = ''
     if n_danger:
         caution_block = f'''<div class="hub-caution">
-            <div class="hc-tit">이 중 위험 등급 {n_danger}곳</div>
-            <div class="hc-txt">공통적으로 <b>{E(worst_first)}</b> 관련 불만이 많아요. 호텔명은 검색에서 확인하세요.</div>
+            <div class="hc-tit"><i class="sdot is-danger"></i>이 중 위험 등급 {n_danger}곳</div>
+            <div class="hc-txt">공통으로 <b>{E(worst_first)}</b> 불만이 많아요.</div>
             <a class="hc-link btn-text btn-text--sm" href="{'../' * depth}search{('?area=' + col['area']) if col['kind']=='area' else ''}">검색에서 확인하기</a>
         </div>'''
 
@@ -4299,10 +4284,10 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
 
     # ── 7. 다른 컬렉션 카드 (상호 링크) + 방법론 ──
     link_cards = ''.join(
-        f'<a class="hub-xlink" href="{_col_href(s, depth)}">{E(nm)}</a>'
+        f'<a class="chip-go hub-xlink" href="{_col_href(s, depth)}">{E(nm)}</a>'
         for s, nm in other_cols if s != slug)
     xlink_block = f'''<div class="hub-sect">
-        <div class="hub-h2">다른 컬렉션도 보기</div>
+        <div class="hub-h2">다른 동네·동행·테마 보기</div>
         <div class="hub-xlinks">{link_cards}</div>
         <div class="hub-method"><span class="seg">실망 확률 = 실망 리뷰(심각한 문제·재방문 거부)의 최신성 가중 비율</span>{DSEP}<span class="seg">글 리뷰 {round(ai_reviews_total() / 10000)}만 건 AI 분석 · 기준 {CITY['data_asof']}</span></div>
     </div>'''
@@ -4331,11 +4316,11 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         <section id="hub">
             <nav class="hub-crumb"><a href="{'../' * depth}">캐치플로</a> › <a href="{'../' * depth}search">{CITY['ko']} 호텔</a> › <span>{E(col['name'])}</span></nav>
             {hub_h1_html(col['h1'])}
-            <p class="hub-summary">{E(summary_full)}</p>
+            <p class="hub-summary">{E(summary2)}</p>
             <div class="hub-stat-strip">
-                <span class="hs-item"><b>{n}</b>곳 분석</span>
-                <span class="hs-item"><b>{reviews:,}</b>건 리뷰</span>
-                <span class="hs-item">평균 실망 <b>{avg_p}%</b></span>
+                <span class="hs-item"><b>{n}곳</b>분석 호텔</span>
+                <span class="hs-item"><b>{reviews:,}건</b>분석 리뷰</span>
+                <span class="hs-item"><b>{avg_p}%</b>평균 실망 확률</span>
             </div>
             {risk_card}
             {rank_block}
@@ -4381,7 +4366,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
         names = [SUB_PHRASE[s] for s in g[2]]
         rare = [SUB_PHRASE[s] for s in g[2] if s in RARE_SUBS]
         q2 = f'{name} 여행이면 호텔에서 뭘 봐야 하나요?'
-        a2p = (f'{", ".join(names)} 불만이 적은지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만 골라 세 항목 불만이 적은 순으로 보여드려요.'
+        a2p = (f'{", ".join(names)} 불만이 적은지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만, 불만이 적은 순으로 보여드려요.'
                + (f' {", ".join(rare)}{josa_eun(rare[-1])} 드물지만 치명적이라 최근 1년 심각 리뷰가 한 건이라도 있으면 뺐어요.' if rare else ''))
         faqs.append((q2, E(a2p), a2p))
     elif kind == 'bath':
@@ -4410,7 +4395,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
             faqs.append((q2, E(a2p), a2p))
     elif kind == 'family':
         q2 = '가족여행 호텔은 뭘 봐야 하나요?'
-        a2p = '아이와 함께라면 방음(옆방·복도 소음), 청결(머리카락·벌레·곰팡이), 위치(밤길·동네 분위기) 3가지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만 골라 평균 점수가 낮은 순으로 보여드려요.'
+        a2p = '아이와 함께라면 방음(옆방·복도 소음), 청결(머리카락·벌레·곰팡이), 위치(밤길·동네 분위기) 3가지가 특히 중요해요. 이 페이지는 세 항목이 모두 위험 등급이 아닌 곳만, 불만이 적은 순으로 보여드려요.'
         faqs.append((q2, E(a2p), a2p))
     elif kind == 'luxury':
         # 비싼 호텔이 실망확률도 낮은가 — 럭셔리 평균 vs 도시평균
@@ -4421,7 +4406,7 @@ def build_collection_faq(col, stats, pids, hotels_meta, H, city):
 
     # (3) 데이터 기준일
     q3 = '데이터는 언제 기준인가요?'
-    a3p = f'리뷰 데이터는 주간 단위로 갱신돼요. 현재 페이지는 {CITY["data_asof"]} 기준으로 집계했어요.'
+    a3p = f'리뷰 데이터는 매주 갱신해요. 이 페이지는 {CITY["data_asof"]} 기준이에요.'
     faqs.append((q3, E(a3p), a3p))
     return faqs
 
@@ -4443,48 +4428,47 @@ def build_about(hotels_meta, H, city):
         return (f'<div class="sect about-sect"><div class="head"><div class="title">{E(title)}</div></div>'
                 f'<div class="about-body">{body}</div></div>')
 
-    s1 = sect('무엇을 하는 서비스인가요',
-        f'캐치플로는 {CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt}을 모으고 그중 글 리뷰 {ai_reviews_total():,}건을 AI로 분석해, '
-        '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드립니다. '
-        '별점에 묻힌 치명적인 단점을 예약 전에 미리 확인하실 수 있어요.')
+    s1 = sect('어떤 서비스인가요',
+        f'{CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt} 중 글 리뷰 {ai_reviews_total():,}건을 AI로 분석해요. '
+        '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드려요. '
+        '별점에 묻힌 치명적인 단점을 예약 전에 확인하세요.')
     s2 = sect('실망 확률은 이렇게 계산해요',
         '<ul class="about-list">'
         '<li>심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰를 <b>실망 리뷰</b>로 세요</li>'
-        '<li>최근 12개월 리뷰를 쓰고, 최근일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</li>'
-        '<li>별점만 남긴 리뷰는 같은 별점 리뷰에서 실망이 나온 비율로 추정해 반영해요</li>'
-        f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않도록 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
-        f'<li>최근 1년 리뷰(별점만 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
-        f'<li>최근 1년 리뷰가 {RANK_MIN}개 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 리뷰가 적어도 위험 신호가 뚜렷하면 위험으로 알려 드려요</li>'
+        '<li>최근 1년 리뷰만 쓰고, 최근일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</li>'
+        '<li>별점만 남긴 리뷰는 같은 별점 리뷰의 실망 비율로 추정해요</li>'
+        f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않게 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
+        f'<li>최근 1년 리뷰(별점만 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
+        f'<li>최근 1년 리뷰가 {RANK_MIN}개 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 위험 신호가 뚜렷하면 위험으로 알려 드려요</li>'
         '<li>순위는 정밀한 백분위 대신 \'상위 25% 이내\'처럼 넉넉한 구간으로, 80% 이상 확실할 때만 보여 드려요</li>'
-        '<li>배지(양호·주의·위험)는 경계 근처에서 매주 바뀌지 않도록, 경계를 충분히 넘었을 때만 바꿔요</li>'
+        '<li>배지(양호·주의·위험)는 경계를 충분히 넘었을 때만 바꿔서, 매주 오르내리지 않아요</li>'
         '</ul>')
     s2b = sect('항목별 점수는 이렇게 매겨요',
         '<ul class="about-list">'
         '<li>청결·냄새·소음·객실·직원·위치 6개 항목을 불만의 양과 심각도로 점수화해요</li>'
         f'<li>{CITY["ko"]} 평균을 50으로 두고, 평균의 3배 이상이면 100이에요</li>'
-        '<li>불만 리뷰가 5건 미만인 항목·소분류에는 위험 등급을 붙이지 않아요</li>'
-        '<li>벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
+        '<li>불만 리뷰가 5건 미만인 항목에는 위험 등급을 붙이지 않아요</li>'
+        '<li>벌레·곰팡이·동네 분위기·객실 보안처럼 드물지만 치명적인 문제는 점수 대신 리뷰 건수로 보여드려요</li>'
         '</ul>')
     s3 = sect('데이터 출처와 한계',
         '<ul class="about-list">'
-        '<li>구글 지도 등 공개 플랫폼의 실제 투숙객 리뷰를 사용해요</li>'
-        f'<li>매주 갱신하며, 현재 페이지는 {asof} 기준({CITY["ko"]} 평균 실망 확률 {avg_pct}%)이에요</li>'
-        '<li><b>AI 분석은 통계적 의견이며 오류가 있을 수 있고, 실제 이용 경험과 다를 수 있어요</b></li>'
-        '<li>예약 판단의 유일한 근거로 삼지 마시고, 개별 리뷰 원문도 함께 확인하세요</li>'
+        '<li>구글 지도 등 공개 플랫폼의 실제 투숙객 리뷰를 써요</li>'
+        f'<li>매주 갱신해요. 지금은 {asof} 기준({CITY["ko"]} 평균 실망 확률 {avg_pct}%)이에요</li>'
+        '<li><b>AI 분석은 통계적 의견이라 오류가 있을 수 있고, 실제 이용 경험과 다를 수 있어요</b></li>'
+        '<li>예약의 유일한 근거로 삼지 말고, 리뷰 원문도 함께 확인하세요</li>'
         '</ul>')
     s4 = sect('정정·이의제기',
-        f'본인 업소 정보의 사실 오류나 이의가 있으시면 '
-        f'<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>로 알려주세요. 확인 후 신속히 반영합니다.')
+        f'사실 오류나 이의가 있으면 <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>로 알려 주세요. 확인 후 바로 반영해요.')
     s5 = sect('제휴 고지',
-        '일부 예약 링크는 제휴 링크일 수 있으며, 예약 시 캐치플로가 수수료를 받을 수 있어요. '
-        '수수료는 분석 결과에 영향을 주지 않습니다.')
+        '일부 예약 링크는 제휴 링크라서, 예약하면 캐치플로가 수수료를 받을 수 있어요. '
+        '수수료는 분석 결과와 추천 순서에 영향을 주지 않아요.')
 
     return head('캐치플로 소개 — 실망 확률은 이렇게 계산해요', depth=0,
                 description=desc, canonical=f'{BASE}/about') + site_header(0, back='./') + f'''
     <main id="container">
         <section id="about">
             <h1 class="about-h1">캐치플로 소개</h1>
-            <p class="about-lead">공개된 투숙객 리뷰를 AI로 분석해, 예약 전에 알아야 할 위험을 알려드려요.</p>
+            <p class="about-lead"><span class="seg">투숙객 리뷰를 AI로 분석해,</span> <span class="seg">예약 전에 알아야 할 위험을 알려드려요.</span></p>
             {s1}{s2}{s2b}{s3}{s4}{s5}
         </section>
     </main>''' + build_footer(0) + FOOT

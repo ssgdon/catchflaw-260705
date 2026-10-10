@@ -23,22 +23,12 @@ body{color:var(--ink);}
 #main .head .desc{margin:8px 0 0;line-height:21px;font-size:var(--fs-body-sm);font-weight:500;color:var(--ink-3);}
 #main{padding:0 0 64px;}
 
-/* ---------- 메인 히어로(검색) ---------- */
-#main .search-box{padding:48px 20px 44px;}
-#main .search-box .title .tit{line-height:40px;font-size:var(--fs-display);font-weight:800;}
-#main .search-box .title .txt{margin:12px 0 0;line-height:26px;font-size:var(--fs-body);}
-#main .search-box .text .subject{line-height:19px;font-size:var(--fs-caption);font-weight:700;}
-#main .search-box .input{margin:28px 0 0;padding:0 10px 0 18px;height:56px;border-radius:var(--radius-img);box-shadow:0 8px 24px rgb(0 0 0 / 18%);}
-#main .search-box .input input{font-size:var(--fs-body);}
-#main .search-box .input button{width:40px;height:40px;border-radius:12px;}
-
 /* ---------- 호텔 카드 리스트(슬라이더) ---------- */
 #main .hotel-list{padding:48px 20px 8px;}
 
 /* ---------- 뱃지 (전 화면 공통) ---------- */
 
 /* ---------- 별점 (전 화면 공통 확대) ---------- */
-#main .search-box .text .star,
 #detail .analysis .review .list .item .item-info .star,
 #review .list .item .item-top .star{width:82px;}
 
