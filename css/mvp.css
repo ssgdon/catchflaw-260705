@@ -612,7 +612,7 @@
 #main .hotel-list.recent-list .list li{width:auto;}
 
 /* P2 상세 섹션 탭 — 공통 헤더(56px) 바로 아래 고정. 활성 탭 = 스크롤 위치(DETAIL_TABS_JS). z 9 = 하단 CTA(10) 아래(첫 화면에서 CTA를 가리지 않게) */
-#detail .det-tabs{position:sticky;top:56px;z-index:9;background:var(--surface-card);}   /* 밑줄 탭 문법은 ds.css §v3 .tabs-u */
+#detail .det-tabs{position:sticky;top:var(--sticky-top);z-index:9;background:var(--surface-card);}   /* 밑줄 탭 문법은 ds.css §v3 .tabs-u */
 #detail .sect[id],#detail .sec-anchor{scroll-margin-top:calc(var(--sticky-top) + var(--h-tab));}
 #detail .sec-anchor{height:0;}
 
