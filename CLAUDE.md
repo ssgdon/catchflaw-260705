@@ -32,6 +32,7 @@
 - FAQ(B층): 리뷰에서 사전 추출한 실전 정보 카드(짐보관·조식·주차 등). `pipeline/faq_topics.py`(토픽 정본)+`pipeline/faq_extract.py`(gemini 종합, `hotel_faq` 테이블) → `export_pg.py`가 `data-src/faq.json` 생성 → generate.py 상세 FAQ 섹션(근거 없으면 미노출).
 - **추천순(2026-10)**: `scripts/scoring.rec_scores` = 안전(실망 확률, 15% 포화) 0.4 + 신뢰(베이지안 구글 평점) 0.3 + 수요(최근 1년 한국인 리뷰 수 `kr_stats` 1y kr_n) 0.3, 모수 = ranked(1년 리뷰 100+). **정렬 전용, 숫자 비노출** — 메인 콘셉트는 실망 확률 유지. 홈·검색 기본 정렬·허브·상세 대안·AI 추천·비교 팝업이 공용(UI-STANDARDS §16). 배지 위험 문턱 2.0배(`DANGER_MULT`). 비교 쌍 시드 `scripts/compare_pairs.json`, 수용 기준 `scripts/check_rec.py`. 근거·설계 = `RECOMMEND-PRICE-DESIGN.md`·`HOME-CONCEPT-DESIGN.md`.
 - 가격: `hotel_prices` 표본(주간 구글 지도 가격 자동 누적 + `pipeline/price_sample.py` 날짜 지정 2인 1박 수집) → `export_pg` prices.json(최근 8주) → generate.py `price_stats`가 평일 밤 중앙값 "평일 약 13만원"(사용자 실측 17곳과 배율 0.99)을 대표값·가격대(표시 만원 기준)·정렬로, 주말(금·토 밤, 평일의 약 2.6배)은 상세에 따로 표기. 평일 근거(날짜 지정 1건 또는 표본 2건) 없으면 숫자 비표시. 운영은 RUNBOOK §5-2.
+- 호텔 status: active(운영) · watch(리뷰 적음, 매주 수집·사이트 노출) · new(편입 대기 → 주간 배치 그룹B 초도 수집) · closed(폐업·구글 병합) · **hidden(품질 의심 — 중복 등록·표본 극소, 2026-10-10 신설: 수집·집계·사이트 전부 제외, master_refresh도 재편입 안 함)**. export_pg·score.py 집계는 active·watch만.
 - 추천 제외(`hotels.rec_excluded`): 러브호텔·넷카페 등은 검색·상세엔 노출되나 홈 추천·검색 기본목록·지도에선 숨김(호텔명 직접 검색 시에만 노출).
 
 ## MVP 규칙
