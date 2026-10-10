@@ -3176,13 +3176,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             # 드물지만 치명적인 리뷰(2026-10-10): 벌레·곰팡이·밤길·보안 — 최근 1년 리뷰 건수 + 심각. 비교 화면 표와 같은 숫자·색
             def _rare_row(_s):
                 _sb = h['cats'][SUB_CAT[_s]]['subs'][_s]
-                _n, _cr = int(_sb.get('count_1y', 0) or 0), int(_sb.get('crit_1y', 0) or 0)
-                _tone = 'danger' if _cr >= 3 else 'warning' if _cr else 'some' if _n else 'zero'
-                _v = (f'<b>{_n}건</b>' + (f'<small>심각 {_cr}</small>' if _cr else ''))
-                _v = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" aria-label="{E(SUB_PHRASE[_s])} 리뷰 {_n}건 보기">{_v}</button>'
-                      if _n else _v)
+                _cr = int(_sb.get('crit_1y', 0) or 0)   # 2026-10-10: 심각 판정만 센다(주의 포함 건수·'심각 N' 둘째 줄 삭제 — 사용자 요청)
+                _tone = 'danger' if _cr >= 3 else 'warning' if _cr else 'zero'
+                _v = f'<b>{_cr}건</b>'
+                _v = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" aria-label="{E(SUB_PHRASE[_s])} 심각 리뷰 {_cr}건 보기">{_v}</button>'
+                      if _cr else _v)
                 return f'<tr><th scope="row">{E(SUB_PHRASE[_s])}</th><td class="is-{_tone}">{_v}</td></tr>'
-            _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 리뷰 건수 · 색이 있으면 심각 리뷰 포함</p>'
+            _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 동안 심각했던 경험만 셌어요</p>'
                          '<table class="cv-tbl gl-tbl"><tbody>' + ''.join(_rare_row(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS)
                          + '</tbody></table></div>')
             _col = lambda tit, items: (f'<div class="gl-col"><div class="gl-h">{tit}</div><ul>'

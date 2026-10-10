@@ -103,13 +103,12 @@
       return '<tr><th scope="row">' + glue(esc(r[1])) + '</th>' + H.map(function (h) {
         var v = h.rr && h.rr[r[0]];
         if (!v) return '<td class="is-none">–</td>';
-        var tone = v[1] >= 3 ? 'danger' : v[1] > 0 ? 'warning' : v[0] > 0 ? 'some' : 'zero';
-        var inner = '<b>' + v[0] + '건</b>' + (v[1] ? '<small>심각 ' + v[1] + '</small>' : '');
-        // 1건 이상 = 그 호텔 상세로 가서 이 소분류 리뷰 시트를 바로 연다(?rv=)
-        return '<td class="is-' + tone + '">' + (v[0] ? '<a class="cv-go" href="./hotels/' + h.id + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 리뷰 ' + v[0] + '건 보기">' + inner + '</a>' : inner) + '</td>';
+        // 2026-10-10: 심각 판정만 한 줄로(주의 포함 건수·'심각 N' 둘째 줄 삭제). 1건 이상 = 그 호텔 상세의 이 소분류 리뷰 시트(?rv=)
+        var n = v[1], tone = n >= 3 ? 'danger' : n > 0 ? 'warning' : 'zero', inner = '<b>' + n + '건</b>';
+        return '<td class="is-' + tone + '">' + (n ? '<a class="cv-go" href="./hotels/' + h.id + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 심각 리뷰 ' + n + '건 보기">' + inner + '</a>' : inner) + '</td>';
       }).join('') + '</tr>';
     }).join('');
-    return '<section class="cv-blk cv-rare"><h3 class="cv-t">드물지만 치명적인 리뷰</h3><p class="cv-s">최근 1년 리뷰 건수 · 색이 있으면 심각 리뷰 포함</p>'
+    return '<section class="cv-blk cv-rare"><h3 class="cv-t">드물지만 치명적인 리뷰</h3><p class="cv-s">최근 1년 동안 심각했던 경험만 셌어요</p>'
       + '<table class="cv-tbl"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></section>';
   }
 
