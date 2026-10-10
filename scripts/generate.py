@@ -1097,7 +1097,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     <div class="hero-photo" aria-hidden="true"></div>
                 </div>
             </article>
-            <div class="trust-band"><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
             {vs_block}
             <article class="section sec-2 sec-rec">
                 {slider('한국인이 찾고 실망은 적은 숙소', best, href='./search')}
@@ -2723,8 +2722,8 @@ def faq_answer_html(a):
     return re.sub(r'(?<=[다요])\.\s+', '.<br>', emph(a or ''))
 
 def orig_link_label(o):
-    """F32+F39: 원문 링크 라벨 통일 — 목적지 URL은 현행 그대로(변형 금지)."""
-    return '리뷰 원문 보기 ↗'
+    """F32+F39: 원문 링크 라벨 — '출처에서 보기 ↗'(리뷰 시트 js/detail-page.js origLink와 같은 말, 2026-10-10). 목적지 URL은 현행 그대로(변형 금지)."""
+    return f'{o}에서 보기 ↗' if o else '원래 사이트에서 보기 ↗'
 
 def _faq_ev_preview(ev, topic=''):
     """FAQ 카드 내 리뷰 근거 미니카드 — 고객 id(마스킹) 우선, 출처는 보조, 별점 있으면 별점(§7: 별 0개 금지)."""

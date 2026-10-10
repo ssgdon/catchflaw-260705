@@ -95,25 +95,30 @@ $(function(){
             + '<div class="rv-meta">' + star + '<span>' + esc(o.o) + '</span>' + (lang ? '<span>' + lang + ' 리뷰</span>' : '') + '</div>'
             + '<p class="rv-text clamp">' + o.text + '</p>'
             + '<div class="rv-date">' + esc(fmtDate(o.d)) + (o.s ? ' · ' + esc(subKo(o.s)) : '') + relSpan(o.d) + '</div>'
-            + '<div class="rv-foot">' + origLink(o.u) + (o.rep || '') + (o.full ? '<button type="button" class="rv-act rv-more" aria-expanded="false">전체 리뷰</button>' : '') + '</div>'
-            + (o.full ? '<div class="rv-full" hidden>' + o.full + '</div>' : '')
+            // 아래 줄(2026-10-10): 왼쪽 '리뷰 원문 ⌄'(펼치면 전문 → 맨 아래 'Google에서 보기 ↗') · 오른쪽 끝 '분류가 이상해요'(회색, 보조 행동)
+            //   펼칠 전문이 없으면 왼쪽에 바로 '출처에서 보기 ↗'
+            + '<div class="rv-foot">' + (o.full ? '<button type="button" class="rv-act rv-more" aria-expanded="false">리뷰 원문</button>' : origLink(o.u, o.o)) + (o.rep || '') + '</div>'
+            + (o.full ? '<div class="rv-full" hidden>' + o.full + (o.u ? '<div class="rv-full-src">' + origLink(o.u, o.o) + '</div>' : '') + '</div>' : '')
             + '</li>';
     }
     function card(q){
         var full = '';
-        if (q.tf) full += '<p class="rv-full-t">전체 리뷰 (번역)</p><p class="rv-full-x">' + esc(q.tf) + '</p>';
-        if (q.of && q.of !== q.tf) full += '<p class="rv-full-t">원문</p><p class="rv-full-x">' + esc(q.of) + '</p>';
+        if (q.l === 'ko') { if (q.of || q.tf) full = '<p class="rv-full-x">' + esc(q.of || q.tf) + '</p>'; }   // 한국어 리뷰: 번역 없이 전문만
+        else {
+            if (q.tf) full += '<p class="rv-full-t">번역</p><p class="rv-full-x">' + esc(q.tf) + '</p>';
+            if (q.of && q.of !== q.tf) full += '<p class="rv-full-t">원문</p><p class="rv-full-x">' + esc(q.of) + '</p>';
+        }
         return item({n: q.n, g: q.g, st: q.st, o: q.o, l: q.l, text: emph(q.q), d: q.d, s: q.s, u: q.u, rep: q.f ? repBtn(q) : '', full: full});
     }
     // 오분류 신고 버튼 (FEEDBACK-2610 §13, js/report.js) — 대분류는 소분류에서(실망 모아보기는 여러 항목이 섞임)
     function repBtn(q){
         var c = (window.QSUBCAT && window.QSUBCAT[q.s]) || (curCat !== '__dis__' ? curCat : '');
-        return '<button type="button" class="rv-act rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
+        return '<button type="button" class="rv-act rv-rep rep-btn" data-fid="' + esc(q.f) + '" data-cat="' + esc(c) + '" data-sub="' + esc(q.s) + '" data-grade="' + esc(q.g) + '">분류가 이상해요</button>';
     }
     // F32+F39: 원문 링크 — 라벨 통일 "리뷰 원문 보기", 목적지는 저장 URL 그대로. URL 빈값이면 미출력
-    function origLink(u){
+    function origLink(u, src){   // 출처 사이트로 — 'Google에서 보기 ↗'(출처 이름이 없으면 '원래 사이트에서 보기')
         if (!u) return '';
-        return '<a class="rv-act" href="' + esc(u) + '" target="_blank" rel="noopener">리뷰 원문 보기 ↗</a>';
+        return '<a class="rv-act rv-src" href="' + esc(u) + '" target="_blank" rel="noopener">' + (src ? esc(src) + '에서 보기' : '원래 사이트에서 보기') + ' ↗</a>';
     }
     // F27: 날짜 옆 상대 시간 (동적 렌더 — 로드시점 계산)
     function relSpan(d){ var s = window.CF_rel ? window.CF_rel(String(d||'').slice(0,10)) : ''; return s ? ' · ' + s : ''; }
@@ -224,7 +229,7 @@ $(function(){
     // F28: FAQ 근거 = 리뷰 항목과 같은 모양(이름·별점·출처·언어·인용·날짜+상대시간·원문링크·번역 펼치기). 심각도는 해당 없음
     function faqCard(e){
         return item({n: e.n || '투숙객', st: parseInt(e.st, 10) || 0, o: e.o || 'Google', l: e.l, text: e.qh || emph(e.q), d: e.d, u: e.u,
-                     full: e.tf ? '<p class="rv-full-t">전체 리뷰 (번역)</p><p class="rv-full-x">' + esc(e.tf) + '</p>' : ''});   // qh = 서버 하이라이트 HTML(F23)
+                     full: e.tf ? (e.l === 'ko' ? '' : '<p class="rv-full-t">번역</p>') + '<p class="rv-full-x">' + esc(e.tf) + '</p>' : ''});   // qh = 서버 하이라이트 HTML(F23)
     }
     // FAQ-LAZYLOAD: 근거 시트 소스 = R2 faq_reviews/{pid}.json (토픽별 최근1년 매칭 전체, 토픽당 최대 60건).
     // 전체 JSON 1회 fetch 후 캐싱(토픽 전환 시 재요청 없음). 실패/CORS 시 인라인 FAQEVID 폴백 — 빈 시트 금지.

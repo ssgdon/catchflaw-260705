@@ -168,30 +168,31 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .button{padding:var(--sp-4) var(--page-x) calc(var(--sp-4) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}
 
 /* ════════ 홈 (DESIGN-SYSTEM-V3 §7-1 · v3 4B home) ════════
-   탐색 리듬: 섹션 사이 24(선 없음) · 제목 18/700(+ 셰브론) → 12 → 카드. 히어로는 흰 바탕(사진·말풍선·어두운 오버레이 없음 — PC만 오른쪽 사진 1장).
-   보라 면은 히어로의 '내 성향에 딱 맞는 호텔 추천받기' 하나(고정 그라데이션 버튼은 없다). 설명 회색 글자 없음 */
+   탐색 리듬: 섹션 사이 24(선 없음) · 제목 22/700(+ 셰브론, 2026-10-10 18→22: 카드 글자 16과 단계 차이를 둠) → 12 → 카드. 히어로는 흰 바탕(사진·말풍선·어두운 오버레이 없음 — PC만 오른쪽 사진 1장).
+   보라 면은 '내 성향에 딱 맞는 호텔 추천받기' 하나 — 모바일은 화면 아래 떠 있는 알약(2026-10-10 사용자 결정), PC는 히어로 안. 설명 회색 글자 없음 */
 #main .head{margin:0;}
-#main .head .title{line-height:var(--lh-title);font-size:var(--fs-h3);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#main .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .hotel-list{padding:var(--browse-gap) var(--page-x) var(--sp-2);}   /* 탐색 리듬(v3 §4-2): 섹션 사이 24, 선 없음 */
 #main .hotel-list .head,#main .home-map .head{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);margin-bottom:var(--browse-head);}   /* 제목 → 카드 12 */
 /* 셰브론 제목: 제목 줄 전체가 링크(터치 44), 셰브론 = ::after 회전 테두리 */
-#main .head .head-link{display:inline-flex;align-items:center;gap:var(--sp-2);min-height:var(--h-icon);margin-block:calc((var(--h-icon) - var(--lh-title) * var(--fs-h3)) / -2);color:var(--ink);}
+#main .head .head-link{display:inline-flex;align-items:center;gap:var(--sp-2);min-height:var(--h-icon);margin-block:calc((var(--h-icon) - var(--lh-title) * var(--fs-h2)) / -2);color:var(--ink);}
 #main .head .head-link::after{content:"";flex:none;width:8px;height:8px;margin-top:1px;border-top:2px solid currentColor;border-right:2px solid currentColor;transform:rotate(45deg);}
 .slider-nav{display:none;}   /* 이전·다음 원은 PC에서만(pc.css) */
 
-/* 히어로: 제목 32 → 14 한 줄 → 검색 알약 56 → 보라 CTA 48 → 이동 칩 36 → 신뢰 띠 */
-#main .search-box{display:flex;flex-direction:column;padding:var(--sp-5) var(--page-x) 0;background:var(--surface-card);}
+/* 히어로: 제목 32 → 14 한 줄 → 검색 알약 56 → 이동 칩 36 (→ 첫 섹션까지 40 = 16 + 24). 신뢰 띠는 2026-10-10 삭제 — '수수료가 순서에 영향 없음'은 소개 페이지에 */
+#main .search-box{display:flex;flex-direction:column;padding:var(--sp-5) var(--page-x) var(--sp-4);background:var(--surface-card);}
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
-#main .search-box .btn-airec{margin-top:var(--sp-3);}
+/* 추천받기 = 모바일 떠 있는 보라 알약(§6-11 떠 있는 컨트롤과 같은 자리) · 비교함이 있으면 그 위로 · 검색창 입력 중엔 숨김(키보드 위로 뜨지 않게) */
+#main .search-box .btn-airec{position:fixed;z-index:var(--z-float);left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:calc(100% - var(--page-x) * 2);margin:0;padding:0 var(--sp-6);border-radius:var(--radius-pill);box-shadow:var(--shadow-float);}
+html.has-cmp #main .search-box .btn-airec{bottom:calc(var(--sp-6) + var(--h-float) + var(--sp-3) + env(safe-area-inset-bottom));}
+#main .search-box .input:focus-within ~ .btn-airec{display:none;}
+body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h-btn) + var(--sp-6) + env(safe-area-inset-bottom));}   /* 떠 있는 알약이 푸터 끝 글자를 가리지 않게 */
 #main .search-box .hero-chips{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-3) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #main .search-box .hero-chips::-webkit-scrollbar{display:none;}
 #main .search-box .hero-chips .hc-label{flex:none;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;}
 #main .search-box .hero-photo{display:none;}   /* PC 전용 사진(pc.css) */
-#main .trust-band{display:flex;flex-wrap:wrap;gap:var(--sp-1) var(--sp-3);padding:var(--sp-2) var(--page-x) 0;font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:var(--lh-ui);color:var(--ink-3);}
-#main .trust-band .tb-i{white-space:nowrap;}
-#main .trust-band .tb-i + .tb-i::before{content:"·";margin-right:var(--sp-3);color:var(--ink-4);}
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
 #main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-2);}
@@ -399,6 +400,7 @@ html.ov-lock{overflow:hidden;}
 @keyframes cf-dots{0%{opacity:1;}50%{opacity:.35;}}
 .btn-text{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-family:inherit;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
 .btn-text--sm{font-size:var(--fs-meta);}   /* 작은 맥락(건수 링크·'근거 보기'·'분류가 이상해요') — 터치는 그대로 44 */
+.btn-text.rep-btn{font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* '분류가 이상해요' = 보조 행동, 회색(2026-10-10 톤 다운) */
 .btn-text.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
 /* 아이콘 버튼: 터치 44 · 보이는 원 36(--h-circle). --surface = 목록 헤더 · --photo = 사진 위(흰 원 + 얕은 그림자) · 기본 = 원 없음 */
 .btn-icon{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer;}
@@ -584,6 +586,8 @@ textarea.ov-input{height:96px;resize:none;}
 .rv-foot:empty{display:none;}
 .rv-act{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-decoration-color:currentColor;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
 .rv-act.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
+.rv-foot .rv-rep{margin-left:auto;font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* 보조 행동: 오른쪽 끝·회색·밑줄 없음(2026-10-10 톤 다운) */
+.rv-full-src{margin-top:var(--sp-2);}
 .rv-more::after{content:"";display:inline-block;width:6px;height:6px;margin-left:6px;border-right:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-2px) rotate(45deg);}
 .rv-more.is-open::after{transform:translateY(1px) rotate(-135deg);}
 .rv-full{margin-top:var(--sp-2);padding-left:var(--sp-4);border-left:2px solid var(--line-strong);}
