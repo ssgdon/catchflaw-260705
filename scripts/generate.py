@@ -3191,7 +3191,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             glance_html = f'''<div class="sect glance" id="sec-sum">
                 <div class="gl-box">
                     <div class="gl-eyebrow">한눈에 보기</div>
-                    <p class="gl-lead">{_lead}</p>
+                    <p class="gl-lead is-{('warning' if _ok else _neg[0][0]) if _neg else 'safe'}">{_lead}</p>
                     <div class="gl-cols">
                         {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
                         {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}

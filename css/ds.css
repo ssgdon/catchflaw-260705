@@ -45,7 +45,10 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .glance .gl-box{padding:0;border:0;border-radius:0;background:none;}
 #detail .glance .gl-eyebrow{font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
 #detail .glance .gl-lead{margin-top:var(--sp-1);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
-#detail .glance .gl-lead em{font-style:normal;color:inherit;white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리, 색 없음 */
+#detail .glance .gl-lead em{font-style:normal;color:inherit;white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리 */
+#detail .glance .gl-lead.is-danger em{color:var(--danger-text);}   /* 핵심어만 판정 색(2026-10-10) — 걸리는 점 = 주의·위험, 없으면 안전 */
+#detail .glance .gl-lead.is-warning em{color:var(--warning-text);}
+#detail .glance .gl-lead.is-safe em{color:var(--safe-text);}
 #detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-4);}
 #detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}   /* '걸리는 점·괜찮은 점' 18/700(2026-10-10: 14 회색이라 안 보였음) */
 #detail .glance .gl-rare{margin-top:var(--sp-6);}
