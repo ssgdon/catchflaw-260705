@@ -1083,7 +1083,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
                     <div class="title" data-ga-title>
-                        <h1 class="tit hero-title">잠깐, 그 호텔 <br><span class="hero-key">최악의 리뷰</span>는요?</h1>
+                        <h1 class="tit hero-title">좋은 호텔의<br><span class="hero-key">진짜 이야기</span>를<br>찾아드려요</h1>
                         <div class="txt">리뷰 {ai_reviews_txt} 건에서 치명적인 단점만 찾아요</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
