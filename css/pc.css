@@ -236,12 +236,6 @@
     /* 공유·피드백·항목별 필터 등 cf-modal 카드 */
     .cf-modal .cf-modal-card{top:50%;bottom:auto;width:min(480px, calc(100vw - 64px));padding:var(--sp-8);border-radius:var(--radius-card);transform:translate(-50%,-50%);animation:cf-pop .2s ease;}
     @keyframes cf-pop{from{opacity:0;transform:translate(-50%,-48%) scale(.98);}to{opacity:1;transform:translate(-50%,-50%);}}
-    /* 비교 페이지 호텔 추가 팝업 */
-    .cmp-pick .cp-panel{top:50%;bottom:auto;width:min(560px, calc(100vw - 64px));max-height:min(80vh, 720px);border-radius:var(--radius-card);box-shadow:0 24px 64px rgb(0 0 0 / 25%);opacity:0;transform:translate(-50%,-48%) scale(.98);transition:transform .2s ease, opacity .2s ease;}
-    .cmp-pick.is-open .cp-panel{opacity:1;transform:translate(-50%,-50%);}
-    .cmp-pick .cp-head{padding:var(--sp-6) var(--sp-6) var(--sp-3);}
-    .cmp-pick .cp-search,.cmp-pick .cp-sub{padding-left:var(--sp-6);padding-right:var(--sp-6);}
-    .cmp-pick .cp-list{padding:0 var(--sp-6) var(--sp-6);}
 
     /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════
        폭 400(확인)·568(기본)·780(긴 목록)·1032(리뷰 근거 2단) · 위 40 · 최대 높이 100vh−80 · 헤더 64(--h-sheet-head) · 푸터 80 · 딤 40% */

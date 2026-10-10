@@ -187,20 +187,21 @@
     function kmTo(h) { if (cLa == null || h.la == null) return null; var dy = (h.la - cLa) * 111, dx = (h.lo - cLo) * 93; return Math.sqrt(dx * dx + dy * dy); }
     function nearLoc(id) { var d = kmTo(D[id]); return d != null && d <= 2; }
     function nearPrice(id) { var k = D[id].krw; return !!(avg && k && Math.abs(k - avg) / avg <= 0.35); }
-    var near = pool.filter(function (id) { return nearLoc(id) && nearPrice(id); }), sub = '비교 중인 호텔과 비슷한 위치·가격대에서 추천순';
-    if (near.length < 6 && cLa != null) { near = pool.filter(nearLoc); sub = '비교 중인 호텔과 가까운 위치에서 추천순'; }
-    if (near.length < 6 && avg) { near = pool.filter(nearPrice); sub = '비교 중인 호텔과 비슷한 가격대에서 추천순'; }
+    var near = pool.filter(function (id) { return nearLoc(id) && nearPrice(id); }), sub = '비슷한 위치·가격대에서 추천순';
+    if (near.length < 6 && cLa != null) { near = pool.filter(nearLoc); sub = '가까운 위치에서 추천순'; }
+    if (near.length < 6 && avg) { near = pool.filter(nearPrice); sub = '비슷한 가격대에서 추천순'; }
     if (near.length < 6) { near = pool; sub = '추천순'; }
     near.sort(function (a, b) { return (D[b].rs || 0) - (D[a].rs || 0) || D[a].p - D[b].p || D[b].an - D[a].an; });
-    return { sub: sub + ' · 실망 확률이 낮고 한국인 리뷰가 많은 순', ids: near.slice(0, 8) };
+    return { sub: sub, ids: near.slice(0, 8) };   // 부제는 14 한 줄(v3 §5-8 ⑩) — 추천순 설명은 검색 정렬 안내와 같은 말이라 뺌
   }
+  // 컴팩트 행(§6-4): 썸네일 56 + 이름 16/600(최대 2줄) + 메타 14 '● 실망 확률 4% · 평일 약 13만원 · 하카타역 도보 5분'. 오른쪽 열 없음
   function pickRow(id) {
-    var h = D[id], meta = [h.pt ? '1박 ' + h.pt : '가격 정보 없음'];
-    if (h.st) meta.push(h.st);
+    var h = D[id], meta = ['<span class="seg"><i class="cp-dot is-' + esc(h.b || 'safe') + '"></i>실망 확률 ' + h.p + '%</span>'];
+    meta.push('<span class="seg">· ' + esc(h.pt ? '1박 ' + h.pt : '가격 정보 없음') + '</span>');   // 구분점은 뒤 묶음에 붙여 줄 끝에 매달리지 않게(§15)
+    if (h.st) meta.push('<span class="seg">· ' + esc(h.st) + '</span>');
     return '<li><button type="button" class="cp-item" data-pick="' + id + '">'
       + '<span class="cp-img">' + (h.img ? '<img src="' + esc(h.img) + '" alt="" loading="lazy">' : '') + '</span>'
-      + '<span class="cp-info"><span class="cp-nm">' + esc(h.n) + '</span><span class="cp-meta">' + esc(meta.join(' · ')) + '</span></span>'
-      + '<span class="cp-p is-' + (h.b || 'safe') + '">실망 ' + h.p + '%</span></button></li>';
+      + '<span class="cp-info"><span class="cp-nm">' + esc(h.n) + '</span><span class="cp-meta">' + meta.join(' ') + '</span></span></button></li>';
   }
   function renderPick() {
     var q = pick.querySelector('.cp-q').value.trim(), c = candidates(q);
@@ -208,43 +209,34 @@
     pick.querySelector('.cp-list').innerHTML = c.ids.length ? c.ids.map(pickRow).join('')
       : '<li class="cp-empty">찾는 호텔이 없어요. 아직 분석되지 않은 호텔일 수 있어요.</li>';
   }
-  function openPick() {
+  // A 페이지 시트 · H1 '비교할 호텔 추가' · 푸터 없음(행 탭 = 추가). 뒤로가기·ESC·딤·X는 CF.sheet
+  function openPick(e) {
     if (ids().length >= MAX) { if (window.CFCompare) window.CFCompare.toast('비교는 ' + MAX + '곳까지 담을 수 있어요'); return; }
     if (!pick) {
-      pick = document.createElement('div'); pick.className = 'cmp-pick'; pick.hidden = true;
-      pick.setAttribute('role', 'dialog'); pick.setAttribute('aria-modal', 'true'); pick.setAttribute('aria-label', '비교할 호텔 추가');
-      pick.innerHTML = '<div class="cp-dim" data-close="1"></div><div class="cp-panel">'
-        + '<div class="cp-head"><b>비교할 호텔 추가</b><button type="button" class="cp-close" data-close="1" aria-label="닫기">✕</button></div>'
-        + '<div class="cp-search"><input type="search" class="cp-q" placeholder="' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔명 검색 (한글·영문·일본어)" autocomplete="off"></div>'
-        + '<div class="cp-sub"></div><ul class="cp-list"></ul></div>';
-      document.body.appendChild(pick);
+      pick = CF.sheet.make({
+        id: 'cmp-add', type: 'sheet', w: 'md', head: 'bar', title: '비교할 호텔 추가',
+        body: '<div class="cp-search"><input type="search" class="ov-input cp-q" placeholder="' + esc(window.CF_CITY_KO || '후쿠오카') + ' 호텔명 검색 (한글·영문·일본어)" autocomplete="off" aria-label="호텔명 검색"></div>'
+          + '<p class="cp-sub"></p><ul class="cp-list"></ul>'
+      });
       pick.addEventListener('click', function (e) {
-        if (e.target.closest('[data-close]')) { closePick(); return; }
         var it = e.target.closest('[data-pick]'); if (!it) return;
         var a = ids(); if (a.length >= MAX) return;
         a.push(it.getAttribute('data-pick')); saveIds(a);
         ev('compare_add', { hotel_id: it.getAttribute('data-pick'), count: a.length, source: 'compare_page' });
-        closePick(); render();
+        CF.sheet.close(pick); render();
       });
       var t = null;
       pick.querySelector('.cp-q').addEventListener('input', function () { clearTimeout(t); t = setTimeout(renderPick, 120); });
     }
     pick.querySelector('.cp-q').value = '';
     renderPick();
-    pick.hidden = false; void pick.offsetHeight; pick.classList.add('is-open');
-    document.body.style.overflow = 'hidden';
-    pick.querySelector('.cp-q').focus();
-    loadIdx().then(function () { if (pick.classList.contains('is-open') && pick.querySelector('.cp-q').value) renderPick(); });
+    pick.querySelector('.ov-body').scrollTop = 0;
+    CF.sheet.open(pick, { focus: '.cp-q', opener: e && e.target.closest('[data-add]') });
+    loadIdx().then(function () { if (CF.sheet.isOpen(pick) && pick.querySelector('.cp-q').value) renderPick(); });
   }
-  function closePick() {
-    if (!pick) return;
-    pick.classList.remove('is-open'); document.body.style.overflow = '';
-    setTimeout(function () { pick.hidden = true; }, 200);
-  }
-  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && pick && pick.classList.contains('is-open')) closePick(); });
 
   root.addEventListener('click', function (e) {
-    if (e.target.closest('[data-add]')) { openPick(); return; }
+    if (e.target.closest('[data-add]')) { openPick(e); return; }
     var x = e.target.closest('[data-x]');
     if (x) {
       var id = x.getAttribute('data-x');
