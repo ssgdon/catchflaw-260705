@@ -872,7 +872,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                       key=lambda p: -REC.get(p, 0))[:8]
         if len(pids) >= 3:
             price_parts.append(slider(f'<em>{label}</em> 추천',
-                f'추천순 · 2인 1박 평일 가격({CITY["price_seen"]} 확인)', pids))
+                f'2인 1박 평일 가격 기준 ({CITY["price_seen"]} 확인)', pids))
     price_sliders = ''.join(price_parts)
 
     # 동네·동행·테마별 허브 칩 (FEEDBACK-2610 §3): 3줄(라벨 + 가로 스크롤 칩), 홈 마지막 블록. 생성된 허브만 노출 — 순서는 COLLECTIONS
@@ -893,11 +893,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             </article>'''
 
     # 블록 2: 지금 한국인이 가장 많이 고민하는 비교 (카페 'A vs B' 151/1000건) — HOME-CONCEPT §2.1
-    vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in PAIRS[:4])
+    # 카페 최다 비교 4쌍은 그대로, 보여주는 순서만 '실망 확률 차이가 큰 쌍 먼저' — '비슷해요' 카드가 앞에 오면 비교할 거리가 없어 보임
+    _gap = lambda pr: max(H[pr[0]]['p_crit'], H[pr[1]]['p_crit']) / max(min(H[pr[0]]['p_crit'], H[pr[1]]['p_crit']), 1e-6)
+    vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in sorted(PAIRS[:4], key=_gap, reverse=True))
     vs_block = f'''<article class="section sec-vs">
                 <div class="home-vs init">
                     <div class="head"><div class="title"><em>한국인</em>이 가장 많이 <em>비교</em>하는 숙소</div>
-                    <div class="desc">네이버 카페 최다 질문 쌍 · 실망 확률로 갈랐어요</div></div>
+                    </div>
                     <div class="vs-list">{vs_cards}</div>
                 </div>
             </article>''' if vs_cards else ''
@@ -937,10 +939,9 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
                     {hero_chips_html}
-                    <div class="scope-note">현재 <b>{CITY['ko']}</b> 호텔 {n_live}곳 중 {len(scored)}곳 실망 확률 공개{DSEP}다른 도시는 준비 중이에요{DSEP}<a class="hero-cmp" href="./compare">두 곳 비교하기 →</a></div>
                 </div>
             </article>
-            <div class="trust-band"><span class="tb-i">리뷰 {total_reviews_txt} 건 분석</span><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
+            <div class="trust-band"><span class="tb-i">추천 순서에 광고·수수료 없음</span><span class="tb-i">{CITY['data_asof']} 기준</span></div>
             {vs_block}
             <article class="section sec-2 sec-rec">
                 {slider('<em>한국인</em>이 찾고 <em>실망</em>은 적은 숙소', '한국인 리뷰 많고 평점 높고 실망 확률 낮은 순', best)}
