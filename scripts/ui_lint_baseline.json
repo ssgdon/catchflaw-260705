@@ -12,7 +12,7 @@
  "R-fw500:css/layout.css": 24,
  "R-fw500:css/mvp.css": 2,
  "R-fw500:css/uplift.css": 3,
- "R-hex:css/common.css": 13,
+ "R-hex:css/common.css": 12,
  "R-hex:css/layout.css": 166,
  "R-hex:css/uplift.css": 18,
  "R-ink2:css/ds.css": 6,
@@ -57,5 +57,5 @@
  "R-radius:css/mvp.css": 35,
  "R-radius:css/uplift.css": 6,
  "R-z:css/layout.css": 4,
- "R-z:css/mvp.css": 19
+ "R-z:css/mvp.css": 18
 }

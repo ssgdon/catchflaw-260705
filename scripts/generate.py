@@ -992,6 +992,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     $(function(){{
         var BAND_COLOR = {{safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'}};
         var map = L.map('map', {{scrollWheelZoom: false}}).setView([33.5902, 130.4017], 13);
+        // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
+        map.on('popupopen popupclose', function(e){{ var w = map.getContainer().closest('.map-wrap'); if (w) w.classList.toggle('is-pop', e.type === 'popupopen'); }});
         L.tileLayer('https://{{s}}.google.com/vt/lyrs=m&x={{x}}&y={{y}}&z={{z}}&hl=ko',
             {{maxZoom: 19, subdomains: ['mt0','mt1','mt2','mt3'], attribution: '&copy; Google'}}).addTo(map);
         map.on('click', function(){{ map.scrollWheelZoom.enable(); }});
@@ -1450,6 +1452,8 @@ def build_search(city_avg_pct):
         // ───── 지도 ─────
         var BAND_COLOR = {{safe:'#5EA5E7', warning:'#F0A028', danger:'#FA5252'}};
         var map = L.map('map', {{scrollWheelZoom:false}}).setView([33.5902,130.4017], 13);
+        // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
+        map.on('popupopen popupclose', function(e){{ var w = map.getContainer().closest('.map-wrap'); if (w) w.classList.toggle('is-pop', e.type === 'popupopen'); }});
         L.tileLayer('https://{{s}}.google.com/vt/lyrs=m&x={{x}}&y={{y}}&z={{z}}&hl=ko',
             {{maxZoom:19, subdomains:['mt0','mt1','mt2','mt3'], attribution:'&copy; Google'}}).addTo(map);
         map.on('click', function(){{ map.scrollWheelZoom.enable(); }});
