@@ -372,3 +372,15 @@ textarea.ov-input{height:96px;resize:none;}
 .cf-toast.show{opacity:1;transform:none;}
 .cf-toast.has-act{justify-content:space-between;width:calc(100% - var(--sp-12));max-width:400px;min-height:60px;padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-5);border-radius:var(--radius-box);text-align:left;pointer-events:auto;}
 .cf-toast .cf-toast-act{flex:none;min-height:var(--h-icon);padding:0 var(--sp-3);border:0;background:none;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
+
+/* ② 공유(B 바텀 시트 · H3): 호텔 행(썸네일 56 + 이름 16/600) → 2열 옵션 버튼(52, 1px, 아이콘 24 + 16) */
+.sh-hotel{display:flex;align-items:center;gap:var(--sp-3);padding:0 0 var(--sp-5);}
+.sh-thumb{flex:none;width:56px;height:56px;border-radius:var(--radius-chip);object-fit:cover;background:var(--surface);}
+.sh-name{min-width:0;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-wrap:balance;}
+.sh-opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-3);}
+.sh-opt{display:flex;align-items:center;gap:var(--sp-3);height:var(--h-input);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-btn);background:var(--surface-card);font-size:var(--fs-body);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
+.sh-opt svg{flex:none;}
+/* ③ 이탈 전 피드백(B · H2 · F1): 입력 96 + 52, 안내 14 */
+.fb-body{display:flex;flex-direction:column;gap:var(--sp-2);}
+.fb-done{padding:var(--sp-12) 0;text-align:center;}
+.fb-done-msg{margin:0;font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}

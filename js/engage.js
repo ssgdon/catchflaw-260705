@@ -1,7 +1,7 @@
 /* 캐치플로 공유 + 이탈 전 피드백 (engage.js)
    window.CF_HOTEL = {pid, name, gmap} 가 있을 때만 동작 (상세 페이지)
    window.CF_SB = {url, key} 로 Supabase(mvp_feedbacks, INSERT 전용) 저장
-   의존: jQuery, backnav.js(CFNav) */
+   의존: jQuery, backnav.js(CF.sheet·CF.toast) */
 (function () {
   function ready(fn) { if (document.readyState !== 'loading') fn(); else document.addEventListener('DOMContentLoaded', fn); }
   ready(function () {
@@ -21,31 +21,25 @@
     // 카카오톡 인앱 브라우저 감지
     var isKakaoInApp = /KAKAOTALK/i.test(navigator.userAgent);
 
-    // ───────── 공유 ─────────
+    // ───────── 공유 (B 바텀 시트 · H3 정보형 — navigator.share가 없을 때만) ─────────
     var shareSheet = null;
+    var ICO_LINK = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 14a4.5 4.5 0 0 0 6.4 0l3-3a4.5 4.5 0 0 0-6.4-6.4l-1.2 1.2M14 10a4.5 4.5 0 0 0-6.4 0l-3 3a4.5 4.5 0 0 0 6.4 6.4l1.2-1.2" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
+    var ICO_OUT = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    function esc(t) { return String(t == null ? '' : t).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
     function buildShareSheet() {
-      var m = document.createElement('div');
-      m.className = 'cf-modal'; m.id = 'cf-share-sheet';
-      var kakaoBrowserBtn = isKakaoInApp
-        ? '<button type="button" class="sh-item kakao" data-act="external">기본 브라우저로 열어 공유하기</button>'
-        : '';
-      m.innerHTML =
-        '<div class="cf-modal-dim"></div>' +
-        '<div class="cf-modal-card">' +
-          '<div class="sh-tit">공유하기</div>' +
-          '<div class="sh-list">' +
-            kakaoBrowserBtn +
-            '<button type="button" class="sh-item" data-act="copy">링크 복사하기</button>' +
-          '</div>' +
-        '</div>';
-      document.body.appendChild(m);
-      m.querySelector('.cf-modal-dim').addEventListener('click', function () { CFNav.pop(); });
-      m.querySelector('[data-act="copy"]').addEventListener('click', function () {
-        copyLink(); CFNav.pop();
+      var img = (window.CF_IMGS || [])[0];
+      var m = CF.sheet.make({
+        id: 'cf-share-sheet', type: 'bottom', w: 'md', head: 'info', title: '공유하기',
+        body: '<div class="sh-hotel">' + (img ? '<img class="sh-thumb" src="' + esc(img) + '" alt="">' : '') + '<span class="sh-name">' + esc(H.name) + '</span></div>'
+          + '<div class="sh-opts">'
+          + '<button type="button" class="sh-opt" data-act="copy">' + ICO_LINK + '링크 복사</button>'
+          // 카카오 인앱 → 외부 브라우저로 현재 URL 열기 (거기서 OS 공유 사용 가능)
+          + (isKakaoInApp ? '<button type="button" class="sh-opt" data-act="external">' + ICO_OUT + '브라우저로 열기</button>' : '')
+          + '</div>'
       });
+      m.querySelector('[data-act="copy"]').addEventListener('click', function () { copyLink(); CF.sheet.close(m); });
       var ext = m.querySelector('[data-act="external"]');
       if (ext) ext.addEventListener('click', function () {
-        // 카카오 인앱 → 외부 브라우저로 현재 URL 열기 (거기서 OS 공유 사용 가능)
         location.href = 'kakaotalk://web/openExternal?url=' + encodeURIComponent(location.href);
       });
       return m;
@@ -61,11 +55,9 @@
       document.body.removeChild(t);
     }
     function showToast() { CF.toast('링크를 복사했어요'); }   // 토스트 1벌(js/backnav.js)
-    function openShare() {
+    function openShare(opener) {
       if (!shareSheet) shareSheet = buildShareSheet();
-      shareSheet.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-      CFNav.push(function () { shareSheet.classList.remove('is-open'); document.body.style.overflow = ''; });
+      CF.sheet.open(shareSheet, { opener: opener });
     }
 
     $('.btn-share').off('click').on('click', function (e) {
@@ -73,7 +65,7 @@
       var data = { title: document.title, text: H.name + ' — 캐치플로 분석', url: location.href };
       // OS 네이티브 공유(카카오톡 등 앱 목록) 우선
       if (navigator.share) { navigator.share(data).catch(function () {}); }
-      else { openShare(); }  // 미지원(카카오 인앱 등) → 자체 공유 시트
+      else { openShare(this); }  // 미지원(카카오 인앱 등) → 자체 공유 시트
     });
 
     // ───────── 이탈 전 피드백 ─────────
@@ -82,30 +74,21 @@
     function alreadyShown() { try { return sessionStorage.getItem(FB_KEY) === '1'; } catch (e) { return false; } }
     function markShown() { try { sessionStorage.setItem(FB_KEY, '1'); } catch (e) {} }
 
+    // B 바텀 시트 · H2 큰 제목 · F1('그냥 이동할게요' 링크 + 잉크 '보내고 이동')
     function buildFbModal() {
-      var m = document.createElement('div');
-      m.className = 'cf-modal'; m.id = 'cf-feedback-modal';
-      m.innerHTML =
-        '<div class="cf-modal-dim"></div>' +
-        '<div class="cf-modal-card">' +
-          '<div class="fb-body">' +
-            '<div class="fb-head">' +
-              '<span class="fb-tit">이동 전에 딱 1초만!</span>' +
-              '<button type="button" class="fb-close" data-act="close">✕</button></div>' +
-            '<div class="fb-txt">캐치플로에 어떤 기능이 있으면 좋을까요? 불편한 점도 좋아요. 여러분 의견으로 서비스를 만들어가요!</div>' +
-            '<textarea id="fb-text" placeholder="예) 지하철역까지 도보 시간도 알려주세요"></textarea>' +
-            '<input type="tel" id="fb-phone" placeholder="휴대폰 번호 (선택)" inputmode="numeric">' +
-            '<div class="fb-phone-note">정식 오픈하면 제일 먼저 알려드릴게요 · 번호는 안내 용도로만 써요</div>' +
-            '<div class="cf-modal-btns">' +
-              '<button type="button" class="cf-btn cf-btn-primary" data-act="send">의견 보내고 이동하기</button>' +
-              '<button type="button" class="cf-btn fb-skip" data-act="skip">그냥 이동할게요</button>' +
-            '</div>' +
-          '</div>' +
-          '<div class="fb-done" hidden><div class="msg">소중한 의견 고마워요!</div></div>' +
-        '</div>';
-      document.body.appendChild(m);
-      m.querySelector('[data-act="close"]').addEventListener('click', function () { CFNav.pop(); });
-      m.querySelector('.cf-modal-dim').addEventListener('click', function () { CFNav.pop(); });
+      var m = CF.sheet.make({
+        id: 'cf-feedback-modal', type: 'bottom', w: 'md', head: 'large', title: '이동 전에 딱 1초만!',
+        sub: '<span class="seg">어떤 기능이 있으면 좋을까요?</span> <span class="seg">불편한 점도 좋아요.</span>', footType: 'f1',
+        body: '<div class="fb-body">'
+          + '<textarea id="fb-text" class="ov-input" placeholder="예) 지하철역까지 도보 시간도 알려주세요" aria-label="의견"></textarea>'
+          + '<input type="tel" id="fb-phone" class="ov-input" placeholder="휴대폰 번호 (선택)" inputmode="numeric" aria-label="휴대폰 번호(선택)">'
+          + '<p class="ov-note"><span class="seg">정식 오픈하면 제일 먼저 알려드릴게요 ·</span> <span class="seg">번호는 안내 용도로만 써요</span></p>'
+          + '</div>'
+          + '<div class="fb-done" hidden><p class="fb-done-msg">소중한 의견 고마워요!</p></div>',
+        foot: '<button type="button" class="btn-text" data-act="skip">그냥 이동할게요</button>'
+          + '<button type="button" class="btn-ink" data-act="send">보내고 이동</button>'
+      });
+      m.querySelector('.ov-sub').classList.add('is-text');
       m.querySelector('[data-act="skip"]').addEventListener('click', function () { go(); });
       m.querySelector('[data-act="send"]').addEventListener('click', function () {
         var text = (m.querySelector('#fb-text').value || '').trim();
@@ -114,6 +97,8 @@
         submit(text, phone);
         // 저장 성공 여부와 무관하게 UX는 즉시 진행
         m.querySelector('.fb-body').setAttribute('hidden', '');
+        m.querySelector('.ov-hero').setAttribute('hidden', '');
+        m.querySelector('.ov-foot').setAttribute('hidden', '');
         m.querySelector('.fb-done').removeAttribute('hidden');
         setTimeout(go, 900);
       });
@@ -137,16 +122,15 @@
     function go() {
       markShown();
       var url = pendingUrl || H.gmap;
-      if (fbModal) { fbModal.querySelector('.fb-body').removeAttribute('hidden'); fbModal.querySelector('.fb-done').setAttribute('hidden', ''); }
-      if (CFNav.isOpen()) CFNav.pop();
+      if (fbModal) CF.sheet.close(fbModal);
       window.open(url, '_blank', 'noopener');
     }
-    function openFb(url) {
+    function openFb(url, opener) {
       pendingUrl = url;
       if (!fbModal) fbModal = buildFbModal();
-      fbModal.classList.add('is-open');
-      document.body.style.overflow = 'hidden';
-      CFNav.push(function () { fbModal.classList.remove('is-open'); document.body.style.overflow = ''; });
+      ['.fb-body', '.ov-hero', '.ov-foot'].forEach(function (q) { fbModal.querySelector(q).removeAttribute('hidden'); });
+      fbModal.querySelector('.fb-done').setAttribute('hidden', '');
+      CF.sheet.open(fbModal, { opener: opener });
     }
 
     // 구글맵으로 나가는 링크 가로채기 (세션당 1회만 피드백)
@@ -167,7 +151,7 @@
       }
       if (alreadyShown()) return;  // 이미 봤으면 정상 이동
       e.preventDefault();
-      openFb(url);
+      openFb(url, this);
     });
   });
 })();

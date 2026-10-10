@@ -304,32 +304,7 @@
 .cf-modal .cf-btn{flex:1;display:flex;align-items:center;justify-content:center;height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body);font-weight:var(--fw-bold);}
 .cf-modal .cf-btn-primary{background:var(--primary);color:var(--ink-inverse);}
 
-/* ---------- 이탈 전 피드백 모달 (디자인 표준 정렬) ---------- */
-#cf-feedback-modal .cf-modal-card{text-align:left;padding:22px 20px calc(20px + env(safe-area-inset-bottom));}
-#cf-feedback-modal .fb-head{display:flex;align-items:center;gap:8px;}
-#cf-feedback-modal .fb-tit{flex:1;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-#cf-feedback-modal .fb-close{flex:0 0 auto;display:flex;align-items:center;justify-content:center;width:32px;height:32px;font-size:var(--fs-h3);color:var(--ink-3);}
-#cf-feedback-modal .fb-txt{margin:8px 0 16px;line-height:1.55;font-size:var(--fs-body);color:var(--ink-2);}
-#cf-feedback-modal textarea,
-#cf-feedback-modal input[type=tel]{width:100%;padding:14px;border:1.5px solid var(--line-strong);border-radius:var(--radius-btn);font-size:var(--fs-body);line-height:1.5;font-family:inherit;color:var(--ink);background:var(--surface-card);}
-#cf-feedback-modal textarea{height:88px;resize:none;}
-#cf-feedback-modal input[type=tel]{margin:8px 0 0;}
-#cf-feedback-modal textarea:focus,
-#cf-feedback-modal input[type=tel]:focus{border-color:var(--primary);}
-#cf-feedback-modal .fb-phone-note{margin:8px 2px 0;font-size:var(--fs-meta);color:var(--ink-3);}
-#cf-feedback-modal .cf-modal-btns{flex-direction:column;gap:8px;margin-top:18px;}
-#cf-feedback-modal .cf-modal-btns .cf-btn{flex:0 0 auto;width:100%;height:var(--h-btn);}   /* column 배치에서 flex:1 높이붕괴 방지 */
-#cf-feedback-modal .fb-skip{flex:0 0 auto;background:transparent;color:var(--ink-3);height:46px;font-size:var(--fs-body);font-weight:var(--fw-semi);}
-#cf-feedback-modal .fb-done{padding:28px 0;text-align:center;}
-#cf-feedback-modal .fb-done .big{font-size:var(--fs-title-xl);line-height:1;}
-#cf-feedback-modal .fb-done .msg{margin:12px 0 0;font-size:var(--fs-body-lg);font-weight:var(--fw-bold);color:var(--ink);}
 
-/* ---------- 공유 시트 (navigator.share 폴백) ---------- */
-#cf-share-sheet .cf-modal-card{padding:20px 20px calc(20px + env(safe-area-inset-bottom));}
-#cf-share-sheet .sh-tit{margin:0 0 16px;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);text-align:center;}
-#cf-share-sheet .sh-list{display:flex;flex-direction:column;gap:8px;}
-#cf-share-sheet .sh-item{display:flex;align-items:center;gap:12px;width:100%;padding:14px 16px;border-radius:12px;background:var(--surface);font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);}
-#cf-share-sheet .sh-item.kakao{background:var(--kakao);}
 
 /* ---------- 메인: CTA 강조 버튼 ---------- */
 
