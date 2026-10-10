@@ -1702,10 +1702,10 @@ def build_search(city_avg_pct):
         function unsupported(q){{
             $total.html(''); $lhead.hide(); $hint.html('');
             $notice.show().html(
-                '<div class="notice-card">'
-                + '<div class="notice-tit">아직 <b>'+CITY_KO+'</b>만 지원해요</div>'
-                + '<div class="notice-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요.<br>'+CITY_KO+' 호텔은 전부 분석되어 있으니 먼저 둘러보세요!</div>'
-                + '<a class="btn-line btn-sm" href="./search">'+CITY_KO+' 호텔 전체 보기</a></div>');
+                '<div class="empty-sec">'
+                + '<div class="es-tit">아직 '+CITY_KO+'만 지원해요</div>'
+                + '<div class="es-txt">&ldquo;'+q+'&rdquo; 지역은 준비 중이에요. '+CITY_KO+' 호텔을 먼저 둘러보세요.</div>'
+                + '<div class="es-btns"><a class="btn-line btn-sm" href="./search">'+CITY_KO+' 호텔 전체 보기</a></div></div>');
             $res.html('');
         }}
 
@@ -2018,10 +2018,10 @@ def build_search(city_avg_pct):
                 if (recBud) relax += '<a class="btn-line btn-sm" href="'+recUrl({{bud:''}})+'">예산 넓혀 다시 보기</a> ';
                 if (recArea) relax += '<a class="btn-line btn-sm" href="'+recUrl({{area:''}})+'">지역 넓혀 다시 보기</a> ';
                 if (recNo.length) relax += '<a class="btn-line btn-sm" href="'+recUrl({{no:''}})+'">&lsquo;한 번도 없어야&rsquo; 조건 풀기</a>';
-                $('#results').html('<div class="notice-card" style="margin:16px 0">'
-                    + '<div class="notice-tit">'+(cands.length ? '조건에 맞는 곳이 '+cands.length+'곳뿐이에요' : '조건에 맞는 곳이 없어요')+'</div>'
-                    + '<div class="notice-txt">'+(recNo.length ? '조건을 하나씩 풀면 더 보여드릴 수 있어요' : '예산이나 지역을 넓히면 더 보여드릴 수 있어요')+'</div>'
-                    + '<div style="margin-top:14px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap">'+relax+'</div></div>');
+                $('#results').html('<div class="empty-sec">'
+                    + '<div class="es-tit">'+(cands.length ? '조건에 맞는 곳이 '+cands.length+'곳뿐이에요' : '조건에 맞는 곳이 없어요')+'</div>'
+                    + '<div class="es-txt">'+(recNo.length ? '조건을 하나씩 풀면 더 보여드릴 수 있어요' : '예산이나 지역을 넓히면 더 보여드릴 수 있어요')+'</div>'
+                    + '<div class="es-btns">'+relax+'</div></div>');
                 recShown = cands;
             }} else {{
                 // 묶음별로: 모두 괜찮은 곳 → 1가지 아쉬운 곳 (합쳐서 10곳까지 바로), 나머지와 2가지 이상 아쉬운 곳은 '더 보기'
@@ -2865,7 +2865,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if len(_alt) >= 3:
                 sim = _alt
                 sim_title = f'{cat_ko(_wc)} 불만이 걱정된다면'
-                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 불만이 확실히 적은 곳이에요'
+                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 불만이 확실히 적은 곳'
                 _mine = cat_verdict(h['cats'][_wc]['score'])[0]
                 sim_extra = {p: (f'<div class="hcard-note"><span class="seg">{E(cat_ko(_wc))} 불만 <b>{E(cat_verdict(H[p]["cats"][_wc]["score"])[0])}</b></span>'
                                  f'<span class="seg">이 호텔은 {E(_mine)}</span></div>') for p in _alt}
@@ -2886,7 +2886,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                          extra=f'<div class="hcard-note"><span class="seg">실망 확률 <b>{pct(H[q]["p_crit"])}%</b></span><span class="seg">이 호텔은 {pct(h["p_crit"])}%</span></div>') for q in partners)
         pairs_block = f'''<div class="sect hotel" id="sec-vs">
             <div class="head"><div class="title">이 호텔과 함께 고민하는 호텔</div>
-            <div class="desc">네이버 카페에서 자주 같이 비교되는 호텔이에요 · 실망 확률·불만 항목을 나란히 놓고 보세요</div></div>
+            <div class="desc">네이버 카페에서 자주 같이 비교되는 호텔이에요</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{_pc}</ul></div>
             <a class="vs-more-link btn-text" href="../compare?ids={pid},{partners[0]}">나란히 비교하기</a>
         </div>'''
@@ -4236,11 +4236,10 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     rank_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], i + 1, depth, chips_of(p)) for i, p in enumerate(top))
     if col['kind'] == 'who':
         _g = _who_group(col['who'])
-        rank_note = (f'{"·".join(SUB_PHRASE[s] for s in _g[2])} 불만이 모두 위험 등급이 아닌 곳을, 세 항목 불만이 적은 순으로 보여드려요 '
-                     f'(최근 1년 리뷰 {RANK_MIN}개 미만·분석 준비 중 호텔 제외)')
+        rank_note = (f'{"·".join(SUB_PHRASE[s] for s in _g[2])} 불만이 모두 위험이 아닌 곳, 불만 적은 순 · 최근 1년 리뷰 {RANK_MIN}건 이상만')
     else:
-        rank_note = (f'조건에 맞는 곳을 추천순으로 보여드려요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만은 아래 따로)' if is_all else
-                     f'추천순이에요 · {REC_SORT_DESC} (최근 1년 리뷰 {RANK_MIN}개 미만·분석 준비 중 호텔 제외)')
+        rank_note = (f'추천순 · 최근 1년 리뷰 {RANK_MIN}건 이상은 여기, 미만은 아래 따로' if is_all else
+                     f'추천순 · 최근 1년 리뷰 {RANK_MIN}건 이상인 호텔만')
     search_link = f'<a class="btn-gray btn-block" href="{"../" * depth}search{("?area=" + col["area"]) if col["kind"]=="area" else ""}">{CITY["ko"]} 호텔 전체 검색</a>'
     rank_block = (f'''<div class="hub-sect">
         <div class="hub-h2">추천 TOP {len(top)}</div>

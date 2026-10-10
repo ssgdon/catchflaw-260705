@@ -18,7 +18,7 @@
 #main .search-box .ac-box .ac-item + .ac-item{border-top:1px solid var(--line);}
 #main .search-box .ac-box .ac-item:active{background:var(--primary-soft);}
 #main .search-box .ac-box .ac-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:var(--fw-bold);}
-#main .search-box .ac-box .ac-p{flex:0 0 auto;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--primary);}
+#main .search-box .ac-box .ac-p{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
 #main .search-box .ac-box .ac-p.dim{color:var(--ink-3);}
 #main .search-box .ac-box .ac-none{padding:14px 16px;font-size:var(--fs-caption);color:var(--ink-2);}
 
@@ -46,15 +46,12 @@
 .map-pop b{display:block;margin:0 0 4px;font-size:var(--fs-caption);line-height:1.35;}
 .map-pop .pop-meta{margin:0 0 6px;font-size:var(--fs-meta);color:var(--ink-2);}
 .map-pop .pop-p{display:inline-block;padding:2px 8px;border-radius:6px;font-size:var(--fs-micro);font-weight:700;color:var(--ink-inverse);}
-.map-pop .pop-link{display:block;margin:8px 0 0;font-size:var(--fs-meta);font-weight:700;color:var(--primary);}
+.map-pop .pop-link{display:block;margin:8px 0 0;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;}
 .leaflet-popup-content{margin:12px 14px;}
 .leaflet-popup-content-wrapper{border-radius:12px;}
 
 /* ---------- 검색: 미지원 도시 안내 ---------- */
 #search .notice{padding:0 var(--page-x);}
-#search .notice-card{margin:20px 0 4px;padding:var(--sp-8) var(--sp-5);border-radius:var(--radius-card);background:var(--surface);text-align:center;}
-#search .notice-tit{margin:var(--sp-3) 0 var(--sp-2);line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-#search .notice-txt{line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink-2);}
 #search .list li.sub-head{padding:24px 0 0;border:0;line-height:1.4;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink-2);}
 
 /* ---------- 검색 리스트 정돈 (가로 넘침 방지 · 부족하면 줄바꿈으로 높이 확보) ---------- */
@@ -112,7 +109,7 @@
 /* 위치 표시 손잡이: 숫자를 넣지 않으므로 슬라이더 손잡이 크기(16) — 중심이 채움 끝에 오도록 */
 #detail .analysis .risk-acc-body .stat-fill .bubble{position:absolute;top:50%;right:0;transform:translate(50%,-50%);display:block;width:16px;height:16px;border-radius:50%;background:var(--surface-card);border:3px solid;box-shadow:0 1px 3px rgb(0 0 0 / 16%);font-style:normal;}
 #detail .analysis .risk-acc-body .stat-count{flex:0 0 40px;text-align:right;font-size:var(--fs-caption);font-weight:var(--fw-bold);font-variant-numeric:tabular-nums;padding:0;}
-#detail .analysis .risk-acc-body .stat-count.has-reviews{color:var(--primary);text-decoration:underline;text-underline-offset:2px;cursor:pointer;}
+#detail .analysis .risk-acc-body .stat-count.has-reviews{color:var(--ink);text-decoration:underline;text-underline-offset:3px;cursor:pointer;}
 #detail .analysis .risk-acc-body .stat-count.zero{color:var(--ink-3);opacity:.6;}
 #detail .analysis .risk-acc-body .stat-row.is-danger .stat-fill{background:linear-gradient(90deg,var(--danger-tint) 0%,var(--danger) 100%);}
 #detail .analysis .risk-acc-body .stat-row.is-danger .bubble{border-color:var(--danger);color:var(--danger-text);}
@@ -213,7 +210,7 @@
 
 /* ---------- 검색: 지도 영역 안내 ---------- */
 #search .map-hint{padding:8px var(--page-x) 0;font-size:var(--fs-meta);color:var(--ink-3);}
-#search .map-hint b{color:var(--primary);font-weight:var(--fw-bold);}
+#search .map-hint b{color:var(--ink);font-weight:var(--fw-bold);}
 
 /* ---------- 리뷰 오분류 신고 (FEEDBACK-2610 §13 · js/report.js) — 눈에 띄지 않는 텍스트 버튼(시트는 ds.css §v3 .ov) ---------- */
 #detail .q-foot{display:flex;justify-content:flex-end;margin-top:var(--sp-3);padding-top:var(--sp-2);border-top:1px solid var(--line);}
@@ -238,10 +235,10 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #search .rec-header .rh-sub{margin:6px 0 12px;font-size:var(--fs-caption);color:var(--ink-2);}
 #search .rec-header .rh-chips{display:flex;flex-wrap:wrap;gap:6px;}
 #search .rec-header .rh-chip{display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 11px;border-radius:30px;background:var(--surface-card);font-size:var(--fs-micro);font-weight:var(--fw-bold);color:var(--ink-2);}
-#search .rec-header .rh-chip .rh-rank{color:var(--primary);margin-right:3px;}
+#search .rec-header .rh-chip .rh-rank{color:var(--ink);margin-right:3px;}
 
 /* rec 지도 순위 마커 (divIcon) */
-.rec-marker{display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--primary);color:var(--ink-inverse);font-weight:800;border:2px solid var(--surface-card);box-shadow:0 1px 4px rgb(0 0 0 / 25%);font-variant-numeric:tabular-nums;}
+.rec-marker{display:flex;align-items:center;justify-content:center;border-radius:50%;background:var(--ink);color:var(--ink-inverse);font-weight:800;border:2px solid var(--surface-card);box-shadow:0 1px 4px rgb(0 0 0 / 25%);font-variant-numeric:tabular-nums;}
 .rec-marker.big{width:32px;height:32px;font-size:var(--fs-caption);}
 .rec-marker.small{width:26px;height:26px;font-size:var(--fs-meta);}
 
@@ -287,7 +284,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 .ac-box .ac-item.is-sel{background:var(--primary-soft);}
 .ac-box .ac-miss{padding:14px 16px;font-size:var(--fs-caption);color:var(--ink-2);line-height:1.5;cursor:pointer;}
 .ac-box .ac-miss .ac-miss-q{font-weight:var(--fw-bold);color:var(--ink);}
-.ac-box .ac-miss b{color:var(--primary);font-weight:var(--fw-bold);text-decoration:underline;text-underline-offset:2px;}
+.ac-box .ac-miss b{color:var(--ink);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
 .ac-box .ac-miss:active{background:var(--primary-soft);}
 /* F45: 검색페이지도 공통 헤더(.det-header 56px) 사용 → #title 검색바는 헤더 아래로 스티키. z는 헤더(90) 아래 */
 #title{top:56px;z-index:80;}
@@ -298,7 +295,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #title .search .ac-box .ac-item + .ac-item{border-top:1px solid var(--line);}
 #title .search .ac-box .ac-item:active,#title .search .ac-box .ac-item.is-sel{background:var(--primary-soft);}
 #title .search .ac-box .ac-name{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:var(--fw-bold);}
-#title .search .ac-box .ac-p{flex:0 0 auto;font-size:var(--fs-meta);font-weight:var(--fw-bold);}
+#title .search .ac-box .ac-p{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
 #title .search .ac-box .ac-p.dim{color:var(--ink-3);}
 #title .search .ac-box .ac-area{display:flex;align-items:center;gap:8px;padding:12px 16px;font-size:var(--fs-body);color:var(--ink);}
 #title .search .ac-box .ac-area + .ac-area{border-top:1px solid var(--line);}
@@ -592,7 +589,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #detail .disappear .head .v-sub{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-2);text-align:center;}
 /* 근거 2줄: 글 리뷰 중 실망 리뷰 N건(→ 리스크 상세) · 예약을 접을 만한 심각 리뷰 */
 #detail .disappear .ev{margin-top:var(--sp-4);border-top:1px solid var(--line);}
-#detail .disappear .ev-row{display:flex;align-items:center;gap:var(--sp-3);width:100%;padding:var(--sp-3) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-2);text-align:left;text-decoration:none;word-break:keep-all;}
+#detail .disappear .ev-row{display:flex;align-items:center;gap:var(--sp-3);width:100%;min-height:64px;padding:var(--sp-3) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);text-align:left;text-decoration:none;word-break:keep-all;}
 #detail .disappear .ev-row b{font-weight:var(--fw-bold);color:var(--ink);}
 #detail .disappear .ev-txt{flex:1 1 auto;min-width:0;}
 #detail .disappear .ev-dot{flex:none;width:var(--sp-2);height:var(--sp-2);border-radius:50%;background:var(--ink-3);}
@@ -670,16 +667,18 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 /* 비교 토글 = 카드 오른쪽 아래(행동 자리) — 위에 두면 호텔명 폭을 60px 빼앗아 이름이 쪼개짐. 마지막 줄만 버튼 폭만큼 비움 */
 #search .list .item.with-cmp .cont{padding-bottom:var(--sp-1);}
 #search .list .item.with-cmp .cont > :last-child{padding-right:72px;}
-#search .r-cmp{position:absolute;bottom:0;right:0;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-chip-sm);padding:0 var(--sp-2);border:1px solid var(--line-strong);border-radius:var(--radius-chip);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
+#search .r-cmp{position:absolute;bottom:0;right:0;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-chip-sm);padding:0 var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);cursor:pointer;}
 #search .r-cmp i{display:block;width:var(--sp-3);height:var(--sp-3);border:1.5px solid var(--ink-3);border-radius:var(--sp-1);}
-#search .r-cmp.is-on{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
-#search .r-cmp.is-on i{border-color:var(--primary);background:var(--primary);}
+#search .r-cmp.is-on{border-color:var(--ink);background:var(--surface-2);box-shadow:inset 0 0 0 1px var(--ink);}   /* 담김 = 선택 문법(2px 잉크 + 옅은 면) */
+#search .r-cmp.is-on i{border-color:var(--ink);background:var(--ink);}
 #search .r-tags{display:flex;flex-wrap:wrap;gap:var(--sp-1);margin-top:var(--sp-2);}
 
 /* P5 비교 페이지 (/compare, js/compare-page.js) */
-#cmp .cmp-empty{padding:var(--sp-12) var(--page-x);text-align:center;}
-#cmp .cmp-empty .ce-tit{font-size:var(--fs-h3);font-weight:var(--fw-display);line-height:var(--lh-ui);}
-#cmp .cmp-empty .ce-txt{margin-top:var(--sp-2);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-2);}
+#cmp .cmp-empty{padding:var(--sp-8) var(--page-x) var(--sp-12);text-align:left;}   /* 페이지형 빈 상태(§6-10): 왼쪽 정렬 */
+#cmp .cmp-empty .ce-tit{font-size:var(--fs-h2);font-weight:var(--fw-bold);line-height:var(--lh-title);letter-spacing:var(--ls-title);}
+#cmp .cmp-empty .ce-txt{margin-top:var(--sp-2);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#cmp .cmp-empty .btn-brand{margin-top:var(--sp-6);}
+#cmp .cmp-empty .btn-text{display:flex;margin-top:var(--sp-2);}
 #cmp .cmp-hd{position:sticky;top:56px;z-index:80;display:grid;grid-template-columns:repeat(var(--n,3),minmax(0,1fr));gap:var(--sp-2);padding:var(--sp-3) var(--page-x);background:var(--surface-card);border-bottom:1px solid var(--line);}
 #cmp .cmp-h{position:relative;min-width:0;}
 #cmp .cmp-h-sp{display:none;}   /* PC 항목명 칸 자리(pc.css에서 표시) */
@@ -708,7 +707,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #cmp .cmp-switch{flex:none;white-space:nowrap;display:inline-flex;align-items:center;gap:var(--sp-2);border:0;background:none;font-size:var(--fs-caption);font-weight:var(--fw-bold);color:var(--ink-2);cursor:pointer;}
 #cmp .cmp-switch i{position:relative;width:36px;height:20px;border-radius:var(--radius-pill);background:var(--line-strong);transition:background .2s;}
 #cmp .cmp-switch i::after{content:"";position:absolute;left:2px;top:2px;width:16px;height:16px;border-radius:50%;background:var(--surface-card);transition:left .2s;}
-#cmp .cmp-switch.is-on i{background:var(--primary);}
+#cmp .cmp-switch.is-on i{background:var(--ink);}
 #cmp .cmp-switch.is-on i::after{left:18px;}
 #cmp .cmp-grp{padding-top:var(--section-pt);}
 #cmp .cmp-gt{padding:0 var(--page-x) var(--sp-2);font-size:var(--fs-h2);line-height:var(--lh-title);letter-spacing:var(--ls-title);font-weight:var(--fw-display);}
@@ -760,7 +759,7 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 /* 비교 페이지: 호텔 추가 칸·추가 팝업 (모바일 = 바텀시트, PC는 pc.css에서 가운데 팝업) */
 #cmp .cmp-add{display:block;min-width:0;padding:0;border:0;background:none;text-align:left;cursor:pointer;}
 #cmp .cmp-add .ca-box{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-1);aspect-ratio:4/3;border:1.5px dashed var(--line-strong);border-radius:var(--radius-box);background:var(--surface);color:var(--ink-2);text-align:center;transition:border-color .15s,background .15s;}
-#cmp .cmp-add:hover .ca-box{border-color:var(--primary);background:var(--primary-soft);color:var(--primary);}
+#cmp .cmp-add:hover .ca-box{border-color:var(--ink);background:var(--surface-2);color:var(--ink);}
 #cmp .cmp-add .ca-plus{position:relative;width:20px;height:20px;}
 #cmp .cmp-add .ca-plus::before,#cmp .cmp-add .ca-plus::after{content:"";position:absolute;left:50%;top:50%;background:currentColor;border-radius:1px;transform:translate(-50%,-50%);}
 #cmp .cmp-add .ca-plus::before{width:16px;height:2px;}
@@ -859,10 +858,10 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #search .list .cont .stat .price b{font-weight:var(--fw-bold);color:var(--ink-2);}   /* 구글 최저가는 참고치라 강조하지 않는다 */
 #search .list .r-foot{flex-basis:100%;display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-3);}
 #search .list .r-foot .r-tags{margin:0;flex:1 1 auto;}
-#search .list .r-foot .r-cmp{position:static;margin-left:auto;flex:none;}
+#search .list .r-foot .r-cmp{position:relative;margin-left:auto;flex:none;}
+#search .r-cmp::before{content:"";position:absolute;inset:-4px 0;}   /* 36 → 터치 44 */
 #search .list .thumb{position:relative;}
 #search .list .thumb .rec-rank{position:absolute;z-index:2;top:6px;left:6px;display:inline-flex;align-items:center;justify-content:center;min-width:24px;height:24px;padding:0 6px;border-radius:var(--radius-chip);background:var(--ink);color:var(--ink-inverse);font-size:var(--fs-meta);font-weight:var(--fw-display);}
-#search .list .thumb .rec-rank.is-top{background:var(--primary);}
 /* 홈 섹션 제목의 키워드 강조 (문구 압축 규칙: 제목 짧게 + 핵심어 1~2개 색) */
 #main .head .title em{font-style:normal;color:var(--primary);}
 
@@ -874,7 +873,7 @@ html.is-scroll-down #float:has(.btn-airec){transform:translateX(-50%);opacity:1;
 #detail ~ #float{transition:transform .25s ease,opacity .25s ease,visibility .25s;}
 html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 /* 근거 1줄(실망 리뷰 M건)은 버튼 — 링크 행과 같은 모양 */
-#detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink-2);cursor:pointer;}
+#detail .disappear button.ev-row{appearance:none;-webkit-appearance:none;margin:0;border:0;border-bottom:1px solid var(--line);background:none;font:inherit;color:var(--ink);cursor:pointer;}
 
 /* 홈 신뢰 띠 (HOME-CONCEPT §4-3): 히어로 아래 한 줄 — 분석 규모·중립성·기준일 */
 #main .trust-band{display:flex;flex-wrap:wrap;justify-content:center;gap:4px var(--sp-3);padding:var(--sp-3) var(--page-x);border-bottom:1px solid var(--line);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:1.5;color:var(--ink-3);text-align:center;}
@@ -894,7 +893,6 @@ html.is-scroll-down #detail ~ #float{opacity:0;visibility:hidden;}
 #search .list .rec-group{display:flex;align-items:baseline;gap:var(--sp-2);padding:var(--sp-5) 0 var(--sp-2);border-top:0;}
 #search .list .rec-group + li{border-top:0;}
 #search .list .rec-group .rg-t{font-size:var(--fs-body);font-weight:var(--fw-display);color:var(--warning-text);}
-#search .list .rec-group.is-pass .rg-t{color:var(--primary);}
 #search .list .rec-group .rg-n{font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);}
 #search .list .rec-more-wrap{padding:var(--sp-4) 0;border-top:1px solid var(--line);}
 #main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
@@ -909,11 +907,11 @@ html.rec-mode #title{display:none;}
 #search .rec-header .rh-chips{flex-wrap:nowrap;gap:6px;margin:var(--sp-3) calc(var(--page-x) * -1) 0;padding:0 var(--page-x);overflow-x:auto;scrollbar-width:none;}
 #search .rec-header .rh-chips::-webkit-scrollbar{display:none;}
 #search .rec-header .rh-chip{flex:none;height:var(--h-chip-sm);padding:0 var(--sp-3);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-2);white-space:nowrap;}
-#search .rec-header .rh-chip.is-pr{border-color:var(--primary);color:var(--primary);font-weight:var(--fw-bold);}
+#search .rec-header .rh-chip.is-pr{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);color:var(--ink);font-weight:var(--fw-semi);}
 #search .rec-header .rh-chip.is-no{background:var(--surface-2);border-color:var(--surface-2);}
 #search .rec-header .rh-sum{margin-top:var(--sp-4);}
 #search .rec-header .rh-lead{font-size:var(--fs-body);font-weight:var(--fw-regular);line-height:1.5;color:var(--ink);}
-#search .rec-header .rh-lead b{font-weight:var(--fw-display);color:var(--primary);}
+#search .rec-header .rh-lead b{font-weight:var(--fw-bold);color:var(--ink);}
 #search .rec-header .rh-note{margin-top:2px;font-size:var(--fs-meta);line-height:1.5;color:var(--ink-3);}
 /* 묶음 머리: 섹션 라벨 + 개수 알약 */
 #search .list .rec-group{padding:var(--sp-6) 0 var(--sp-1);}

@@ -637,3 +637,12 @@ html.has-cmp #detail ~ #float{bottom:calc(var(--h-btn) + var(--h-float) + var(--
 .faq-chips{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* FAQ 키워드: '후기가 갈려요 · 가족여행 추천' 메타 한 줄 */
 .vs-topic{margin-bottom:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}   /* 비교 카드 주제 = 메타 글자('텐진 숙소') */
 .visual .hotel-gallery .gallery-count{position:absolute;z-index:2;right:var(--sp-4);bottom:var(--sp-4);display:inline-flex;align-items:center;height:var(--h-badge);padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--scrim-photo);font-size:var(--fs-micro);line-height:1;font-weight:var(--fw-semi);color:var(--ink-inverse);font-variant-numeric:tabular-nums;}   /* 사진 카운터: 26 · 8 · 스크림 + 흰 13/600 */
+
+/* 섹션형 빈 상태(§6-10): 18/700 제목 → 8 → 14 --ink-3 본문 2줄 이내 → 16 → 외곽선 버튼 36. 회색 상자 없음 — 검색 미지원 도시·AI 조건 미달 */
+.empty-sec{padding:var(--sp-8) 0 var(--sp-4);}
+#search .notice .empty-sec{padding-top:var(--sp-5);}
+.es-tit{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
+.es-txt{margin-top:var(--sp-2);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);text-wrap:pretty;}
+.es-btns{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-4);}
+#detail .information .info-share{align-self:flex-start;margin-top:var(--sp-3);}   /* 상세 정보 영역 공유 = 외곽선 소형 버튼(내용 폭) */
+#detail .information .info-share img{width:18px;height:18px;}

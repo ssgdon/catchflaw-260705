@@ -6,7 +6,6 @@
   'use strict';
 
   // 등급 색은 토큰 변수로(--safe·--warning·--danger), 없으면 메타 회색
-  var BAND_VAR = { safe: 'var(--safe)', warning: 'var(--warning)', danger: 'var(--danger)' };
 
   function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
 
@@ -166,7 +165,7 @@
     function hotelRow(h, i) {
       var band = h.band || null;
       var chip = h.p != null
-        ? '<span class="ac-p" style="color:' + (BAND_VAR[band] || 'var(--ink-3)') + '">실망 ' + h.p + '%</span>'
+        ? '<span class="ac-p"><i class="sdot' + (band ? ' is-' + band : '') + '"></i>실망 ' + h.p + '%</span>'   // 글자는 잉크, 의미는 점이(§3-3)
         : '<span class="ac-p dim">분석 준비 중</span>';
       var krn = (h.krn > 0) ? '<span class="ac-krn">한국인 리뷰 ' + h.krn.toLocaleString() + '건</span>' : '';
       return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'
