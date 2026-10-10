@@ -111,7 +111,7 @@
       + '<table class="cv-tbl"><thead>' + head + '</thead><tbody>' + body + '</tbody></table></section>';
   }
 
-  // ③ 1박 가격: 호텔마다 한 줄 — 평일(채운 점)에서 주말(빈 점)까지 막대, 축은 0부터(길이 = 가격)
+  // ③ 1박 가격: 호텔마다 한 줄 — 평일(채운 점)에서 주말(빈 점)까지 막대, 점 위에 숫자(만원)만, 축은 0부터(길이 = 가격). 글 줄 없음(2026-10-10)
   function priceChart(H) {
     var mx = 0;
     H.forEach(function (h) { if (h.krw) mx = Math.max(mx, man(h.krw)); if (h.pw) mx = Math.max(mx, man(h.pw)); });
@@ -121,13 +121,17 @@
     function x(v) { return (v / top * 100).toFixed(1) + '%'; }
     var rows = H.map(function (h, i) {
       var wd = h.krw ? man(h.krw) : null, we = h.pw ? man(h.pw) : null;
-      if (wd == null) return '<li class="cv-pr"><div class="cv-pn">' + dot(i) + esc(sname(h)) + '</div><p class="cv-pv is-none">가격 정보 없음</p></li>';
-      var track = '<div class="cv-track">'
+      var name = '<div class="cv-pn">' + dot(i) + esc(sname(h)) + '</div>';
+      if (wd == null) return '<li class="cv-pr">' + name + '<p class="cv-pv">가격 정보 없음</p></li>';
+      // 숫자는 점 바로 위(단위 '만원'은 아래 축에만). 두 점이 가까우면(축의 12% 안) 평일은 왼쪽·주말은 오른쪽으로 벌려 겹치지 않게
+      var near = we != null && (we - wd) / top < 0.12;
+      return '<li class="cv-pr">' + name + '<div class="cv-track">'
         + (we != null ? '<span class="cv-span is-c' + i + '" style="left:' + x(wd) + ';width:' + x(Math.max(we - wd, 0)) + '"></span>' : '')
         + '<span class="cv-pt is-wd is-c' + i + '" style="left:' + x(wd) + '"></span>'
-        + (we != null ? '<span class="cv-pt is-we is-c' + i + '" style="left:' + x(we) + '"></span>' : '') + '</div>';
-      var txt = '평일 <b>약 ' + wd + '만원</b>' + (we != null ? ' → 주말 <b>약 ' + we + '만원</b>' : '');
-      return '<li class="cv-pr"><div class="cv-pn">' + dot(i) + esc(sname(h)) + '</div>' + track + '<p class="cv-pv">' + txt + '</p></li>';
+        + (we != null ? '<span class="cv-pt is-we is-c' + i + '" style="left:' + x(we) + '"></span>' : '')
+        + '<span class="cv-lb is-wd' + (near ? ' is-l' : '') + '" style="left:' + x(wd) + '" aria-label="평일 약 ' + wd + '만원">' + wd + '</span>'
+        + (we != null ? '<span class="cv-lb is-we' + (near ? ' is-r' : '') + '" style="left:' + x(we) + '" aria-label="주말 약 ' + we + '만원">' + we + '</span>' : '')
+        + '</div></li>';
     }).join('');
     var axis = '<div class="cv-axis-x" aria-hidden="true">' + ticks.map(function (t) { return '<span style="left:' + x(t) + '">' + t + (t === top ? '만원' : '') + '</span>'; }).join('') + '</div>';
     return '<section class="cv-blk cv-price"><h3 class="cv-t">1박 가격</h3><p class="cv-s">2인 1박 · <span class="cv-key"><i class="cv-k is-wd"></i>평일</span> <span class="cv-key"><i class="cv-k is-we"></i>주말(금·토)</span></p>'

@@ -882,13 +882,15 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .cv-prs{margin:var(--sp-4) 0 0;padding:0;list-style:none;}
 .cv-pr + .cv-pr{margin-top:var(--sp-5);}
 .cv-pn{display:flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
-.cv-track{position:relative;height:var(--sp-6);margin:var(--sp-1) var(--sp-2) 0;border-bottom:1px solid var(--line);}
-.cv-span{position:absolute;top:50%;height:6px;margin-top:-3px;border-radius:var(--radius-pill);background:currentColor;opacity:.35;}
-.cv-pt{position:absolute;top:50%;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;border:3px solid currentColor;background:var(--surface-card);}
+.cv-track{position:relative;height:calc(var(--sp-6) + var(--sp-5));margin:var(--sp-1) var(--sp-2) 0;border-bottom:1px solid var(--line);}   /* 위 = 숫자 줄, 아래 = 점·막대 */
+.cv-span{position:absolute;bottom:var(--sp-3);height:6px;margin-bottom:-3px;border-radius:var(--radius-pill);background:currentColor;opacity:.35;}
+.cv-pt{position:absolute;bottom:var(--sp-3);width:14px;height:14px;margin:0 0 -7px -7px;border-radius:50%;border:3px solid currentColor;background:var(--surface-card);}
 .cv-pt.is-wd{background:currentColor;}
-.cv-pv{margin:var(--sp-1) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
-.cv-pv b{font-weight:var(--fw-bold);color:var(--ink);}
-.cv-pv.is-none{color:var(--ink-4);}
+.cv-lb{position:absolute;top:0;transform:translateX(-50%);font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-bold);color:var(--ink);white-space:nowrap;}   /* 점 위 숫자(만원) */
+.cv-lb.is-we{font-weight:var(--fw-semi);color:var(--ink-3);}   /* 주말 = 빈 점과 짝, 한 단계 연하게 */
+.cv-lb.is-l{transform:translateX(calc(-100% + var(--sp-1)));}
+.cv-lb.is-r{transform:translateX(calc(var(--sp-1) * -1));}
+.cv-pv{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-4);}
 .cv-axis-x{position:relative;height:var(--sp-5);margin:var(--sp-3) var(--sp-2) 0;font-size:var(--fs-meta);color:var(--ink-3);}
 .cv-axis-x span{position:absolute;top:0;transform:translateX(-50%);white-space:nowrap;}
 .cv-axis-x span:first-child{transform:none;}
