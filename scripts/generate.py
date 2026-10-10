@@ -95,6 +95,8 @@ CITY = {'code': 'fukuoka', 'ko': '후쿠오카', 'en': 'Fukuoka', 'data_asof': '
 REC = {}      # pid → rec_score(0~1, scoring.rec_scores). 정렬 전용, 화면에 숫자로 노출 금지
 KRN = {}      # pid → 최근 1년 한국인 리뷰 수 (kr_stats 1y kr_n) = 수요 신호
 KRR = {}      # pid → 최근 1년 한국인 비율(%) = 한국인 리뷰 ÷ 글 리뷰. 한국인 리뷰 10건 이상일 때만 (표시용)
+SV = {}       # pid → 네이버 월간 검색량(PC+모바일, 별칭 합산) = 인지도 신호. pipeline/kw_volume.py → data-src/search_volume.json.
+              #       추천 순위엔 쓰지 않는다(알아보는 정도 ≠ 만족). 많이 찾는 호텔 칩·비교 쌍·사이트맵 우선순위에만
 PAIRS = []    # [(pid_a, pid_b)] 카페에서 자주 같이 비교되는 쌍 (scripts/compare_pairs.json)
 REC_SORT_DESC = '실망 확률이 낮고, 한국인 리뷰가 많고, 구글 평점이 높은 순'   # '추천순' 툴팁·설명 정본
 
@@ -685,6 +687,36 @@ def resolve_pairs(hotels_meta, H):
             seen.add((pa, pb)); out.append((pa, pb))
     return out
 
+PAIR_SV_MIN = 1500     # 두 호텔 모두 월 검색 1,500회 이상 (상위 약 40%)
+PAIR_KRN_MIN = 30      # 두 호텔 모두 최근 1년 한국인 리뷰 30건 이상
+PAIR_PRICE_RATIO = 1.3 # 평일 가격 차이 1.3배 이내
+PAIR_KM = 1.2          # 직선 1.2km 이내 (같은 동네)
+
+def auto_pairs(hotels_meta, H, k=12):
+    """검색량 기반 비교 쌍 (2026-10-10): 한국인이 많이 찾는(검색량·한국인 리뷰) 호텔 중 가격·위치가 비슷한 쌍.
+       두 호텔의 검색량 중 작은 쪽이 큰 쌍부터 고르되 한 호텔은 한 쌍에만, 보여주는 순서는 실망 확률 차이가 큰 쌍부터
+       (비슷한 두 곳 중 어디가 덜 실망스러운지가 고객에게 가장 쓸모 있는 정보). 검색량 파일이 없으면 빈 목록."""
+    import itertools
+    if not SV: return []
+    pool = [p for p, m in hotels_meta.items()
+            if p in H and H[p]['scored'] and H[p].get('ranked') and SV.get(p, 0) >= PAIR_SV_MIN
+            and KRN.get(p, 0) >= PAIR_KRN_MIN and m.get('krw') and m.get('latitude')]
+    cands = []
+    for a, b in itertools.combinations(pool, 2):
+        ma, mb = hotels_meta[a], hotels_meta[b]
+        if max(ma['krw'], mb['krw']) / min(ma['krw'], mb['krw']) > PAIR_PRICE_RATIO: continue
+        if haversine_km(float(ma['latitude']), float(ma['longitude']), float(mb['latitude']), float(mb['longitude'])) > PAIR_KM: continue
+        cands.append((min(SV[a], SV[b]), a, b))
+    cands.sort(reverse=True)
+    used, sel = set(), []
+    for _, a, b in cands:
+        if a in used or b in used: continue
+        used |= {a, b}
+        sel.append((a, b) if H[a]['p_crit'] <= H[b]['p_crit'] else (b, a))   # 실망 확률 낮은 쪽을 왼쪽에
+        if len(sel) >= k: break
+    sel.sort(key=lambda ab: -abs(H[ab[0]]['p_crit'] - H[ab[1]]['p_crit']))
+    return sel
+
 def vs_verdict(pa, pb, hotels_meta, H):
     """비교 카드 결론 1줄 (HOME-CONCEPT §2.1 · FEEDBACK-2610 §2.2): 둘 다 위험 → '두 곳 다 평균보다 실망이 잦아요',
     차이 < 평균의 0.3배면 '비슷해요', 1.5배 이상이면 'N배 낮아요'. 반환 (문구 HTML, 낮은 쪽 pid|None)."""
@@ -729,11 +761,12 @@ def vs_sub(pa, pb, win, hotels_meta, H):
 
 def vs_topic(pa, pb, hotels_meta):
     """비교 카드 주제 한 줄: 두 호텔의 지역(같으면 '텐진', 다르면 '하카타역 vs 텐진') + 같은 가격대면 밴드."""
-    def area_of(p):
+    def area_of(p):   # 반경 안에 드는 지역 중 중심이 가장 가까운 곳 (나카스 호텔이 텐진 반경에도 걸려 '텐진'으로 붙던 문제)
         m = hotels_meta[p]
-        for a in AREAS:
-            if _in_area(m, a): return a['ko'].split('·')[0]
-        return None
+        if not m.get('latitude'): return None
+        la, lo = float(m['latitude']), float(m['longitude'])
+        hits = sorted((haversine_km(la, lo, a['lat'], a['lng']), a['ko'].split('·')[0]) for a in AREAS if _in_area(m, a))
+        return hits[0][1] if hits else None
     a, b = area_of(pa), area_of(pb)
     if a and b and a != b: return f'{a} vs {b}'                 # 지역이 다르면 그 자체가 주제
     area = a or b
@@ -857,7 +890,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     # 숨겨진 보석: 한국인 비중이 낮지만(25% 미만 — 미야코·블라섬처럼 실망 확률 최저권인데 한국인 비중이 낮은 곳, 수요 혼합 신호에선 뒤로 밀리는 곳) 실망 확률·평점이 좋은 곳 (2026-10-10, 50건 미만 → 비율 기준)
     gems = [p for p in rec_pool if (KRN.get(p, 0) / max(H[p].get('text_1y') or 0, 1)) < 0.25 and H[p]['p_crit'] <= SAFE_MULT * (CITY.get('crit') or 0)
             and bayes_rating(hotels_meta[p].get('total_score'), hotels_meta[p].get('reviews_count')) >= 4.2][:8]   # 조용히 좋은 곳(인기 가중 상쇄)
-    hot = sorted((p for p in scored), key=lambda p: -KRN.get(p, 0))[:6]           # 히어로 칩: 판정 진입이라 위험도 포함
+    hot = sorted((p for p in scored), key=lambda p: (-SV.get(p, -1), -KRN.get(p, 0)))[:6]   # 히어로 칩: 네이버 검색량 순(없으면 한국인 리뷰 수). 판정 진입이라 위험도 포함
     cur1 = worst_by_sub('청결', '벌레')
     cur2 = worst_by_sub('냄새', '악취')
 
@@ -902,7 +935,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in sorted(PAIRS[:4], key=_gap, reverse=True))
     vs_block = f'''<article class="section sec-vs">
                 <div class="home-vs init">
-                    <div class="head"><div class="title"><em>한국인</em>이 가장 많이 <em>비교</em>하는 숙소</div>
+                    <div class="head"><div class="title"><em>많이 찾는</em> 호텔끼리 <em>비교</em></div>
                     </div>
                     <div class="vs-list">{vs_cards}</div>
                 </div>
@@ -2821,7 +2854,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                          extra=f'<div class="vs-line">실망 확률 <b>{pct(H[q]["p_crit"])}%</b><span> · 이 호텔은 {pct(h["p_crit"])}%</span></div>') for q in partners)
         pairs_block = f'''<div class="sect hotel" id="sec-vs">
             <div class="head"><div class="title">이 호텔과 함께 고민하는 호텔</div>
-            <div class="desc">네이버 카페에서 자주 같이 비교되는 호텔이에요 · 실망 확률·불만 항목을 나란히 놓고 보세요</div></div>
+            <div class="desc">한국인이 많이 찾는 호텔 중 가격·위치가 비슷한 곳이에요 · 실망 확률·불만 항목을 나란히 놓고 보세요</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{_pc}</ul></div>
             <a class="vs-more-link" href="../compare?ids={pid},{partners[0]}">나란히 비교하기 →</a>
         </div>'''
@@ -4525,13 +4558,21 @@ Allow: /
 Sitemap: {BASE}/sitemap.xml
 '''
 
+def sv_priority(pid):
+    """상세 페이지 사이트맵 우선순위: 네이버 검색량 상위 25% 0.9 · 중앙 이상 0.8 · 나머지 0.7 (검색량 없으면 0.8)."""
+    if not SV: return '0.8'
+    vals = sorted(SV.values())
+    q75, q50 = vals[int(len(vals) * 0.75)], vals[len(vals) // 2]
+    v = SV.get(pid, 0)
+    return '0.9' if v >= q75 else '0.8' if v >= q50 else '0.7'
+
 def build_sitemap(detail_pids, collection_slugs=()):
     lastmod = CITY['asof'] or time.strftime('%Y-%m-%d')   # meta.json asof(YYYY-MM-DD), 없으면 빌드일
     rows = [(f'{BASE}/', 'daily', '1.0'),
             (f'{BASE}/search', 'daily', '0.9'),
             (f'{BASE}/about', 'monthly', '0.5'),   # 소개·방법론 (LEGAL-SOFTEN §2-c)
             *[(f'{BASE}/{slug}', 'weekly', '0.9') for slug in collection_slugs],   # 허브 priority 0.9
-            *[(f'{BASE}/hotels/{pid}', 'weekly', '0.8') for pid in detail_pids]]
+            *[(f'{BASE}/hotels/{pid}', 'weekly', sv_priority(pid)) for pid in detail_pids]]
     urls = '\n'.join(
         f'  <url><loc>{E(loc)}</loc><lastmod>{lastmod}</lastmod>'
         f'<changefreq>{cf}</changefreq><priority>{pr}</priority></url>'
@@ -4564,7 +4605,13 @@ def main():
     KRR.clear(); KRR.update({p: round(100 * n / H[p]['text_1y']) for p, n in KRN.items()
                              if n >= 10 and p in H and (H[p].get('text_1y') or 0) > 0})
     REC.clear(); REC.update(rec_scores(H, hotels_meta, KRN))
-    PAIRS[:] = resolve_pairs(hotels_meta, H)
+    SV.clear()
+    if os.path.exists(os.path.join(SRC, 'search_volume.json')):
+        try: SV.update({p: int(d.get('v') or 0) for p, d in json.load(open(os.path.join(SRC, 'search_volume.json'), encoding='utf-8'))['hotels'].items()})
+        except Exception: pass
+    _auto = auto_pairs(hotels_meta, H)
+    _seen = {frozenset(ab) for ab in _auto}
+    PAIRS[:] = _auto + [ab for ab in resolve_pairs(hotels_meta, H) if frozenset(ab) not in _seen]   # 홈 4장 = 자동 상위, 상세 '함께 고민'은 카페 시드까지
     FAQ.clear(); FAQ.update(faq_data or {})
 
     if os.path.exists(OUT): shutil.rmtree(OUT)
@@ -4648,7 +4695,7 @@ def main():
     sitemap_n = n + 3 + len(col_slugs)   # 홈·검색·about + 허브 + 상세
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 분석 준비 중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
     print(f'컬렉션 생성 {len(built_cols)}개: ' + ', '.join(f'{c["slug"]}({len(p)})' for c, p in built_cols))
-    print(f'추천순 모수 {len(REC)}곳 · 비교 쌍 {len(PAIRS)}개 · 한국인 리뷰 최대 {max(list(KRN.values()) or [0])}건')
+    print(f'추천순 모수 {len(REC)}곳 · 비교 쌍 {len(PAIRS)}개(검색량 자동 {len(_auto)}) · 검색량 {len(SV)}곳 · 한국인 리뷰 최대 {max(list(KRN.values()) or [0])}건')
     if skipped_cols:
         print('컬렉션 스킵 ' + str(len(skipped_cols)) + '개: ' + ', '.join(f'{s}({r})' for s, r in skipped_cols))
 
