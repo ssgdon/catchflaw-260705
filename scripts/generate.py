@@ -419,28 +419,61 @@ def load():
     return hotels_meta, quotes, stars, kr, monthly, monthly_cat, faq, social
 
 # ───────────────────────── 공통 조각 ─────────────────────────
-# P2 상세 섹션 탭: 스크롤 위치로 활성 탭 표시 + 클릭 시 헤더+탭 높이만큼 보정해 이동. f-string 아님(JS 중괄호 보존).
+# P2 상세 섹션 탭 + 4A 상세 헤더 상태·앵커 이동. f-string 아님(JS 중괄호 보존). 모든 상세(채점 여부 무관)에 들어간다.
+#  · 헤더(v3 §6-7): 사진 위에서는 투명 + 떠 있는 원(is-top), 사진을 지나면 흰 바. 아래로 스크롤하면 숨고(--sticky-top 0) 탭 48만 남는다.
+#  · 이동(앵커·탭·아코디언·근거 줄) 오프셋 = 탭 높이 + (목적지가 아래면 0, 위면 헤더 높이). 헤더가 숨는/보이는 상태는 이동 전에 정해 두고
+#    CF_HOLD 동안 common.js의 스크롤 방향 감지를 멈춘다(탭을 눌렀는데 목적지가 56px 어긋나던 문제).  PC는 헤더가 늘 보임(sticky 64).
 DETAIL_TABS_JS = '''<script>
 (function(){
-    var nav = document.getElementById('det-tabs'); if (!nav) return;
+    var root = document.documentElement, hd = document.querySelector('#detail .det-header'), vis = document.querySelector('#detail .visual');
+    var nav = document.getElementById('det-tabs'), pcq = window.matchMedia('(min-width:1100px)');
+    function hdH(){ return hd ? hd.offsetHeight : 0; }                       // 보이는 상태의 헤더 높이(transform으로 숨어도 같은 값)
+    function hdState(){ if (hd) hd.classList.toggle('is-top', !!vis && !pcq.matches && vis.getBoundingClientRect().bottom > hdH()); }
+    window.CF_hdState = hdState;
+    window.addEventListener('scroll', hdState, {passive: true}); window.addEventListener('resize', hdState); hdState();
+    // el 위치로 부드럽게 이동. pad = 목적지 위 추가 여백(예: 소분류 행 위 8)
+    function jump(el, pad){
+        var y0 = window.pageYOffset, ty = el.getBoundingClientRect().top + y0, navH = nav ? nav.offsetHeight : 0;
+        var down = !pcq.matches && ty > y0 + navH + hdH();
+        window.CF_HOLD = Date.now() + 800;
+        if (!pcq.matches) root.classList.toggle('is-scroll-down', down);
+        window.scrollTo({top: Math.max(0, ty - navH - (down ? 0 : hdH()) - (pad || 0) + 1), behavior: 'smooth'});
+    }
+    window.CF_jump = jump;
+    document.addEventListener('click', function(e){
+        var a = e.target.closest && e.target.closest('#detail a[href^="#"]');
+        if (!a || a.hasAttribute('data-target') || e.defaultPrevented) return;
+        var el = document.getElementById(a.getAttribute('href').slice(1)); if (!el) return;
+        e.preventDefault(); jump(el);
+        if (a.closest('#det-tabs') && typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
+    });
+    // 가격 기준 시트(하단 바 가격 탭)
+    document.addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('[data-act="price-basis"]'), m = document.getElementById('ov-price');
+        if (b && m && window.CF && CF.sheet) { e.preventDefault(); CF.sheet.open(m, {opener: b}); }
+    });
+    // 인용 리뷰 4줄 말줄임 → 넘칠 때만 '더 보기'(그 자리에서 펼침/접기). 닫힌 아코디언은 열릴 때 다시 잰다(CF_qmore)
+    window.CF_qmore = function(scope){
+        [].forEach.call((scope || document).querySelectorAll('#detail .item-bottom .text'), function(t){
+            var b = t.parentNode.querySelector('.q-more'); if (!b || !t.offsetWidth || b.dataset.x) return;
+            b.hidden = !(t.scrollHeight > t.clientHeight + 1);
+        });
+    };
+    document.addEventListener('click', function(e){
+        var b = e.target.closest && e.target.closest('#detail .q-more'); if (!b) return;
+        var on = b.closest('.item').classList.toggle('is-expanded'); b.textContent = on ? '접기' : '더 보기'; b.dataset.x = '1';
+    });
+    window.addEventListener('load', function(){ window.CF_qmore(); });
+    if (!nav) return;
     var links = [].slice.call(nav.querySelectorAll('a')), ticking = false;
-    var hd = document.querySelector('.det-header');
-    function top0(){ return (hd ? hd.offsetHeight : 56) + nav.offsetHeight; }   // 헤더 높이: 모바일 56 · PC 64
     function target(a){ return document.getElementById(a.getAttribute('href').slice(1)); }
     function spy(){
         ticking = false;
-        var cur = links[0], lim = top0() + 24;
+        var cur = links[0], lim = nav.getBoundingClientRect().bottom + 24;
         links.forEach(function(a){ var s = target(a); if (s && s.getBoundingClientRect().top <= lim) cur = a; });
         links.forEach(function(a){ a.classList.toggle('is-on', a === cur); });
     }
     window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, {passive: true});
-    nav.addEventListener('click', function(e){
-        var a = e.target.closest('a'); if (!a) return;
-        var s = target(a); if (!s) return;
-        e.preventDefault();
-        window.scrollTo({top: s.getBoundingClientRect().top + window.pageYOffset - top0() + 1, behavior: 'smooth'});
-        if (typeof gtag === 'function') gtag('event', 'detail_tab', {tab: a.textContent});
-    });
 })();
 </script>'''
 
@@ -554,7 +587,7 @@ MENU_ICO = {
     'about': _MI.format(f'<circle cx="12" cy="12" r="8" {_MS}/><path d="M12 11v5M12 8h.01" {_MS}/>'),
 }
 
-def site_header(depth=1, back=None, search=True):
+def site_header(depth=1, back=None, search=True, menu=True, actions='', back_cls=''):
     """F36+F40+F45: 전 페이지 공통 헤더(좌 back·중앙 로고·우 햄버거)+메뉴 바텀 시트(PC 가로 메뉴와 같은 5링크, v3 §5-8 ⑨).
     back=None(홈)이면 back 아이콘 대신 스페이서 → 로고 중앙 유지. 메뉴 JS는 jQuery 비의존(CF.sheet, backnav.js)."""
     p = '../' * depth
@@ -564,8 +597,23 @@ def site_header(depth=1, back=None, search=True):
                  f'<input type="search" name="q" placeholder="{CITY["ko"]} 호텔명 검색" aria-label="호텔 검색">'
                  '<button type="submit" aria-label="검색"><svg width="18" height="18" viewBox="0 0 20 20" fill="none"><circle cx="9" cy="9" r="6" stroke="currentColor" stroke-width="1.8"/><path d="m13.5 13.5 3.5 3.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></form>'
                  if search else '')
-    back_slot = (f'<a class="dh-back" href="{back}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>'
+    back_slot = (f'<a class="dh-back{back_cls}" href="{back}" aria-label="뒤로가기"><img src="{p}img/back_b.svg" alt="뒤로가기"></a>'
                  if back else '<span class="dh-back dh-back-empty" aria-hidden="true"></span>')
+    if not menu:
+        # 상세(v3 §6-7, 4A): 뒤로 · 로고 · 공유·비교(actions). 햄버거·메뉴 시트 없음 — 로고가 홈, PC는 dh-nav
+        return f'''<div class="det-header det-header--detail is-top">
+                {back_slot}
+                <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
+                {dh_search}
+                <nav class="dh-nav" aria-label="주요 메뉴">
+                    <a href="{home}">홈</a>
+                    <a href="{p}search">호텔 검색</a>
+                    <a href="{p}compare">호텔 비교</a>
+                    <a href="{p}recent">최근 본 호텔</a>
+                    <a href="{p}about">산출 방법</a>
+                </nav>
+                <div class="dh-acts">{actions}</div>
+            </div>'''
     return f'''<div class="det-header">
                 {back_slot}
                 <a class="dh-logo" href="{home}" aria-label="CATCHFLAW 홈"><img src="{p}img/logo.svg" alt="CATCHFLAW"></a>
@@ -2158,6 +2206,7 @@ def quote_cards(qlist, limit=6):
             <div class="item-info">{star}<div class="web">{origin}</div>{lang_chip}</div>
             <div class="item-bottom">
                 <div class="text">{emph(q.get('quote') or q.get('summary'))}</div>
+                <button type="button" class="btn-text btn-text--sm q-more" hidden>더 보기</button>
                 <div class="date">{E((q.get('pub') or '')[:10].replace('-', '. '))} · {E(SUB_PHRASE.get(q.get('scat') or '', q.get('scat') or ''))}</div>
             </div>
             {rep}
@@ -2450,7 +2499,7 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
         vbars += vgroup('불만 리뷰 비율', kr_rk_pct / norm, all_rk_pct / norm,
                         f'{round(kr_rk_pct)}%', f'{round(all_rk_pct)}%')
         footnote = (f'<div class="kr-foot">{per} 글 리뷰 기준{DSEP}<span class="seg">불만 리뷰 = 심각·주의 불만이 적힌 리뷰</span>'
-                    '<br>별점만 남긴 리뷰는 국적을 알 수 없어 양쪽 다 뺐어요</div>')
+                    f'{DSEP}<span class="seg">별점만 남긴 리뷰는 국적을 몰라 뺐어요</span></div>')
 
     # §2-a 한국인 비중 순위 — 분포 막대 차트(전체 호텔 중 이 호텔 위치 강조) + 평이한 부연설명.
     # 50% 초과는 '하위 M%'로 뒤집어 직관화. 부연: 상위 33% 이내=많은 편 / 하위 33%=적은 편 / 그 외=보통.
@@ -2622,8 +2671,9 @@ def _faq_ev_preview(ev, topic=''):
     return (f'<li class="fe-item"><div class="fe-meta">{meta}</div>'
             f'<div class="fe-q">"{faq_hl(ev.get("q") or "", topic)}"</div>{link}</li>')
 
-def faq_section(faq):
-    """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8."""
+def faq_section(faq, price_html=''):
+    """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8.
+    price_html(4A): 맨 위 '가격' 행(접지 않음) — 평일·주말 가격을 시트 안에만 숨기지 않는다(v3 §6-8)."""
     if not faq: return ''
     by_g = defaultdict(list)
     for item in faq:
@@ -2656,7 +2706,7 @@ def faq_section(faq):
                                    'u': ev.get('u') or '', 'l': ev.get('l') or '', 'tf': ev.get('tf') or ''}
                                   for ev in evlist]
                     more = (f'<button type="button" class="btn-gray btn-block" data-act="faq-more" data-topic="{E(t)}" '
-                            f'data-q="{E(it.get("q") or "")}">리뷰 {n_label}개 모두 보기</button>')
+                            f'data-q="{E(it.get("q") or "")}">리뷰 {n_label}건 모두 보기</button>')
                 ev_block = (f'<div class="faq-ev-head">실제 투숙객 리뷰</div>'
                             f'<ul class="faq-ev">{prev}</ul>{more}')
             # F18: 접힘(기본) = Q.질문+칩 한 덩어리 / 펼침 = 답변·근거(.faq-body)
@@ -2672,7 +2722,8 @@ def faq_section(faq):
                    if faqevid else '')
     return f'''<div class="sect faq" id="hotel-faq">
             <div class="head"><div class="title">리뷰로 확인한 실전 정보</div>
-            <div class="desc">투숙객 리뷰에서 추출했어요 · 최신 정책은 호텔에 확인하세요</div></div>
+            <div class="desc">투숙객 리뷰에서 뽑았어요{DSEP}<span class="seg">정책은 바뀔 수 있으니 호텔에 확인하세요</span></div></div>
+            {price_html}
             <div class="faq-tabs tabs-u">{''.join(tabs)}</div>
             <div class="faq-cards">{''.join(cards)}</div>
         </div>{evid_script}'''
@@ -2705,7 +2756,7 @@ def social_section(soc, name):
                 if len(blogs) > 3 else '')
         out.append(f'''<div class="sect social-blog">
             <div class="head"><div class="title">네이버 블로그 후기</div>
-            <div class="desc">네이버 "{E(name)} 후기" 상위 글을 여기서 바로 읽어요</div></div>
+            <div class="desc">네이버 상위 글을 여기서 바로 읽어요</div></div>
             <div class="nb-list">{''.join(cards)}</div>
             {more}
         </div>''')
@@ -2723,7 +2774,7 @@ def social_section(soc, name):
             </li>''')
         out.append(f'''<div class="sect social-video">
             <div class="head"><div class="title">관련 영상</div>
-            <div class="desc">유튜브 "{E(name)} 후기" 영상을 여기서 바로 봐요</div></div>
+            <div class="desc">유튜브 후기 영상을 여기서 바로 봐요</div></div>
             <div class="yt-slider"><ul class="swiper-wrapper">{''.join(slides)}</ul></div>
         </div>''')
     return '\n'.join(out)
@@ -2770,12 +2821,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _loc = []
         _ns = nearest_station(meta.get('latitude'), meta.get('longitude'))
         if _ns:
-            _loc.append(f'<span class="tag lc-chip">{E(_ns[0])} 도보 {_ns[1]}분 · {_ns[2]}m</span>')
+            _loc.append(f'<span class="seg">{E(_ns[0])} 도보 {_ns[1]}분({_ns[2]}m)</span>')
         for _a in AREAS:
             if _in_area(meta, _a):
-                _loc.append(f'<span class="tag lc-chip">{E(_a["ko"].split("·")[0].rstrip("역"))}권</span>')
+                _loc.append(f'<span class="seg">{E(_a["ko"].split("·")[0].rstrip("역"))}권</span>')
                 break
-        loc_chips = f'<div class="loc-chips">{"".join(_loc[:2])}</div>' if _loc else ''
+        loc_chips = f'<p class="loc-meta">{" · ".join(_loc[:2])}</p>' if _loc else ''   # 4A: 알약 칩 → 메타 글자 한 줄(v3 §7-3)
         addr_html = (f'<div class="loc-addr">{E(meta.get("address") or "")}</div>'
                      if meta.get('address') else '')
         map_block = f'''<div class="sect location">
@@ -2791,8 +2842,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # 표본 공정성(2026-10): 최근 1년 리뷰 RANK_MIN 미만이면 상단에 주의 문구 — 순위·추천에서 빠진 이유와 함께
     lowrev_html = ''
     if h['scored'] and not h['ranked']:
-        lowrev_html = (f'<div class="lowrev-note"><b>{per} 리뷰가 {h["analyzed"]:,}개뿐이에요</b>'
-                       f'<span>리뷰 몇 건에 숫자가 크게 달라질 수 있어 순위·추천에서는 뺐어요{DSEP}참고용으로 봐 주세요</span></div>')
+        lowrev_html = (f'<div class="lowrev-note"><b>{per} 리뷰가 {h["analyzed"]:,}건뿐이에요</b>'
+                       f'<span>숫자가 크게 달라질 수 있어 순위·추천에서 뺐어요{DSEP}참고용으로 봐 주세요</span></div>')
     # ── 딜브레이커 발동 계산 (경고 스트립·점프칩·verdict 공용): 희소·고위험 최근 1년 심각 ≥3건 — 캘리브레이션 고정 ──
     # 건수는 집계(findings_sub)의 정확한 값 — 예전엔 인용문 목록(카테고리당 40건 상한·이름+날짜 중복제거)에서 세서 일부 과소집계
     db_data = []          # [(cat, strip_label, chip_label, n), ...] — 발동(≥3)분만 (점프칩 fj-risk·verdict 공용, F35로 스트립은 삭제)
@@ -2821,41 +2872,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             else:
                 rare_cascade[_scat] = (f'{per} 심각 리뷰 없음', 'clear')
 
-    # ── 진입점 점프 칩 (info-cont 마지막 줄): 위험 칩(딜브레이커) + FAQ 질문형 칩(primary) + 전체 (최대 4칩) ──
-    FAQ_CHIP_Q = [('bath', '대욕장 있나요?'), ('luggage', '짐 맡아주나요?'), ('breakfast', '조식 어때요?'),
-                  ('family', '아이동반 되나요?'), ('parking', '주차 되나요?')]
-    faq_jump_html = ''
-    if h['scored'] and (faq or db_data):
-        _chips = []
-        for _cat, _sl, _cl, _n in db_data:
-            _chips.append(f'<button type="button" class="chip-go fj-btn fj-risk" data-target="risk-{CAT_INDEX[_cat]}"><i class="sdot is-danger"></i>{_cl} {_n}건</button>')
-        if faq:
-            _tset = {it.get('t') for it in faq}
-            _slots = max(0, 3 - len(db_data))      # 위험 칩 1개면 질문 칩 2개, 없으면 3개 (총 4칩 상한: 위험+질문+전체)
-            for _key, _lbl in FAQ_CHIP_Q:
-                if _slots <= 0: break
-                if _key in _tset:
-                    _chips.append(f'<button type="button" class="chip-go fj-btn fj-q" data-target="faq-{_key}">{_lbl}</button>')
-                    _slots -= 1
-            _chips.append(f'<button type="button" class="chip-go fj-btn fj-all" data-target="hotel-faq">실전정보 {len(faq)}개 전체보기</button>')
-        # F14: 우측 화이트 페이드(스크롤 어포던스) 래퍼 · F19: 칩 위 마이크로 타이틀(칩 없으면 미출력)
-        faq_jump_html = (f'<div class="fj-title">리뷰에서 찾아봤어요</div>'
-                         f'<div class="faq-jump-wrap"><div class="faq-jump">{"".join(_chips)}</div></div>')
+    # (4A) 진입점 점프 칩 줄('리뷰에서 찾아봤어요')은 v3 §7-3 ⑤로 삭제 — 위험 신호는 한눈에 보기·실망 확률 근거 줄이, 실전정보는 FAQ 섹션이 맡는다
 
     # 이 호텔이 속한 컬렉션 칩 (지역 1 + 테마 매칭, 최대 3 — HUB §3-d)
     col_chip_block = ''
     if hotel_cols:
         chips = ''.join(f'<a class="chip-go det-col-chip" href="../{E(slug)}">{E(name)} 리포트</a>' for slug, name in hotel_cols)
         col_chip_block = f'''<div class="sect hub-detail-cols">
-            <div class="head"><div class="title">이 호텔이 속한 컬렉션</div>
-            <div class="desc">같은 조건의 다른 호텔과 위험도를 비교해 보세요</div></div>
+            <div class="head"><div class="title">같은 조건의 호텔 모아보기</div></div>
             <div class="det-col-chips">{chips}</div>
         </div>'''
 
     # P4 약점 맞춤 대안: 최고 위험 카테고리가 주의·위험이면 같은 가격대·근거리 후보 중 그 카테고리 위험도가
     # 10 이상 낮은 곳만(3곳 미만이면 기존 일반 추천 폴백). 채점 호텔은 리스크 상세 바로 뒤에 배치(스크롤 50% 대응).
     sim = similar_hotels(pid, hotels_meta, H)
-    sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', '비슷한 가격대·가까운 위치에서 추천순으로 골랐어요', {}
+    sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', '가격대·거리가 비슷한 곳을 추천순으로 골랐어요', {}
     if h['scored']:
         _wc = max(CATS, key=lambda c: h['cats'][c]['score'])
         _ws = round(h['cats'][_wc]['score'])
@@ -2865,7 +2896,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             if len(_alt) >= 3:
                 sim = _alt
                 sim_title = f'{cat_ko(_wc)} 불만이 걱정된다면'
-                sim_desc = f'비슷한 가격대·가까운 위치에서 {cat_ko(_wc)} 불만이 확실히 적은 곳'
+                sim_desc = f'가격대·거리가 비슷하고 {cat_ko(_wc)} 불만이 확실히 적은 곳이에요'
                 _mine = cat_verdict(h['cats'][_wc]['score'])[0]
                 sim_extra = {p: (f'<div class="hcard-note"><span class="seg">{E(cat_ko(_wc))} 불만 <b>{E(cat_verdict(H[p]["cats"][_wc]["score"])[0])}</b></span>'
                                  f'<span class="seg">이 호텔은 {E(_mine)}</span></div>') for p in _alt}
@@ -2886,7 +2917,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                          extra=f'<div class="hcard-note"><span class="seg">실망 확률 <b>{pct(H[q]["p_crit"])}%</b></span><span class="seg">이 호텔은 {pct(h["p_crit"])}%</span></div>') for q in partners)
         pairs_block = f'''<div class="sect hotel" id="sec-vs">
             <div class="head"><div class="title">이 호텔과 함께 고민하는 호텔</div>
-            <div class="desc">네이버 카페에서 자주 같이 비교되는 호텔이에요</div></div>
+            <div class="desc">카페에서 자주 같이 비교되는 호텔이에요</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{_pc}</ul></div>
             <a class="vs-more-link btn-text" href="../compare?ids={pid},{partners[0]}">나란히 비교하기</a>
         </div>'''
@@ -2898,7 +2929,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if not h['scored']:
         body_scored = f'''<div class="sect"><div class="head">
             <div class="title">아직 분석 리뷰가 부족해요</div>
-            <div class="desc">이 호텔은 분석된 리뷰가 {h['analyzed']}건이라 신뢰할 수 있는 확률을 내기 어려워요 (최소 {MIN_REVIEWS}건). 데이터가 쌓이면 공개할게요.</div>
+            <div class="desc">분석한 리뷰가 {h['analyzed']}건뿐이라 확률을 내기 어려워요{DSEP}<span class="seg">{MIN_REVIEWS}건 이상 쌓이면 공개할게요</span></div>
         </div></div>'''
     else:
         v = pct(h['p_crit']); avg = pct(city['crit'])
@@ -2951,7 +2982,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _rows.append(('warning', f'불만이 가장 많은 항목은 <b>{E(cat_ko(_worst6))}</b>{NB}({h["cats"][_worst6]["count_1y"]}건)',
                           f'#risk-{CATS.index(_worst6)}'))
         else:
-            _rows.append(('safe', f'벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼<br>예약을 접을 만한 심각 리뷰 <b>없음</b>', None))
+            _rows.append(('safe', f'예약을 접을 만한 심각 리뷰는 <b>없어요</b><span class="ev-sub">벌레·곰팡이·밤길·객실 보안 기준</span>', None))
         def _ev(tone, txt, href, sub=None):
             inner = f'<span class="ev-dot is-{tone}"></span><span class="ev-txt">{txt}</span>'
             if href == '__dis__':
@@ -3013,7 +3044,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _panels.append(f'<div class="who-panel" data-who="{_gk}"{"" if _on else " hidden"}><div class="who-h">{_head}</div><ul>{_li}</ul>{_qhtml}</div>')
         who_html = f'''<div class="sect who" id="sec-who">
             <div class="head"><div class="title">누구와 가세요?</div>
-            <div class="desc">일행 구성과 관련 깊은 리뷰·실전 정보만 모아 보여드려요</div></div>
+            <div class="desc">일행에 맞는 리뷰와 실전 정보만 모았어요</div></div>
             <div class="who-chips">{''.join(_chips)}</div>
             {''.join(_panels)}
         </div>''' + WHO_JS
@@ -3069,13 +3100,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                        + '</ul></div>')
             glance_html = f'''<div class="sect glance" id="sec-sum">
                 <div class="gl-box">
-                    <div class="gl-eyebrow">{per} 리뷰 {h['analyzed']:,}건으로 본 한 줄 결론</div>
+                    <div class="gl-eyebrow">한눈에 보기</div>
                     <p class="gl-lead">{_lead}</p>
                     <div class="gl-cols">
                         {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
                         {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
                     </div>
-                    <div class="gl-foot"><span><span class="seg">{per} 리뷰 {h['analyzed']:,}건 · 기준 {CITY['data_asof']}</span>{DSEP}<span class="seg">리뷰 숫자로 자동 작성</span></span><a class="gl-more btn-text btn-text--sm" href="#risk-detail">근거 보기</a></div>
+                    <div class="gl-foot"><span>{per} 리뷰 {h['analyzed']:,}건 기준</span><a class="gl-more btn-text btn-text--sm" href="#risk-detail">근거 보기</a></div>
                 </div>
             </div>'''
 
@@ -3240,7 +3271,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <span class="risk-dot is-{band}"></span>
                     <span class="cat-name">{E(cat_ko(c))}</span>
                     <span class="cat-verdict is-{band}">{E(head_txt)}</span>
-                    <span class="cat-rank">점수 대신 실제 리뷰 건수로 보여드려요</span>
+                    <span class="cat-rank">점수 없이 리뷰 건수로 보여드려요</span>
                     <span class="risk-arrow"></span>
                 </button>
                 <div class="risk-acc-body">
@@ -3265,7 +3296,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             low_share = round(st['low_1y'] / st['total_1y'] * 100)
             stars_block = f'''<div class="sect recent">
                 <div class="head"><div class="title">구글 별점 분포</div>
-                <div class="desc">{per} 구글 리뷰 중 <b>2점 이하가 {low_share}%</b>예요.<br>별점은 구글 리뷰만 있어요 (트립닷컴 등은 별점 미제공)</div>
+                <div class="desc">{per} 구글 리뷰 중 <b>2점 이하가 {low_share}%</b>예요{DSEP}<span class="seg">별점은 구글 리뷰만 있어요</span></div>
                 <div class="count">{per} {st['total_1y']:,}건</div></div>
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
@@ -3308,7 +3339,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <div class="sect risk">
             <div class="head"><div class="title">항목별로 보면</div>
-            <div class="desc">{CITY['ko']} 호텔 평균과 비교한 불만 정도예요 · 누르면 근거 리뷰로 이동해요</div></div>
+            <div class="desc">{CITY['ko']} 평균과 비교한 불만 정도예요{DSEP}<span class="seg">누르면 리뷰로 이동해요</span></div></div>
             <div class="chart">
                 <div class="radar-box"><canvas id="radar"></canvas></div>
                 <div class="custom-legend">
@@ -3351,20 +3382,19 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {radar_cats_html}
         </div>
         <div class="sect analysis" id="risk-detail">
-            <div class="head"><div class="title">리스크 상세 분석</div>
-            <div class="desc">{CITY['ko']} 평균과 비교한 항목별 불만 정도예요 · 누르면 실제 리뷰</div></div>
+            <div class="head"><div class="title">항목별 불만 리뷰</div>
+            <div class="desc">항목을 눌러 실제 리뷰를 확인해 보세요</div></div>
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">
                 <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
-                <span class="note">불만 리뷰 5건 미만 소분류는 위험 등급을 붙이지 않아요</span>
-                <span class="note">인용문은 리뷰 원문 발췌입니다</span>
-                <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 객실 보안처럼 드물지만 치명적인 항목은 점수 대신 리뷰 건수로 보여드려요</span>
+                <span class="note">인용문은 리뷰 원문 발췌예요{DSEP}<span class="seg">불만 리뷰 5건 미만 항목은 위험 등급을 붙이지 않아요</span></span>
+                <span class="note">벌레·곰팡이·밤길·객실 보안은 드물지만 치명적이라 점수 대신 리뷰 건수로 보여드려요</span>
             </div>
         </div>
         {similar_block}
         {pairs_block}
-        {faq_section(faq)}
+        {faq_section(faq, '<!--PRICE_ROW-->')}
         {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
         {social_section(social, name)}
         {stars_block}
@@ -3422,28 +3452,90 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         if social or stars_block: _tabs.append(('sec-rev', '후기'))
         tabs_html = ('<nav class="det-tabs tabs-u" id="det-tabs" aria-label="섹션 바로가기">'
                      + ''.join(f'<a href="#{t}" class="{"is-on" if i == 0 else ""}">{lbl}</a>' for i, (t, lbl) in enumerate(_tabs))
-                     + '</nav>' + DETAIL_TABS_JS)
+                     + '</nav>')
 
     # P5 비교 담기 (채점 호텔만 — 비교표가 위험도 기반)
     cmp_btn = (f'<button type="button" class="cmp-btn" data-cmp-id="{pid}" data-cmp-name="{E(name)}" '
                f'data-cmp-img="{E(abs_img(pid, meta))}"><span class="cmp-ico"></span><span class="cmp-t">비교 담기</span></button>'
                if h['scored'] else '')
+
+    # ── 4A 상단 헤더 원 버튼(v3 §6-7): 뒤로(site_header) · 공유 · 비교 담기. 사진 위에서는 흰 원 + 그림자, 사진을 지나면 회색 원 ──
+    _SHARE_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15V4m0 0L8.5 7.5M12 4l3.5 3.5M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1" '
+                  'stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>')
+    hdr_actions = (f'<button type="button" class="btn-share btn-icon btn-icon--photo dh-act" aria-label="공유">{_SHARE_SVG}</button>'
+                   + (f'<button type="button" class="cmp-btn btn-icon btn-icon--photo dh-act cmp-saved" data-cmp-id="{pid}" data-cmp-name="{E(name)}" '
+                      f'data-cmp-img="{E(abs_img(pid, meta))}" data-on="비교함에 담김" data-off="비교 담기" aria-label="비교 담기" aria-pressed="false"><span class="cmp-ico"></span></button>'
+                      if h['scored'] else ''))
+
+    # ── 4A 첫 화면(v3 §7-3 ①): 제목 → 메타 → 3칸 요약 행(실망 확률 · 구글 평점 · 분석 리뷰). 등급은 점 색, 라벨은 '실망 확률' ──
+    _bk = badge_key(h); _bst = BADGE_STATES[_bk]
+    _sr = f'<span class="blind">{_bst["sr"]}</span>' if _bst['sr'] else ''
+    _dot = '' if _bst['dot'] is None else '<i class="sdot' + (' ' + _bst['dot'] if _bst['dot'] else '') + '"></i>'
+    if h['scored']:
+        _plab = '<span class="nw">실망 확률</span>' + (' · <span class="nw">리뷰 적음</span>' if _bk in ('low', 'lowdanger') else '')
+        cell_prob = f'<div class="is-cell is-prob"><b class="sv">{_dot}{_sr}{pct(h["p_crit"])}%</b><span class="sl">{_plab}</span></div>'
+    else:
+        cell_prob = '<div class="is-cell is-prob"><b class="sv">—</b><span class="sl"><span class="nw">분석 준비 중</span></span></div>'
+    cell_google = (f'<a class="is-cell is-google" data-out="google" href="{E(gmap)}" target="_blank" rel="noopener">'
+                   f'<b class="sv">★ {fmt_score(meta.get("total_score"))}</b><span class="sl">구글 {meta.get("reviews_count") or 0:,}개</span></a>')
+    _an_in = f'<b class="sv">{h["analyzed"]:,}건</b><span class="sl">분석 리뷰</span>'
+    cell_an = (f'<a class="is-cell is-an" href="#risk-detail">{_an_in}</a>' if h['scored'] else f'<div class="is-cell is-an">{_an_in}</div>')
+    info_sum = f'<div class="info-sum" role="group" aria-label="요약">{cell_prob}<i class="is-vr" aria-hidden="true"></i>{cell_google}<i class="is-vr" aria-hidden="true"></i>{cell_an}</div>'
+    _st_txt = station_short(meta)
+    info_meta = (f'<p class="info-meta">{" · ".join(x for x in [E(CITY["ko"]), hstars] if x)}'
+                 + (f'{DSEP}<span class="seg">{E(_st_txt)}</span>' if _st_txt else '') + '</p>')
+    info_name_en = f'<p class="name-en">{E(meta.get("sub_title"))}</p>' if meta.get('sub_title') else ''
+
+    # ── 4A 가격(v3 §6-8): 하단 바 = 평일 대표가(누르면 '가격 기준' 시트) + 브랜드 알약. 주말은 실전정보 맨 위 '가격' 행·PC 결정 카드·시트에 늘 표기 ──
+    _pt = meta.get('price_txt') or ''
+    _pwe = man_txt(meta.get('price_we')) if (_pt.startswith('평일') and meta.get('price_we')) else ''
+    _bold = lambda t: re.sub(r'(\d[\d,]*만원)', r'<b>\1</b>', E(t))
+    _pseen = f'{md_ko(meta["price_seen"])} 확인' if meta.get('price_seen') else ''
+    price_sheet, price_row_html, price_sect = '', '', ''
+    if _pt:
+        _sheet_rows = f'<li><span>{"평일" if _pt.startswith("평일") else "주말(금·토 밤)"}</span><span>{_bold(_pt[3:].strip())}</span></li>'
+        if _pwe: _sheet_rows += f'<li><span>주말(금·토 밤)</span><span>{_bold(_pwe)}</span></li>'
+        price_sheet = f'''<div class="ov" data-ov="bottom" id="ov-price" role="dialog" aria-modal="true" aria-labelledby="ov-price-t" hidden>
+            <div class="ov-dim"></div>
+            <section class="ov-panel ov-w-md">
+                <header class="ov-head ov-head--info"><button type="button" class="ov-close" aria-label="닫기"></button><h2 class="ov-title" id="ov-price-t">가격 기준</h2></header>
+                <div class="ov-body pb-body">
+                    <ul class="pb-rows">{_sheet_rows}</ul>
+                    <p class="pb-p">2인 1박 기준이에요. 구글 지도에 올라온 요금을 모아 대표값을 냈어요. 평일은 금·토를 뺀 밤, 주말은 금·토 밤이에요.</p>
+                    <p class="pb-sub">{(_pseen + ' · ') if _pseen else ''}날짜와 객실에 따라 달라질 수 있어요</p>
+                </div>
+            </section>
+        </div>'''
+        price_row_html = (f'<div class="faq-price"><div class="fp-q">1박 가격</div>'
+                          f'<p class="fp-a"><span class="seg">{_bold(_pt)}</span>' + (f' · <span class="seg">주말 {_bold(_pwe)}</span>' if _pwe else '') + '</p>'
+                          f'<p class="fp-sub">2인 1박{(" · " + _pseen) if _pseen else ""}</p></div>')
+        price_sect = '' if '<!--PRICE_ROW-->' in body_scored else f'<div class="sect price-sect" id="sec-price"><div class="head"><div class="title">가격</div></div>{price_row_html}</div>'   # 실전정보 섹션이 없으면 가격만 따로
+        bar_html = (f'<div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">{E(_pt)}</button>'
+                    f'<span class="bp-sub">2인 1박{(" · " + _pseen) if _pseen else ""}</span></div>'
+                    f'<a class="btn-brand bar-cta" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>')
+    else:
+        bar_html = f'<div class="button"><a class="btn-brand btn-block" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>'
+
+    body_scored = body_scored.replace('<!--PRICE_ROW-->', price_row_html)   # 실전정보 섹션 맨 위 '가격' 행 자리
+
     # ── PC 전용: 브레드크럼(JSON-LD BreadcrumbList와 동일 경로) + 오른쪽 결정 카드(실망 확률·핵심 수치·CTA) ──
     _area = next((a for a in AREAS if _in_area(meta, a)), None)
     pc_crumb = (f'<nav class="pc-crumb" aria-label="경로"><a href="../">캐치플로</a><span>›</span><a href="../search">{CITY["ko"]} 호텔</a>'
                 + (f'<span>›</span><a href="../search?area={_area["code"]}">{E(_area["ko"])}</a>' if _area else '')
                 + f'<span>›</span><b>{E(name)}</b></nav>')
     _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
-    _rows = [('구글 평점', f'<b>{fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}개)'),
+    _rows = [('구글 평점', f'<b>★ {fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}개)'),
              ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}')]
-    if meta.get('price_txt'): _rows.append(('1박 가격', f'<b>{E(meta["price_txt"])}</b>' + (f' · 주말 약 {round(meta["price_we"] / 10_000)}만원' if meta.get('price_we') else '')))
+    if _pt: _rows.append(('평일' if _pt.startswith('평일') else '주말', f'<b>{E(_pt[3:].strip())}</b>'))
+    if _pwe: _rows.append(('주말', f'<b>{E(_pwe)}</b>'))
+    if _pt: _rows.append(('', f'2인 1박{(" · " + _pseen) if _pseen else ""}'))
     if _st2: _rows.append(('가까운 역', f'{E(_st2[0])} 도보 <b>{_st2[1]}분</b>'))
-    _rows_html = ''.join(f'<li><span>{k}</span><span>{v}</span></li>' for k, v in _rows)
+    _rows_html = ''.join((f'<li><span>{k}</span><span>{v}</span></li>' if k else f'<li class="ps-pnote"><span>{v}</span></li>') for k, v in _rows)
     if h['scored']:
         _pv = pct(h['p_crit'])
-        _top_html = (f'<div class="ps-eyebrow">이 호텔에서 실망할 확률</div>'
-                     f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}">{E(v_head)}</div>'
-                     f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%{tier_html}</div>')
+        _top_html = (f'<div class="ps-eyebrow">실망 확률</div>'
+                     f'<div class="ps-pct">{_pv}%</div><div class="ps-verdict is-{v_tone}"><i class="sdot is-{v_tone}"></i>{_sr}{E(v_head)}</div>'
+                     f'<div class="ps-avg">{CITY["ko"]} 평균 {pct(city["crit"])}%</div>')
     else:
         _top_html = (f'<div class="ps-eyebrow">실망 확률</div><div class="ps-collect">분석 준비 중</div>'
                      f'<div class="ps-avg">분석 리뷰가 {MIN_REVIEWS}건 이상 쌓이면 공개해요</div>')
@@ -3477,34 +3569,21 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     <script src="../js/lightbox.js?v={BUILD}" defer></script>
     <main id="container">
         <section id="detail">
-            {site_header(1, back='../search')}
+            {site_header(1, back='../search', menu=False, actions=hdr_actions, back_cls=' btn-icon btn-icon--photo')}
             <div class="content">
                 {gallery_html(meta, name, img)}
                 {pc_gallery_html(meta, name, img)}
                 <div class="sect information">
                     {pc_crumb}
-                    <div class="info-top"><div class="badge">{badge_html(h, "tag")}</div></div>
                     <div class="info-cont">
                         <div class="name">
                             <h1 class="name-ko">{E(name)}</h1>
-                            <p class="name-en">{E(meta.get('sub_title') or '')}</p>
+                            {info_name_en}
                         </div>
-                        <div class="meta"><span>{CITY['ko']}, JP</span>{f'<span>{hstars}</span>' if hstars else ''}{f"<span class='price'>1박 <b>{meta['price_txt']}</b></span>" if meta.get('price_txt') else ''}</div>
-                        {(f'<p class="price-note">' + (f'주말은 약 {round(meta["price_we"] / 10_000)}만원 · ' if meta.get('price_we') else '') + '2인 1박' + (f' · {md_ko(meta["price_seen"])} 확인' if meta.get('price_seen') else '') + '</p>') if meta.get('price_txt') else ''}
-                        <button type="button" class="btn-share info-share btn-line btn-sm"><img src="../img/b_share.svg" alt="">공유하기</button>
+                        {info_meta}
                     </div>
+                    {info_sum}
                     {lowrev_html}
-                    <div class="info-bottom">
-                        <a class="btn-link btn-google" data-out="google" href="{E(gmap)}" target="_blank" rel="noopener">
-                            <span class="ico"><img src="../img/google.svg" alt=""></span>
-                            <span class="txt"><span class="label">구글 평점 {fmt_score(meta.get('total_score'))}</span><span class="count">({meta.get('reviews_count') or 0:,}개)</span></span>
-                        </a>
-                        <a class="btn-link btn-audit" href="#risk-detail">
-                            <span class="ico"><img src="../img/audit.svg" alt=""></span>
-                            <span class="txt"><span class="label">분석 리뷰 {h['analyzed']:,}건</span><span class="count"><span class="seg">{per}</span>{DSEP}<span class="seg">구글·트립닷컴 등</span></span></span>
-                        </a>
-                    </div>
-                    {faq_jump_html}
                 </div>
                 {pc_side}
                 {tabs_html}
@@ -3512,15 +3591,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {who_html}
                 {map_block}
                 {body_scored}
+                {price_sect}
                 {col_chip_block}
                 {'' if h['scored'] else similar_block}
             </div>
-            <div class="button"><a class="btn-brand btn-block" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
-        </section>
-        <section id="float">
-            <div class="float">
-                {cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn cmp-fab"').replace('<span class="cmp-t">비교 담기</span>', '<span class="cmp-t">비교</span>').replace('data-cmp-img', 'data-off="비교" data-on="담김" data-cmp-img') if cmp_btn else ''}
-            </div>
+            {bar_html}
+            {price_sheet}
+            {DETAIL_TABS_JS}
         </section>
     </main>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -3922,7 +3999,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             $sect.on('click', '.risk-acc-head', function(){{
                 var $item = $(this).closest('.risk-acc-item');
                 $item.toggleClass('is-open');
-                if ($item.hasClass('is-open')) initCatTrend($item);   // 펼칠 때만 init
+                if ($item.hasClass('is-open')) {{ initCatTrend($item); if (window.CF_qmore) CF_qmore($item[0]); }}   // 펼칠 때만 init
             }});
 
             // F12 FAQ 필터 탭: 그룹별 카드 표시 토글 (전체=data-g 빈값)
@@ -3949,10 +4026,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 var $item = $('#' + id);
                 if (!$item.length) return;
                 $item.addClass('is-open');
-                initCatTrend($item);
-                // 스택 헤더 높이만큼 보정해서 헤더가 바로 보이도록
-                var top = $item.offset().top - 8;
-                $('html, body').stop().animate({{scrollTop: top}}, 350);
+                initCatTrend($item); if (window.CF_qmore) CF_qmore($item[0]);
+                // 이동 오프셋(탭 48 + 헤더 숨김/보임)은 상세 공용 CF_jump가 계산(DETAIL_TABS_JS)
+                window.CF_jump($item[0], 8);
             }}
             $('.radar-cats').on('click', '.radar-cat', function(){{
                 openAndScroll($(this).data('target'));
@@ -3962,25 +4038,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 e.preventDefault();
                 var t = String($(this).data('target') || ''), sub = String($(this).data('sub') || '');
                 var $item = $('#' + t); if (!$item.length) return;
-                $item.addClass('is-open'); initCatTrend($item);
+                $item.addClass('is-open'); initCatTrend($item); if (window.CF_qmore) CF_qmore($item[0]);
                 var $row = sub ? $item.find('.stat-row').filter(function(){{ return $(this).attr('data-sub') === sub; }}).first() : $();
                 var $to = $row.length ? $row : $item;
                 setTimeout(function(){{   // 본문(display:none → block)이 그려진 뒤에 위치를 재야 행 좌표가 맞는다
-                    // html{{scroll-behavior:smooth}}와 jQuery animate(scrollTop)가 충돌해 제자리에 머무는 일이 있어 브라우저 기본 스크롤 사용
-                    window.scrollTo({{top: Math.max(0, $to.offset().top - ($row.length ? 72 : 8)), behavior: 'smooth'}});
+                    window.CF_jump($to[0], 8);
                     if ($row.length) {{ $row.addClass('is-flash'); setTimeout(function(){{ $row.removeClass('is-flash'); }}, 2200); }}
                 }}, 60);
             }});
-            // 점프 칩(진입점·위치 섹션 공용): risk-* → 아코디언 오픈, faq-* → 해당 카드로 스크롤, hotel-faq → 섹션 앵커
-            $('#detail').on('click', '.fj-btn', function(){{
-                var t = String($(this).data('target') || '');
-                if (t.indexOf('risk-') === 0) {{ openAndScroll(t); return; }}
-                if (t.indexOf('faq-') === 0) $('#hotel-faq .faq-tab[data-g=""]').trigger('click');  // 전체 탭으로 카드 노출 보장
-                var $el = $('#' + t); if (!$el.length) return;
-                if ($el.hasClass('faq-card')) $el.addClass('is-open');   // F18: 점프 진입 시 답변까지 펼침
-                $('html, body').stop().animate({{scrollTop: $el.offset().top - 8}}, 350);
-            }});
-
             // 레이더 캔버스 클릭 → nearest 카테고리 아코디언 열기
             var chartEl = document.getElementById('radar');
             if (chartEl && window.Chart) {{

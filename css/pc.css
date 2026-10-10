@@ -44,29 +44,27 @@
     html.is-scroll-down #float:has(.btn-airec){transform:none;}   /* 홈 추천 버튼은 PC에서도 항상 표시 */
 
     /* ════════ 상세: 제목줄 → 사진 그리드 → [본문 | 고정 결정 카드] ════════ */
-    #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 360px;column-gap:56px;align-items:start;max-width:var(--pc-max);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}
+    #detail{--h-header:64px;--sticky-top:var(--h-header);}   /* 4A: 상세 PC 헤더 64 — sticky 오프셋(탭·결정 카드·앵커)이 이 토큰을 따른다 */
+    #detail .det-header{height:var(--h-header);}
+    #detail .content{display:grid;grid-template-columns:minmax(0,1fr) 373px;column-gap:94px;align-items:start;max-width:calc(1120px + var(--pc-x) * 2);margin:0 auto;padding:var(--sp-4) var(--pc-x) var(--sp-12);}   /* 1120 = 653 / 94 / 373 (v3 §7-3) */
     #detail .content > *{grid-column:1;min-width:0;}
     #detail .content > .visual{display:none;}                       /* 모바일 스와이프 갤러리 → PC 사진 그리드 */
     #detail > .button{display:none;}                                  /* 모바일 하단 CTA 바 → 결정 카드 CTA */
 
-    /* 제목줄(정보 섹션): 경로 · 배지 · 호텔명 · 메타 | 오른쪽에 평점·분석 버튼 */
-    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"crumb crumb" "top acts" "cont acts" "fjt fjt" "fj fj";column-gap:var(--sp-8);padding:var(--sp-2) 0 var(--sp-5);overflow:visible;}
-    #detail .information .pc-crumb{grid-area:crumb;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4);font-size:var(--fs-caption);color:var(--ink-3);}
+    /* 제목줄(정보 섹션): 경로 · 호텔명·메타 · 3칸 요약 행(sum, 가로 560 안) — v3 §7-3 (4) */
+    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"crumb" "cont" "sum" "note";margin-top:0;padding:var(--sp-2) 0 var(--sp-5);border-radius:0;overflow:visible;}
+    #detail .information .pc-crumb{grid-area:crumb;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
     #detail .information .pc-crumb a{color:var(--ink-3);}
-    #detail .information .pc-crumb a:hover{color:var(--primary);}
-    #detail .information .pc-crumb b{font-weight:var(--fw-semi);color:var(--ink-2);}
-    #detail .information .info-top{grid-area:top;}
+    #detail .information .pc-crumb a:hover{color:var(--ink);text-decoration:underline;}
+    #detail .information .pc-crumb b{font-weight:var(--fw-semi);color:var(--ink);}
     #detail .information .info-cont{grid-area:cont;}
-    #detail .information .info-cont .name .name-ko{font-size:var(--fs-title);line-height:var(--lh-title);}   /* PC도 모바일과 같은 26(v3 §2-1, --fs-pc-h1 34 폐지) */
-    #detail .information .info-share,#float .float .cmp-fab{display:none;}   /* PC는 오른쪽 결정 카드의 비교·공유 버튼 사용 */
-    #detail .information .info-bottom{grid-area:acts;align-self:end;display:flex;gap:var(--sp-2);margin:0;}
-    #detail .information .info-bottom .btn-link{min-width:200px;height:auto;min-height:64px;padding-top:var(--sp-3);padding-bottom:var(--sp-3);}
-    #detail .information .info-bottom .btn-link .txt .count{white-space:nowrap;}
-    #detail .information .fj-title{grid-area:fjt;margin-top:var(--sp-5);}
-    #detail .information .faq-jump-wrap{grid-area:fj;}
+    #detail .information .info-cont .name .name-ko{font-size:var(--fs-title);line-height:var(--lh-title);}   /* PC도 모바일과 같은 26(v3 §2-1) */
+    #detail .information .info-meta .dsep{display:inline;height:auto;overflow:visible;}   /* PC는 한 줄: '후쿠오카 · 3성급 호텔 · 텐진역 도보 3분' */
+    #detail .information .info-sum{grid-area:sum;max-width:560px;}
+    #detail .information .lowrev-note{grid-area:note;max-width:560px;}
 
     /* 사진 그리드: 장수별 배치 (호텔당 사진 1~2장이 대부분) */
-    #detail .content > .pc-gallery{grid-column:1 / -1;grid-row:2;position:relative;display:grid;gap:var(--sp-2);height:440px;margin-bottom:var(--sp-8);overflow:hidden;border-radius:var(--radius-card);}
+    #detail .content > .pc-gallery{grid-column:1 / -1;grid-row:2;position:relative;display:grid;gap:var(--sp-2);height:500px;margin-bottom:var(--sp-8);overflow:hidden;border-radius:var(--radius-box);}
     #detail .pc-gallery .pg-cell{position:relative;min-height:0;overflow:hidden;background:var(--surface);}
     #detail .pc-gallery img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .3s;}
     #detail .pc-gallery .pg-cell:hover img{transform:scale(1.03);}
@@ -82,35 +80,35 @@
     #detail .pc-gallery.g5 .pg-0{grid-row:1 / 3;}
     #detail .pc-gallery .pg-count{position:absolute;right:var(--sp-4);bottom:var(--sp-4);height:32px;padding:0 var(--sp-3);display:flex;align-items:center;border-radius:var(--radius-box);background:rgb(25 27 31 / 70%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-bold);}
 
-    /* 오른쪽 고정 결정 카드 */
-    #detail .content > .pc-side{grid-column:2;grid-row:3 / span 60;position:sticky;top:96px;display:block;padding:var(--sp-6);border:1px solid var(--line-strong);border-radius:var(--radius-card);background:var(--surface-card);box-shadow:0 12px 32px rgb(25 27 31 / 8%);}
-    .pc-side .ps-eyebrow{font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);}
-    .pc-side .ps-pct{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-bold);line-height:var(--lh-title);letter-spacing:var(--ls-title);color:var(--ink);font-variant-numeric:tabular-nums;}   /* 히어로 숫자는 본문 72 하나 — 결정 카드는 22(v3 §7-3 (4)) */
-    .pc-side .ps-verdict{margin-top:var(--sp-1);font-size:var(--fs-body-lg);font-weight:var(--fw-bold);}
-    .pc-side .ps-verdict.is-safe{color:var(--safe-text);}
-    .pc-side .ps-verdict.is-warning{color:var(--warning-text);}
-    .pc-side .ps-verdict.is-danger{color:var(--danger-text);}
-    .pc-side .ps-verdict.is-low{color:var(--ink-2);}
-    .pc-side .ps-avg .tier-badge{margin-left:var(--sp-2);}
+    /* 오른쪽 고정 결정 카드(v3 §7-3 (4)): 실망 확률 14 → 숫자 22/700(히어로 숫자는 왼쪽 섹션 72 하나뿐) → 판정 16/700 + 8px 점 → 행 14 → 브랜드 CTA 48 */
+    #detail .content > .pc-side{grid-column:2;grid-row:3 / span 60;position:sticky;top:calc(var(--sticky-top) + var(--sp-6));display:block;padding:var(--sp-6);border:1px solid var(--line-strong);border-radius:var(--radius-box);background:var(--surface-card);box-shadow:var(--shadow-float);}
+    .pc-side .ps-eyebrow{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
+    .pc-side .ps-pct{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-bold);line-height:var(--lh-title);letter-spacing:var(--ls-title);color:var(--ink);font-variant-numeric:tabular-nums;}
+    .pc-side .ps-verdict{display:flex;align-items:center;gap:var(--sp-2);margin-top:var(--sp-1);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
+    .pc-side .ps-collect{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-bold);color:var(--ink);}
+    .pc-side .ps-avg{margin-top:var(--sp-1);font-size:var(--fs-meta);color:var(--ink-3);}
     #detail .disappear .ev-row{font-size:var(--fs-body);}
-    .pc-side .ps-collect{margin-top:var(--sp-1);font-size:var(--fs-h2);font-weight:var(--fw-display);color:var(--ink-2);}
-    .pc-side .ps-avg{margin-top:var(--sp-1);font-size:var(--fs-caption);color:var(--ink-3);}
     .pc-side .ps-rows{margin-top:var(--sp-5);padding-top:var(--sp-4);border-top:1px solid var(--line);}
-    .pc-side .ps-rows li{display:flex;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) 0;font-size:var(--fs-caption);color:var(--ink-3);}
-    .pc-side .ps-rows li span:last-child{color:var(--ink-2);text-align:right;}
-    .pc-side .ps-rows b{font-weight:var(--fw-bold);color:var(--ink);}
+    .pc-side .ps-rows li{display:flex;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-2) 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+    .pc-side .ps-rows li span:last-child{color:var(--ink);text-align:right;}
+    .pc-side .ps-rows li.ps-pnote{padding-top:0;}
+    .pc-side .ps-rows li.ps-pnote span{color:var(--ink-3);text-align:left;}
+    .pc-side .ps-rows b{font-weight:var(--fw-semi);color:var(--ink);}
     .pc-side .ps-cta{margin-top:var(--sp-5);}
     .pc-side .ps-actions{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);margin-top:var(--sp-2);}
     .pc-side .ps-actions .ps-share:only-child{grid-column:1 / -1;}
     .pc-side .ps-note{margin-top:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);text-align:center;}
-    .pc-side .ps-note a{color:var(--ink-2);text-decoration:underline;}
+    .pc-side .ps-note a{color:var(--ink);text-decoration:underline;}
 
     /* 본문(왼쪽 칼럼): 섹션 구분은 얇은 선 + 넉넉한 위 여백 */
     #detail .content > .sect{padding:var(--section-pt) 0 var(--section-pb);}
     #detail .content > .sect::before{left:0 !important;right:0 !important;}   /* ds.css 구분선: PC 본문 칼럼은 좌우 여백이 없으므로 끝까지 */
     #detail .content > .sect.glance{padding:var(--sp-6) 0;}
-    #detail .det-tabs{top:64px;}
-    #detail .sect[id],#detail .sec-anchor{scroll-margin-top:calc(64px + var(--h-tab) + var(--sp-1));}
+    #detail .det-tabs{top:var(--sticky-top);}
+    #detail .det-tabs{padding:0;}   /* PC 본문 칼럼은 좌우 여백이 없다 — 첫 탭 글자를 본문 왼쪽 끝에 */
+    #detail .det-tabs > a:first-child{padding-left:0;}
+    #detail .det-tabs > a:first-child::after{left:0;}
+    #detail .sect[id],#detail .sec-anchor{scroll-margin-top:calc(var(--sticky-top) + var(--h-tab) + var(--sp-1));}
     #detail .location .map iframe{aspect-ratio:auto;height:360px;}     /* 모바일 32:22 비율은 PC 폭에서 너무 큼 */
     #detail .risk .radar-cats{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--sp-10);}   /* 결론 목록 2열 */
     /* 대안·추천 슬라이더 → 4열 카드 그리드 (Expedia 패턴, 8곳 = 2줄) — 홈·상세 공용 .hotel-slider */

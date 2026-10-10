@@ -28,65 +28,73 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .sect .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .sect .head .desc{margin:var(--sp-1) 0 0;line-height:var(--lh-ui);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}   /* 섹션 설명 = 14 메타, 최대 2줄(v3 §2-5) */
 #detail .sect .head .count{font-size:var(--fs-caption);}
+#detail .sect .head .desc span{font-weight:inherit;}   /* layout.css의 .desc span 700 해제 — 설명 안 .seg는 본문 굵기 */
+#detail .sect .head .desc b{font-weight:var(--fw-semi);color:var(--ink);}
 
-/* 정보(제목) 영역 */
-#detail .information{padding-top:var(--sp-6);padding-bottom:var(--sp-8);}
-#detail .information .info-cont .name{margin-top:var(--sp-3);}
+/* 정보(제목) 영역 — 4A 첫 화면: 제목 26 → 일본어명·메타 14 → 3칸 요약 행(아래 §v3 4A 블록) */
+#detail .information{padding-top:var(--sp-6);padding-bottom:var(--sp-5);}
+#detail .information .info-cont{display:block;margin:0;}
+#detail .information .info-cont .name{display:block;margin:0;}
 #detail .information .info-cont .name .name-ko{line-height:var(--lh-title);font-size:var(--fs-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
-#detail .information .info-cont .name .name-en{margin-top:4px;line-height:1.4;font-size:var(--fs-meta);color:var(--ink-3);}
-#detail .information .info-cont .meta{margin-top:var(--sp-2);}
-#detail .information .info-cont .meta span{line-height:1.5;font-size:var(--fs-caption);font-weight:var(--fw-regular);color:var(--ink-3);}
-#detail .information .info-cont .meta span b{color:var(--primary);font-weight:var(--fw-bold);}
-/* 가격 기준(2인 1박·확인일) — .info-cont 간격 16 중 12를 당겨 가격 줄에 붙임(4px) */
-#detail .information .info-cont .price-note{margin-top:calc(var(--sp-3) * -1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
-#detail .information .info-bottom{margin-top:var(--sp-5);gap:var(--sp-2);}
-#detail .information .info-bottom .btn-link{height:72px;padding:0 var(--sp-4);border-radius:var(--radius-box);}
-#detail .information .info-bottom .btn-link .txt .label{font-size:var(--fs-body);font-weight:var(--fw-bold);line-height:1.35;}
-#detail .information .info-bottom .btn-link .txt .count{font-size:var(--fs-meta);line-height:1.4;}
-#detail .fj-title{margin-top:var(--sp-6);font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink-3);}
-#detail .faq-jump{gap:var(--sp-2);}
+#detail .information .info-cont .name .name-en{margin-top:var(--sp-1);line-height:var(--lh-ui);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
+#detail .information .info-meta{margin-top:var(--sp-1);line-height:var(--lh-ui);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 
-/* 섹션 탭 */
-#detail .det-tabs{border-bottom-color:var(--line);}
+/* 섹션 탭 — 기준선은 --sticky-top(헤더가 숨으면 0, v3 §6-7) */
+#detail .det-tabs{top:var(--sticky-top);border-bottom-color:var(--line);}
 
-/* 한눈에 보기 */
-#detail .sect.glance{padding:var(--sp-2) var(--page-x) var(--sp-6);}
-#detail .glance .gl-box{padding:var(--sp-6);background:var(--surface-2);border:1px solid var(--line);}
-#detail .glance .gl-eyebrow{font-size:var(--fs-meta);}
-#detail .glance .gl-lead{font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
-#detail .glance .gl-lead em{white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리로 */
-#detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-5);}
-#detail .glance .gl-h{margin-bottom:var(--sp-2);font-size:var(--fs-meta);}
-#detail .glance li{padding:6px 0;font-size:var(--fs-body);line-height:1.55;}
-#detail .glance .gl-dot{margin-top:9px;}
-#detail .glance .gl-foot{flex-wrap:wrap;row-gap:var(--sp-2);font-size:var(--fs-meta);}
-#detail .glance .gl-foot > span{flex:1 1 100%;}   /* 안내문은 한 줄 전체, '근거 보기'는 아래 오른쪽 */
+/* 한눈에 보기(§7-3): 회색 상자 해체. 눈썹 14/600 → 결론 리드를 섹션 제목 22/700으로 → 걸리는 점·괜찮은 점 행(8px 점 + 16 --ink, 수치 14 --ink-3) */
+#detail .glance .gl-box{padding:0;border:0;border-radius:0;background:none;}
+#detail .glance .gl-eyebrow{font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+#detail .glance .gl-lead{margin-top:var(--sp-1);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#detail .glance .gl-lead em{font-style:normal;color:inherit;white-space:nowrap;}   /* 강조 항목명(객실 보안 등)은 한 덩어리, 색 없음 */
+#detail .glance .gl-cols{gap:var(--sp-5);margin-top:var(--sp-4);}
+#detail .glance .gl-h{margin-bottom:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);}
+#detail .glance li{padding:var(--sp-2) 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#detail .glance li b{font-weight:var(--fw-semi);}
+#detail .glance li .seg{display:block;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .glance li .dsep{display:none;}   /* 수치 .seg가 항상 둘째 줄 — 구분점 불필요(PC에서 줄 끝에 매달리던 '·') */
+#detail .glance .gl-dot{margin-top:var(--sp-2);}
+#detail .glance .gl-foot{align-items:center;margin-top:var(--sp-3);padding-top:0;border-top:0;font-size:var(--fs-meta);}
 
-/* 누구와 가세요 */
+/* 누구와 가세요: 보기 전환 칩 36 → 패널 상자 해체. 인용은 왼쪽 2px 선 + 들여쓰기 16(§7-3) */
 #detail .who .who-chips{gap:var(--sp-2);}
-#detail .who .who-panel{margin-top:var(--sp-5);padding:var(--sp-5) var(--sp-5) var(--sp-4);border:0;background:var(--surface-2);}
-#detail .who .who-h{font-size:var(--fs-h3);font-weight:var(--fw-display);}
+#detail .who .who-panel{margin-top:var(--sp-5);padding:0;border:0;border-radius:0;background:none;}
+#detail .who .who-h{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);}
+#detail .who .who-h em{color:inherit;}   /* 항목명 보라 강조 삭제(§3-2) */
 #detail .who li{padding:var(--sp-3) 0;font-size:var(--fs-body);border-top-color:var(--line);}
-#detail .who .who-quote{background:var(--surface-card);}
+#detail .who .who-quote{margin-top:var(--sp-4);padding:0 0 0 var(--sp-4);border:0;border-left:2px solid var(--line-strong);border-radius:0;background:none;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 
-/* 위치 */
+/* 위치: 주소 16 --ink → 메타 14 → 지도 카드 4:3 r20(§7-3) */
 #detail .location .loc-addr{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
-#detail .location .loc-chips{gap:var(--sp-2);margin:var(--sp-3) 0;}
+#detail .location .loc-meta{margin:var(--sp-1) 0 var(--sp-4);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .location .map{border:0;border-radius:var(--radius-card);background:var(--surface);}
+#detail .location .map iframe{aspect-ratio:4/3;}
 
 /* 실망 확률 */
 /* 실망 확률: 섹션 제목 22(왼쪽) → 가운데 히어로 숫자 64 잉크 → 판정 22(시맨틱 글자색 허용 최소 크기). 숫자는 잉크, 의미는 판정 글자가 맡는다(v3 §7-3) */
 #detail .disappear .head .eyebrow{margin:0 0 var(--sp-6);text-align:left;line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .disappear .head .pct{line-height:var(--lh-num);font-size:var(--fs-num-xl);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
 #detail .disappear .head .vh{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
+#detail .disappear .head .v-sub{margin-top:var(--sp-2);color:var(--ink-3);}
+#detail .disappear .ev-row b{font-weight:var(--fw-semi);}
+#detail .disappear .ev-txt .ev-sub{display:block;margin-top:2px;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .disappear .basis{margin-top:var(--sp-4);text-align:left;}   /* 산출 기준(?) 펼침: 왼쪽 정렬 14 --ink-3 */
+#detail .disappear .basis-fold{text-align:left;}
+#detail .disappear .basis-fold .basis{padding:0;}
+#detail .disappear .basis p + p{margin-top:var(--sp-2);}
 
 /* 항목별로 보면: 색 상자 6개 → 구분선 목록 (결론 글자색만으로 의미 전달) */
 #detail .risk .radar-cats{gap:0;margin-top:var(--sp-5);}
 #detail .risk .radar-cat{min-height:0;padding:var(--sp-4) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent !important;}
 #detail .risk .radar-cat:last-child{border-bottom:0;}
-#detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-bold);}
-#detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-caption);color:var(--ink-3);}
-#detail .risk .radar-cat .rc-sub b{font-weight:var(--fw-bold);color:var(--ink-2);}   /* 핵심 수치(1.1배·60% 적어요) */
-#detail .risk .radar-cat .rc-verdict{font-size:var(--fs-body);font-weight:var(--fw-display);}
+#detail .risk .radar-cat .rc-name{font-size:var(--fs-body);font-weight:var(--fw-semi);}
+#detail .risk .radar-cat .rc-sub{margin-top:2px;font-size:var(--fs-meta);color:var(--ink-3);}
+#detail .risk .radar-cat .rc-sub b{font-weight:var(--fw-semi);color:var(--ink);}   /* 핵심 수치(1.1배·60% 적어요) */
+#detail .risk .radar-cat .rc-verdict,#detail .risk .radar-cat.is-danger .rc-verdict,#detail .risk .radar-cat.is-warning .rc-verdict,#detail .risk .radar-cat.is-safe .rc-verdict{display:inline-flex;align-items:center;gap:var(--sp-2);font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);}   /* 16/600 --ink + 8px 색 점(§3-3) */
+#detail .risk .radar-cat .rc-verdict::before{content:"";flex:none;width:8px;height:8px;border-radius:50%;background:var(--ink-3);}
+#detail .risk .radar-cat.is-danger .rc-verdict::before{background:var(--danger);}
+#detail .risk .radar-cat.is-warning .rc-verdict::before{background:var(--warning);}
+#detail .risk .radar-cat.is-safe .rc-verdict::before{background:var(--safe);}
 
 /* 리스크 상세: 테두리 카드 묶음 → 구분선 목록 */
 #detail .analysis .risk-acc-item{margin:0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;}
@@ -101,7 +109,17 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .factor{font-size:var(--fs-body);font-weight:var(--fw-bold);}
 #detail .analysis .risk-acc-body .stat-row .stat-info .keywords{font-size:var(--fs-meta);color:var(--ink-3);}
 #detail .analysis .risk-acc-body .stat-count{font-size:var(--fs-caption);}
-#detail .analysis .review .list .item{padding:var(--sp-5);border:0;background:var(--surface-2);}
+/* 인용 리뷰 카드: 테두리·면 없음 + 카드 사이 세로 1px 선, 4줄 말줄임 + 밑줄 '더 보기'(넘칠 때만, 펼치면 전문) — v3 §7-3 */
+#detail .analysis .review .list .item{padding:0 var(--sp-3);border:0;border-radius:0;background:none;}
+#detail .analysis .review .list li:first-child .item{padding-left:0;}
+#detail .analysis .review .list li + li .item{border-left:1px solid var(--line);}
+#detail .analysis .review .list .item .item-bottom .text{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:4;overflow:hidden;}
+#detail .analysis .review .list .item.is-expanded .item-bottom .text{display:block;-webkit-line-clamp:unset;overflow:visible;}
+#detail .analysis .review .list .item .q-more{margin-top:var(--sp-1);}
+#detail .analysis .review .list .item .q-foot{justify-content:flex-start;margin-top:var(--sp-2);padding-top:0;border-top:0;}
+#detail .analysis .risk-acc-body .no-quote{padding:0;border-radius:0;background:none;text-align:left;color:var(--ink-3);}
+#detail .analysis .risk-acc-body{border-radius:0;}
+#detail .analysis .risk-acc-head .risk-dot{display:none;}   /* 결론 라벨(.cat-verdict)이 이미 8px 점을 가진다 — 점 2개 방지 */
 #detail .analysis .review .list .item .item-bottom .text{font-size:var(--fs-body);line-height:var(--lh-body);}
 #detail .stat-legend{gap:var(--sp-2) var(--sp-3);}
 #detail .stat-legend .lg,#detail .stat-legend .note{font-size:var(--fs-meta);}
@@ -115,24 +133,44 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 /* 가격 줄의 주말 값: 굵게 안 함, 넘치면 통째로 다음 줄(.seg) */
 .price .pl-we{font-weight:var(--fw-regular);color:var(--ink-3);}
 
-/* 실전정보 FAQ: 질문마다 간격을 둔 개별 카드(선 하나) — 펼친 근거 리뷰는 카드 안에서 선으로만 구분(상자 안 상자 금지) */
-#detail .faq .faq-cards{display:flex;flex-direction:column;gap:var(--sp-3);}
-#detail .faq .faq-card{margin:0;padding:var(--sp-5);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);}
-#detail .faq .faq-q{gap:var(--sp-2);}
-#detail .faq .faq-a{margin-top:var(--sp-4);}
-#detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding-top:var(--sp-4);border-top:1px solid var(--line);}
+/* 실전정보 FAQ(§7-3): 카드 상자 해체 → 행 목록(행 64+ · 1px --line). 펼친 답변은 16 --ink, 근거 인용은 왼쪽 2px 선 + 들여쓰기 16(상자 없음) */
+#detail .faq .faq-cards{display:block;}
+#detail .faq .faq-card{margin:0;padding:var(--sp-5) 0;border:0;border-radius:0;background:none;}
+#detail .faq .faq-card + .faq-card{border-top:1px solid var(--line);}
+#detail .faq .faq-q{gap:var(--sp-2);min-height:var(--sp-6);}
+#detail .faq .faq-q .q-pre{display:none;}   /* 'Q.' 보라 글자 삭제 */
+#detail .faq .faq-q .q-txt{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}
+#detail .faq .faq-chips{margin-top:var(--sp-1);}
+#detail .faq .faq-card.is-open .faq-chips{display:none;}   /* 펼치면 답변이 키워드를 대신한다 */
+#detail .faq .faq-a{margin-top:var(--sp-3);}
+#detail .faq .faq-a span{color:var(--ink);font-weight:var(--fw-semi);}   /* 강조 = 색 없이 굵기만 */
+#detail .faq .faq-ev-head{margin:var(--sp-5) 0 0;padding:0;border:0;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
 #detail .faq .faq-ev{gap:0;}
-#detail .faq .faq-ev .fe-item{padding:var(--sp-4) 0;border-radius:0;background:transparent;}
-#detail .faq .faq-ev .fe-item + .fe-item{border-top:1px solid var(--line);}
+#detail .faq .faq-ev .fe-item{margin-top:var(--sp-4);padding:0 0 0 var(--sp-4);border:0;border-left:2px solid var(--line-strong);border-radius:0;background:none;}
+#detail .faq .faq-ev .fe-item + .fe-item{border-top:0;}
+#detail .faq .faq-ev .fe-q{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#detail .faq .faq-ev .fe-q b{font-weight:var(--fw-semi);}
+#detail .faq .faq-ev .fe-name{font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);}
+#detail .faq .btn-gray{margin-top:var(--sp-4);}
+/* 가격 행(맨 위, 접지 않음) */
+#detail .faq-price{padding:0 0 var(--sp-1);}
+#detail .faq-price .fp-q{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}
+#detail .faq-price .fp-a{margin-top:var(--sp-1);font-size:var(--fs-body);line-height:var(--lh-body);}
+#detail .faq-price .fp-a b{font-weight:var(--fw-bold);}
+#detail .faq-price .fp-sub{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .price-sect .faq-price{padding:0;}
 
-/* 블로그 후기 카드 */
+/* 블로그 후기: 행 목록(제목 16/600 2줄 + 메타 14 + 썸네일 72 r8) */
 .social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;}
 .social-blog .nb-card:last-of-type{border-bottom:0;}
+.social-blog .nb-tit{font-weight:var(--fw-semi);line-height:var(--lh-ui);}
+.social-blog .nb-thumb{width:72px;height:72px;border-radius:var(--radius-chip);}
+.social-blog .btn-gray{margin-top:var(--sp-4);}
 
 /* 컬렉션 칩 */
 
-/* 하단 CTA 바 */
-#detail .button{padding:var(--sp-4) var(--page-x) calc(var(--sp-4) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}   /* 바 80 = 16 + 버튼 48 + 16 (§6-8) */
+/* 하단 CTA 바(§6-8): 바 80 = 16 + 버튼 48 + 16. 왼쪽 가격 열 + 오른쪽 브랜드 알약(4A 블록 아래 .has-price) */
+#detail .button{padding:var(--sp-4) var(--page-x) calc(var(--sp-4) + env(safe-area-inset-bottom));box-shadow:0 -1px 0 var(--line);}
 
 /* ════════ 홈 ════════ */
 #main .head .title{line-height:var(--lh-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
@@ -203,21 +241,16 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 /* 차트 범례: 항목 단위로 줄바꿈, 긴 호텔명은 항목 안에서 2줄 */
 #detail .risk .chart .custom-legend{display:grid;grid-template-columns:minmax(0,max-content) max-content;justify-content:center;column-gap:var(--sp-4);}   /* [호텔명(넘치면 …) | 후쿠오카 평균] 한 줄 */
 #detail .risk .chart .custom-legend .legend-item{min-width:0;max-width:100%;white-space:normal;}   /* 긴 호텔명은 2줄 허용(말줄임으로 정보를 지우지 않음, v3 §7-3) */
-/* 상단 두 버튼: 좁은 화면에서 라벨이 '분석 리뷰 / 212개'로 쪼개지지 않게 — 여백 축소 + 장식 아이콘(≡)은 좁은 폭에서 숨김 */
-#detail .information .info-bottom .btn-link{padding:0 var(--sp-3);gap:6px;}
-#detail .information .info-bottom .btn-link .txt .label{white-space:nowrap;}
-@media (max-width:400px){#detail .information .info-bottom .btn-audit .ico{display:none;}}
-
-/* 구글 별점 분포: 바깥 테두리 상자 제거, 1·2점(불만 구간)은 연한 빨강 띠로 묶어 한눈에 구분 */
+/* 구글 별점 분포(v3 §7-3): 바깥 상자·연빨강 띠 없음 — 흑백 막대 두께 4(채움 --ink, 트랙 --line), 1·2점 막대만 --danger */
 #detail .recent .list{padding:0;border:0;border-radius:0;background:transparent;}
-#detail .recent .list ul{gap:0;}
-#detail .recent .list li{padding:var(--sp-3) var(--sp-4);}
-#detail .recent .list li:nth-child(-n+2){background:var(--danger-soft);}
-#detail .recent .list li:nth-child(1){padding-top:var(--sp-4);border-radius:var(--radius-box) var(--radius-box) 0 0;}
-#detail .recent .list li:nth-child(2){padding-bottom:var(--sp-4);margin-bottom:var(--sp-2);border-radius:0 0 var(--radius-box) var(--radius-box);}
-#detail .recent .list li:nth-child(-n+2) .num,#detail .recent .list li:nth-child(-n+2) .per{color:var(--danger-text);font-weight:var(--fw-bold);}
-#detail .recent .list li:nth-child(-n+2) .bar{background:var(--surface-card);}
+#detail .recent .list ul{gap:var(--sp-2);}
+#detail .recent .list li{align-items:center;padding:0;}
+#detail .recent .list li .num,#detail .recent .list li:nth-child(1) .num,#detail .recent .list li:nth-child(2) .num{width:var(--sp-8);font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);}
+#detail .recent .list li .per{font-size:var(--fs-body);font-weight:var(--fw-regular);color:var(--ink);}
+#detail .recent .list li .bar{height:var(--sp-1);background:var(--line);}
+#detail .recent .list li .bar i,#detail .recent .list li:nth-child(1) .bar i,#detail .recent .list li:nth-child(2) .bar i{background:var(--ink);}
 #detail .recent .list li:nth-child(-n+2) .bar i{background:var(--danger);}
+#detail .recent .head .count{position:static;margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-regular);color:var(--ink-3);}
 
 /* ════════ §v3 (DESIGN-SYSTEM-V3) — 새 부품은 이 블록에, 대체된 레거시 셀렉터는 같은 PR에서 삭제 ════════ */
 /* 페이지 제목(§4-1): 페이지마다 h1 1개. 상단 바 아래 20 → 32 제목 → 24 → 내용, 좌 24 */
@@ -646,3 +679,79 @@ html.has-cmp #detail ~ #float{bottom:calc(var(--h-btn) + var(--h-float) + var(--
 .es-btns{display:flex;flex-wrap:wrap;gap:var(--sp-2);margin-top:var(--sp-4);}
 #detail .information .info-share{align-self:flex-start;margin-top:var(--sp-3);}   /* 상세 정보 영역 공유 = 외곽선 소형 버튼(내용 폭) */
 #detail .information .info-share img{width:18px;height:18px;}
+
+/* ════════ v3 4A detail — 상세 첫 화면·헤더·하단 바·가격 시트 (DESIGN-SYSTEM-V3 §6-7 · §6-8 · §7-3) ════════ */
+#detail .dh-acts{display:none;}   /* 공유·비교 원 버튼은 모바일(≤1099)에서만 — PC는 결정 카드가 맡는다 */
+#detail .visual::before{display:none;}   /* layout.css의 검정 그라데이션(사진 1장일 때 보임) 삭제 */
+#detail .information .lowrev-note{margin-top:var(--sp-4);}
+
+/* 3칸 요약 행: 위아래 1px --line · 최소 높이 72 · 칸 사이 세로 1px 32. 등급은 점 색, 라벨은 '실망 확률'(리뷰 적음·준비 중만 덧붙임) */
+#detail .info-sum{display:grid;grid-template-columns:1.4fr 1px 1fr 1px 1fr;align-items:stretch;margin-top:var(--sp-5);border-top:1px solid var(--line);border-bottom:1px solid var(--line);}
+#detail .info-sum .is-cell{display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;min-height:72px;padding:var(--sp-3) var(--sp-1);text-align:center;color:var(--ink);}
+#detail .info-sum a.is-cell:active{background:var(--surface-2);}
+#detail .info-sum .is-vr{align-self:center;width:1px;height:32px;background:var(--line);}
+#detail .info-sum .sv{display:flex;align-items:center;justify-content:center;gap:6px;font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);font-variant-numeric:tabular-nums;}
+#detail .info-sum .sl{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+#detail .info-sum .sl .nw{color:var(--ink-3);}
+
+/* 하단 CTA 바: 가격(왼쪽 열) + 브랜드 알약 48(오른쪽, min 140). 가격 근거 없으면 전폭 .btn-brand(F3) */
+#detail .button .bar-price{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:2px;}
+#detail .button .bp-main{position:relative;max-width:100%;padding:0;border:0;background:none;font-family:inherit;font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);text-decoration:underline;text-underline-offset:3px;text-align:left;white-space:nowrap;cursor:pointer;}
+#detail .button .bp-main::before{content:"";position:absolute;inset:calc(var(--sp-3) * -1) calc(var(--sp-1) * -1);}   /* 터치 44+ */
+#detail .button .bp-sub{max-width:100%;overflow:hidden;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);white-space:nowrap;text-overflow:ellipsis;}   /* 정상 문구는 잘리지 않음(360 최악 305/312) — 안전장치 */
+#detail .button .bar-cta{flex:none;min-width:140px;padding:0 var(--sp-5);border-radius:var(--radius-pill);}
+
+/* 가격 기준 시트(B · H3 정보형) */
+#ov-price .pb-rows{margin:0;padding:0;list-style:none;border-top:1px solid var(--line);}
+#ov-price .pb-rows li{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-4) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);}
+#ov-price .pb-rows li span:first-child{color:var(--ink-3);}
+#ov-price .pb-rows b{font-weight:var(--fw-bold);}
+#ov-price .pb-p{margin:var(--sp-4) 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#ov-price .pb-sub{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+
+/* 인용 리뷰 '더 보기' — 넘칠 때만 노출([hidden]은 .btn-text의 inline-flex를 이긴다) */
+.q-more[hidden]{display:none;}
+
+/* 한국인 리뷰 현황(§7-3): 회색 상자 4개 해체 → 분포 차트 전폭 + 2열 수치(세로 1px 선) + 안내 16 */
+.kr-card .kr-dist{margin:0 0 var(--sp-6);padding:0;border-radius:0;background:none;}
+.kr-card .kp-cap{font-size:var(--fs-body);color:var(--ink);}
+.kr-card .kp-cap b{color:var(--ink);}
+.kr-card .kp-sub{font-size:var(--fs-meta);color:var(--ink-3);}
+.kr-card .kp-sub b{font-weight:var(--fw-semi);color:var(--ink);}
+.kr-card .kr-vbars{gap:0;}
+.kr-card .kv-group{padding:0 var(--sp-3);border-radius:0;background:none;}
+.kr-card .kv-group + .kv-group{border-left:1px solid var(--line);}
+.kr-card .kv-val-ko{color:var(--ink);}
+.kr-card .kr-foot{margin-top:var(--sp-4);}
+.kr-card .kr-insight{margin-top:var(--sp-5);padding:0;border-radius:0;background:none;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+.kr-card .kr-insight b{font-weight:var(--fw-semi);color:var(--ink);}
+.kr-card .kr-serious{margin-top:var(--sp-2);padding:0;border-radius:0;background:none;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+.kr-card .kr-serious b{font-weight:var(--fw-semi);color:var(--ink);}
+.kr-card .kr-count b{color:var(--ink);}
+
+/* 모바일·태블릿(≤1099): 헤더가 사진 위에 떠 있다가(투명 + 흰 원 버튼) 사진을 지나면 흰 바. 아래로 스크롤하면 숨고 탭이 맨 위로(--sticky-top 0) */
+@media (max-width:1099px){
+    #detail .det-header{display:grid;grid-template-columns:1fr auto 1fr;height:var(--h-header);margin-bottom:calc(var(--h-header) * -1);padding:0 calc(var(--sp-3) - var(--sp-1));transition:transform .2s,background-color .2s,border-color .2s;}   /* 헤더가 레이아웃 높이 0 → 사진이 화면 맨 위부터 */
+    #detail .det-header .dh-back{justify-self:start;width:var(--h-icon);height:var(--h-icon);margin:0;}
+    #detail .det-header .dh-back img{width:20px;height:20px;}
+    #detail .det-header .dh-logo{justify-self:center;transition:opacity .2s;}
+    #detail .dh-acts{display:flex;justify-self:end;align-items:center;}
+    #detail .dh-act.cmp-btn.is-on::after{content:"";position:absolute;left:50%;top:50%;width:12px;height:7px;margin:-6px 0 0 -6px;border-left:2px solid var(--ink-inverse);border-bottom:2px solid var(--ink-inverse);transform:rotate(-45deg);}
+    #detail .dh-act .cmp-ico{width:var(--sp-4);height:var(--sp-4);}
+    #detail .dh-act .cmp-ico::before{width:var(--sp-4);}
+    #detail .dh-act .cmp-ico::after{height:var(--sp-4);}
+    #detail .det-header:not(.is-top) .btn-icon--photo::before{background:var(--surface);box-shadow:none;}
+    #detail .dh-act.is-on.cmp-saved::before{background:var(--primary-cta);box-shadow:none;}   /* 비교함에 담김 = 저장 상태(보라 역할 2) → 브랜드 채움 + 흰 체크 */
+    #detail .det-header.is-top{background:transparent;border-bottom-color:transparent;}
+    #detail .det-header.is-top .dh-logo{opacity:0;pointer-events:none;}
+    html.is-scroll-down #detail .det-header:not(.is-top){transform:translateY(-100%);}
+    html.is-scroll-down #detail{--sticky-top:0px;}
+    #detail .det-tabs{transition:top .2s;}
+    #detail .button.has-price{display:flex;align-items:center;gap:var(--sp-3);}   /* PC는 #detail > .button 숨김(pc.css) — 모바일에서만 flex */
+
+    /* 사진 4:3 · 점 페이지네이션 삭제 · 카운터는 흰 시트 위 16 · 정보 시트가 사진 위로 20 겹침(위 모서리 20) */
+    #detail .visual{aspect-ratio:4/3;}
+    #detail .visual .hotel-gallery .swiper-pagination{display:none;}
+    #detail .visual .hotel-gallery .gallery-count{right:var(--sp-4);bottom:calc(var(--sp-5) + var(--sp-4));}
+    #detail .content > .information{position:relative;z-index:2;margin-top:calc(var(--sp-5) * -1);border-radius:var(--radius-card) var(--radius-card) 0 0;}
+}
