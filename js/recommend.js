@@ -44,12 +44,7 @@
   window.CFRec = { CATS: CATS, BUDGETS: BUDGETS, AREA_DESC: AREA_DESC, MUSTS: MUSTS, mustBy: mustBy, normNo: normNo, byCode: byCode, open: openWizard };
 
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
-  function toast(msg) {
-    var el = document.createElement('div'); el.className = 'cf-toast'; el.textContent = msg;
-    document.body.appendChild(el);
-    requestAnimationFrame(function () { el.classList.add('show'); });
-    setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 1600);
-  }
+  function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
 
   // ── 상태 ──
   var sheet = null, step = 1, maxStep = 1, sel = [], bud = '', area = '', no = [], bw = false;

@@ -21,7 +21,7 @@
 
 /* ══════════════════════ PC (≥1100px) ══════════════════════ */
 @media (min-width:1100px){
-    :root{--width:560px;--pc-max:1200px;--pc-x:32px;--fs-num-xl:72px;--fs-hero:48px;--section-pt:48px;--section-pb:48px;--head-gap:24px;}   /* PC 전용: 히어로 숫자 72·홈 히어로 48(v3 §2-1), 문서 리듬 48/48·제목→내용 24(§4-2) */
+    :root{--width:560px;--pc-max:1200px;--pc-x:32px;--fs-num-xl:72px;--fs-hero:48px;--section-pt:48px;--section-pb:48px;--head-gap:24px;--h-sheet-head:64px;}   /* PC 전용: 히어로 숫자 72·홈 히어로 48(v3 §2-1), 문서 리듬 48/48·제목→내용 24(§4-2) */
     body,#wrapper{background:var(--surface-card);}
     #wrapper{width:100%;}
 
@@ -40,7 +40,6 @@
     /* ── 공통 푸터·플로팅 ── */
     #site-foot{max-width:var(--pc-max);margin:0 auto;padding-left:var(--pc-x);padding-right:var(--pc-x);border-top:1px solid var(--line);}
     #float{left:auto;right:var(--pc-x);width:auto;transform:none;}
-    .cf-toast{bottom:var(--sp-10);}
     .cmp-tray,.cmp-tray.on-detail{left:auto;right:calc(var(--pc-x) + 64px);bottom:var(--sp-6);transform:none;}
     html.is-scroll-down #float,html.is-scroll-down .cmp-tray,html.is-scroll-down .cmp-tray.on-detail{transform:translateY(130%);}   /* PC는 가로 이동 없음 */
     html.is-scroll-down #float:has(.btn-airec){transform:none;}   /* 홈 추천 버튼은 PC에서도 항상 표시 */
@@ -243,6 +242,23 @@
     .cmp-pick .cp-head{padding:var(--sp-6) var(--sp-6) var(--sp-3);}
     .cmp-pick .cp-search,.cmp-pick .cp-sub{padding-left:var(--sp-6);padding-right:var(--sp-6);}
     .cmp-pick .cp-list{padding:0 var(--sp-6) var(--sp-6);}
+
+    /* ════════ §v3 오버레이 PC 변환(DESIGN-SYSTEM-V3 §5-6): 시트·바텀 시트·다이얼로그 모두 가운데 모달(네 모서리 32) ════════
+       폭 400(확인)·568(기본)·780(긴 목록)·1032(리뷰 근거 2단) · 위 40 · 최대 높이 100vh−80 · 헤더 64(--h-sheet-head) · 푸터 80 · 딤 40% */
+    .ov{justify-content:center;padding:40px var(--pc-x);}
+    .ov-panel{width:var(--ov-w-md);max-width:100%;max-height:calc(100vh - 80px);border-radius:var(--radius-sheet);box-shadow:var(--shadow-sheet);opacity:0;transform:scale(.98);transition:opacity .2s, transform .2s;}
+    .ov.ov-on > .ov-panel{opacity:1;transform:none;}
+    .ov.ov-on.ov-under > .ov-panel{transform:scale(.96);}
+    .ov[data-ov=sheet] > .ov-panel{height:min(calc(100vh - 80px), 800px);}
+    .ov-panel.ov-w-sm{width:var(--ov-w-sm);}
+    .ov-panel.ov-w-lg{width:var(--ov-w-lg);}
+    .ov-panel.ov-w-xl{width:var(--ov-w-xl);}
+    .ov-foot{padding:var(--sp-4) var(--sp-6);}
+    .ov-close:hover,.ov-back:hover{background:var(--surface);}
+    .ov-head--large .ov-mini{left:var(--h-sheet-head);right:var(--h-sheet-head);}
+    /* 토스트: 왼쪽 아래 32 */
+    .cf-toast{left:var(--sp-8);right:auto;bottom:var(--sp-8);margin:0;}
+    .cf-toast.has-act{width:auto;min-width:322px;min-height:64px;}
 
     /* ════════ 컬렉션 허브·소개·최근 본 ════════ */
     #hub{max-width:960px;margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}

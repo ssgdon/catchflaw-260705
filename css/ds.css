@@ -263,3 +263,112 @@ p,.text,.hub-summary,.hf-a,.foot-note,.about-body,.note,.faq-a,.loc-addr,.hub-me
 .page-empty .pe-btn{display:inline-flex;align-items:center;justify-content:center;height:var(--h-btn);padding:0 var(--sp-5);border-radius:var(--radius-btn);font-size:var(--fs-body);font-weight:var(--fw-bold);white-space:nowrap;}
 .page-empty .pe-btn.is-brand{background:var(--primary-cta);color:var(--ink-inverse);}
 .page-empty .pe-btn.is-line{border:1px solid var(--ink);color:var(--ink);}
+
+/* ════════ §v3 오버레이 1벌 (DESIGN-SYSTEM-V3 §5 · UI-STANDARDS §17) ════════
+   그릇: .ov[data-ov=sheet] 페이지 시트(높이 고정) · [data-ov=bottom] 바텀 시트(내용 높이) · [data-ov=dialog] 가운데 다이얼로그 · CF.toast
+   마크업: .ov > .ov-dim + .ov-panel > .ov-head(--bar H1 | --large H2 | --info H3) + .ov-body + .ov-foot(--f1|--f2|--f3, 반드시 ov-body 밖)
+   동작(뒤로가기·ESC·딤·포커스·스크롤 잠금·시트 위 시트·키보드)은 js/backnav.js CF.sheet 하나. PC 변환은 pc.css */
+.ov{position:fixed;inset:0;z-index:var(--z-sheet);display:flex;flex-direction:column;align-items:center;justify-content:flex-end;}
+.ov[hidden]{display:none;}
+.ov-dim{position:absolute;inset:0;background:var(--ov-dim);opacity:0;transition:opacity .2s;}
+.ov.ov-on > .ov-dim{opacity:1;}
+.ov-panel{position:relative;display:flex;flex-direction:column;width:var(--width);max-width:100%;max-height:calc(var(--vvh, 100dvh) - var(--sp-12));margin-bottom:var(--ov-kb, 0px);overflow:hidden;border-top-left-radius:var(--radius-sheet);border-top-right-radius:var(--radius-sheet);background:var(--surface-card);transform:translateY(100%);transition:transform .2s ease;outline:0;}
+.ov.ov-on > .ov-panel{transform:none;transition-duration:.28s;}
+.ov[data-ov=sheet] > .ov-panel{height:calc(var(--vvh, 100dvh) - var(--sp-12));}   /* 페이지 시트: 위 48만 남기고 높이 고정 — 단계·목록이 바뀌어도 높이가 튀지 않음 */
+.ov[data-ov=dialog]{justify-content:center;padding:0 var(--sp-3);}
+.ov[data-ov=dialog] > .ov-panel{width:100%;max-width:var(--ov-w-sm);margin-bottom:0;border-radius:var(--radius-sheet);opacity:0;transform:scale(.98);transition:opacity .2s, transform .2s;}
+.ov[data-ov=dialog].ov-on > .ov-panel{opacity:1;transform:none;}
+/* 시트 위 시트: 위 시트의 딤만(이중 딤 금지), 아래 시트는 조금 작게 */
+.ov.ov-under > .ov-dim{opacity:0;}
+.ov.ov-on.ov-under > .ov-panel{transform:scale(.96);}
+html.ov-lock{overflow:hidden;}
+
+/* 헤더 3형식 */
+.ov-head{position:relative;flex:none;background:var(--surface-card);}
+.ov-title{margin:0;color:var(--ink);outline:0;}
+.ov-close,.ov-back{position:relative;display:block;flex:none;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer;}
+.ov-back[hidden]{visibility:hidden;}
+.ov-close::before,.ov-close::after{content:"";position:absolute;left:50%;top:50%;width:18px;height:2px;background:currentColor;}
+.ov-close::before{transform:translate(-50%,-50%) rotate(45deg);}
+.ov-close::after{transform:translate(-50%,-50%) rotate(-45deg);}
+.ov-back::before{content:"";position:absolute;left:50%;top:50%;width:10px;height:10px;border-left:2px solid currentColor;border-bottom:2px solid currentColor;transform:translate(-25%,-50%) rotate(45deg);}
+/* H1 작은 헤더: 56 · 가운데 16/700 한 줄(고정 문구만) · X 오른쪽(아이콘 끝이 시트 끝에서 24) · 아래 1px */
+.ov-head--bar{display:grid;grid-template-columns:var(--h-icon) minmax(0,1fr) var(--h-icon);align-items:center;column-gap:var(--sp-2);height:var(--h-sheet-head);padding:0 calc(var(--page-x) - 14px);border-bottom:1px solid var(--line);}
+.ov-head--bar .ov-back{grid-column:1;}
+.ov-head--bar .ov-title{grid-column:2;overflow:hidden;text-align:center;white-space:nowrap;text-overflow:ellipsis;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-bold);}
+.ov-head--bar .ov-close{grid-column:3;}
+/* H2 큰 제목: X만 있는 56 줄 → 8 → 26/700 왼쪽 → 8 → 부제 → 24. 스크롤로 제목이 사라지면 가운데 16 작은 제목 + 1px로 접힘 */
+.ov-head--large{display:flex;align-items:center;justify-content:flex-end;height:var(--h-sheet-head);padding:0 calc(var(--page-x) - 14px);border-bottom:1px solid transparent;transition:border-color .15s;}
+.ov-head--large .ov-mini{position:absolute;top:50%;left:var(--h-sheet-head);right:var(--h-sheet-head);overflow:hidden;transform:translateY(-50%);text-align:center;white-space:nowrap;text-overflow:ellipsis;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-bold);color:var(--ink);opacity:0;transition:opacity .15s;}
+.ov-head--large.is-collapsed{border-bottom-color:var(--line);}
+.ov-head--large.is-collapsed .ov-mini{opacity:1;}
+.ov-hero{padding:var(--sp-2) 0 var(--sp-6);}
+.ov-hero .ov-title{font-size:var(--fs-title);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);text-wrap:balance;}
+/* H3 정보형: X만 있는 56 줄 → 18/700 왼쪽(최대 2줄) → 4 → 14 메타 → 12. 푸터 없이 X로만 닫음 */
+.ov-head--info{padding:var(--h-sheet-head) var(--page-x) var(--sp-3);}
+.ov-head--info .ov-close{position:absolute;top:calc((var(--h-sheet-head) - var(--h-icon)) / 2);right:calc(var(--page-x) - 14px);}
+.ov-head--info .ov-title{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);text-wrap:balance;}
+.ov-sub{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.ov-head--info .ov-sub{margin-top:var(--sp-1);}
+.ov-sub.is-text{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}   /* 부제가 문장이면 16 잉크, 메타 한 줄이면 14 회색 */
+/* 확인 다이얼로그(종료 확인): 56 줄에 가운데 18 제목 + X, 선 없음 → 가운데 본문 */
+.ov--confirm .ov-head--bar{border-bottom:0;}
+.ov--confirm .ov-head--bar .ov-title{white-space:normal;font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);}
+.ov--confirm .ov-body{text-align:center;}
+
+/* 본문: 좌우 24, 구획은 위아래 24 + 1px(구획 제목 18) */
+.ov-body{flex:1 1 auto;min-height:0;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:0 var(--page-x) var(--sp-6);}
+.ov-head--bar + .ov-body{padding-top:var(--sp-4);}
+.ov-panel > .ov-body:last-child{padding-bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));}
+.ov-text{margin:0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);text-wrap:pretty;}
+.ov-note{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.ov-sec{padding:var(--sp-6) 0;border-top:1px solid var(--line);}
+.ov-sec:first-child,.ov-hero + .ov-sec{padding-top:0;border-top:0;}
+.ov-sec:last-child{padding-bottom:0;}
+.ov-sec-t{margin:0;font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
+.ov-sec-t .ov-opt-q{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
+.ov-sec-sub{margin:var(--sp-1) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.ov-sec-t + .ov-chips,.ov-sec-sub + .ov-chips,.ov-sec-t + .ov-input,.ov-sec-sub + .ov-input{margin-top:var(--sp-3);}
+
+/* 푸터 3형식: 하단 고정, 위 1px(내용이 밑으로 지나가면 그림자), 12 24 12+safe → 바 72 */
+.ov-foot{position:relative;flex:none;display:flex;align-items:center;gap:var(--sp-4);padding:var(--sp-3) var(--page-x) calc(var(--sp-3) + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:var(--surface-card);transition:box-shadow .15s;}
+.ov-foot.is-raised{border-top-color:transparent;box-shadow:var(--shadow-up);}
+.ov-foot--f1,.ov-foot--f2{justify-content:space-between;}
+.ov-foot--f1 > .btn-ink,.ov-foot--f1 > .btn-brand,.ov-foot--f2 > .btn-ink,.ov-foot--f2 > .btn-brand{min-width:120px;margin-left:auto;}
+.ov-foot--f3{flex-direction:column;align-items:stretch;gap:var(--sp-2);}
+.ov-foot-sum{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-bold);color:var(--ink);}
+.ov-foot-note{margin:0;text-align:center;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.ov[data-ov=dialog] .ov-foot{padding-bottom:var(--sp-4);border-top:0;}
+
+/* 버튼(§6-1) — 시트 푸터가 먼저 쓴다. 높이·라운드는 토큰(P1 부품 단계에서 --h-btn 48 · --radius-btn 10으로) */
+.btn-ink,.btn-brand,.btn-gray{display:inline-flex;align-items:center;justify-content:center;gap:var(--sp-2);height:var(--h-btn);padding:0 var(--sp-6);border:0;border-radius:var(--radius-btn);font-size:var(--fs-body);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;text-decoration:none;cursor:pointer;}
+.btn-ink{background:var(--ink);color:var(--ink-inverse);}
+.btn-brand{background:var(--primary-cta);color:var(--ink-inverse);}
+.btn-brand:active{background:var(--primary-deep);}
+.btn-gray{background:var(--surface);color:var(--ink);font-weight:var(--fw-semi);}
+.btn-ink:disabled,.btn-brand:disabled,.btn-gray:disabled{background:var(--line);color:var(--ink-3);cursor:default;}   /* 비활성: 숨기거나 흐리게 하지 않음(§3-4) */
+.btn-text{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
+
+/* 오버레이 안 고르기 부품: 필터 칩(다중, 선택 = 2px 잉크 + 옅은 면) · 보기 전환 칩(단일, 선택 = 잉크 채움) · 라디오 행 · 입력 */
+.ov-chips{display:flex;flex-wrap:wrap;gap:var(--sp-3) var(--sp-2);}
+.chip-filter{display:inline-flex;align-items:center;height:var(--h-chip);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
+.chip-filter.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--surface-2);}
+.chip-view{flex:none;display:inline-flex;align-items:center;height:var(--h-chip-sm);padding:0 var(--sp-4);border:0;border-radius:var(--radius-pill);background:var(--surface);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;cursor:pointer;}
+.chip-view.on{background:var(--ink);color:var(--ink-inverse);}
+.ov-opts{display:flex;flex-direction:column;}
+.ov-opt{display:flex;align-items:center;gap:var(--sp-4);min-height:64px;padding:var(--sp-3) 0;border-top:1px solid var(--line);cursor:pointer;}
+.ov-opt:first-child{border-top:0;}
+.ov-opt-t{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.ov-opt-t b{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
+.ov-opt-t span{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.ov-radio{flex:none;appearance:none;-webkit-appearance:none;width:24px;height:24px;margin:0;border:1px solid var(--ink-4);border-radius:50%;background:var(--surface-card);cursor:pointer;transition:border-width .1s;}
+.ov-radio:checked{border:7px solid var(--ink);}
+.ov-input{display:block;width:100%;min-height:var(--h-input);padding:var(--sp-3) var(--sp-4);border:1px solid var(--ink-4);border-radius:var(--radius-btn);background:var(--surface-card);font-family:inherit;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+.ov-input:focus{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);outline:0;}
+textarea.ov-input{height:96px;resize:none;}
+
+/* 토스트(§5-5): 흰 알약(행동 없음) · 흰 스낵바(행동 있음). 위치는 CF.toast가 하단 고정 바·트레이·시트 푸터 위 16으로 올림 */
+.cf-toast{position:fixed;z-index:var(--z-toast);left:0;right:0;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));display:flex;align-items:center;justify-content:center;gap:var(--sp-3);width:max-content;max-width:min(84vw, 340px);min-height:40px;margin:0 auto;padding:var(--sp-2) var(--sp-5);border-radius:var(--radius-card);background:var(--surface-card);box-shadow:var(--shadow-float);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-align:center;text-wrap:balance;opacity:0;transform:translateY(10px);transition:opacity .25s, transform .25s;pointer-events:none;}
+.cf-toast.show{opacity:1;transform:none;}
+.cf-toast.has-act{justify-content:space-between;width:calc(100% - var(--sp-12));max-width:400px;min-height:60px;padding:var(--sp-2) var(--sp-2) var(--sp-2) var(--sp-5);border-radius:var(--radius-box);text-align:left;pointer-events:auto;}
+.cf-toast .cf-toast-act{flex:none;min-height:var(--h-icon);padding:0 var(--sp-3);border:0;background:none;font-size:var(--fs-meta);font-weight:var(--fw-bold);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}

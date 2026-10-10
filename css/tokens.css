@@ -56,6 +56,8 @@
     --shadow-float: 0 6px 16px rgb(0 0 0 / 12%);   /* 떠 있는 알약·스낵바·PC 결정 카드 */
     --shadow-badge: 0 1px 3px rgb(0 0 0 / 14%);    /* 사진 위 흰 배지·흰 원 버튼 */
     --shadow-pop: 0 8px 28px rgb(0 0 0 / 16%);     /* 자동완성·팝오버 */
+    --shadow-up: 0 -2px 12px rgb(0 0 0 / 8%);      /* 시트 고정 푸터 — 내용이 밑으로 지나갈 때만(선 대신) */
+    --shadow-sheet: 0 24px 64px rgb(0 0 0 / 20%);  /* PC 가운데 모달 */
 
     /* ---------- 타이포 v3 (UI-STANDARDS §3) ----------
        ★ font-size는 이 변수만 쓴다(px 직접 기입 금지 — scripts/lint_ui.py가 빌드 때 막음)

@@ -23,12 +23,7 @@
   }
   function catKo(c) { return (window.CAT_KO && window.CAT_KO[c]) || c; }
   function gtagSafe(name, p) { if (typeof gtag === 'function') gtag('event', name, p || {}); }
-  function toast(msg) {
-    var el = document.createElement('div'); el.className = 'cf-toast'; el.textContent = msg;
-    document.body.appendChild(el);
-    requestAnimationFrame(function () { el.classList.add('show'); });
-    setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 2200);
-  }
+  function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
   // 남용 집계용 익명 ID: localStorage 랜덤값의 SHA-256 앞 16자 (개인정보 아님)
   function clientHash() {
     var id = '';

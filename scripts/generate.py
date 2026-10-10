@@ -3530,12 +3530,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             var $sheet = $('#review-sheet'), curCat = null, curSub = null, krOnly = false;
             var qfull = false, qloading = false;   // R2 전체 인용문 로드 상태 (REVIEW-LAZYLOAD §C)
 
-            function toast(msg){{
-                var t = document.createElement('div'); t.className = 'cf-toast'; t.textContent = msg;
-                document.body.appendChild(t);
-                requestAnimationFrame(function(){{ t.classList.add('show'); }});
-                setTimeout(function(){{ t.classList.remove('show'); setTimeout(function(){{ t.remove(); }}, 300); }}, 1800);
-            }}
+            function toast(msg){{ CF.toast(msg); }}   // 토스트 1벌(js/backnav.js)
             // 첫 '더보기'/한국인필터 시 호텔 전체 인용문 JSON을 R2에서 1회 fetch → QDATA 교체(이후 탭 전환 즉시)
             function loadFull(cb){{
                 if (qfull || !window.QFULL) {{ cb && cb(); return; }}

@@ -8,13 +8,7 @@
   // 등급 색은 토큰 변수로(--safe·--warning·--danger), 없으면 메타 회색
   var BAND_VAR = { safe: 'var(--safe)', warning: 'var(--warning)', danger: 'var(--danger)' };
 
-  function toast(msg) {
-    var el = document.createElement('div');
-    el.className = 'cf-toast'; el.innerHTML = msg;
-    document.body.appendChild(el);
-    requestAnimationFrame(function () { el.classList.add('show'); });
-    setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 2000);
-  }
+  function toast(msg) { CF.toast(msg); }   // 토스트 1벌(js/backnav.js)
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');

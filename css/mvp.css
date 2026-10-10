@@ -294,18 +294,15 @@
    추가 컴포넌트 (2차 피드백) — 모달 · 공유시트 · 필터시트 · 지역칩 · 소팅
    ============================================================ */
 
-/* ---------- 공통 모달 (종료확인 · 피드백) ---------- */
+/* ---------- 공통 모달 (피드백 · 공유 · 신고 · 마법사 — P1-n에서 .ov로 옮기는 중) ---------- */
 .cf-modal{position:fixed;z-index:400;inset:0;display:none;}
 .cf-modal.is-open{display:block;}
 .cf-modal .cf-modal-dim{position:absolute;inset:0;background:rgb(0 0 0 / 60%);}
 .cf-modal .cf-modal-card{position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:var(--width);max-width:100%;padding:28px 22px calc(24px + env(safe-area-inset-bottom));border-radius:20px 20px 0 0;background:var(--surface-card);text-align:center;animation:cf-slide-up .28s ease;}
 @keyframes cf-slide-up{from{transform:translate(-50%,100%);}to{transform:translate(-50%,0);}}
-.cf-modal .cf-modal-tit{margin:12px 0 8px;line-height:1.35;font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);}
-.cf-modal .cf-modal-txt{line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
 .cf-modal .cf-modal-btns{display:flex;gap:8px;margin:22px 0 0;}
 .cf-modal .cf-btn{flex:1;display:flex;align-items:center;justify-content:center;height:var(--h-btn);border-radius:var(--radius-btn);font-size:var(--fs-body);font-weight:var(--fw-bold);}
 .cf-modal .cf-btn-primary{background:var(--primary);color:var(--ink-inverse);}
-.cf-modal .cf-btn-ghost{background:var(--surface);color:var(--ink-2);}
 
 /* ---------- 이탈 전 피드백 모달 (디자인 표준 정렬) ---------- */
 #cf-feedback-modal .cf-modal-card{text-align:left;padding:22px 20px calc(20px + env(safe-area-inset-bottom));}
@@ -412,9 +409,6 @@
 #cf-report .rp-submit{flex:none;width:100%;height:var(--h-btn-lg);}
 #cf-report .rp-submit:disabled{background:var(--line);color:var(--ink-3);cursor:default;}   /* v3 비활성(§6-1): --line 면 + --ink-3 글자 — 숨기거나 흐리게 하지 않음 */
 
-/* ---------- 토스트 ---------- */
-.cf-toast{position:fixed;z-index:var(--z-toast);left:0;right:0;margin:0 auto;width:max-content;bottom:80px;transform:translateY(10px);padding:12px 20px;border-radius:24px;background:rgb(25 27 31 / 92%);color:var(--ink-inverse);font-size:var(--fs-caption);font-weight:var(--fw-semi);opacity:0;transition:opacity .3s, transform .3s;pointer-events:none;white-space:nowrap;}
-.cf-toast.show{opacity:1;transform:none;}   /* 폭 버그(P0a): left:50%+translate(-50%)는 남은 폭(375에서 188px)으로 줄바꿈됨 → 양끝 0 + margin auto + max-content */
 
 /* ============================================================
    AI 맞춤 추천 (recommend.js) — 플로팅 버튼 + 3스텝 마법사
@@ -497,8 +491,6 @@ body:has(#ac-box:not([hidden])) #float{opacity:0;visibility:hidden;}   /* 홈 �
 #cf-rec-wizard .rec-loading-tit{font-size:var(--fs-h3);font-weight:var(--fw-display);color:var(--ink);line-height:1.4;}
 #cf-rec-wizard .rec-loading-sub{font-size:var(--fs-body);color:var(--ink-2);line-height:1.55;max-width:20em;}
 
-/* ── 토스트 개선 (글씨 키우고 여백 넉넉히, 여러 줄 허용) ── */
-.cf-toast{padding:14px 22px;font-size:var(--fs-body);line-height:1.45;white-space:normal;max-width:min(84vw,340px);text-align:center;text-wrap:balance;box-shadow:0 6px 24px rgb(25 27 31 / 28%);}
 
 /* ── 한국인 리뷰 현황 카드 (상세, 레이더 위) ── */
 /* 헤더: 제목(좌, 카테고리별 위험도와 동일 크기) + 건수(우, 같은 줄) */
@@ -1021,9 +1013,6 @@ html.has-cmp #detail ~ #float{bottom:calc(148px + env(safe-area-inset-bottom));}
 .cmp-tray .ct-x{position:relative;flex:none;width:36px;height:100%;margin-left:var(--sp-1);padding:0;border:0;background:none;color:var(--ink-4);font-size:var(--fs-body-lg);line-height:1;cursor:pointer;}
 .cmp-tray .ct-x::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:1px;background:var(--ink-2);}
 .cmp-tray .ct-x:hover{color:var(--ink-inverse);}
-/* 실행 버튼이 있는 토스트(되돌리기) — 기본 토스트는 클릭 통과라 이 변형만 눌리게 */
-.cf-toast.has-act{display:flex;align-items:center;gap:var(--sp-3);pointer-events:auto;white-space:nowrap;}
-.cf-toast .cf-toast-act{flex:none;padding:0;border:0;background:none;color:var(--primary-soft);font-size:inherit;font-weight:var(--fw-bold);text-decoration:underline;cursor:pointer;}
 .cmp-tray .ct-th{display:flex;}
 .cmp-tray .ct-th img,.cmp-tray .ct-th i{display:block;width:32px;height:32px;margin-left:calc(var(--sp-2) * -1);border:2px solid var(--ink);border-radius:50%;object-fit:cover;background:var(--ink-2);}
 .cmp-tray .ct-th :first-child{margin-left:0;}

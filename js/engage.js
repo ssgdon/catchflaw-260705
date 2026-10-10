@@ -60,12 +60,7 @@
       try { document.execCommand('copy'); showToast(); } catch (e) {}
       document.body.removeChild(t);
     }
-    function showToast() {
-      var el = document.createElement('div'); el.className = 'cf-toast'; el.textContent = '링크가 복사되었어요!';
-      document.body.appendChild(el);
-      requestAnimationFrame(function () { el.classList.add('show'); });
-      setTimeout(function () { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 300); }, 1600);
-    }
+    function showToast() { CF.toast('링크를 복사했어요'); }   // 토스트 1벌(js/backnav.js)
     function openShare() {
       if (!shareSheet) shareSheet = buildShareSheet();
       shareSheet.classList.add('is-open');

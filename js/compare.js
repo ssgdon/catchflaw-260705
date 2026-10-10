@@ -16,19 +16,8 @@
   function ev(name, p) { if (typeof gtag === 'function') gtag('event', name, p || {}); }
   function esc(s) { return String(s || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/"/g, '&quot;'); }
 
-  // act = {label, fn}: 토스트 안 실행 버튼(되돌리기 등). 있으면 눌러볼 시간을 주려고 4초 유지
-  function toast(msg, act) {
-    var old = document.querySelector('.cf-toast.has-act'); if (old) old.remove();
-    var t = document.createElement('div'); t.className = 'cf-toast' + (act ? ' has-act' : ''); t.textContent = msg;
-    if (act) {
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'cf-toast-act'; b.textContent = act.label;
-      b.addEventListener('click', function () { act.fn(); t.remove(); });
-      t.appendChild(b);
-    }
-    document.body.appendChild(t);
-    requestAnimationFrame(function () { t.classList.add('show'); });
-    setTimeout(function () { t.classList.remove('show'); setTimeout(function () { t.remove(); }, 300); }, act ? 4000 : 1800);
-  }
+  // act = {label, fn}: 토스트 안 실행 버튼(되돌리기 등) → 흰 스낵바, 4초 유지. 토스트 1벌(js/backnav.js CF.toast)
+  function toast(msg, act) { CF.toast(msg, act ? { action: act } : null); }
 
   function clearAll() {   // 트레이 × — 비교함을 비우고, 실수였을 때를 위해 되돌리기 제공
     var prev = get();
