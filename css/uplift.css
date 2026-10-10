@@ -9,7 +9,7 @@
 /* (색·라운드 변수는 tokens.css v2가 단일 기준 — 여기서 재정의하지 않는다) */
 
 /* ---------- 글로벌 타이포 ---------- */
-body{letter-spacing:-0.02em;color:var(--ink);}
+body{color:var(--ink);}
 
 /* ---------- 헤더 ---------- */
 #header .header .inner{height:64px;}

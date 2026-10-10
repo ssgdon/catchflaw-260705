@@ -304,6 +304,10 @@ def josa_iga(word):
 NB = ' '                                    # 줄바꿈 없는 공백
 DSEP = '<span class="dsep"> · </span>'           # 문장 사이 구분점: 모바일에선 줄바꿈으로(ds.css ⑦)
 _GLUE = [
+    # 소분류 이름은 한 덩어리(v3 §2-4-8): '객실 / 보안', '옆방·복도 / 소음'처럼 제목 balance가 이름을 가르지 않게
+    (re.compile('|'.join(sorted({re.escape(n) for v in list(SUBS.values()) + [list(SUB_PHRASE.values())] for n in v if ' ' in n},
+                                key=len, reverse=True))), lambda m: m.group(0).replace(' ', NB)),
+    (re.compile(r'못 (참아|자|넘어가)|(?<=[가-힣]) (실망이야)'), lambda m: ('못' + NB + m.group(1)) if m.group(1) else NB + m.group(2)),
     (re.compile(r'실망 확률'), '실망' + NB + '확률'),
     (re.compile(r'(많은|적은|낮은|높은|좋은) (편|순|곳|숙소|호텔)'), r'\1' + NB + r'\2'),
     (re.compile(r'가장 (많음|적음|낮음|높음|낮은|높은|많은|적은|좋은|가까운)'), '가장' + NB + r'\1'),
@@ -323,6 +327,18 @@ _GLUE = [
 ]
 _DESC_RE = re.compile(r'(<div class="desc">)(.*?)(</div>)', re.S)
 _H1_DASH_RE = re.compile(r'(<h1 class="hub-h1">)(.*?)(</h1>)', re.S)
+
+
+def hub_h1_html(h1):
+    """허브 h1(v3 §2-4-7·§7-6): '후쿠오카 커플·2인 호텔 — 좁은 방·침대·옆방 소음 기준'
+       → <h1>[눈썹 '후쿠오카'] 커플·2인 호텔</h1> + 16 회색 부제. h1 글자에 도시명이 남아 검색 랜딩에 손해 없음(JSON-LD는 원문 그대로)"""
+    main, _, sub = str(h1).partition(' — ')
+    city = CITY['ko'] + ' '
+    if main.startswith(city):
+        main = f'<span class="h1-eyebrow">{E(CITY["ko"])}</span> {E(main[len(city):])}'
+    else:
+        main = E(main)
+    return f'<h1 class="hub-h1">{main}</h1>' + (f'\n            <p class="hub-h1-sub">{E(sub)}</p>' if sub else '')
 
 
 def _glue(t):
@@ -934,7 +950,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <li><div class="subject">침대에서 벌레가 나왔어요</div><div class="star"><i style="width:40%"></i></div></li>
                     </ul></div>
                     <div class="title" data-ga-title>
-                        <h1 class="tit">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
+                        <h1 class="tit hero-title">잠깐, 그 호텔 <br><span>최악의 리뷰</span>는요?</h1>
                         <div class="txt">AI가 {CITY['ko']} 호텔 리뷰 {ai_reviews_txt} 개를 분석해 <br><span>치명적인 단점</span>만 찾아냅니다.</div>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
@@ -1099,12 +1115,12 @@ def build_404():
        링크는 절대경로(어느 깊이에서도 서빙되므로 상대경로 금지)."""
     return head('페이지를 찾을 수 없어요 — 캐치플로', depth=0,
         extra_head='<meta name="robots" content="noindex">') + site_header(0, back='./') + f'''
-    <main id="container"><section id="search" style="padding:60px 20px">
-        <div class="notice-card">
-            <div class="notice-tit">페이지를 찾을 수 없어요</div>
-            <div class="notice-txt">주소가 바뀌었거나 없는 페이지예요.<br>{CITY['ko']} 호텔 분석은 아래에서 계속 볼 수 있어요.</div>
-            <a class="notice-btn" href="/">캐치플로 홈으로</a>
-            <a class="notice-btn" href="/search" style="margin-left:8px;background:var(--ink)">호텔 전체 보기</a>
+    <main id="container"><section class="page-empty">
+        <h1 class="page-title">페이지를 찾을 수 없어요</h1>
+        <p class="pe-txt">주소가 바뀌었거나 없는 페이지예요.<br>{CITY['ko']} 호텔 분석은 아래에서 계속 볼 수 있어요.</p>
+        <div class="pe-btns">
+            <a class="pe-btn is-brand" href="/">캐치플로 홈으로</a>
+            <a class="pe-btn is-line" href="/search">호텔 전체 보기</a>
         </div>
     </section></main>''' + build_footer(0) + FOOT
 
@@ -1119,7 +1135,7 @@ def build_recent(hotels_meta, H):
         <section id="main">
             {site_header(0, back='./')}
             <div class="hotel-list recent-list">
-                <div class="head"><div class="title">최근 본 호텔</div></div>
+                <div class="head"><h1 class="page-title">최근 본 호텔</h1></div>
                 <div class="list"><ul id="recent-list"></ul></div>
             </div>
             <div class="recent-empty" id="recent-empty" hidden>
@@ -1240,6 +1256,7 @@ def build_compare():
         '<body>', '<body data-page="compare">') + site_header(0, back='./search') + f'''
     <main id="container">
         <section id="cmp">
+            <h1 class="page-title">호텔 비교</h1>
             <div id="cmp-root"><div class="cmp-empty">불러오는 중…</div></div>
         </section>
     </main>
@@ -1336,6 +1353,7 @@ def build_search(city_avg_pct):
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
     <main id="container">
         ''' + site_header(0, back='./', search=False) + f'''
+        <h1 class="page-title blind">{CITY['ko']} 호텔 검색</h1>
         <section id="title">
             <div class="search">
                 <button type="button" id="btn-search"><img src="./img/search_g.svg" alt="검색"></button>
@@ -2641,7 +2659,7 @@ def social_section(soc, name):
                 if len(blogs) > 3 else '')
         out.append(f'''<div class="sect social-blog">
             <div class="head"><div class="title">네이버 블로그 후기</div>
-            <div class="desc">네이버 "{E(name)} 후기" 상위 글이에요 · 탭하면 여기서 바로 읽을 수 있어요</div></div>
+            <div class="desc">네이버 "{E(name)} 후기" 상위 글을 여기서 바로 읽어요</div></div>
             <div class="nb-list">{''.join(cards)}</div>
             {more}
         </div>''')
@@ -2659,7 +2677,7 @@ def social_section(soc, name):
             </li>''')
         out.append(f'''<div class="sect social-video">
             <div class="head"><div class="title">관련 영상</div>
-            <div class="desc">유튜브 "{E(name)} 후기" 영상 · 탭하면 바로 재생돼요</div></div>
+            <div class="desc">유튜브 "{E(name)} 후기" 영상을 여기서 바로 봐요</div></div>
             <div class="yt-slider"><ul class="swiper-wrapper">{''.join(slides)}</ul></div>
         </div>''')
     return '\n'.join(out)
@@ -2794,7 +2812,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # P4 약점 맞춤 대안: 최고 위험 카테고리가 주의·위험이면 같은 가격대·근거리 후보 중 그 카테고리 위험도가
     # 10 이상 낮은 곳만(3곳 미만이면 기존 일반 추천 폴백). 채점 호텔은 리스크 상세 바로 뒤에 배치(스크롤 50% 대응).
     sim = similar_hotels(pid, hotels_meta, H)
-    sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', f'비슷한 가격대·가까운 위치에서 추천순이에요 · {REC_SORT_DESC}', {}
+    sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', '비슷한 가격대·가까운 위치에서 추천순으로 골랐어요', {}
     if h['scored']:
         _wc = max(CATS, key=lambda c: h['cats'][c]['score'])
         _ws = round(h['cats'][_wc]['score'])
@@ -3228,7 +3246,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         body_scored = f'''
         <div class="sect disappear" id="sec-prob">
             <div class="head">
-                <div class="eyebrow">이 호텔에서 실망할 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
+                <div class="eyebrow">실망 확률<button type="button" class="basis-toggle" aria-label="산출 기준"><i class="bt-q">?</i></button></div>
                 <div class="pct is-{v_tone}">{v}%</div>
                 <div class="vh is-{v_tone}">{E(v_head)}</div>
                 {v_sub_html}
@@ -3291,7 +3309,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         <div class="sect analysis" id="risk-detail">
             <div class="head"><div class="title">리스크 상세 분석</div>
-            <div class="desc">항목별로 {CITY['ko']} 호텔 평균보다 불만이 많은지 적은지 보여드려요<br>펼치면 불만 건수와 실제 리뷰를 볼 수 있어요</div></div>
+            <div class="desc">{CITY['ko']} 평균과 비교한 항목별 불만 정도예요 · 누르면 실제 리뷰</div></div>
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
             <div class="stat-legend">
@@ -4343,7 +4361,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     <main id="container">
         <section id="hub">
             <nav class="hub-crumb"><a href="{'../' * depth}">캐치플로</a> › <a href="{'../' * depth}search">{CITY['ko']} 호텔</a> › <span>{E(col['name'])}</span></nav>
-            <h1 class="hub-h1">{E(col['h1'])}</h1>
+            {hub_h1_html(col['h1'])}
             <p class="hub-summary">{E(summary_full)}</p>
             <div class="hub-stat-strip">
                 <span class="hs-item"><b>{n}</b>곳 분석</span>
@@ -4558,7 +4576,7 @@ def prev_badges():
 
 
 def main():
-    # UI 규칙 v2 게이트 (UI-STANDARDS §14): 토큰 밖 글자 크기·색, 배지 외 12px, PC 규칙 위치 등 위반 시 빌드 중단
+    # UI 규칙 v3 게이트 (UI-STANDARDS §14): 토큰 밖 글자 크기·색, 배지 외 12px, PC 규칙 위치 등 위반 시 빌드 중단
     import lint_ui
     lint_ui.run(strict=True)
     city, H = compute(SRC, prev_badges=prev_badges())
@@ -4583,6 +4601,12 @@ def main():
         shutil.copytree(hotels_img, os.path.join(OUT, 'img', 'hotels'))
 
     def W(path, s):
+        if path.endswith('.html'):   # E14 페이지 h1 정확히 1개(UI-STANDARDS §3) — 쓰기 전에 검사
+            e14 = lint_ui.check_page_h1(path, s)
+            if e14:
+                print('UI lint ' + e14)
+                if os.environ.get('CF_UI_LINT') != 'warn':
+                    raise SystemExit('빌드 중단: ' + e14)
         full = os.path.join(OUT, path)
         os.makedirs(os.path.dirname(full), exist_ok=True)   # 하위 디렉토리(area/·best/) 자동 생성
         open(full, 'w', encoding='utf-8').write(polish_breaks(s) if path.endswith('.html') else s)

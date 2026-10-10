@@ -56,7 +56,6 @@
     --shadow-float: 0 6px 16px rgb(0 0 0 / 12%);   /* 떠 있는 알약·스낵바·PC 결정 카드 */
     --shadow-badge: 0 1px 3px rgb(0 0 0 / 14%);    /* 사진 위 흰 배지·흰 원 버튼 */
     --shadow-pop: 0 8px 28px rgb(0 0 0 / 16%);     /* 자동완성·팝오버 */
-    --shadow-search: var(--shadow-pop);            /* (구) 별칭 */
 
     /* ---------- 타이포 v3 (UI-STANDARDS §3) ----------
        ★ font-size는 이 변수만 쓴다(px 직접 기입 금지 — scripts/lint_ui.py가 빌드 때 막음)
@@ -68,32 +67,30 @@
     --fs-title: 26px;             /* 상세 호텔명·하위 페이지 제목·시트 큰 제목 */
     --fs-h2: 22px;                /* 섹션 제목·판정 글자 */
     --fs-h3: 18px;                /* 홈 섹션 제목·그룹 머리·다이얼로그 제목·하단 바 가격 */
-    --fs-body: 17px;              /* 본문·목록 행·버튼 라벨·입력값 */
+    --fs-body: 16px;              /* 본문·목록 행·버튼 라벨·입력값 (v2.1 17 → v3 16, 문장 역할 15 → 16과 함께) */
     --fs-card: 15px;              /* 호텔 카드(.hcard) 글자 전용 */
     --fs-meta: 14px;              /* 메타·섹션 설명·칩 라벨 — 읽는 글자의 최소 크기 */
     --fs-micro: 13px;             /* 배지·범례·축 라벨·카운터 전용 */
-    /* (구) v2.1 이름 — 새 코드 금지, 사용처가 0이 되면 삭제 (lint R-fslegacy) */
-    --fs-num-lg: 56px;  --fs-num: 44px;  --fs-pc-h1: 34px;  --fs-display: 30px;  --fs-h1: 28px;
-    --fs-lead: 20px;    --fs-body-lg: 18px;  --fs-body-sm: 16px;  --fs-caption: 15px;
+    /* (구) v2.1 이름 — 새 코드 금지, 사용처가 0이 되면 삭제 (lint R-fslegacy · E0가 남은 참조를 잡음)
+       폐지: --fs-num-lg 56 → num-xl · --fs-pc-h1 34 → title. 남은 것은 레거시(layout·uplift)·P1 부품 정리 대기 */
+    --fs-num: 44px;  --fs-display: 30px;  --fs-h1: 28px;  --fs-lead: 20px;
+    --fs-body-lg: 18px;            /* → --fs-h3 */
+    --fs-body-sm: var(--fs-body);  /* 같은 16 — 이름만 바뀜 */
+    --fs-caption: 15px;            /* 역할별로 나눔: 문장 → body 16 · 카드 → card 15 · 메타 → meta 14 (v3 §2-3) */
 
     /* 행간 4종 + 리터럴 1(높이 고정 한 줄) */
     --lh-num: 1.1;                /* 64·72 숫자 */
     --lh-title: 1.3;              /* 32·26·22·18 제목 */
     --lh-ui: 1.4;                 /* 카드·메타·1–2줄 UI 문장 */
-    --lh-body: 1.6;               /* 리뷰 원문·설명 문단 */
-    --lh-tight: var(--lh-title);  /* (구) 별칭 */
-    --lh-head: var(--lh-ui);      /* (구) 별칭 */
+    --lh-body: 1.5;               /* 리뷰 원문·설명 문단 (16 × 1.5 = 24) */
 
     /* 굵기 3단: 700 = 18px 이상 제목·버튼·가격·큰 숫자 / 600 = 15–16px 행 제목·카드 이름·링크·칩 / 400 = 본문·메타 */
     --fw-bold: 700;   --fw-semi: 600;   --fw-regular: 400;
-    --fw-display: var(--fw-bold); /* (구) 별칭 — 제목 규칙이 씀. P2에서 --fw-bold로 치환 */
-    --fw-medium: 500;             /* (구) 래칫으로 0까지(R-fslegacy) — 400 또는 600으로 옮긴다 */
+    --fw-display: var(--fw-bold); /* (구) 별칭 — 제목 규칙이 씀. P2에서 --fw-bold로 치환 (500은 v3에서 폐지) */
 
     /* 자간: 20px 이상 -0.02em · 15–18px -0.01em · 14px 이하 0. body·html·* 에는 걸지 않는다 */
     --ls-title: -0.02em;
     --ls-text: -0.01em;
-    --ls-global: var(--ls-title); /* (구) 별칭 */
-    --ls-body: var(--ls-text);    /* (구) 별칭 */
 
     /* ---------- 간격 (4px 그리드) ---------- */
     --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px;  --sp-4: 16px;
@@ -106,7 +103,6 @@
     --browse-gap: 24px;           /* 탐색 리듬(홈·최근 본): 섹션 사이, 선 없음 */
     --browse-head: 12px;          /* 탐색 리듬: 섹션 제목 → 카드 */
     --section-y: 48px;            /* (구) 섹션 위아래 */
-    --section-gap: 40px;          /* (구) 섹션 리듬 — 하위호환 */
 
     /* ---------- 컨트롤 높이 (px 직접 기입 금지, lint R-ctrlh) ---------- */
     --h-btn-lg: 56px;             /* 하단 주 버튼(CTA) — P1에서 --h-btn(48) 별칭 후 삭제 */

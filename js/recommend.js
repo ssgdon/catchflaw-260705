@@ -4,6 +4,8 @@
    공유 상수(CFRec.CATS 등)는 검색 rec 모드에서도 사용
    의존: jQuery, backnav.js(CFNav) */
 (function () {
+  // 말투 묶음(v3 §2-4-8): '못 / 참아'·'방은 / 실망이야'처럼 타일 라벨이 끝말에서 갈리지 않게 줄바꿈 없는 공백
+  function glue(t) { return String(t).replace(/못 (참아|자|넘어가)/g, '못\u00a0$1').replace(/ 실망이야/g, '\u00a0실망이야'); }
   /* 내부 카테고리 키(ko)는 분류 v5 점수 대분류 6개(청결/냄새/소음/객실/직원/위치)와 일치해야
      검색 rec 모드의 matchScore(h.cs[ko])가 동작한다. code는 URL 파라미터라 v4 값 유지. 라벨은 고객 언어(UI-STANDARDS §8). */
   var CATS = [
@@ -100,7 +102,7 @@
       var on = rank >= 0;
       return '<button type="button" class="rec-chip' + (on ? ' on' : '') + '" data-code="' + c.code + '">' +
         (on ? '<span class="rec-rank">' + (rank + 1) + '</span>' : '') +
-        '<span class="rec-chip-label">' + c.label + '</span>' +
+        '<span class="rec-chip-label">' + glue(c.label) + '</span>' +
         '<span class="rec-chip-kw">' + c.kw + '</span>' +
       '</button>';
     }).join('');

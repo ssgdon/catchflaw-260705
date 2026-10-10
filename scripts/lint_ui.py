@@ -16,14 +16,16 @@ generate.py가 빌드 시작 때 run()을 호출한다 → 위반이 있으면 �
   E3  색은 tokens.css 변수만. hex 직접 기입 금지 (mvp·ds·pc·신규 CSS, generate.py/js 인라인 style)
   E4  PC 전용 규칙(min-width:1100px)은 pc.css에만, pc.css의 규칙은 전부 @media 안에
   E5  css/에 새 파일 → 로드 순서(KNOWN_CSS)·CLAUDE.md·UI-STANDARDS 등록 후 사용
+  E8  자간: --fs-meta·--fs-micro 규칙의 음수 letter-spacing, body·html·*의 letter-spacing 금지(em 자간이 px로 상속됨)
   E10 .ov-panel의 border-radius는 var(--radius-sheet) 또는 0만 (오버레이 해부도, UI-STANDARDS §17)
   E11 .ov-close·.ov-back·.btn-icon의 width·height는 var(--h-icon)·var(--h-circle)만
   E15 var(--fs-card)(15px)는 호텔 카드(.hcard) 안에서만
+  E14 페이지마다 <h1> 정확히 1개 + class ∩ {page-title, hero-title, name-ko, hub-h1, about-h1} — generate.py W()가 쓰기 직전 검사
 래칫(R — 파일별 개수가 기준선 scripts/ui_lint_baseline.json보다 늘면 오류. 줄일 수만 있고, 0이 되면 E로 승격)
   R-hex 레거시 CSS hex · R-lhpx px 행간 · R-radius 단계 밖 라운드 · R-ctrlh 버튼·칩 px 높이
   R-fslegacy (구) 토큰 사용(--fs-caption·--fs-body-sm·--fw-medium·--lh-head·--h-btn-lg·--section-y …) → 0이면 E7
   R-e6 제목 크기 규칙의 굵기가 var(--fw-bold)/var(--fw-display)가 아님 → 0이면 E6
-  R-fw500 리터럴 font-weight:500 · R-ls 14px 이하 음수 자간·body/html/* 자간 → 0이면 E8
+  R-fw500 리터럴 font-weight:500
   R-lhnum line-height가 var(--lh-*)·1이 아님(px 제외) → 0이면 E9 · R-ovdim 딤 면이 var(--ov-dim*)가 아님 → E10a
   R-z 고정·sticky 또는 10 이상 z-index가 var(--z-*)가 아님 · R-primary 보라(--primary*) 사용 · R-primarylink 링크 보라 글자
   R-ovlegacy 레거시 오버레이 클래스·CF.sheet 밖 is-open 토글 → 0이면 E13 · R-ink2 var(--ink-2) 사용 · R-jshex JS hex 색 문자열
@@ -66,7 +68,7 @@ VAR_RE = re.compile(r'var\(\s*(--[\w-]+)\s*([,)])')
 VAR_EXEMPT = re.compile(r'^--swiper-')
 RULE_WHAT = {'R-hex': 'hex 색', 'R-lhpx': 'px 줄간격', 'R-radius': '단계 밖 라운드', 'R-ctrlh': '버튼·칩 px 높이',
              'R-fslegacy': '(구) 토큰 사용', 'R-e6': '제목 굵기가 --fw-bold 아님', 'R-fw500': 'font-weight:500',
-             'R-ls': '14px 이하 음수 자간·body 자간', 'R-lhnum': 'line-height 토큰 밖 값', 'R-ovdim': '딤 면이 --ov-dim 아님',
+'R-lhnum': 'line-height 토큰 밖 값', 'R-ovdim': '딤 면이 --ov-dim 아님',
              'R-z': 'z-index 토큰 밖 값', 'R-primary': '보라(--primary*) 사용', 'R-primarylink': '링크 보라 글자',
              'R-ovlegacy': '레거시 오버레이 클래스·is-open 토글', 'R-ink2': 'var(--ink-2) 사용', 'R-jshex': 'JS hex 색 문자열'}
 
@@ -151,7 +153,7 @@ def lint_css(name, src, errs, counts):
                 if TITLE_FS_RE.search(val) and ws and not TITLE_FW_OK.match(ws[0]):
                     bump('R-e6')
                 if re.search(r'var\(--fs-(meta|micro)\)', val) and re.match(r'-', decls.get('letter-spacing', ('',))[0]):
-                    bump('R-ls')
+                    errs.append(f'E8 {where} → 14px 이하 글자에 음수 자간 금지(v3 §2-2)')
             if HEX_RE.search(val):
                 if name in LEGACY_CSS:
                     bump('R-hex')
@@ -165,7 +167,7 @@ def lint_css(name, src, errs, counts):
             if prop == 'font-weight' and val == '500':
                 bump('R-fw500')
             if prop == 'letter-spacing' and any(re.fullmatch(r'(html|body|\*)', p) for p in parts):
-                bump('R-ls')
+                errs.append(f'E8 {where} → body·html·*에 자간 금지 — em 자간이 px로 상속돼 작은 글자까지 조여짐(v3 §2-2)')
             if prop == 'line-height':
                 if re.fullmatch(r'[\d.]+px', val):
                     bump('R-lhpx')
@@ -224,6 +226,22 @@ def lint_inline(rel, src, errs, counts):
         n = len(JSHEX_RE.findall(line))
         if n:
             bump('R-jshex', n)
+
+
+H1_CLASSES = {'page-title', 'hero-title', 'name-ko', 'hub-h1', 'about-h1'}
+
+
+def check_page_h1(path, page):
+    """E14 페이지 h1 정확히 1개 + 허용 클래스(UI-STANDARDS §3). 위반이면 메시지, 아니면 None"""
+    body = re.sub(r'<script\b.*?</script>', '', page, flags=re.S)
+    h1s = re.findall(r'<h1\b([^>]*)>', body)
+    if len(h1s) != 1:
+        return f'E14 {path} → <h1> {len(h1s)}개 — 페이지마다 정확히 1개'
+    m = re.search(r'class="([^"]*)"', h1s[0])
+    cls = set(m.group(1).split()) if m else set()
+    if not cls & H1_CLASSES:
+        return f'E14 {path} → h1 class {sorted(cls)} — {"·".join(sorted(H1_CLASSES))} 중 하나'
+    return None
 
 
 def _defined_vars():
