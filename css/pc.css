@@ -167,9 +167,8 @@
                  url(../img/home_bg_pc.jpg) right 40% / cover no-repeat;}   /* PC: 같은 장면 가로형 1600×900 */
     #main .map-wrap #map{height:440px;}
     #main .hotel-list,#main .sec-collections,#main .sec-map > *{padding-left:var(--pc-x);padding-right:var(--pc-x);}
-    #main .sec-intro{padding-left:var(--pc-x);padding-right:var(--pc-x);}
-    #main .sec-intro .intro-card{max-width:560px;}   /* 안내 카드는 왼쪽 열 폭(히어로 글과 같은 560) */
-    #main .sec-intro .ic-close{right:auto;left:calc(var(--pc-x) + 560px - var(--h-icon) - var(--sp-1));}
+    #main .sec-intro .intro-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-6);padding:0 var(--pc-x);overflow:visible;}   /* PC: 두 장 나란히(한 장만 남으면 왼쪽 칸) */
+    #main .sec-intro .intro-card{min-height:136px;}
     #main .hub-home-row .hh-label{font-size:var(--fs-h3);}
     /* 홈 캐러셀(§7-1): 행마다 5장 한 줄 가로 스크롤 + 제목 오른쪽 원형 이전·다음 32, 사진 20:19, 카드 간격 24 */
     #main .hotel-slider{overflow-x:auto;overflow-y:hidden;scrollbar-width:none;}

@@ -1143,14 +1143,35 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                 {slider('한국인이 찾고 실망은 적은 숙소', best, href='./search')}
             </article>
             <article class="section sec-intro" id="home-intro" data-ga-block>
-                <a class="intro-card" href="./about" data-ga="intro_card">
-                    <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
-                    <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene')}</span>
-                </a>
-                <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+                <div class="intro-row">
+                    <div class="intro-item" data-intro="calc">
+                        <a class="intro-card" href="./about" data-ga="intro_calc">
+                            <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
+                            <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene')}</span>
+                        </a>
+                        <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+                    </div>
+                    <div class="intro-item" data-intro="rec">
+                        <a class="intro-card" href="./recommend" data-ga="intro_rec">
+                            <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">네 가지만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
+                            <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene')}</span>
+                        </a>
+                        <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+                    </div>
+                </div>
             </article>
-            <script>try{{if(localStorage.getItem('cf_intro_x'))document.getElementById('home-intro').hidden=true;}}catch(e){{}}
-            document.querySelector('#home-intro .ic-close').addEventListener('click',function(){{var a=document.getElementById('home-intro');a.hidden=true;try{{localStorage.setItem('cf_intro_x','1');}}catch(e){{}}if(typeof gtag==='function')gtag('event','intro_card_close');}});</script>
+            <script>(function(){{   // 닫은 카드는 다시 안 띄움(cf_intro_x = 닫은 카드 목록, 예전 '1'은 산출 방법 카드). 둘 다 닫으면 줄째 숨김
+                var sec = document.getElementById('home-intro'), K = 'cf_intro_x', x = [];
+                try {{ var v = localStorage.getItem(K); x = v === '1' ? ['calc'] : JSON.parse(v || '[]'); }} catch(e) {{}}
+                function sync(){{ var left = 0; [].forEach.call(sec.querySelectorAll('.intro-item'), function(it){{ it.hidden = x.indexOf(it.dataset.intro) >= 0; if (!it.hidden) left++; }}); sec.hidden = !left; sec.classList.toggle('is-single', left === 1); }}
+                sync();
+                sec.addEventListener('click', function(e){{
+                    var b = e.target.closest('.ic-close'); if (!b) return;
+                    var k = b.closest('.intro-item').dataset.intro; if (x.indexOf(k) < 0) x.push(k);
+                    try {{ localStorage.setItem(K, JSON.stringify(x)); }} catch(e) {{}}
+                    sync(); if (typeof gtag === 'function') gtag('event', 'intro_card_close', {{card: k}});
+                }});
+            }})();</script>
             <article class="section sec-map">
                 <div class="home-map init">
                     <div class="head"><div class="title">지도로 한눈에</div>
