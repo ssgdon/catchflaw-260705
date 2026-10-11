@@ -239,7 +239,7 @@ def price_band(krw, bands=None):
     return None
 
 def price_stats(rows):
-    """한 호텔의 가격 표본(prices.json 행들) → (평일 원화|None, 표시 문구, 확인일 'YYYY-MM-DD', 주말 원화|None) / 근거 없으면 None.
+    """한 호텔의 가격 표본(prices.json 행들) → (평일 원화|None, 표시 문구, 확인일 'YYYY-MM-DD', 주말 원화|None, {'wd','we': 숙박일 목록}) / 근거 없으면 None.
     같은 숙박일은 가장 최근 수집 1건만(같은 날이면 날짜 지정 수집 우선). 대표 = 평일 밤 중앙값('평일 약 13만원').
     평일 근거 = 날짜 지정 수집 1건 이상 또는 평일 표본 2건 이상 — 구글 지도가 고른 연초 비수기 하루뿐인 호텔은
     실제보다 반값으로 보여 제외(몬토레 9만 vs 실측 17만). 평일 근거가 없고 주말만 있으면 '주말 약 N만원'(가격대·정렬 제외)."""
@@ -257,17 +257,30 @@ def price_stats(rows):
     wd = [(rank[1], v) for d, (rank, v) in by_day.items() if date.fromisoformat(d).weekday() not in WEEKEND_NIGHTS]
     we = [v for d, (_, v) in by_day.items() if date.fromisoformat(d).weekday() in WEEKEND_NIGHTS]
     we_mid = int(statistics.median(we)) if we else None
+    days = {'wd': sorted(d for d in by_day if date.fromisoformat(d).weekday() not in WEEKEND_NIGHTS),
+            'we': sorted(d for d in by_day if date.fromisoformat(d).weekday() in WEEKEND_NIGHTS)}   # 가격 기준 시트 '언제 숙박 요금인지'
     if wd and (len(wd) >= 2 or any(g for g, _ in wd)):
         mid = statistics.median(v for _, v in wd)
-        return int(mid), f'평일 약 {max(1, round(mid / 10_000))}만원', seen, we_mid
+        return int(mid), f'평일 약 {max(1, round(mid / 10_000))}만원', seen, we_mid, days
     if we_mid:
-        return None, f'주말 약 {max(1, round(we_mid / 10_000))}만원', seen, None
+        return None, f'주말 약 {max(1, round(we_mid / 10_000))}만원', seen, None, days
     return None
 
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
     d = date.fromisoformat(str(iso)[:10])
     return f'{d.month}월 {d.day}일'
+
+def stay_days_ko(days, ref_year=None):
+    """숙박일 목록 → 가격 기준 시트 문구. 1~3일은 날짜를 모두('10월 21일(수)·1월 3일(일)'), 4일 이상은 범위+일수.
+    기준 연도와 다른 해는 연도를 붙인다('2027년 1월 3일')."""
+    if not days: return ''
+    ds = [date.fromisoformat(d) for d in sorted(days)]
+    ref_year = ref_year or ds[0].year
+    f = lambda d: (f'{d.year}년 ' if d.year != ref_year else '') + f'{d.month}월 {d.day}일'
+    if len(ds) <= 3:
+        return '·'.join(f'{f(d)}({"월화수목금토일"[d.weekday()]})' for d in ds) + ' 숙박'
+    return f'{f(ds[0])}~{f(ds[-1])} 숙박 중 {len(ds)}일'
 
 E = lambda s: html.escape(str(s or ''), quote=True)
 
@@ -376,7 +389,7 @@ def load():
         m['r2_img'] = m['r2_imgs'][0] if m['r2_imgs'] else None
         m['local_img'] = os.path.exists(os.path.join(ROOT, 'assets', 'hotels', f'{pid}.jpg'))
         m['krw'], m['price_txt'] = parse_price(m.get('price'))
-        m['price_seen'] = m['price_we'] = None
+        m['price_seen'] = m['price_we'] = m['price_days'] = None
     # 가격 표본(최근 8주) → 대표값·범위·확인일. 기준 = 표본 중 가장 최근 수집일(빌드가 늦어도 창이 비지 않게)
     psamples = defaultdict(list)
     if os.path.exists(os.path.join(SRC, 'prices.json')):
@@ -389,7 +402,7 @@ def load():
     for pid, m in hotels_meta.items():
         if psamples:                 # 표본이 있으면 근거 없는 호텔은 숫자 비표시 (옛 단일가로 채우지 않음)
             ps = price_stats(psamples.get(pid, []))
-            m['krw'], m['price_txt'], m['price_seen'], m['price_we'] = ps or (None, '', None, None)
+            m['krw'], m['price_txt'], m['price_seen'], m['price_we'], m['price_days'] = ps or (None, '', None, None, None)
         m['band'] = price_band(m['krw'])
     seen = [m['price_seen'] for m in hotels_meta.values() if m['price_seen']]
     CITY['price_seen'] = md_ko(max(seen)) if seen else CITY['data_asof']
@@ -3493,7 +3506,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>
         {similar_block}
         {pairs_block}
-        {faq_section(faq, '<!--PRICE_ROW-->', pid)}
+        {faq_section(faq, '', pid)}
         {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
         {social_section(social, name)}
         {stars_block}
@@ -3585,37 +3598,45 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                  + (f'{DSEP}<span class="seg">{E(_st_txt)}</span>' if _st_txt else '') + '</p>')
     info_name_en = f'<p class="name-en">{E(meta.get("sub_title"))}</p>' if meta.get('sub_title') else ''
 
-    # ── 4A 가격(v3 §6-8): 하단 바 = 평일 대표가(누르면 '가격 기준' 시트) + 브랜드 알약. 주말은 실전정보 맨 위 '가격' 행·PC 결정 카드·시트에 늘 표기 ──
+    # ── 4A 가격(v3 §6-8 · 2026-10-12 개편): 리뷰 내용이 아니라 호텔 정보라 실전정보(FAQ)에서 빼서 첫 화면 정보 영역(위치 줄 → [1박 가격] → 요약 3칸)에 둔다.
+    #    값 줄 = 평일·주말만, '언제 숙박 요금인지·2인 1박·확인일'은 ? → '가격 기준' 시트(하단 바 가격 탭과 같은 시트) ──
     _pt = meta.get('price_txt') or ''
     _pwe = man_txt(meta.get('price_we')) if (_pt.startswith('평일') and meta.get('price_we')) else ''
     _bold = lambda t: re.sub(r'(\d[\d,]*만원)', r'<b>\1</b>', E(t))
     _pseen = f'{md_ko(meta["price_seen"])} 확인' if meta.get('price_seen') else ''
-    price_sheet, price_row_html, price_sect = '', '', ''
+    _pdays = meta.get('price_days') or {}
+    _pyear = int(str(meta['price_seen'])[:4]) if meta.get('price_seen') else None
+    price_sheet, price_info = '', ''
     if _pt:
-        _sheet_rows = f'<li><span>{"평일" if _pt.startswith("평일") else "주말(금·토 밤)"}</span><span>{_bold(_pt[3:].strip())}</span></li>'
-        if _pwe: _sheet_rows += f'<li><span>주말(금·토 밤)</span><span>{_bold(_pwe)}</span></li>'
+        def _sheet_row(label, val, days):
+            dtxt = stay_days_ko(days, _pyear)
+            return (f'<li><div class="pb-r"><span>{label}</span><span>{_bold(val)}</span></div>'
+                    + (f'<p class="pb-d">{E(dtxt)}</p>' if dtxt else '') + '</li>')
+        if _pt.startswith('평일'):
+            _sheet_rows = _sheet_row('평일', _pt[3:].strip(), _pdays.get('wd'))
+            if _pwe: _sheet_rows += _sheet_row('주말(금·토 밤)', _pwe, _pdays.get('we'))
+        else:
+            _sheet_rows = _sheet_row('주말(금·토 밤)', _pt[3:].strip(), _pdays.get('we'))
         price_sheet = f'''<div class="ov" data-ov="bottom" id="ov-price" role="dialog" aria-modal="true" aria-labelledby="ov-price-t" hidden>
             <div class="ov-dim"></div>
             <section class="ov-panel ov-w-md">
                 <header class="ov-head ov-head--info"><button type="button" class="ov-close" aria-label="닫기"></button><h2 class="ov-title" id="ov-price-t">가격 기준</h2></header>
                 <div class="ov-body pb-body">
                     <ul class="pb-rows">{_sheet_rows}</ul>
-                    <p class="pb-p">2인 1박 기준, 구글 지도에 올라온 요금의 중간값이에요. 평일은 금·토를 뺀 밤, 주말은 금·토 밤이에요.</p>
+                    <p class="pb-p">2인 1박 기준, 위 날짜에 구글에 올라온 요금의 중간값이에요. 평일은 금·토를 뺀 밤, 주말은 금·토 밤이에요.</p>
                     <p class="pb-sub">{(_pseen + ' · ') if _pseen else ''}날짜와 객실에 따라 달라질 수 있어요</p>
                 </div>
             </section>
         </div>'''
-        price_row_html = (f'<div class="faq-price"><div class="fp-q">1박 가격</div>'
-                          f'<p class="fp-a"><span class="seg">{_bold(_pt)}</span>' + (f' · <span class="seg">주말 {_bold(_pwe)}</span>' if _pwe else '') + '</p>'
-                          f'<p class="fp-sub">2인 1박{(" · " + _pseen) if _pseen else ""}</p></div>')
-        price_sect = '' if '<!--PRICE_ROW-->' in body_scored else f'<div class="sect price-sect" id="sec-price"><div class="head"><div class="title">가격</div></div>{price_row_html}</div>'   # 실전정보 섹션이 없으면 가격만 따로
+        price_info = (f'<div class="info-price"><button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog">'
+                      f'<span class="ip-l">1박 가격</span><i class="ip-q" aria-hidden="true"></i><span class="blind">기준 보기</span></button>'
+                      f'<p class="ip-v"><span class="seg">{_bold(_pt)}</span>' + (f' · <span class="seg">주말 {_bold(_pwe)}</span>' if _pwe else '') + '</p></div>')
         bar_html = (f'<div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">{E(_pt)}</button>'
-                    f'<span class="bp-sub">2인 1박{(" · " + _pseen) if _pseen else ""}</span></div>'
+                    f'<span class="bp-sub">2인 1박 기준</span></div>'
                     f'<a class="btn-brand bar-cta" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>')
     else:
         bar_html = f'<div class="button"><a class="btn-brand btn-block" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>'
 
-    body_scored = body_scored.replace('<!--PRICE_ROW-->', price_row_html)   # 실전정보 섹션 맨 위 '가격' 행 자리
 
     # ── PC 전용: 브레드크럼(JSON-LD BreadcrumbList와 동일 경로) + 오른쪽 결정 카드(실망 확률·핵심 수치·CTA) ──
     _area = next((a for a in AREAS if _in_area(meta, a)), None)
@@ -3627,7 +3648,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
              ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}')]
     if _pt: _rows.append(('평일' if _pt.startswith('평일') else '주말', f'<b>{E(_pt[3:].strip())}</b>'))
     if _pwe: _rows.append(('주말', f'<b>{E(_pwe)}</b>'))
-    if _pt: _rows.append(('', f'2인 1박{(" · " + _pseen) if _pseen else ""}'))
+    if _pt: _rows.append(('', '<button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">2인 1박 · 가격 기준</span><i class="ip-q" aria-hidden="true"></i></button>'))
     if _st2: _rows.append(('가까운 역', f'{E(_st2[0])} 도보 <b>{_st2[1]}분</b>'))
     _rows_html = ''.join((f'<li><span>{k}</span><span>{v}</span></li>' if k else f'<li class="ps-pnote"><span>{v}</span></li>') for k, v in _rows)
     if h['scored']:
@@ -3685,6 +3706,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         </div>
                         {info_meta}
                     </div>
+                    {price_info}
                     {info_sum}
                     {lowrev_html}
                 </div>
@@ -3694,7 +3716,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {who_html}
                 {map_block}
                 {body_scored}
-                {price_sect}
                 {col_chip_block}
                 {'' if h['scored'] else similar_block}
             </div>
