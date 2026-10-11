@@ -177,13 +177,6 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .faq .faq-ev .fe-q b{font-weight:var(--fw-semi);}
 #detail .faq .faq-ev .fe-name{font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink);}
 #detail .faq .btn-gray{margin-top:var(--sp-4);}
-/* 가격 행(맨 위, 접지 않음) */
-#detail .faq-price{padding:0 0 var(--sp-1);}
-#detail .faq-price .fp-q{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}
-#detail .faq-price .fp-a{margin-top:var(--sp-1);font-size:var(--fs-body);line-height:var(--lh-body);}
-#detail .faq-price .fp-a b{font-weight:var(--fw-bold);}
-#detail .faq-price .fp-sub{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
-#detail .price-sect .faq-price{padding:0;}
 
 /* 블로그 후기: 행 목록(제목 16/600 2줄 + 메타 14 + 썸네일 72 r8) */
 .social-blog .nb-card{padding:var(--sp-3) 0;border:0;border-bottom:1px solid var(--line);border-radius:0;}
@@ -1042,8 +1035,10 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 
 /* 가격 기준 시트(B · H3 정보형) */
 #ov-price .pb-rows{margin:0;padding:0;list-style:none;border-top:1px solid var(--line);}
-#ov-price .pb-rows li{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-4) 0;border-bottom:1px solid var(--line);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);}
-#ov-price .pb-rows li span:first-child{color:var(--ink-3);}
+#ov-price .pb-rows li{padding:var(--sp-4) 0;border-bottom:1px solid var(--line);}
+#ov-price .pb-r{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-3);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);}
+#ov-price .pb-r span:first-child{color:var(--ink-3);}
+#ov-price .pb-d{margin:var(--sp-1) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* 어느 숙박일 요금인지(2026-10-12) */
 #ov-price .pb-rows b{font-weight:var(--fw-bold);}
 #ov-price .pb-p{margin:var(--sp-4) 0 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #ov-price .pb-sub{margin:var(--sp-2) 0 0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
@@ -1096,3 +1091,14 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
    PC: 배경이 화면 폭만큼 커지므로 사진에 굽지 않고, 노을 빛에 맞춰 색을 입힌 컷아웃을 오른쪽 칸에 세운다(pc.css).
    그래서 .hero-mascot(<picture>)은 PC 소스만 있고 모바일에선 숨김(1px 자리표시 이미지만 받음). 장식이라 aria-hidden */
 #main .search-box .hero-mascot{display:none;}
+
+/* ════════ §v3 상세 '1박 가격' (2026-10-12) — 리뷰 내용이 아니라 호텔 정보: 위치 줄과 요약 3칸 사이에 둔다 ════════
+   라벨 '1박 가격 ?' = 가격 기준 시트 버튼(하단 바 가격 탭과 같은 시트). 숙박일·2인 1박·확인일은 시트에만 */
+#detail .information .info-price{margin-top:var(--sp-4);}
+#detail .ip-h{position:relative;display:inline-flex;align-items:center;gap:var(--sp-1);padding:0;border:0;background:none;font-family:inherit;color:var(--ink-3);cursor:pointer;}
+#detail .ip-h::before{content:"";position:absolute;inset:calc(var(--sp-3) * -1) calc(var(--sp-2) * -1);}   /* 터치 44 */
+#detail .ip-l{font-size:var(--fs-meta);line-height:var(--lh-ui);}
+#detail .ip-q{display:inline-flex;align-items:center;justify-content:center;width:var(--sp-4);height:var(--sp-4);border:1.5px solid currentColor;border-radius:var(--radius-pill);font-style:normal;}
+#detail .ip-q::before{content:"?";font-size:11px;line-height:1;font-weight:var(--fw-bold);}
+#detail .info-price .ip-v{margin-top:var(--sp-1);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#detail .info-price .ip-v b{font-weight:var(--fw-bold);}
