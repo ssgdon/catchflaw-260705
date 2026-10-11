@@ -605,7 +605,6 @@ textarea.ov-input{height:96px;resize:none;}
 .rs.is-faq .rs-list{margin-top:var(--sp-2);}
 .rs-more .btn-gray{width:100%;}
 .rs-empty,.rs-loading{padding:var(--sp-8) 0;text-align:center;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink-3);}
-.rs-loading::before{content:"";display:block;width:22px;height:22px;margin:0 auto var(--sp-3);border:2.5px solid var(--line);border-top-color:var(--ink);border-radius:50%;animation:cf-rec-spin .8s linear infinite;}
 /* 리뷰 항목(§6-5): 작성자 16/600 + 심각도 상태 태그(회색 알약 + 색 점) → 메타 14 → 본문 16/1.5(키워드 = 형광펜) → 날짜 14 → 텍스트 링크(터치 44) */
 .rv-top{display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);}
 .rv-name{min-width:0;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
@@ -1102,3 +1101,37 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .ip-q::before{content:"?";font-size:11px;line-height:1;font-weight:var(--fw-bold);}
 #detail .info-price .ip-v{margin-top:var(--sp-1);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .info-price .ip-v b{font-weight:var(--fw-bold);}
+
+/* ════════ §v3 캐치플로 수달 — 기다림·빈 화면·완료 순간에만 (2026-10-12) ════════
+   레퍼런스(Alan): 목록·데이터 화면은 깨끗하게 두고, 로딩·결과 없음·보냄 완료처럼 화면이 비는 순간에만 캐릭터.
+   그림은 장식(alt="", aria-hidden) — 뜻은 늘 옆 글자가 전한다. 마크업은 CF.mascot()·CF.mascotScene()(js/backnav.js)
+   크기 3단: 시트 안 로딩 64 · 결과 영역 빈 화면 104 · 페이지 빈 화면·전체 로딩 136. 움직임은 로딩(--bob)만, '동작 줄이기' 설정이면 멈춤 */
+.mascot{display:block;width:104px;height:auto;pointer-events:none;user-select:none;-webkit-user-drag:none;}
+.mascot--sm{width:64px;}
+.mascot--lg{width:136px;}
+.mascot--bob{transform-origin:50% 100%;animation:cf-mascot-bob 1.6s ease-in-out infinite;}
+@keyframes cf-mascot-bob{0%,100%{transform:translateY(0) rotate(-2deg);}50%{transform:translateY(calc(var(--sp-1) * -1)) rotate(2deg);}}
+@media (prefers-reduced-motion:reduce){.mascot--bob{animation:none;}}
+/* 옅은 보라 원 받침 — 흰 바탕에 그림이 떠 보이지 않게 몸 아래쪽에 깐다(브랜드 표식, 면 색만) */
+.mascot-scene{position:relative;width:fit-content;isolation:isolate;}
+.mascot-scene::before{content:"";position:absolute;z-index:-1;left:8%;right:8%;bottom:2%;aspect-ratio:1;border-radius:var(--radius-pill);background:var(--primary-soft);}
+.mascot-scene--center{margin-left:auto;margin-right:auto;}
+/* 자리별 간격 */
+#search .notice .empty-sec .mascot-scene,.rec-empty .mascot-scene{margin-bottom:var(--sp-4);}
+.page-empty .mascot-scene{margin:var(--sp-10) auto var(--sp-2);}
+.rs-loading .mascot{margin:0 auto var(--sp-3);}
+.fb-done .mascot{margin:0 auto var(--sp-4);}
+#recp .rw-loading .mascot-scene{margin-bottom:var(--sp-2);}
+/* 홈 안내 카드(레퍼런스의 안내 카드 패턴): 옅은 보라 면 + 글 왼쪽 + 수달이 오른쪽 아래에서 살짝 잘려 올라온다. X로 닫으면 다시 안 뜬다(localStorage cf_intro_x) */
+#main .sec-intro{position:relative;padding:var(--browse-gap) var(--page-x) 0;}
+#main .sec-intro[hidden]{display:none;}
+.intro-card{display:flex;align-items:stretch;gap:var(--sp-2);min-height:128px;padding-left:var(--sp-5);border-radius:var(--radius-card);background:var(--primary-soft);overflow:hidden;color:var(--ink);}
+.intro-card .ic-txt{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:var(--sp-1);padding:var(--sp-5) 0;}
+.intro-card .ic-tit{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}
+.intro-card .ic-sub{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.intro-card .ic-link{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
+.intro-card .ic-art{flex:none;align-self:flex-end;width:112px;margin:0 var(--sp-6) calc(var(--sp-5) * -1) 0;}
+.intro-card .ic-scene::before{display:none;}   /* 카드 면이 이미 보라 — 원 받침 생략 */
+.intro-card .ic-mascot{width:112px;}
+#main .sec-intro .ic-close{position:absolute;top:calc(var(--browse-gap) + var(--sp-1));right:calc(var(--page-x) + var(--sp-1));}
+

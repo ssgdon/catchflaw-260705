@@ -75,6 +75,8 @@ $(function(){
     if (!window.QDATA) setTimeout(loadEmbed, 1200);
 
     function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+    // 리뷰 팝업·FAQ 근거를 받는 동안: 돋보기로 들여다보는 작은 수달(살랑) + 문구 (2026-10-12, ds.css §v3 캐치플로 수달)
+    function loadingLi(){ return '<li class="rs-loading">' + (window.CF && CF.mascot ? CF.mascot('peek', 'mascot--sm mascot--bob') : '') + '리뷰를 불러오는 중…</li>'; }
     function subKo(s){ return (window.QSUBKO && window.QSUBKO[s]) || s; }   // '동네 분위기' → '밤길·동네 분위기' 등 화면 표기
     function catKo(c){ return (window.CAT_KO && window.CAT_KO[c]) || c; }    // 표시만 순화, curCat은 내부키 유지
     function emph(s){ return esc(s).replace(/\*\*(.+?)\*\*/g, '<mark>$1</mark>').replace(/\*\*/g, ''); }   // 키워드 = 형광펜(--hl) + 잉크
@@ -147,13 +149,13 @@ $(function(){
         var M = (window.QDIS && window.QDIS.n) || 0;
         $('#sheet-cat').text('실망');
         $('#sheet-cnt').text(qloading ? '불러오는 중…' : (!krOnly && qfull && M && M !== list.length) ? M + '건 중 ' + list.length + '건' : list.length + '건');
-        $('#sheet-list').html(list.map(card).join('') || '<li class="rs-empty">' + (qloading ? '리뷰를 불러오는 중…' : '실망 리뷰가 없어요') + '</li>');
+        $('#sheet-list').html(list.map(card).join('') || (qloading ? loadingLi() : '<li class="rs-empty">실망 리뷰가 없어요</li>'));
         $('#sheet-chips').html('<p class="rs-note">심각한 문제를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰예요</p>');
         $('#sheet-kr').toggleClass('on', krOnly).attr('aria-pressed', krOnly ? 'true' : 'false');
         after();
     }
     function render(){
-        if (!window.QDATA) { $('#sheet-list').html('<li class="rs-loading">리뷰를 불러오는 중…</li>'); after(); return; }
+        if (!window.QDATA) { $('#sheet-list').html(loadingLi()); after(); return; }
         if (curCat === '__dis__') return renderDis();
         var T = (window.QTOTAL && window.QTOTAL[curCat]) || null;
         var base = (window.QDATA[curCat] || []);
@@ -281,7 +283,7 @@ $(function(){
         var seq = ++faqSeq;   // 로딩 중 토픽 전환/재오픈 시 낡은 응답 렌더 방지
         if (faqFull) faqRender(topic, q);
         else {
-            faqList(topic, q, 0, '<li class="rs-loading">리뷰를 불러오는 중…</li>');
+            faqList(topic, q, 0, loadingLi());
             faqFetch()
                 .then(function(){ if (seq === faqSeq) faqRender(topic, q); })
                 .catch(function(){ if (seq === faqSeq) faqRender(topic, q); });
