@@ -6,7 +6,7 @@
 
 | 파일 | 건수 | 내용 | 적용 |
 |---|---|---|---|
-| `corrections_classification.jsonl` | 281 | 분류 변경(소분류·대분류) 또는 판정 해제(`new_grade: "정상"`, 123건) | **적용** |
+| `corrections_classification.jsonl` | 323 | 분류 변경(소분류·대분류) 또는 판정 해제(`new_grade: "정상"`, 131건). `source`: audit-2610 277 · policy-2610 46 | **적용** |
 | `corrections_grade.jsonl` | 140 | 등급만 변경(심각→주의 91, 주의→심각 49) — 벌레·곰팡이·동네 분위기·객실 보안 제외 | SPEC.md 대조 후 적용 |
 | `hold_owner_review.jsonl` | 33 | 희귀 소분류 등급 변경 제안 — 운영자가 이미 전수 점검한 영역 | 운영자가 한 건씩 보고 결정 |
 | `fewshot_v58.md` | — | 오류 패턴 · 규칙 추가안 · 예시 · 회귀 체크리스트 | prompt_v5.py v5.8 |
