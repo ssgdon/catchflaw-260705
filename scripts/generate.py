@@ -1102,8 +1102,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                 <div class="search-box init" data-ga-block>
                     <div class="title" data-ga-title>
                         <h1 class="tit hero-title">이 호텔,<br><span class="hero-key">실망할 확률</span>은<br>몇&nbsp;%일까요?</h1>
-                        <img class="hero-mascot" src="./img/mascot/otter-look-640.webp" srcset="./img/mascot/otter-look-400.webp 400w, ./img/mascot/otter-look-640.webp 640w"
-                             sizes="(min-width:1100px) 340px, 190px" width="640" height="763" alt="" aria-hidden="true" decoding="async" fetchpriority="high">
+                        <picture class="hero-mascot" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/mascot/otter-look-pc.webp"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="640" height="763" alt="" decoding="async"></picture>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">
                         <input type="text" name="q" id="hero-q" placeholder="{CITY['ko']} 호텔 이름으로 검색">

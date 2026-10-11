@@ -215,9 +215,9 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
    왼쪽·위·아래를 흰색(--surface-card)으로 흐리게 덮어 글자는 흰 면 위에서 읽히고 오른쪽에만 건물·수영장이 보인다. 사진은 장식(aria 없음) */
 #main .search-box{position:relative;isolation:isolate;}
 #main .search-box::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;   /* 히어로 전체 = 세로 사진(보라 하늘·호텔·인피니티 풀) — 2026-10-10 */
-  background:linear-gradient(to right, var(--surface-card) 0%, transparent 55%),   /* 제목 쪽 하늘을 한 번 더 밝게 */
+  background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 8%, transparent 55%),   /* 제목 쪽 하늘을 한 번 더 밝게 · 390 넘는 폭에서 사진 왼쪽 끝을 흰 면으로 덮음 */
              linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   /* 아래 칩 줄은 흰 면 */
-             url(../img/home_bg.jpg) center 62% / 100% auto no-repeat;}   /* 하늘 아래쪽~호텔~수영장이 보이는 자리 */
+             url(../img/home_bg_otter_1080.webp) right 100% / min(100%, 390px) auto no-repeat;}   /* 2026-10-11 수달이 풀 데크에 선 장면(사진 안에 합성): 오른쪽 아래 정렬 — 귀는 제목 둘째 줄, 돋보기는 '까요?' 오른쪽, 몸은 검색창 뒤. 390 넘는 폭에선 키우지 않음(귀가 머리 바에 닿지 않게) */
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
@@ -1091,9 +1091,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
     #detail .content > .information{position:relative;z-index:2;margin-top:calc(var(--sp-5) * -1);border-radius:var(--radius-card) var(--radius-card) 0 0;}
 }
 
-/* ════════ §v3 홈 히어로 캐릭터 (2026-10-11) — 캐치플로 수달이 오른쪽 풍경 위에 서서 돋보기로 제목 쪽을 본다 ════════
-   쌓임: 히어로 사진(::before −1) < 수달(제목 상자 안 −1) < 제목 글자 < 검색창(2). 발은 검색창 위쪽 뒤로 숨는다.
-   장식 그림(alt="")이라 탭은 통과시킨다. PC 배치는 pc.css */
-#main .search-box .title{position:relative;z-index:1;}
-#main .search-box .input{z-index:2;}
-#main .search-box .hero-mascot{position:absolute;z-index:-1;right:calc(var(--page-x) * -1);bottom:calc((var(--sp-10) + var(--sp-5)) * -1);width:min(168px, 46vw);height:auto;pointer-events:none;user-select:none;}   /* 꼬리 끝 = 화면 오른쪽 끝, 돋보기는 제목 둘째 줄 오른쪽 빈자리 */
+/* ════════ §v3 홈 히어로 캐릭터 (2026-10-11) — 캐치플로 수달 ════════
+   모바일: 히어로 배경 사진 안에 합성(img/home_bg_otter_1080.webp, 위 #main .search-box::before) — 따로 얹지 않는다.
+   PC: 배경이 화면 폭만큼 커지므로 사진에 굽지 않고, 노을 빛에 맞춰 색을 입힌 컷아웃을 오른쪽 칸에 세운다(pc.css).
+   그래서 .hero-mascot(<picture>)은 PC 소스만 있고 모바일에선 숨김(1px 자리표시 이미지만 받음). 장식이라 aria-hidden */
+#main .search-box .hero-mascot{display:none;}
