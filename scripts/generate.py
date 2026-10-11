@@ -851,6 +851,20 @@ def vs_topic(pa, pb, hotels_meta):
     parts = [x for x in (area, band) if x]
     return (' · '.join(parts) + ' 숙소') if parts else '숙소 비교'
 
+HOME_CITIES = [('후쿠오카', True), ('도쿄', False), ('오사카', False), ('교토', False), ('삿포로', False), ('오키나와', False)]   # 홈 도시 줄(2026-10-10) — 열린 도시는 True
+
+def city_row_html():
+    """홈 히어로 도시 선택 줄: 열린 도시 = 잉크 칩(→ 검색), 준비 중 도시 = 흐린 칩 + '준비 중' 꼬리표(누를 수 없음)."""
+    pin = ('<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" '
+           'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
+    items = []
+    for name, live in HOME_CITIES:
+        if live:
+            items.append(f'<a class="city-chip is-on" href="./search" aria-current="true" data-ga="home_city">{pin}{name}</a>')
+        else:
+            items.append(f'<span class="city-chip is-off" aria-disabled="true">{pin}{name}<span class="soon-tag">준비 중</span></span>')
+    return f'<div class="city-row" role="group" aria-label="도시">{"".join(items)}</div>'
+
 def vs_card(pa, pb, hotels_meta, H, depth=0):
     """홈 비교 카드 1장 (v3 §7-1): 주제(메타 글자) · 사진 2장 + VS · 이름·평점 2열 · 실망 확률 / 한국인 리뷰 / 1박 평일 행
     (A값 | 라벨 | B값) · 1px 선 아래 결론 16/600 + 보조 문장 14 → compare 프리셋 링크. 상자 안 상자 없음 — 이긴 쪽 '실망 확률' 값만 형광펜(--hl)."""
@@ -1090,6 +1104,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
+                    {city_row_html()}
                     <a href="./recommend" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
                     {hero_chips_html}
                     <div class="hero-photo" aria-hidden="true"></div>
