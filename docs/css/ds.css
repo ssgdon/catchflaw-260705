@@ -252,12 +252,12 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 #main .vs-card .vs-g{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
 #main .vs-card .vs-g img{width:14px;height:14px;}
 #main .vs-card .vs-rows{margin-top:var(--sp-3);border-top:1px solid var(--line);}
-#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:var(--h-btn);padding:var(--sp-2) 0;}
+#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:var(--h-chip);padding:var(--sp-2) 0;}
 #main .vs-card .vs-r + .vs-r{border-top:1px solid var(--line);}
 #main .vs-card .vs-r > :last-child{text-align:right;}
 #main .vs-card .vs-k{text-align:center;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;}
-#main .vs-card .vs-v{font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);font-variant-numeric:tabular-nums;}
-#main .vs-card .vs-p{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);}   /* 실망 확률 = 카드의 핵심 숫자 18/700 — 다른 숫자(16/600)보다 한 단계 위 */
+#main .vs-card .vs-v{font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);font-variant-numeric:tabular-nums;}   /* 한국인 리뷰·가격 = 홈 카드 숫자와 같은 14/600(2026-10-11: 16이라 이 표만 커 보였음) */
+#main .vs-card .vs-p{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-bold);}   /* 실망 확률 = 카드의 핵심 숫자 16/700 + 이긴 쪽 형광펜 — 다른 숫자(14/600)보다 한 단계 위 */
 #main .vs-card .vs-none{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #main .vs-card .vs-r > .vs-p{justify-self:start;}
