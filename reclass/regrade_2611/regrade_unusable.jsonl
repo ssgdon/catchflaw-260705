@@ -1,0 +1,120 @@
+{"fid": 2506, "new_grade": "주의", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "냉방 냄새로 못 씀, 제습 모드로 지냄(부분)"}
+{"fid": 6121, "new_grade": "심각", "item": "화장실·욕실", "essential": true, "other_code": null, "unsure": true, "note": "하수 냄새로 화장실·욕조 못 씀, 만실로 교체 불가"}
+{"fid": 8668, "new_grade": "주의", "item": "샤워실(협소)", "essential": true, "other_code": null, "unsure": false, "note": "좁아서 샤워 불가란 과장 표현, 고장 아님"}
+{"fid": 4297, "new_grade": "주의", "item": "세탁기", "essential": false, "other_code": null, "unsure": false, "note": "세탁기 투입금 환불 거부, 숙박 환불 아님"}
+{"fid": 10002, "new_grade": "심각", "item": "샤워", "essential": true, "other_code": null, "unsure": false, "note": "샤워 연결부 파손, 결국 목욕 못 함"}
+{"fid": 808, "new_grade": "주의", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "クーラーきかない—완전 고장인지 약함인지 불명"}
+{"fid": 1126, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "에어컨 미작동, 외부 냉방기 대체; 원문 잘림"}
+{"fid": 1476, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "空調が全くきかない, 방 더움"}
+{"fid": 2039, "new_grade": "주의", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "冷氣不冷—약함일 수 있음(번역 과장)"}
+{"fid": 2391, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "켜도 냉방 없음, 더워 죽을 뻔"}
+{"fid": 3283, "new_grade": "주의", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "대부분 미작동·선풍기 제공, 방교체 요청 성사 불명"}
+{"fid": 3685, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 없음, 무덥고 환기 불량"}
+{"fid": 4175, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 없어 매우 더움"}
+{"fid": 4276, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "空調もできず + 욕조 배수 전혀 안 됨"}
+{"fid": 4317, "new_grade": "심각", "item": "난방", "essential": true, "other_code": null, "unsure": false, "note": "난방 에러, 냉방·송풍만 가능, 추운 날"}
+{"fid": 4340, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 전혀 없음, 열사병 직전"}
+{"fid": 4343, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "No air conditioning"}
+{"fid": 4679, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "1·3일째 에어컨 고장, 선풍기만"}
+{"fid": 5408, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "냉방 기능 없는 방, 단 바깥 추워 답답함 위주"}
+{"fid": 5411, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "냉방 없는 방, 창고처럼 더움"}
+{"fid": 5465, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 없어 매우 더움, 선풍기 대여"}
+{"fid": 6257, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "冷氣故障, 창문 열라는 응대뿐"}
+{"fid": 6259, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨·환풍기 고장, 숨막힘"}
+{"fid": 6262, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 사용 불가, 창문 소음에 잠 못 잠"}
+{"fid": 6346, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "냉방 없고 난방만, 더워서 창문(추락 위험)"}
+{"fid": 6407, "new_grade": "심각", "item": "난방", "essential": true, "other_code": "방교체·퇴실", "unsure": false, "note": "히터 작동 안 함, 바로 다른 호텔로 옮김"}
+{"fid": 7356, "new_grade": "심각", "item": "난방", "essential": true, "other_code": "환불·보상요구", "unsure": false, "note": "暖房きかない, 돈 돌려달라"}
+{"fid": 7409, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "No AC (짧은 언급, ★3)"}
+{"fid": 8003, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "aircon not working, so warm"}
+{"fid": 8208, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "에어컨 없음 언급이 원문 잘린 부분에만 있음"}
+{"fid": 8477, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": true, "note": "does not work, minimal to no air—약함 여지"}
+{"fid": 8514, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "空調沒有冷氣, 매우 무더움"}
+{"fid": 9150, "new_grade": "주의", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "하루 되고 하루 안 됨(간헐), 창문 가능"}
+{"fid": 9238, "new_grade": "심각", "item": "에어컨", "essential": true, "other_code": null, "unsure": false, "note": "에어컨 미작동, 창문 소음에 잠 못 잠"}
+{"fid": 321, "new_grade": "심각", "item": "샤워(위생)", "essential": true, "other_code": null, "unsure": true, "note": "샤워 오염으로 못 써 생수 4병으로 씻음"}
+{"fid": 192, "new_grade": "주의", "item": "비데", "essential": false, "other_code": null, "unsure": false, "note": "ウォシュレット故障中"}
+{"fid": 491, "new_grade": "주의", "item": "비데", "essential": false, "other_code": null, "unsure": false, "note": "비데 온수 안 멈춤, 화장실 문 닫힘 불량"}
+{"fid": 566, "new_grade": "주의", "item": "세탁기", "essential": false, "other_code": null, "unsure": true, "note": "세탁기 잠김·가열로 옷 손상(재산 피해)"}
+{"fid": 810, "new_grade": "주의", "item": "냉장고", "essential": false, "other_code": null, "unsure": false, "note": "冷蔵庫冷えない"}
+{"fid": 1172, "new_grade": "심각", "item": "객실 문 잠금", "essential": true, "other_code": null, "unsure": false, "note": "문 잠금 개폐 불가, 다음 날 응급 수리"}
+{"fid": 1887, "new_grade": "주의", "item": "냉장고", "essential": false, "other_code": null, "unsure": false, "note": "냉장고 고장·악취"}
+{"fid": 1973, "new_grade": "주의", "item": "공기청정기", "essential": false, "other_code": null, "unsure": false, "note": "필터 오염으로 공기청정기 무용"}
+{"fid": 2012, "new_grade": "심각", "item": "변기", "essential": true, "other_code": null, "unsure": false, "note": "변기 터져 오물 유출, 청소 후 계속 사용"}
+{"fid": 2188, "new_grade": "심각", "item": "전자 잠금장치", "essential": true, "other_code": null, "unsure": false, "note": "전자 락 고장 + 세탁기·드라이어 등"}
+{"fid": 2894, "new_grade": "주의", "item": "세탁기", "essential": false, "other_code": null, "unsure": true, "note": "세탁기 에러; 같은 글 변기 물 안 내려감 별도"}
+{"fid": 3780, "new_grade": "심각", "item": "변기", "essential": true, "other_code": null, "unsure": false, "note": "toilet didn't flush"}
+{"fid": 4137, "new_grade": "심각", "item": "객실 문", "essential": true, "other_code": null, "unsure": false, "note": "전자 도어 고장으로 안 열림(★3)"}
+{"fid": 4652, "new_grade": "주의", "item": "냉장고", "essential": false, "other_code": null, "unsure": false, "note": "냉장고 전혀 안 시원함"}
+{"fid": 4796, "new_grade": "주의", "item": "세탁기", "essential": false, "other_code": null, "unsure": false, "note": "세제 미투입으로 빨래 냄새"}
+{"fid": 4855, "new_grade": "주의", "item": "로커(캡슐)", "essential": false, "other_code": null, "unsure": true, "note": "캡슐 로커 30분 안 열림, 짐 배송 놓침"}
+{"fid": 4996, "new_grade": "주의", "item": "비데", "essential": false, "other_code": null, "unsure": false, "note": "세정 변좌 고장(샤워 안 나옴)"}
+{"fid": 5448, "new_grade": "주의", "item": "충전기", "essential": false, "other_code": null, "unsure": false, "note": "방 충전기 전멸"}
+{"fid": 5495, "new_grade": "주의", "item": "욕실 환풍기", "essential": false, "other_code": null, "unsure": false, "note": "환풍기 먼지로 기능 안 함"}
+{"fid": 5603, "new_grade": "심각", "item": "변기", "essential": true, "other_code": null, "unsure": false, "note": "변기 고장 물 안 내려감, 수리 호출"}
+{"fid": 6045, "new_grade": "주의", "item": "비데", "essential": false, "other_code": null, "unsure": true, "note": "비데 물 안 나옴; 체크아웃 앞당김—조기퇴실 해석 여지"}
+{"fid": 6174, "new_grade": "주의", "item": "욕실 환풍기", "essential": false, "other_code": null, "unsure": false, "note": "욕실 환풍기 작동 안 함, 에어컨 약함"}
+{"fid": 6521, "new_grade": "주의", "item": "공용 화장실(1/2)", "essential": false, "other_code": null, "unsure": false, "note": "여자 화장실 2개 중 1개 고장"}
+{"fid": 6728, "new_grade": "주의", "item": "포트", "essential": false, "other_code": null, "unsure": false, "note": "포트 녹슬어 사용 불가"}
+{"fid": 7011, "new_grade": "주의", "item": "냉장고", "essential": false, "other_code": null, "unsure": false, "note": "냉장고 작동 안 함"}
+{"fid": 7213, "new_grade": "주의", "item": "비데", "essential": false, "other_code": null, "unsure": false, "note": "비데 물 안 나옴"}
+{"fid": 7669, "new_grade": "심각", "item": "에어컨·문 잠금", "essential": true, "other_code": null, "unsure": true, "note": "에어컨·비데·문 잠금 고장, 단 ★4·짧은 글"}
+{"fid": 7670, "new_grade": "심각", "item": "에어컨·문 잠금", "essential": true, "other_code": null, "unsure": true, "note": "7669와 동일 글, ★4·짧은 글"}
+{"fid": 7898, "new_grade": "심각", "item": "객실 전기", "essential": true, "other_code": null, "unsure": false, "note": "이틀 밤 방 전체 정전, 아이와 공포"}
+{"fid": 8314, "new_grade": "심각", "item": "객실 문 잠금", "essential": true, "other_code": "방교체·퇴실", "unsure": false, "note": "도어락 번호 안 맞아 입실 불가, 방 교체"}
+{"fid": 8325, "new_grade": "심각", "item": "욕실 문", "essential": true, "other_code": null, "unsure": false, "note": "욕실 문 안 열려 갇힘, 생명 위협 느낌"}
+{"fid": 9256, "new_grade": "주의", "item": "로커 잠금", "essential": false, "other_code": null, "unsure": false, "note": "로커 잠김 불량, 문의 수단 부족"}
+{"fid": 10000, "new_grade": "심각", "item": "샤워", "essential": true, "other_code": null, "unsure": false, "note": "샤워 연결부 파손, 결국 목욕 못 함"}
+{"fid": 924, "new_grade": "심각", "item": "온수", "essential": true, "other_code": null, "unsure": false, "note": "샤워 온수 안 나오고 찬물만"}
+{"fid": 1484, "new_grade": "심각", "item": "온수", "essential": true, "other_code": null, "unsure": false, "note": "이틀 아침 모두 온수 없음"}
+{"fid": 1794, "new_grade": "심각", "item": "변기·배수", "essential": true, "other_code": null, "unsure": true, "note": "bathroom left clogged—막힘 대상·정도 불명"}
+{"fid": 2179, "new_grade": "심각", "item": "욕실 배수", "essential": true, "other_code": null, "unsure": false, "note": "배수 막혀 역류, 유닛배스 침수"}
+{"fid": 2895, "new_grade": "심각", "item": "변기", "essential": true, "other_code": null, "unsure": false, "note": "변기 물 안 내려감"}
+{"fid": 3449, "new_grade": "심각", "item": "욕실 배수", "essential": true, "other_code": null, "unsure": true, "note": "욕조 배수 시 세면대 아래로 역류·침수(1회성?)"}
+{"fid": 3651, "new_grade": "심각", "item": "급수", "essential": true, "other_code": null, "unsure": false, "note": "아침 단수, 씻지 못하고 떠남"}
+{"fid": 3797, "new_grade": "심각", "item": "변기", "essential": true, "other_code": null, "unsure": false, "note": "scarico del bagno non funzionava"}
+{"fid": 4099, "new_grade": "심각", "item": "샤워", "essential": true, "other_code": null, "unsure": true, "note": "레인 샤워 물 전혀 안 나옴—핸드샤워 여부 불명"}
+{"fid": 4274, "new_grade": "심각", "item": "욕실 배수", "essential": true, "other_code": null, "unsure": false, "note": "욕조 배수 전혀 안 됨"}
+{"fid": 5819, "new_grade": "심각", "item": "샤워 배수", "essential": true, "other_code": null, "unsure": false, "note": "배수구 꽁초로 막혀 샤워 못 함"}
+{"fid": 5844, "new_grade": "심각", "item": "샤워 배수", "essential": true, "other_code": null, "unsure": false, "note": "샤워 못 함(5819와 같은 글)"}
+{"fid": 6456, "new_grade": "심각", "item": "온수", "essential": true, "other_code": null, "unsure": false, "note": "한겨울 심야 샤워 온수 안 나옴"}
+{"fid": 6471, "new_grade": "주의", "item": "샤워 냉온 조절", "essential": true, "other_code": null, "unsure": true, "note": "냉온 손잡이 안 돌아감—샤워 자체 가능 여부 불명"}
+{"fid": 6838, "new_grade": "심각", "item": "온수", "essential": true, "other_code": null, "unsure": false, "note": "건물 전체 온수 끊김 다음날까지, 아내 못 씻음"}
+{"fid": 7062, "new_grade": "주의", "item": "샤워 배수", "essential": true, "other_code": null, "unsure": true, "note": "배수 느려 발목까지 고임(완전 막힘 아님)"}
+{"fid": 7159, "new_grade": "주의", "item": "욕실 배수", "essential": true, "other_code": null, "unsure": false, "note": "배수 나빠 매번 바닥 물바다(부분)"}
+{"fid": 7512, "new_grade": "주의", "item": "샤워 수압", "essential": true, "other_code": null, "unsure": false, "note": "수압 약해 욕조 못 채움(부분)"}
+{"fid": 7813, "new_grade": "주의", "item": "세면대", "essential": false, "other_code": null, "unsure": true, "note": "세면대 배수·온수 안 됨, 샤워는 언급 없음"}
+{"fid": 8393, "new_grade": "심각", "item": "샤워 배수", "essential": true, "other_code": null, "unsure": true, "note": "全然流れない, 단 직원은 정상이라 함—느림 여지"}
+{"fid": 8502, "new_grade": "주의", "item": "레인 샤워", "essential": true, "other_code": null, "unsure": false, "note": "물 분사 방향 문제로 불편(★3)"}
+{"fid": 8626, "new_grade": "주의", "item": "변기·욕조 배수", "essential": true, "other_code": null, "unsure": false, "note": "물 흐름 나쁨, 휴지 가끔 남음(부분)"}
+{"fid": 9333, "new_grade": "심각", "item": "욕실·세면 배수", "essential": true, "other_code": null, "unsure": false, "note": "배수 막혀 제대로 씻지 못함"}
+{"fid": 835, "new_grade": "주의", "item": "매트리스", "essential": true, "other_code": null, "unsure": true, "note": "不堪使用=낡아 형편없음 관용 표현"}
+{"fid": 226, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "202호 와이파이 안 됨"}
+{"fid": 260, "new_grade": "주의", "item": "콘센트", "essential": false, "other_code": null, "unsure": false, "note": "캡슐 안 콘센트 없음"}
+{"fid": 476, "new_grade": "주의", "item": "콘센트", "essential": false, "other_code": null, "unsure": false, "note": "침대 옆 콘센트 고장"}
+{"fid": 490, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "WiFi 연결 안 됨"}
+{"fid": 809, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi つながらない"}
+{"fid": 936, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wifi超差"}
+{"fid": 1032, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 전혀 안 됨"}
+{"fid": 2006, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 안 됨"}
+{"fid": 2064, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "인터넷 최악"}
+{"fid": 2586, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 거의 안 됨"}
+{"fid": 3247, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "인터넷 없음"}
+{"fid": 3686, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "와이파이 없음(같은 글 에어컨은 3685)"}
+{"fid": 4784, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 전혀 안 됨, 나머진 좋음"}
+{"fid": 5801, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "무료 wifi 전혀 안 됨"}
+{"fid": 5899, "new_grade": "주의", "item": "TV 리모컨", "essential": false, "other_code": null, "unsure": false, "note": "리모컨 고장으로 TV 못 봄"}
+{"fid": 6053, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "QR 인식 안 돼 와이파이 못 씀"}
+{"fid": 6363, "new_grade": "주의", "item": "TV", "essential": false, "other_code": null, "unsure": false, "note": "TV 스마트폰 연결·시청 불가"}
+{"fid": 6688, "new_grade": "주의", "item": "TV", "essential": false, "other_code": null, "unsure": false, "note": "TV 없음"}
+{"fid": 6744, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi·전파 매우 약함"}
+{"fid": 6845, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "와이파이 연결 안 됨"}
+{"fid": 7163, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 매우 느림, 테더링"}
+{"fid": 7606, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "인터넷 사실상 못 씀"}
+{"fid": 7649, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "와이파이 전혀 안 됨"}
+{"fid": 7690, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "객실 와이파이 안 됨"}
+{"fid": 9115, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "객실 무료 Wi-Fi 없음"}
+{"fid": 9200, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "객실 WiFi 전혀 못 씀"}
+{"fid": 9661, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "WiFi 연결 안 됨"}
+{"fid": 10344, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "Wi-Fi 매우 느림·전파 권외"}
+{"fid": 10423, "new_grade": "주의", "item": "와이파이", "essential": false, "other_code": null, "unsure": false, "note": "202호 와이파이 없음"}
