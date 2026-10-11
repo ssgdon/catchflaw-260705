@@ -1014,7 +1014,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     # 숨겨진 보석: 한국인 비중이 낮지만(25% 미만 — 미야코·블라섬처럼 실망 확률 최저권인데 한국인 비중이 낮은 곳, 수요 혼합 신호에선 뒤로 밀리는 곳) 실망 확률·평점이 좋은 곳 (2026-10-10, 50건 미만 → 비율 기준)
     gems = [p for p in rec_pool if (KRN.get(p, 0) / max(H[p].get('text_1y') or 0, 1)) < 0.25 and H[p]['p_crit'] <= SAFE_MULT * (CITY.get('crit') or 0)
             and bayes_rating(hotels_meta[p].get('total_score'), hotels_meta[p].get('reviews_count')) >= 4.2][:8]   # 조용히 좋은 곳(인기 가중 상쇄)
-    hot = sorted((p for p in scored), key=lambda p: (-SV.get(p, -1), -KRN.get(p, 0)))[:6]   # 히어로 칩: 네이버 검색량 순(없으면 한국인 리뷰 수). 판정 진입이라 위험도 포함
     # 2026-10-10 '벌레·냄새 리뷰가 많은 숙소'(경고 목록) → 우리가 건수로 세는 안심 목록. 조건 = 최근 1년 0건(검색 '한 번도 없어야'와 같은 숫자),
     # 순서 = 추천순(위험 배지 제외). 카드 아래에 근거 한 줄
     _safe_pool = [p for p in rec_pool if H[p]['badge'][0] != 'danger']
@@ -1076,9 +1075,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     <div class="vs-list">{vs_cards}</div>
                 </div>
             </article>''' if vs_cards else ''
-    hero_chips = ''.join(f'<a class="chip-go hero-chip" data-ga="hero_chip" href="./hotels/{p}">{E(short_name(hotels_meta[p]["title"]))}</a>' for p in hot)
-    hero_chips_html = (f'<div class="hero-chips"><span class="hc-label">많이 찾는 호텔</span>{hero_chips}</div>'
-                       if hero_chips else '')
     gems_slider = slider('숨겨진 보석 같은 곳', gems) if len(gems) >= 3 else ''
 
     n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
@@ -1106,7 +1102,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     </form>
                     {city_row_html()}
                     <a href="./recommend" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
-                    {hero_chips_html}
                     <div class="hero-photo" aria-hidden="true"></div>
                 </div>
             </article>

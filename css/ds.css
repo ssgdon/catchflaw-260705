@@ -234,9 +234,6 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 .city-chip.is-on{border-color:var(--ink);background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
 .city-chip.is-off{border-color:var(--line);color:var(--ink-4);cursor:default;}
 .soon-tag{margin-left:var(--sp-1);font-size:var(--fs-micro);font-weight:var(--fw-semi);color:var(--ink-4);}
-#main .search-box .hero-chips{display:flex;align-items:center;gap:var(--sp-2);margin:var(--sp-3) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-#main .search-box .hero-chips::-webkit-scrollbar{display:none;}
-#main .search-box .hero-chips .hc-label{flex:none;font-size:var(--fs-meta);font-weight:var(--fw-semi);color:var(--ink-3);white-space:nowrap;}
 #main .search-box .hero-photo{display:none;}   /* PC 전용 사진(pc.css) */
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
