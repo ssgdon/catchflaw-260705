@@ -58,7 +58,7 @@ ALLOW = 'ui-lint: allow'
 LEGACY_TOK_RE = re.compile(r'var\(\s*--(fs-(?:display|h1|pc-h1|lead|body-lg|body-sm|caption|num-lg|num)|fw-medium|lh-tight|lh-head'
                            r'|h-btn-lg|section-y|section-gap|ls-global|ls-body|shadow-search)(?![\w-])')
 TITLE_FS_RE = re.compile(r'var\(--fs-(title-xl|title|h2|h3|hero|num-xl|display|h1|pc-h1|lead|num-lg|num)\)')
-TITLE_FW_OK = re.compile(r'^var\(--fw-(bold|display)\)$')
+TITLE_FW_OK = re.compile(r'^var\(--fw-(bold|display|hero)\)$')   # hero = 홈 히어로 제목 전용 800(2026-10-10)
 PRIMARY_RE = re.compile(r'var\(--primary(?:-deep|-cta|-color)?\)')
 PRIMARY_OK_SUFFIX = ('brand', 'cta', 'heart', 'saved', 'logo', 'chart', 'hero-key')
 DIM_RE = re.compile(r'(dim|dimmed|scrim|backdrop)$')

@@ -218,7 +218,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
   background:linear-gradient(to right, var(--surface-card) 0%, transparent 55%),   /* 제목 쪽 하늘을 한 번 더 밝게 */
              linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   /* 아래 칩 줄은 흰 면 */
              url(../img/home_bg.jpg) center 62% / 100% auto no-repeat;}   /* 하늘 아래쪽~호텔~수영장이 보이는 자리 */
-#main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
 /* 추천받기 = 모바일 떠 있는 보라 알약(§6-11 떠 있는 컨트롤과 같은 자리) · 비교함이 있으면 그 위로 · 검색창 입력 중엔 숨김(키보드 위로 뜨지 않게) */
