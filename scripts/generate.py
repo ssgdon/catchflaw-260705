@@ -497,6 +497,9 @@ DETAIL_TABS_JS = '''<script>
         ticking = false;
         var cur = links[0], lim = nav.getBoundingClientRect().bottom + 24;
         links.forEach(function(a){ var s = target(a); if (s && s.getBoundingClientRect().top <= lim) cur = a; });
+        // 맨 아래 섹션(대안)은 화면 위까지 못 올라온다 → 끝까지 내렸고 그 섹션이 보이면 마지막 탭
+        var last = links[links.length - 1], ls = last && target(last);
+        if (ls && window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 4 && ls.getBoundingClientRect().top < window.innerHeight) cur = last;
         links.forEach(function(a){ a.classList.toggle('is-on', a === cur); });
     }
     window.addEventListener('scroll', function(){ if (!ticking) { ticking = true; requestAnimationFrame(spy); } }, {passive: true});
@@ -2993,7 +2996,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </div>'''
 
     # P4 약점 맞춤 대안: 최고 위험 카테고리가 주의·위험이면 같은 가격대·근거리 후보 중 그 카테고리 위험도가
-    # 10 이상 낮은 곳만(3곳 미만이면 기존 일반 추천 폴백). 채점 호텔은 리스크 상세 바로 뒤에 배치(스크롤 50% 대응).
+    # 10 이상 낮은 곳만(3곳 미만이면 기존 일반 추천 폴백). 위치 = 페이지 맨 아래(같은 조건 모아보기 뒤, 2026-10-12 사용자 요청 — 예전엔 리스크 상세 바로 뒤).
     sim = similar_hotels(pid, hotels_meta, H)
     sim_title, sim_desc, sim_extra = '이런 호텔은 어떠세요?', '가격대·거리가 비슷한 곳을 추천순으로 골랐어요', {}
     if h['scored']:
@@ -3504,8 +3507,6 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고는 드물지만 치명적이라 리뷰 건수로 보여드려요</span>
             </div>
         </div>
-        {similar_block}
-        {pairs_block}
         {faq_section(faq, '', pid)}
         {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
         {social_section(social, name)}
@@ -3559,9 +3560,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # P2 고정 섹션 탭 (채점 호텔만) — DOM 순서 = 탭 순서. 없는 섹션은 탭도 생략.
     if h['scored']:
         _tabs = ([('sec-sum', '요약')] if glance_html else []) + [('sec-prob', '위험도')]
-        if similar_block: _tabs.append(('sec-alt', '대안'))
         if faq: _tabs.append(('hotel-faq', '실전정보'))
         if social or stars_block: _tabs.append(('sec-rev', '후기'))
+        if similar_block: _tabs.append(('sec-alt', '대안'))   # 2026-10-12: 대안은 맨 아래(이 호텔 이야기를 다 본 뒤)
         tabs_html = ('<nav class="det-tabs tabs-u" id="det-tabs" aria-label="섹션 바로가기">'
                      + ''.join(f'<a href="#{t}" class="{"is-on" if i == 0 else ""}">{lbl}</a>' for i, (t, lbl) in enumerate(_tabs))
                      + '</nav>')
@@ -3717,7 +3718,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {map_block}
                 {body_scored}
                 {col_chip_block}
-                {'' if h['scored'] else similar_block}
+                {similar_block}
+                {pairs_block}
             </div>
             {bar_html}
             {price_sheet}
