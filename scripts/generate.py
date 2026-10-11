@@ -851,18 +851,26 @@ def vs_topic(pa, pb, hotels_meta):
     parts = [x for x in (area, band) if x]
     return (' · '.join(parts) + ' 숙소') if parts else '숙소 비교'
 
-HOME_CITIES = [('후쿠오카', True), ('도쿄', False), ('오사카', False), ('교토', False), ('삿포로', False), ('오키나와', False)]   # 홈 도시 줄(2026-10-10) — 열린 도시는 True
+# 도시 타일 사진 출처(위키미디어 공용, 전부 CC0·퍼블릭 도메인 — 출처 표기 의무 없음, 기록용). 480px 썸네일 → 4:3 크롭·채도 0.82·보라 톤 12% 보정
+#   kyoto.jpg ← https://commons.wikimedia.org/wiki/File:20181110_Fushimi_Inari_Torii_1.jpg (CC0, Balon Greyjoy)
+#   fukuoka.jpg ← https://commons.wikimedia.org/wiki/File:Clear_as_sky,sharp_as_light_(4727941548).jpg (CC0, Lmadcap from Tokyo, Japan)
+#   okinawa.jpg ← https://commons.wikimedia.org/wiki/File:Okinawa_Emerald_Beach.JPG (Public domain, Abasaa)
+#   osaka.jpg ← https://commons.wikimedia.org/wiki/File:Osaka-jo_Castle_Evening_2024-07.jpg (CC0, Mr.ちゅらさん)
+#   sapporo.jpg ← https://commons.wikimedia.org/wiki/File:Sapporo_TV_Tower_20070812.jpg (Public domain, hwoarang17)
+#   tokyo.jpg ← https://commons.wikimedia.org/wiki/File:Tokyo_Tower_and_Roppongi_Hills_Mori_Tower_seen_from_Hamamatsucho.jpg (CC0, Syced)
+HOME_CITIES = [('후쿠오카', 'fukuoka', True), ('도쿄', 'tokyo', False), ('오사카', 'osaka', False), ('교토', 'kyoto', False), ('삿포로', 'sapporo', False), ('오키나와', 'okinawa', False)]   # 홈 도시 줄 — 열린 도시는 True. 사진 = img/city/{slug}.jpg(위키미디어 공용 CC0·퍼블릭 도메인, 2026-10-11 톤 보정)
 
 def city_row_html():
-    """홈 히어로 도시 선택 줄: 열린 도시 = 잉크 칩(→ 검색), 준비 중 도시 = 흐린 칩 + '준비 중' 꼬리표(누를 수 없음)."""
+    """홈 히어로 도시 줄(사진 타일): 열린 도시 = 잉크 테두리(선택) → 검색, 준비 중 도시 = 흐린 사진 + '준비 중' 꼬리표(누를 수 없음)."""
     pin = ('<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" '
            'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
     items = []
-    for name, live in HOME_CITIES:
+    for name, slug, live in HOME_CITIES:
+        img = f'style="background-image:url(./img/city/{slug}.jpg)"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
         if live:
-            items.append(f'<a class="city-chip is-on" href="./search" aria-current="true" data-ga="home_city">{pin}{name}</a>')
+            items.append(f'<a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" {img}><span class="ct-n">{pin}{name}</span></a>')
         else:
-            items.append(f'<span class="city-chip is-off" aria-disabled="true">{pin}{name}<span class="soon-tag">준비 중</span></span>')
+            items.append(f'<span class="city-tile is-off" aria-disabled="true" {img}><span class="soon-tag">준비 중</span><span class="ct-n">{pin}{name}</span></span>')
     return f'<div class="city-row" role="group" aria-label="도시">{"".join(items)}</div>'
 
 def vs_card(pa, pb, hotels_meta, H, depth=0):

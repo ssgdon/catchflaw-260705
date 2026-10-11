@@ -227,13 +227,15 @@ html.has-cmp #main .search-box .btn-airec{bottom:calc(var(--sp-6) + var(--h-floa
 #main .search-box .input:focus-within ~ .btn-airec{display:none;}
 body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h-btn) + var(--sp-6) + env(safe-area-inset-bottom));}   /* 떠 있는 알약이 푸터 끝 글자를 가리지 않게 */
 /* 도시 선택 줄(2026-10-10): 검색창 아래 가로 스크롤. 열린 도시 = 잉크 칩, 준비 중 = 흐린 칩 + 꼬리표 */
-#main .search-box .city-row{display:flex;gap:var(--sp-2);margin:var(--sp-4) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+#main .search-box .city-row{display:flex;gap:var(--sp-2);margin:var(--sp-4) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x) var(--sp-2);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #main .search-box .city-row::-webkit-scrollbar{display:none;}
-.city-chip{flex:none;display:inline-flex;align-items:center;gap:var(--sp-1);height:var(--h-chip);padding:0 var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
-.city-chip svg{flex:none;}
-.city-chip.is-on{border-color:var(--ink);background:var(--ink);color:var(--ink-inverse);font-weight:var(--fw-bold);}
-.city-chip.is-off{border-color:var(--line);color:var(--ink-4);cursor:default;}
-.soon-tag{margin-left:var(--sp-1);font-size:var(--fs-micro);font-weight:var(--fw-semi);color:var(--ink-4);}
+.city-tile{position:relative;flex:none;display:flex;flex-direction:column;justify-content:flex-end;width:100px;height:76px;padding:var(--sp-2);border-radius:var(--radius-box);overflow:hidden;background-color:var(--surface);background-position:center;background-size:cover;background-repeat:no-repeat;color:var(--ink-inverse);}   /* 도시 사진 타일 — 사진(background-image)은 HTML에서, img/city(CC0·퍼블릭 도메인) */
+.city-tile::before{content:"";position:absolute;inset:0;background:linear-gradient(to top, var(--scrim-photo) 0%, transparent 65%);}   /* 아래 그늘 = 흰 글자가 읽히게 + 사진 톤 통일 */
+.city-tile > *{position:relative;}
+.ct-n{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;}
+.city-tile.is-on{box-shadow:0 0 0 2px var(--surface-card), 0 0 0 4px var(--ink);}   /* 선택 = 잉크 테두리(흰 틈 2) */
+.city-tile.is-off{cursor:default;filter:grayscale(.7);opacity:.75;}
+.soon-tag{position:absolute;top:var(--sp-2);left:var(--sp-2);padding:2px var(--sp-2);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-micro);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
 #main .search-box .hero-photo{display:none;}   /* PC 전용 사진(pc.css) */
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
