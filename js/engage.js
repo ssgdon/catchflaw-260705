@@ -90,7 +90,7 @@
           + '<input type="tel" id="fb-phone" class="ov-input" placeholder="휴대폰 번호 (선택)" inputmode="numeric" aria-label="휴대폰 번호(선택)">'
           + '<p class="ov-note"><span class="seg">새 기능이 나오면 먼저 알려드릴게요 ·</span> <span class="seg">번호는 안내 용도로만 써요</span></p>'
           + '</div>'
-          + '<div class="fb-done" hidden><p class="fb-done-msg">소중한 의견 고마워요</p></div>',
+          + '<div class="fb-done" hidden>' + (CF.mascot ? CF.mascot('jump') : '') + '<p class="fb-done-msg">소중한 의견 고마워요</p></div>',
         foot: '<button type="button" class="btn-text" data-act="skip">그냥 이동할게요</button>'
           + '<button type="button" class="btn-ink" data-act="send">보내고 이동</button>'
       });
@@ -106,7 +106,7 @@
         m.querySelector('.ov-hero').setAttribute('hidden', '');
         m.querySelector('.ov-foot').setAttribute('hidden', '');
         m.querySelector('.fb-done').removeAttribute('hidden');
-        setTimeout(go, 900);
+        setTimeout(go, 1200);
       });
       return m;
     }

@@ -150,7 +150,7 @@
   }
 
   // 미매칭 → 분석 요청 (Supabase analysis_requests · anon INSERT RLS — engage.js 피드백과 동일 패턴). 검색 결과 없음 화면의 '분석 요청하기'도 이 함수
-  function requestAnalysis(q) {
+  function requestAnalysis(q, quiet) {   // quiet = 부른 쪽이 완료 화면을 따로 그림(검색 결과 없음 화면) → 토스트 생략. 보냈으면 true
     if (window.CF_SB && window.CF_SB.url && window.CF_SB.key) {
       fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
         method: 'POST',
@@ -158,10 +158,11 @@
           'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
         body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
       }).catch(function () {});
-      toast('요청했어요. 분석되면 사이트에 올라와요');
-      return;
+      if (!quiet) toast('요청했어요. 분석되면 사이트에 올라와요');
+      return true;
     }
     toast('분석 요청은 준비 중이에요');
+    return false;
   }
 
   /* ── 구글맵 링크 → 우리 호텔 (2026-10-10, 홈·검색 공용) ──

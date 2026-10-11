@@ -266,6 +266,14 @@ def price_stats(rows):
         return None, f'주말 약 {max(1, round(we_mid / 10_000))}만원', seen, None, days
     return None
 
+MASCOT_DIMS = {'wave': (400, 433), 'peek': (400, 429), 'report': (400, 405), 'look': (400, 459), 'jump': (400, 409)}   # = js/backnav.js CF.MASCOT
+
+def mascot_scene(pose, root='./', img_cls='', scene_cls=''):
+    """캐치플로 수달(로딩·빈 화면·완료 전용, ds.css §v3) — 보라 원 받침 + 그림. 장식이라 alt="" · aria-hidden."""
+    w, h = MASCOT_DIMS[pose]
+    return (f'<div class="mascot-scene{(" " + scene_cls) if scene_cls else ""}" aria-hidden="true"><img class="mascot{(" " + img_cls) if img_cls else ""}" '
+            f'src="{root}img/mascot/otter-{pose}.webp" width="{w}" height="{h}" alt="" decoding="async"></div>')
+
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
     d = date.fromisoformat(str(iso)[:10])
@@ -1134,6 +1142,15 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-2 sec-rec">
                 {slider('한국인이 찾고 실망은 적은 숙소', best, href='./search')}
             </article>
+            <article class="section sec-intro" id="home-intro" data-ga-block>
+                <a class="intro-card" href="./about" data-ga="intro_card">
+                    <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
+                    <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene')}</span>
+                </a>
+                <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+            </article>
+            <script>try{{if(localStorage.getItem('cf_intro_x'))document.getElementById('home-intro').hidden=true;}}catch(e){{}}
+            document.querySelector('#home-intro .ic-close').addEventListener('click',function(){{var a=document.getElementById('home-intro');a.hidden=true;try{{localStorage.setItem('cf_intro_x','1');}}catch(e){{}}if(typeof gtag==='function')gtag('event','intro_card_close');}});</script>
             <article class="section sec-map">
                 <div class="home-map init">
                     <div class="head"><div class="title">지도로 한눈에</div>
@@ -1253,6 +1270,7 @@ def build_404():
     <main id="container"><section class="page-empty">
         <h1 class="page-title">페이지를 찾을 수 없어요</h1>
         <p class="pe-txt">주소가 바뀌었거나 없는 페이지예요.</p>
+        {mascot_scene('peek', '/', 'mascot--lg')}
         <div class="pe-btns">
             <a class="btn-brand" href="/">홈으로</a>
             <a class="btn-line" href="/search">호텔 검색</a>
@@ -1276,6 +1294,7 @@ def build_recent(hotels_meta, H):
             <div id="recent-groups"></div>
             <div class="page-empty recent-empty" id="recent-empty" hidden>
                 <p class="pe-txt">아직 본 호텔이 없어요</p>
+                {mascot_scene('wave', './', 'mascot--lg')}
                 <div class="pe-btns"><a class="btn-brand" href="./search">호텔 둘러보기</a></div>
             </div>
             <ul id="recent-pool" hidden>{pool}</ul>
@@ -1426,7 +1445,7 @@ def build_recommend(hotels_meta, H):
                 <button type="button" class="rw-go-btn btn-brand">추천 호텔 보기</button>
             </div>
             <div class="rw-loading" hidden>
-                <div class="rw-loading-spin" aria-hidden="true"></div>
+                {mascot_scene('peek', './', 'mascot--lg mascot--bob')}
                 <div class="rw-loading-t">조건에 맞는 호텔을 찾고 있어요</div>
                 <div class="rw-loading-d">리뷰 분석 결과로 순서를 매기는 중이에요</div>
             </div>
@@ -1769,14 +1788,14 @@ SEARCH_JS = r"""(function(){
         F.no.forEach(function(k){ c.push(['no', k, (MUST_BY[k]||{}).chip || k]); });
         return c.map(function(x){ return '<button type="button" class="chip-filter chip-filter--sm" data-rm="' + x[0] + '" data-v="' + esc(x[1]) + '">' + esc(x[2]) + ' 빼기</button>'; }).join('');
     }
-    function emptyView(tit, txt, extra, btns){
+    function emptyView(tit, txt, extra, btns, pose){   // pose = 수달 그림(CF.mascotScene): 없음 look · 미지원 도시 wave · 요청 완료 jump
         $lhead.hide(); $res.html('');
         if (!mapOpen) $('#map-toggle').prop('hidden', true);   // 결과 0건(미지원 도시·검색 0건·조건 0건)엔 '지도' 알약 숨김 — 지도를 연 상태면 '목록'으로 닫을 수 있게 둔다
-        $notice.show().html('<div class="empty-sec"><div class="es-tit">' + tit + '</div>' + (txt ? '<div class="es-txt">' + txt + '</div>' : '') + (extra || '') + (btns ? '<div class="es-btns">' + btns + '</div>' : '') + '</div>');
+        $notice.show().html('<div class="empty-sec">' + (window.CF && CF.mascotScene ? CF.mascotScene(pose || 'look') : '') + '<div class="es-tit">' + tit + '</div>' + (txt ? '<div class="es-txt">' + txt + '</div>' : '') + (extra || '') + (btns ? '<div class="es-btns">' + btns + '</div>' : '') + '</div>');
     }
     function unsupported(q){
         emptyView('아직 ' + CITY_KO + '만 지원해요', '‘' + esc(q) + '’ 지역은 준비 중이에요. ' + CITY_KO + ' 호텔부터 둘러보세요.', '',
-            '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 둘러보기</a>');
+            '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 둘러보기</a>', 'wave');
     }
     function noResult(q){   // 이름이 안 맞음 → '혹시 이 호텔인가요?' 비슷한 이름 + 분석 요청 / 조건 때문에 안 보이면 조건 빼기 칩
         var ids = {}, all = q ? matchQ(HOTELS, q) : HOTELS;
@@ -1834,7 +1853,12 @@ SEARCH_JS = r"""(function(){
         else { drawMap(list, true); }
         renderVisible();
     }
-    $notice.on('click', '#req-analysis', function(){ if (window.CFAutocomplete) window.CFAutocomplete.requestAnalysis($q.val().trim()); });
+    $notice.on('click', '#req-analysis', function(){   // 보낸 뒤엔 같은 자리에 완료 화면(점프하는 수달) — 토스트 대신
+        var q = $q.val().trim();
+        if (window.CFAutocomplete && window.CFAutocomplete.requestAnalysis(q, true))
+            emptyView('‘' + esc(q) + '’ 분석을 요청했어요', '분석이 끝나면 사이트에 올라와요. 그동안 다른 호텔을 둘러보세요.', '',
+                '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 둘러보기</a>', 'jump');
+    });
     $notice.on('click', '[data-rm]', function(){
         var k = $(this).data('rm'), v = String($(this).data('v') || '');
         if (k === 'area') F.area = ''; else if (k === 'price') F.price = '';
@@ -2108,7 +2132,7 @@ SEARCH_JS = r"""(function(){
             if (recBud) relax += '<a class="btn-line btn-sm" href="' + recUrl({bud:''}) + '">예산 넓혀 다시 보기</a>';
             if (recArea) relax += '<a class="btn-line btn-sm" href="' + recUrl({area:''}) + '">지역 넓혀 다시 보기</a>';
             if (recNo.length) relax += '<a class="btn-line btn-sm" href="' + recUrl({no:''}) + '">‘한 번도 없어야’ 조건 풀기</a>';
-            $res.html('<li class="rec-empty"><div class="empty-sec"><div class="es-tit">' + (cands.length ? '조건에 맞는 곳이 ' + cands.length + '곳뿐이에요' : '조건에 맞는 곳이 없어요')
+            $res.html('<li class="rec-empty"><div class="empty-sec">' + (window.CF && CF.mascotScene ? CF.mascotScene('look') : '') + '<div class="es-tit">' + (cands.length ? '조건에 맞는 곳이 ' + cands.length + '곳뿐이에요' : '조건에 맞는 곳이 없어요')
                 + '</div><div class="es-txt">' + (recNo.length ? '조건을 하나 풀면 더 보여드려요' : '예산이나 지역을 넓히면 더 보여드려요') + '</div><div class="es-btns">' + relax + '</div></div></li>');
             recShown = cands;
         } else {

@@ -150,6 +150,7 @@
     if (!H.length) {
       pad = 0;
       root.innerHTML = '<div class="page-empty cmp-empty"><p class="pe-txt">호텔을 2곳 이상 담으면 나란히 비교해요. 최대 ' + MAX + '곳까지 담을 수 있어요</p>'
+        + (window.CF && CF.mascotScene ? CF.mascotScene('report', '', 'mascot--lg') : '')
         + '<div class="pe-btns"><a class="btn-brand" href="./search">호텔 둘러보기</a><button type="button" class="btn-line" data-add="1">호텔 이름으로 추가</button></div></div>';
       return;
     }

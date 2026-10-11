@@ -21,6 +21,17 @@ CF.rgba = function (name, a) {
   var n = parseInt(h, 16);
   return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')';
 };
+// 캐치플로 수달(2026-10-12) — 로딩·빈 화면·완료에만 쓰는 장식 그림. 경로는 이 스크립트 위치 기준(어느 깊이 페이지든 같은 파일)
+//   CF.mascot('peek', 'mascot--sm mascot--bob') → <img class="mascot …">  ·  CF.mascotScene('look', 'mascot-scene--page') → 보라 원 받침 + 그림
+CF.root = (function () { var s = document.currentScript && document.currentScript.src; return s ? s.replace(/js\/backnav\.js.*$/, '') : '/'; })();
+CF.MASCOT = { wave: [400, 433], peek: [400, 429], report: [400, 405], look: [400, 459], jump: [400, 409] };   // 그림별 크기(자리 잡기용 width·height)
+CF.mascot = function (pose, cls) {
+  var p = CF.MASCOT[pose] ? pose : 'look', d = CF.MASCOT[p];
+  return '<img class="mascot' + (cls ? ' ' + cls : '') + '" src="' + CF.root + 'img/mascot/otter-' + p + '.webp" width="' + d[0] + '" height="' + d[1] + '" alt="" aria-hidden="true" decoding="async">';
+};
+CF.mascotScene = function (pose, cls, imgCls) {
+  return '<div class="mascot-scene' + (cls ? ' ' + cls : '') + '" aria-hidden="true">' + CF.mascot(pose, imgCls) + '</div>';
+};
 (function () {
   var doc = document, root = doc.documentElement;
   var closers = [];        // CFNav: 열린 오버레이의 '시각적 닫기' 함수 스택(히스토리 버퍼 1개씩)
