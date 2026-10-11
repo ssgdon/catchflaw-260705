@@ -1090,3 +1090,10 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
     #detail .visual .hotel-gallery .gallery-count{right:var(--sp-4);bottom:calc(var(--sp-5) + var(--sp-4));}
     #detail .content > .information{position:relative;z-index:2;margin-top:calc(var(--sp-5) * -1);border-radius:var(--radius-card) var(--radius-card) 0 0;}
 }
+
+/* ════════ §v3 홈 히어로 캐릭터 (2026-10-11) — 캐치플로 수달이 오른쪽 풍경 위에 서서 돋보기로 제목 쪽을 본다 ════════
+   쌓임: 히어로 사진(::before −1) < 수달(제목 상자 안 −1) < 제목 글자 < 검색창(2). 발은 검색창 위쪽 뒤로 숨는다.
+   장식 그림(alt="")이라 탭은 통과시킨다. PC 배치는 pc.css */
+#main .search-box .title{position:relative;z-index:1;}
+#main .search-box .input{z-index:2;}
+#main .search-box .hero-mascot{position:absolute;z-index:-1;right:calc(var(--page-x) * -1);bottom:calc((var(--sp-10) + var(--sp-5)) * -1);width:min(168px, 46vw);height:auto;pointer-events:none;user-select:none;}   /* 꼬리 끝 = 화면 오른쪽 끝, 돋보기는 제목 둘째 줄 오른쪽 빈자리 */
