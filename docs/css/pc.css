@@ -272,8 +272,6 @@
     /* 홈 재구성(HOME-CONCEPT §2.3): 히어로 칩 행 · 비교 카드 4열 */
     #main .sec-vs .home-vs{padding-left:var(--pc-x);padding-right:var(--pc-x);}
     #main .home-vs .vs-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-5);overflow:visible;align-items:stretch;}   /* 모바일 flex의 align-items:flex-start를 풀어 4장 높이 통일 */
-    #main .vs-card{flex:auto;display:flex;flex-direction:column;}
+    #main .vs-card{flex:auto;}
     #main .vs-card .vs-topic{align-self:flex-start;}
-    #main .vs-card .vs-end{margin-top:auto;}   /* 결론이 1줄·2줄로 달라도 카드 아래에 붙음 */
-    #main .vs-card .vs-rows{margin-bottom:var(--sp-3);}
 }

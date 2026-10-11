@@ -233,9 +233,9 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
 #main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-2);}
-#main .home-vs .vs-list{display:flex;align-items:flex-start;gap:var(--sp-3);margin:var(--browse-head) calc(var(--page-x) * -1) 0;padding:0 var(--page-x) var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--page-x);scrollbar-width:none;}
+#main .home-vs .vs-list{display:flex;align-items:stretch;gap:var(--sp-3);margin:var(--browse-head) calc(var(--page-x) * -1) 0;padding:0 var(--page-x) var(--sp-1);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--page-x);scrollbar-width:none;}
 #main .home-vs .vs-list::-webkit-scrollbar{display:none;}
-#main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:block;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);color:var(--ink);}
+#main .vs-card{flex:0 0 300px;scroll-snap-align:start;display:flex;flex-direction:column;padding:var(--sp-4);border:1px solid var(--line-strong);border-radius:var(--radius-img);background:var(--surface-card);color:var(--ink);}
 #main .vs-card .vs-pics{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2);}
 #main .vs-card .vs-pic{display:block;aspect-ratio:4/3;overflow:hidden;border-radius:var(--radius-box);background:var(--surface);}
 #main .vs-card .vs-pic img{width:100%;height:100%;object-fit:cover;}
@@ -243,23 +243,24 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 #main .vs-card .vs-heads{display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-3);margin-top:var(--sp-3);}
 #main .vs-card .vs-col{display:flex;flex-direction:column;gap:var(--sp-1);min-width:0;}
 #main .vs-card .vs-col + .vs-col{align-items:flex-end;text-align:right;}
-#main .vs-card .vs-n{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;line-height:var(--lh-ui);font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);word-break:keep-all;}
+#main .vs-card .vs-n{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;min-height:calc(var(--fs-body) * var(--lh-ui) * 2);line-height:var(--lh-ui);font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);word-break:keep-all;}   /* 이름 칸 = 항상 2줄 높이(2026-10-10) — 1줄 이름이어도 별점·비교 줄이 카드마다 같은 높이 */
 #main .vs-card .vs-g{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);color:var(--ink-3);font-variant-numeric:tabular-nums;white-space:nowrap;}
 #main .vs-card .vs-g img{width:14px;height:14px;}
 #main .vs-card .vs-rows{margin-top:var(--sp-3);border-top:1px solid var(--line);}
-#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:40px;padding:var(--sp-1) 0;}
+#main .vs-card .vs-r{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--sp-2);min-height:var(--h-btn);padding:var(--sp-2) 0;}
 #main .vs-card .vs-r + .vs-r{border-top:1px solid var(--line);}
 #main .vs-card .vs-r > :last-child{text-align:right;}
 #main .vs-card .vs-k{text-align:center;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);white-space:nowrap;}
 #main .vs-card .vs-v{font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);font-variant-numeric:tabular-nums;}
-#main .vs-card .vs-p{font-weight:var(--fw-bold);}
+#main .vs-card .vs-p{font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);}   /* 실망 확률 = 카드의 핵심 숫자 18/700 — 다른 숫자(16/600)보다 한 단계 위 */
 #main .vs-card .vs-none{font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #main .vs-card .vs-v .vs-r{display:block;font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 #main .vs-card .vs-r > .vs-p{justify-self:start;}
 #main .vs-card .vs-r > .vs-p:last-child{justify-self:end;}
 #main .vs-card .vs-p.is-win{padding:0 var(--sp-2);border-radius:var(--radius-chip);background:var(--hl);}   /* 이긴 쪽 값만 형광펜, 글자는 잉크 */
-#main .vs-card .vs-end{margin-top:var(--sp-3);padding-top:var(--sp-3);border-top:1px solid var(--line);line-height:var(--lh-ui);}
-#main .vs-card .vs-verdict{display:block;font-size:var(--fs-body);font-weight:var(--fw-semi);color:var(--ink);}
+#main .vs-card .vs-end{padding-top:var(--sp-3);border-top:1px solid var(--line);line-height:var(--lh-ui);}   /* 결론은 비교 줄 바로 아래 — 카드마다 같은 높이에서 시작(남는 공간은 카드 아래로) */
+#main .vs-card .vs-rows{margin-bottom:var(--sp-3);}
+#main .vs-card .vs-verdict{display:block;font-size:var(--fs-body);font-weight:var(--fw-bold);color:var(--ink);}
 #main .vs-card .vs-end.is-bad .vs-verdict::before{content:"";display:inline-block;width:8px;height:8px;margin-right:var(--sp-2);border-radius:50%;background:var(--danger);vertical-align:middle;}
 #main .vs-card .vs-sub{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);font-weight:var(--fw-regular);color:var(--ink-3);}
 
