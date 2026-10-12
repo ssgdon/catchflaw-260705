@@ -1122,16 +1122,22 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .rs-loading .mascot{margin:0 auto var(--sp-3);}
 .fb-done .mascot{margin:0 auto var(--sp-4);}
 #recp .rw-loading .mascot-scene{margin-bottom:var(--sp-2);}
-/* 홈 안내 카드(레퍼런스의 안내 카드 패턴): 옅은 보라 면 + 글 왼쪽 + 수달이 오른쪽 아래에서 살짝 잘려 올라온다. X로 닫으면 다시 안 뜬다(localStorage cf_intro_x) */
-#main .sec-intro{position:relative;padding:var(--browse-gap) var(--page-x) 0;}
+/* 홈 안내 카드 2장(레퍼런스의 안내 카드 패턴): 산출 방법(이해) + 맞춤형 추천(행동). 모바일은 가로로 넘기는 줄(한 장 + 다음 장 끝이 보임 —
+   수달이 화면에 한 번에 하나), PC는 나란히(pc.css). 카드마다 X로 닫으면 다시 안 뜬다(localStorage cf_intro_x) */
+#main .sec-intro{padding:var(--browse-gap) 0 0;}
 #main .sec-intro[hidden]{display:none;}
-.intro-card{display:flex;align-items:stretch;gap:var(--sp-2);min-height:128px;padding-left:var(--sp-5);border-radius:var(--radius-card);background:var(--primary-soft);overflow:hidden;color:var(--ink);}
+.intro-row{display:flex;gap:var(--sp-3);padding:0 var(--page-x);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--page-x);scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+.intro-row::-webkit-scrollbar{display:none;}
+.intro-item{position:relative;flex:0 0 calc(100% - var(--sp-8));scroll-snap-align:start;}
+.intro-item[hidden]{display:none;}
+#main .sec-intro.is-single .intro-item{flex-basis:100%;}
+.intro-card{display:flex;align-items:stretch;gap:var(--sp-2);height:100%;min-height:128px;padding-left:var(--sp-5);border-radius:var(--radius-card);background:var(--primary-soft);overflow:hidden;color:var(--ink);}
 .intro-card .ic-txt{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:var(--sp-1);padding:var(--sp-5) 0;}
 .intro-card .ic-tit{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);}
 .intro-card .ic-sub{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .intro-card .ic-link{margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
-.intro-card .ic-art{flex:none;align-self:flex-end;width:112px;margin:0 var(--sp-6) calc(var(--sp-5) * -1) 0;}
+.intro-card .ic-art{flex:none;align-self:flex-end;width:104px;margin:0 var(--sp-5) calc(var(--sp-5) * -1) 0;}
 .intro-card .ic-scene::before{display:none;}   /* 카드 면이 이미 보라 — 원 받침 생략 */
-.intro-card .ic-mascot{width:112px;}
-#main .sec-intro .ic-close{position:absolute;top:calc(var(--browse-gap) + var(--sp-1));right:calc(var(--page-x) + var(--sp-1));}
+.intro-card .ic-mascot{width:104px;}
+.intro-item .ic-close{position:absolute;top:var(--sp-1);right:var(--sp-1);}
 
