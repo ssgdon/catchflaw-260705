@@ -1252,7 +1252,7 @@ body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--
 #detail .risk .chart .custom-legend .legend-hotel .legend-symbol:before{background:var(--primary);}
 #detail .risk .chart .custom-legend .legend-hotel .hotel-text{color:var(--primary-deep);font-weight:var(--fw-bold);}
 #detail .risk .chart .custom-legend .legend-average .legend-symbol,
-#detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:var(--ink-4);}
+#detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:var(--ink-3);}   
 .risk-dot{flex:0 0 auto;display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--ink-3);}
 .risk-dot.is-danger{background:var(--danger);}
 .risk-dot.is-warning{background:var(--warning);}

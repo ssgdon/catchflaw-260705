@@ -3273,7 +3273,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         v = pct(h['p_crit']); avg = pct(city['crit'])
         ratio = h['p_crit'] / city['crit']
         radar_vals = [round(h['cats'][c]['score']) for c in CATS]
-        radar_max = max(65, min(100, (max(radar_vals) // 10 + 2) * 10))  # 동적 상한(폴리곤이 안 눌리게, 50은 항상 노출)
+        radar_max = 75 if max(radar_vals) <= 70 else 100   # 눈금 간격 25의 배수만(75·80처럼 바깥 눈금이 겹치지 않게, 2026-10-20). 50(평균)은 항상 노출
 
         # ── F8+F15+F25: 4-CASE verdict 헤드라인 + 근거 2줄(핵심 숫자 <b>) — 숫자는 전부 실측, 비유("100명 중") 금지 ──
         # F25: 최근 1년 심각 실측 카운트 — sev_by_cat(카테고리별 심각 리뷰 수) · crit_reviews_1y(심각 리뷰 수, 고유)
@@ -3714,13 +3714,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     type: 'radar',
                     data: {{
                         labels: {radar_labels},
-                        datasets: [
-                            {{label: '{E(name)}', data: {radar_vals}, fill: true,
-                              backgroundColor: CF.rgba('--primary', .13), borderColor: CF.tok('--primary'), borderWidth: 2,
-                              pointBackgroundColor: CF.tok('--surface-card'), pointBorderColor: CF.tok('--primary'), pointBorderWidth: 2,
-                              pointRadius: 3.5, pointHoverRadius: 4, tension: 0}},
+                        datasets: [   // 평균을 먼저 두면 위에 그려져 호텔 면에 가리지 않는다(2026-10-20)
                             {{label: '{CITY['ko']} 평균', data: [50,50,50,50,50,50], fill: false,
-                              borderColor: CF.tok('--ink-4'), borderDash: [4,4], pointRadius: 0, borderWidth: 1.5}}
+                              borderColor: CF.tok('--ink-3'), borderDash: [6,4], pointRadius: 0, pointHitRadius: 0, borderWidth: 2}},
+                            {{label: '{E(name)}', data: {radar_vals}, fill: true,
+                              backgroundColor: CF.rgba('--primary', .10), borderColor: CF.tok('--primary'), borderWidth: 2,
+                              pointBackgroundColor: CF.tok('--surface-card'), pointBorderColor: CF.tok('--primary'), pointBorderWidth: 2,
+                              pointRadius: 3.5, pointHoverRadius: 4, tension: 0}}
                         ]
                     }},
                     options: {{
@@ -3730,8 +3730,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         scales: {{r: {{
                             min: 0, max: {radar_max},
                             angleLines: {{color: CF.tok('--line')}},
-                            grid: {{color: CF.tok('--line-strong'), circular: false}},
-                            ticks: {{stepSize: 25, backdropColor: 'transparent', showLabelBackdrop: false, color: CF.tok('--ink-4'), font: {{size: 13}}}},
+                            grid: {{color: CF.tok('--line'), circular: false}},
+                            ticks: {{stepSize: 25, display: false}},   // 눈금 숫자 없음(위 꼭짓점과 겹치고 뜻도 없음) — 평균은 점선 + 범례, 정도는 아래 항목 행 '평균의 N배'
                             pointLabels: {{font: {{size: 13, weight: '600'}}, color: CF.tok('--ink-3'), padding: 12}}
                         }}}}
                     }}

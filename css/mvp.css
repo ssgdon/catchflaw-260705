@@ -309,7 +309,7 @@ body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--
 #detail .risk .chart .custom-legend .legend-hotel .legend-symbol:before{background:var(--primary);}
 #detail .risk .chart .custom-legend .legend-hotel .hotel-text{color:var(--primary-deep);font-weight:var(--fw-bold);}
 #detail .risk .chart .custom-legend .legend-average .legend-symbol,
-#detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:var(--ink-4);}
+#detail .risk .chart .custom-legend .legend-average .legend-symbol:before{background:var(--ink-3);}   /* 차트 평균 점선과 같은 색(2026-10-20) */
 /* 카테고리 버튼: 밴드 소프트 배경(테두리 색 제거) + 점수 강조 — 사이트 톤 통일(검색 cat-row 계열) */
 
 /* ── 신호등 점 (§4-b) ── */
