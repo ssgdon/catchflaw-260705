@@ -3291,7 +3291,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _tier = h.get('rank_tier')
         tier_txt = ''
         if _tier:
-            tier_txt = '실망 적은 호텔 ' + _tier[1]
+            # 방향을 말에 넣는다(카피 원칙): 상위 = '실망 적은 호텔 상위 25% 이내', 하위 = '실망 많은 호텔 상위 25% 이내'
+            # ('실망 적은 호텔 하위 25% 이내'는 두 번 읽게 해서 2026-10-20 교체 — 답 문단·위험도 배지 공용)
+            tier_txt = ('실망 많은 호텔 ' + _tier[1].replace('하위', '상위')) if _tier[0] == 'bottom' else ('실망 적은 호텔 ' + _tier[1])
         tier_html = f'<span class="tier-badge is-{v_tone}">{E(tier_txt)}</span>' if tier_txt else ''
         v_sub_html = f'<div class="v-sub">{CITY["ko"]} 평균 {avg}%{tier_html}</div>'
         # 근거 1: 글 리뷰 N건 중 실망 리뷰 M건 (분모 = 글 리뷰: 실망 리뷰는 글에서만 셀 수 있음) → 리스크 상세로
