@@ -1,7 +1,8 @@
 /* 캐치플로 검색 자동완성 (홈 #hero-q + search.html #q 공용) — §7-c
    의존: jQuery, js/search-key.js(CFSearchKey), data/search_index.js(window.CF_IDX)
    window.CF_AREAS(인기 지역), window.CF_SB(Supabase INSERT)
-   각 검색창은 data-ac-href 로 상세 링크 접두사(홈="./hotels/", search="./hotels/") 지정. */
+   각 검색창은 data-ac-href 로 상세 링크 접두사(홈="./hotels/", search="./hotels/") 지정.
+   상세 주소 = 접두사 + 슬러그(u, SEO-CRAWL §2 — CF_IDX·HOTELS 항목의 u). u가 없으면 pid(옛 주소, 301로 이어짐). */
 (function () {
   'use strict';
 
@@ -187,23 +188,23 @@
   }
   function byId(id) {
     var H = window.HOTELS || [];
-    for (var i = 0; i < H.length; i++) if (H[i].id === id) return { id: H[i].id, t: H[i].name };
+    for (var i = 0; i < H.length; i++) if (H[i].id === id) return { id: H[i].id, t: H[i].name, u: H[i].u };
     return null;
   }
   function resolveUrl(v) {
     var s = String(v || '').trim(), m, h;
     if (/maps\.app\.goo\.gl|goo\.gl\/maps|[?&]cid=\d/i.test(s)) return { kind: 'short' };
     if ((m = s.match(/(ChIJ[A-Za-z0-9_-]{10,})/)) && (h = byId(m[1]))) return { hit: h };
-    if ((m = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 80))) return { hit: { id: h.id, t: h.name } };
+    if ((m = s.match(/!3d(-?\d+\.\d+)!4d(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 80))) return { hit: { id: h.id, t: h.name, u: h.u } };
     var name = null;
     if ((m = s.match(/\/place\/([^\/@?#]+)/))) name = m[1];
     else if ((m = s.match(/[?&](?:q|query)=([^&#]+)/)) && !/^-?\d+\.\d+,-?\d+\.\d+$/.test(decodeURIComponent(m[1]))) name = m[1];
     if (name) {
       try { name = decodeURIComponent(name.replace(/\+/g, ' ')); } catch (e) { name = name.replace(/\+/g, ' '); }
       var top = match(name, 1)[0];
-      if (top) return { hit: { id: top.id, t: top.t } };
+      if (top) return { hit: { id: top.id, t: top.t, u: top.u } };
     }
-    if ((m = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 40))) return { hit: { id: h.id, t: h.name } };
+    if ((m = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 40))) return { hit: { id: h.id, t: h.name, u: h.u } };
     return { kind: 'none' };
   }
 
@@ -229,7 +230,7 @@
       var meta = [];
       if (h.ar) meta.push(esc(h.ar));
       meta.push(h.p != null ? '<i class="sdot' + (h.band ? ' is-' + h.band : '') + '"></i>실망 확률 ' + h.p + '%' : '분석 준비 중');   // 글자는 잉크, 의미는 점이(§3-3)
-      return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + h.id + '">'
+      return '<a class="ac-item" role="option" data-i="' + i + '" href="' + hrefPrefix + (h.u || h.id) + '">'
         + '<span class="ac-main"><span class="ac-name">' + hl(h.t, q) + '</span><span class="ac-meta">' + meta.join(' · ') + '</span></span></a>';
     }
 
@@ -284,7 +285,7 @@
       var r = resolveUrl(v);
       lastList = [];
       if (r.hit) {
-        $box.prop('hidden', false).html('<div class="ac-section">링크의 호텔</div>' + hotelRow({ id: r.hit.id, t: r.hit.t, p: null, band: null }, 0).replace('<span class="ac-p dim">분석 준비 중</span>', ''));
+        $box.prop('hidden', false).html('<div class="ac-section">링크의 호텔</div>' + hotelRow({ id: r.hit.id, u: r.hit.u, t: r.hit.t, p: null, band: null }, 0).replace('<span class="ac-p dim">분석 준비 중</span>', ''));
         sel = 0; highlight();
       } else {
         $box.prop('hidden', false).html('<div class="ac-none">' + (r.kind === 'short'

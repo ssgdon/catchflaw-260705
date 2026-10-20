@@ -105,7 +105,7 @@
         if (!v) return '<td class="is-none">–</td>';
         // 2026-10-10: 심각 판정만 한 줄로(주의 포함 건수·'심각 N' 둘째 줄 삭제). 1건 이상 = 그 호텔 상세의 이 소분류 리뷰 시트(?rv=)
         var n = v[1], tone = n >= 3 ? 'danger' : n > 0 ? 'warning' : 'zero', inner = '<b>' + n + '건</b>';
-        return '<td class="is-' + tone + '">' + (n ? '<a class="cv-go" href="./hotels/' + h.id + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 심각 리뷰 ' + n + '건 보기">' + inner + '</a>' : inner) + '</td>';
+        return '<td class="is-' + tone + '">' + (n ? '<a class="cv-go" href="./hotels/' + (h.u || h.id) + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 심각 리뷰 ' + n + '건 보기">' + inner + '</a>' : inner) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     return '<section class="cv-blk cv-rare"><h3 class="cv-t">드물지만 치명적인 리뷰</h3><p class="cv-s">최근 1년 동안 심각했던 경험만 셌어요</p>'
@@ -162,12 +162,12 @@
     var html = canAdd ? '<div class="cmp-addbar"><button type="button" class="btn-line btn-sm cmp-add-btn" data-add="1">+ 호텔 추가</button></div>' : '';
     // 큰 머리: 칸 너비를 채우는 4:3 사진 + 빼기 X (스크롤하면 사라짐) — 이름은 아래 고정 머리 한 곳에만 둔다
     html += '<div class="cmp-top" style="' + cols + '">' + sp + H.map(function (h) {
-        return '<div class="cmp-th"><a class="cmp-img" href="./hotels/' + h.id + '" tabindex="-1" aria-hidden="true">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</a>'
+        return '<div class="cmp-th"><a class="cmp-img" href="./hotels/' + (h.u || h.id) + '" tabindex="-1" aria-hidden="true">' + (h.img ? '<img src="' + esc(h.img) + '" alt="">' : '') + '</a>'
           + '<button type="button" class="cmp-x" data-x="' + h.id + '" aria-label="' + esc(h.n) + ' 비교에서 빼기"></button></div>';
       }).join('') + '</div>';
     // 고정 머리: 호텔 색 점 + 호텔명(3줄 클램프) — 그래프 색과 같은 점
     html += '<div class="cmp-hd" style="' + cols + '">' + sp + H.map(function (h, i) {
-        return '<a class="cmp-nm" href="./hotels/' + h.id + '">' + (H.length > 1 ? dot(i) : '') + esc(h.cn || h.n) + '</a>';
+        return '<a class="cmp-nm" href="./hotels/' + (h.u || h.id) + '">' + (H.length > 1 ? dot(i) : '') + esc(h.cn || h.n) + '</a>';
       }).join('') + '</div>';
     html += '<div class="cmp-sum"><h2 class="cmp-gt cmp-sum-t">한눈에 비교</h2>' + summary(H) + '</div>';
 

@@ -3,7 +3,7 @@
 사용: python scripts/generate.py
 """
 import json, os, shutil, sys, html, re, time, math, statistics, unicodedata
-from collections import defaultdict
+from collections import defaultdict, Counter
 from datetime import date, timedelta
 from urllib.parse import quote as urlquote
 
@@ -1032,8 +1032,8 @@ def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_c
         meta_html = f'<div class="hcard-meta">{line}</div>' if line else ''
         price = price_card_html(meta)
     rank_html = f'<span class="cnt">{rank}</span>' if rank else ''
-    return f'''<li class="{li_cls}">
-        <a href="{p}hotels/{pid}" class="hcard hcard--{kind}" data-ga="home_card">
+    return f'''<li class="{li_cls}" data-pid="{pid}">
+        <a href="{hotel_url(pid, depth)}" class="hcard hcard--{kind}" data-ga="home_card">
             <div class="hcard-photo"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" width="600" height="450" loading="lazy">{badge_html(h)}{rank_html}</div>
             <div class="hcard-body">
                 {head}
@@ -1044,9 +1044,65 @@ def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_c
         </a>
     </li>'''
 
+# ── 상세 주소 슬러그 (SEO-CRAWL-DESIGN §2): /hotels/ChIJ… → /hotels/hotel-monterey-fukuoka. 옛 pid 주소는 _redirects 301 ──
+#    바뀌는 건 '페이지 주소'뿐 — data/q·data/fe 파일명, CF_PID, data-cmp-id·cf_recent·compare?ids=, GA4 hotel_id는 pid 그대로
+SLUG = {}          # pid → 슬러그. ensure_slugs()가 빌드 시작 때 scripts/slugs.json에서 채운다
+SLUGS_FILE = os.path.join(ROOT, 'scripts', 'slugs.json')
+SLUG_MIN = 8       # 자동 슬러그 최소 길이 — 이보다 짧으면(일본어 이름 → 'mk' 등) 빌드를 멈추고 사람이 정한다
+
+def slugify(s):
+    """영문 이름 → 슬러그: NFKD → ASCII 밖 제거(전각 '９'→'9', 'Ⅲ'→'III', 일본어·기호 제거) → 소문자 → [^a-z0-9]+ → '-' → 앞뒤 '-' 제거."""
+    t = unicodedata.normalize('NFKD', str(s or '')).encode('ascii', 'ignore').decode('ascii').lower()
+    return re.sub(r'[^a-z0-9]+', '-', t).strip('-')
+
+def ensure_slugs(hotels_meta):
+    """슬러그 정본 scripts/slugs.json(pid → slug, git 추적)을 읽고, 없는 호텔만 규칙대로 더해 파일을 다시 쓴다(SEO-CRAWL §2-1).
+       이미 있는 pid는 절대 바꾸지 않는다(호텔명이 바뀌어도 — 색인·외부 링크 보존). 원문 = hotels_index.json의 en(s는 sub_title이라 쓰지 않음).
+       결과가 비거나 8자 미만이면 자동으로 정하지 않고 빌드를 멈춘다 → slugs.json에 직접 적는다. 겹치면 나중 것에 -2, -3.
+       새로 더해지면 빌드 산출물과 함께 커밋한다(주간 배치 편입 호텔)."""
+    try:
+        cur = json.load(open(SLUGS_FILE, encoding='utf-8'))
+    except FileNotFoundError:
+        cur = {}
+    bad = sorted(s for s in cur.values() if not re.fullmatch(r'[a-z0-9]+(?:-[a-z0-9]+)*', str(s)))
+    dup = sorted(s for s, k in Counter(cur.values()).items() if k > 1)
+    if bad or dup:
+        raise SystemExit(f'빌드 중단: scripts/slugs.json 형식 오류 — 허용 밖 글자 {bad} · 중복 {dup}')
+    try:
+        en = {r['id']: r.get('en') for r in json.load(open(os.path.join(SRC, 'hotels_index.json'), encoding='utf-8'))}
+    except Exception:
+        en = {}
+    used, added, short = set(cur.values()), {}, []
+    for pid in sorted(p for p in hotels_meta if p not in cur):   # 새 호텔끼리는 pid 순(빌드마다 같은 결과)
+        s = slugify(en.get(pid))
+        if len(s) < SLUG_MIN:
+            short.append((pid, hotels_meta[pid].get('title'), en.get(pid), s))
+            continue
+        base, k = s, 2
+        while s in used:
+            s, k = f'{base}-{k}', k + 1
+        used.add(s)
+        added[pid] = s
+    if short:
+        print('슬러그를 자동으로 정할 수 없는 호텔 — scripts/slugs.json에 직접 적어 주세요(영문 소문자·숫자·하이픈):')
+        for pid, t, e, s in short:
+            print(f'  "{pid}": "…"   ← {t} · en={e!r} · 자동={s!r}')
+        raise SystemExit(f'빌드 중단: 슬러그 미정 {len(short)}곳')
+    if added:
+        cur.update(added)
+        with open(SLUGS_FILE, 'w', encoding='utf-8', newline='\n') as f:
+            f.write(json.dumps(dict(sorted(cur.items())), ensure_ascii=False, indent=1) + '\n')
+        print(f'슬러그 새로 정함 {len(added)}곳 → scripts/slugs.json (빌드 산출물과 함께 커밋)')
+    SLUG.clear()
+    SLUG.update(cur)
+
 def hotel_url(pid, depth=0):
     """상세 페이지 상대 주소 — 상세로 가는 href는 전부 이 함수로 만든다."""
-    return f'{"../" * depth}hotels/{pid}'
+    return f'{"../" * depth}hotels/{SLUG[pid]}'
+
+def hotel_abs(pid):
+    """상세 페이지 절대 주소(canonical·og:url·JSON-LD·사이트맵·허브 ItemList)."""
+    return f'{BASE}/hotels/{SLUG[pid]}'
 
 def hotel_row(pid, meta, h, depth=0):
     """한 줄 호텔 행 .hrow (SEO-CRAWL-DESIGN §3-1 · UI-STANDARDS §18-5 목록 행) — 허브 '나머지 N곳'·'리뷰가 적은 호텔'·전체 목록 공용.
@@ -1267,6 +1323,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     <script defer src="./js/search-ac.js?v={BUILD}"></script>
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
+    function hurl(h){{ return './hotels/' + (h.u || h.id); }}   // 상세 주소 = 슬러그(u, SEO-CRAWL §2) — 데이터에 없으면 pid(301로 이어짐)
     // ───── 메인: 지도 (한국어 라벨 타일) ───── (아래 외부 스크립트는 전부 defer — 이 블록은 $(function) 안에서만 쓴다, 2026-10-20)
     $(function(){{
         var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
@@ -1287,7 +1344,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             mk.bindPopup('<div class="map-pop"><b>' + h.name + '</b>'
                 + '<div class="pop-meta">★ ' + (h.g ? h.g.toFixed(1) : '-') + ' (' + h.rc.toLocaleString() + ')'
                 + (h.pt ? ' · ' + h.pt : '') + '</div>' + chip
-                + '<a class="pop-link" href="./hotels/' + h.id + '">상세 보기 →</a></div>');
+                + '<a class="pop-link" href="' + hurl(h) + '">상세 보기 →</a></div>');
             pts.push([h.lat, h.lng]);
         }});
         // 화면 맞춤은 도심 기준: 중앙값에서 5km 밖 외곽 호텔은 맞춤에서만 제외(마커는 그대로) — 검색 지도와 동일
@@ -1322,7 +1379,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             if (window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(v)) {{
                 e.preventDefault();
                 var r = window.CFAutocomplete.resolveUrl(v);
-                if (r.hit) location.href = './hotels/' + r.hit.id;
+                if (r.hit) location.href = hurl(r.hit);
             }}
         }});
     }});
@@ -1375,9 +1432,9 @@ def build_recent(hotels_meta, H):
         function readTs(){{ var o = {{}}; try {{ o = JSON.parse(localStorage.getItem(TS) || '{{}}'); }} catch (e) {{}} return (o && typeof o === 'object') ? o : {{}}; }}
         function save(ids, ts){{ try {{ localStorage.setItem(KEY, JSON.stringify(ids)); localStorage.setItem(TS, JSON.stringify(ts)); }} catch (e) {{}} }}
         var cards = {{}};   // pid → 카드 <li> 마크업 (빌드 때 만들어 둔 숨김 풀)
-        $('#recent-pool > li').each(function(){{
-            var m = ($(this).find('a.hcard').attr('href') || '').match(/hotels\\/([\\w-]+)/);
-            if (m) cards[m[1]] = this.outerHTML.replace(/<\\/li>\\s*$/, '<button type="button" class="rc-x" data-rm="' + m[1] + '" aria-label="최근 본 목록에서 지우기"></button></li>');
+        $('#recent-pool > li').each(function(){{   // 키 = data-pid(cf_recent의 pid) — href는 슬러그라 pid가 아니다(SEO-CRAWL §2-4)
+            var id = this.getAttribute('data-pid');
+            if (id) cards[id] = this.outerHTML.replace(/<\\/li>\\s*$/, '<button type="button" class="rc-x" data-rm="' + id + '" aria-label="최근 본 목록에서 지우기"></button></li>');
         }});
         $('#recent-pool').remove();
         var editing = false, $g = $('#recent-groups'), $edit = $('#rc-edit');
@@ -1464,6 +1521,7 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None, quotes=None):
         rc = rare_counts(pid, h, quotes or {}) or {}
         out[pid] = {
             'n': meta['title'], 'img': abs_img(pid, meta),
+            'u': SLUG[pid],                                 # 상세 주소 슬러그(SEO-CRAWL §2) — 키는 pid 그대로
             'p': pct(h['p_crit']), 'b': h['badge'][0], 'l': h['badge'][1],
             'pt': meta.get('price_txt') or '', 'krw': meta.get('krw'),
             'pw': meta.get('price_we') if (meta.get('price_txt') or '').startswith('평일') else None,   # 주말(금·토 밤) 중앙값 — 가격 그래프
@@ -1549,7 +1607,8 @@ def build_search_index(hotels_meta, H, quotes=None):
                 cb[c] = h['cats'][c]['band']
                 cs[c] = round(h['cats'][c]['score'])
         items.append({
-            'id': pid, 'name': meta['title'], 'en': meta.get('sub_title') or '',
+            'id': pid, 'u': SLUG[pid],             # u = 상세 주소 슬러그(SEO-CRAWL §2). id(pid)는 비교함·필터 키로 그대로
+            'name': meta['title'], 'en': meta.get('sub_title') or '',
             'stars': stars_label(meta), 'g': float(meta.get('total_score') or 0),
             'rc': meta.get('reviews_count') or 0,
             'img': meta.get('r2_img') or (f'img/hotels/{pid}.jpg' if meta.get('local_img') else ''),
@@ -1599,6 +1658,7 @@ def build_search_ac_index(hotels_meta, H):
             continue
         out.append({
             'id': pid,
+            'u': SLUG[pid],                  # 상세 주소 슬러그 — 자동완성 링크(js/search-ac.js hrefPrefix + u)
             't': meta['title'],
             'ar': area_tag(meta),            # 자동완성 컴팩트 행 메타 '나카스 · ● 실망 확률 4%'
             'p': pct(h['p_crit']) if h['scored'] else None,
@@ -1637,6 +1697,7 @@ SEARCH_JS = r"""(function(){
     var CAT_KEYS = CATS.map(function(c){ return c.ko; });
 
     function esc(s){ return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+    function hurl(h){ return './hotels/' + (h.u || h.id); }   // 상세 주소 = 슬러그(u, SEO-CRAWL §2) — 없으면 pid(301로 이어짐)
     function norm(s){ return (s||'').toLowerCase().replace(/\s+/g,''); }
     function km(a1,o1,a2,o2){ var R=6371,p1=a1*Math.PI/180,p2=a2*Math.PI/180,dp=(a2-a1)*Math.PI/180,dl=(o2-o1)*Math.PI/180;
         var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }
@@ -1671,7 +1732,7 @@ SEARCH_JS = r"""(function(){
     }
     function showCard(h, rank){
         var rate = h.g ? '★ ' + h.g.toFixed(1) + ' (' + h.rc.toLocaleString() + ')' : '';
-        $mc.html('<a class="hcard hcard--map" href="./hotels/' + h.id + '">'
+        $mc.html('<a class="hcard hcard--map" href="' + hurl(h) + '">'
             + '<div class="hcard-photo"><img src="' + imgSrc(h) + '" alt="" width="160" height="120"></div>'
             + '<div class="hcard-body"><h3 class="hcard-name">' + (rank ? rank + '위 ' : '') + esc(h.name) + '</h3>'
             + '<div class="hcard-meta">' + bandText(h) + '</div>'
@@ -1780,7 +1841,7 @@ SEARCH_JS = r"""(function(){
         var rate = h.g ? '★ ' + h.g.toFixed(1) + ' (' + h.rc.toLocaleString() + ')' : '';
         var price = priceHtml(h);
         return '<li class="hres' + (o.cls ? ' ' + o.cls : '') + '" data-id="' + h.id + '">'
-            + '<a class="hcard hcard--wide" href="./hotels/' + h.id + '">'
+            + '<a class="hcard hcard--wide" href="' + hurl(h) + '">'
             + '<div class="hcard-photo"><img src="' + imgSrc(h) + '" alt="' + esc(h.name) + '" width="600" height="450" loading="' + (o.eager ? 'eager' : 'lazy') + '" decoding="async">' + photoBadge(h)
             + (o.rank ? '<span class="cnt hres-rank">' + o.rank + '</span>' : '') + '</div>'
             + '<div class="hcard-body">'
@@ -1877,7 +1938,7 @@ SEARCH_JS = r"""(function(){
             emptyView('조건에 맞는 ‘' + esc(q) + '’ 호텔이 없어요', '', '', rm);
         } else if (q) {
             var list = sug.length ? '<div class="es-sug"><div class="es-sug-t">혹시 이 호텔인가요?</div><ul class="cp-list">' + sug.map(function(h){
-                return '<li><a class="cp-item" href="./hotels/' + h.id + '"><span class="cp-img"><img src="' + imgSrc(h) + '" alt="" loading="lazy"></span>'
+                return '<li><a class="cp-item" href="' + hurl(h) + '"><span class="cp-img"><img src="' + imgSrc(h) + '" alt="" loading="lazy"></span>'
                     + '<span class="cp-info"><span class="cp-nm">' + esc(h.name) + '</span><span class="cp-meta">' + [h.ar, bandText(h)].filter(Boolean).join(' · ') + '</span></span></a></li>'; }).join('') + '</ul></div>' : '';
             emptyView('‘' + esc(q) + '’ 호텔을 찾지 못했어요', sug.length ? '' : '아직 분석하지 않은 호텔일 수 있어요. 요청해 주시면 확인할게요.', list,
                 '<button type="button" class="btn-ink btn-sm" id="req-analysis">분석 요청하기</button>' + rm);
@@ -1891,7 +1952,7 @@ SEARCH_JS = r"""(function(){
         var q0 = $q.val().trim();
         if (q0 && window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(q0)) {
             var r = window.CFAutocomplete.resolveUrl(q0);
-            if (r.hit) location.href = './hotels/' + r.hit.id;
+            if (r.hit) location.href = hurl(r.hit);
             return;
         }
         var q = q0, pool = HOTELS.filter(function(h){ return passFilters(h); }), list = pool, suggested = false;
@@ -2780,7 +2841,7 @@ def _jsonld(obj):
             + '</script>')
 
 def jsonld_detail(pid, meta):
-    url = f'{BASE}/hotels/{pid}'
+    url = hotel_abs(pid)
     def num(x):
         try: return float(x)
         except (TypeError, ValueError): return None
@@ -3832,7 +3893,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 </aside>'''
     if h['scored']:   # 리뷰 팝업(점수 나온 호텔에만 있음)의 임베드 인용문
         SIDE_FILES[f'data/q/{pid}.json'] = json.dumps(sheet_data, ensure_ascii=False, separators=(',', ':'))
-    canonical = f'{BASE}/hotels/{pid}'
+    canonical = hotel_abs(pid)   # og:url도 이것(head())
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
     # 답 문단 + description(SEO-CRAWL §4): 같은 문장 — description은 첫 문장 + 걸리는 점(150자 안)
     answer_html, seo_desc = answer_paragraph(name, h, city, per, v_ans, tier_txt, _neg, _pos_txt, has_price=bool(_pt))
@@ -4207,7 +4268,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     itemlist = {'@context': 'https://schema.org', '@type': 'ItemList', 'name': col['h1'],
                 'itemListElement': [
                     {'@type': 'ListItem', 'position': i + 1, 'name': hotels_meta[p]['title'],
-                     'url': f'{BASE}/hotels/{p}'}
+                     'url': hotel_abs(p)}
                     for i, p in enumerate(top)]}
     faqpage = {'@context': 'https://schema.org', '@type': 'FAQPage',
                'mainEntity': [{'@type': 'Question', 'name': q,
@@ -4517,7 +4578,7 @@ def build_sitemap(detail_pids, collection_slugs=()):
             (f'{BASE}/recommend', 'weekly', '0.8', None),   # 맞춤 추천 (2026-10-10)
             (f'{BASE}/about', 'monthly', '0.5', None),      # 소개·방법론 (LEGAL-SOFTEN §2-c)
             *[(f'{BASE}/{slug}', 'weekly', '0.9', asof) for slug in collection_slugs],   # 허브: 순위가 매주 바뀜
-            *[(f'{BASE}/hotels/{pid}', 'weekly', sv_priority(pid), hl.get(pid)) for pid in detail_pids]]
+            *[(hotel_abs(pid), 'weekly', sv_priority(pid), hl.get(pid)) for pid in detail_pids]]
     urls = '\n'.join(
         f'  <url><loc>{E(loc)}</loc>' + (f'<lastmod>{lm}</lastmod>' if lm else '')
         + f'<changefreq>{cf}</changefreq><priority>{pr}</priority></url>'
@@ -4543,6 +4604,7 @@ def main():
     lint_ui.run(strict=True)
     city, H = compute(SRC, prev_badges=prev_badges())
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data, social_data = load()
+    ensure_slugs(hotels_meta)   # 상세 주소 슬러그(SEO-CRAWL §2-1) — 정할 수 없는 새 호텔이 있으면 여기서 빌드 중단
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
     # 추천순·수요 신호·비교 쌍 (RECOMMEND-PRICE-DESIGN §4 / HOME-CONCEPT-DESIGN) — 홈·검색·허브·상세 대안이 공용
     CITY['crit'] = city['crit']
@@ -4626,7 +4688,7 @@ def main():
     written = []
     for pid, meta in hotels_meta.items():
         if pid not in H: continue
-        W(f'hotels/{pid}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
+        W(f'hotels/{SLUG[pid]}.html', build_detail(pid, meta, H[pid], quotes, stars, city, hotels_meta, H,
             kr_stats.get((pid, 'all')), krrank.get(pid), kr_stats.get((pid, '1y')), monthly, monthly_cat,
             city_avg, city_cat_avg, crit_rank_pct=critrank.get(pid),
             hotel_cols=detail_col_map.get(pid, [])[:3], kr_dist=kr_dist, faq=faq_data.get(pid),
@@ -4645,7 +4707,9 @@ def main():
     W('robots.txt', ROBOTS_TXT)
     # 없어진 허브 → 가장 가까운 허브로 301 (Cloudflare 정적 자산 _redirects: 파일 조회보다 먼저 적용 —
     #  배포가 삭제된 파일을 남겨 둬도 옛 페이지가 뜨지 않게). best/pool(수영장)은 2026-10 허브 재구성(ecaf414)에서 제거 → 고급 숙소
-    W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS))
+    #  + 상세 옛 주소 /hotels/{pid} → /hotels/{slug} (SEO-CRAWL §2-2, 정적 규칙 = 호텔 수 + 2, Cloudflare 한도 2,000 안).
+    #    '.html' 옛 주소는 플랫폼이 먼저 확장자를 떼고(308) 이 301로 이어진다(2홉) — 따로 넣지 않는다
+    W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS + [(f'/hotels/{p}', f'/hotels/{SLUG[p]}') for p in written]))
     W('_headers', headers_txt())   # 정적 자산 캐시·Link preload(Early Hints) — 2026-10-20 속도 최적화
     col_slugs = [c['slug'] for c, _ in built_cols]
     W('sitemap.xml', build_sitemap([p for p in written if H[p]['scored']], col_slugs))   # 분석 준비 중(noindex)은 제외
