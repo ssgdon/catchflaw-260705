@@ -2392,7 +2392,16 @@ body[data-page=compare] .det-header{position:static;}
 .hrow-name:active{text-decoration:underline;}
 .hrow-meta{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
 .hrow-meta b{font-weight:var(--fw-bold);color:var(--ink);}
-#hub .hrows + .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}
+#hub .hrows + .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}   
+#hlist{padding:0 var(--page-x) var(--sp-12);}
+#hlist .page-title{margin-left:0;margin-right:0;}
+#hlist .hl-lead{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
+#hlist .hl-lead a{font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
+#hlist .hl-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}
+#hlist .hl-h2{margin:0 0 var(--head-gap);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#hlist > .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}
+#main .home-collections .hl-all{margin-top:var(--sp-6);}
+#search .search-all{padding:var(--sp-8) var(--page-x) var(--sp-3);}
 /* == pc.css == */
 .det-header .dh-nav,.det-header .dh-search,
 #detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
@@ -2502,6 +2511,7 @@ body[data-page=compare] .det-header{position:static;}
     #search > *{grid-column:1;min-width:0;}
     #search .list-head{padding-left:0;padding-right:0;}
     #search .list,#search .notice{padding:0;}
+    #search .search-all{padding-left:0;padding-right:0;}
     #search .rec-header{padding-left:0;padding-right:0;}
     #results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
     #results > .rec-group,#results > .rec-more-wrap,#results > .rec-empty{grid-column:1 / -1;}
@@ -2621,6 +2631,9 @@ body[data-page=compare] .det-header{position:static;}
     .cf-toast.has-act{width:auto;min-width:322px;min-height:64px;}
     
     #hub{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #hlist{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}   
+    #hlist .page-title{margin-top:0;}
+    #hlist .hl-lead{max-width:736px;}
     #about{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     #about > *{max-width:736px;}   
     .page-empty{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-5) var(--pc-x) var(--sp-12);}

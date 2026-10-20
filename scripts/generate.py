@@ -619,13 +619,14 @@ FOOT = '''</div>
 </body>
 </html>'''
 
-def build_footer(depth=0):
-    """공통 미니 푸터 (LEGAL-SOFTEN §2-b). 전 생성 페이지에 삽입. about·정정창구 링크."""
-    p = '../' * depth
+def build_footer(depth=0, root=None):
+    """공통 미니 푸터 (LEGAL-SOFTEN §2-b). 전 생성 페이지에 삽입. about·전체 호텔 목록(SEO-CRAWL §3-3)·정정창구 링크.
+       root: 링크 접두사를 직접 줄 때(404는 어느 깊이에서도 서빙되므로 '/')."""
+    p = root if root is not None else (('../' * depth) or './')
     return f'''
     <footer id="site-foot">
         <div class="foot-note">캐치플로의 실망 확률·위험도는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
-        <div class="foot-links"><a href="{p or './'}about">캐치플로 소개·산출 방법</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
+        <div class="foot-links"><a href="{p}about">캐치플로 소개·산출 방법</a> · <a href="{p}hotels">전체 호텔 목록</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
 
@@ -1130,10 +1131,12 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             if not items: continue
             chips = ''.join(f'<a class="chip-go hub-home-chip" data-ga="collection_chip" href="./{E(slug)}">{E(COL_BY_SLUG[slug].get("chip") or name)}</a>' for slug, name in items)
             rows.append(f'<div class="hub-home-row"><div class="hh-label">{label}</div><div class="hub-home-chips">{chips}</div></div>')
+        _n_all = sum(1 for pid in hotels_meta if pid in H)
         col_chips = f'''<article class="section sec-collections">
                 <div class="home-collections init" data-ga-block>
                     <div class="head"><div class="title" data-ga-title>동네·동행·테마별로 보기</div></div>
                     {''.join(rows)}
+                    <a class="btn-gray btn-block hl-all" data-ga="all_hotels" href="./hotels">호텔 전체 목록 {_n_all}곳</a>
                 </div>
             </article>'''
 
@@ -1338,9 +1341,9 @@ def build_404():
         {mascot_scene('peek', '/', 'mascot--lg')}
         <div class="pe-btns">
             <a class="btn-brand" href="/">홈으로</a>
-            <a class="btn-line" href="/search">호텔 검색</a>
+            <a class="btn-line" href="/hotels">호텔 전체 보기</a>
         </div>
-    </section></main>''' + build_footer(0) + FOOT
+    </section></main>''' + build_footer(0, root='/') + FOOT
 
 # ───────────────────────── recent (F40) ─────────────────────────
 def build_recent(hotels_meta, H):
@@ -2312,6 +2315,7 @@ def build_search(city_avg_pct):
             </div>
             <div class="notice" id="notice" style="display:none"></div>
             <div class="list"><ul id="results"></ul></div>
+            <div class="search-all"><a class="btn-gray btn-block" href="./hotels">전체 호텔 목록</a></div>
             <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg class="mt-ic mt-ic-map" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><svg class="mt-ic mt-ic-list" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="mt-t">지도</span></button>
         </section>
     </main>
@@ -4380,6 +4384,44 @@ def build_about(hotels_meta, H, city):
         </section>
     </main>''' + build_footer(0) + FOOT
 
+# ───────────────────────── 전체 호텔 목록 /hotels (SEO-CRAWL-DESIGN §3-3) ─────────────────────────
+def build_hotels_list(hotels_meta, H):
+    """사이트에 나오는 호텔 전부를 한 페이지에 서버 렌더 링크로 — 크롤러가 모든 상세로 가는 길(홈·허브에서 안 닿던 107곳 포함).
+       동네별 섹션(AREAS 순서 + '그 외', 빈 묶음 생략) → 안 순서 = 추천순(순위 모수) → 리뷰 적음(실망 확률 낮은 순) → 분석 준비 중(이름순).
+       행 = hotel_row(허브와 같은 부품). JSON-LD ItemList는 넣지 않는다(§8 결정 5 — 상세 Hotel 마크업으로 충분, 평점 정책 가드)."""
+    live = [p for p in hotels_meta if p in H]
+    n_live = len(live)
+    asof = CITY.get('asof')
+    asof_txt = f'{int(str(asof)[:4])}년 {md_ko(asof)}' if asof else CITY['data_asof']
+    groups = [(a['ko'].split('·')[0], a['ko']) for a in AREAS] + [('', '그 외')]   # (area_tag 값, 섹션 제목)
+    def order(p):
+        h = H[p]
+        if h['scored'] and h['ranked']: return (0, -REC.get(p, 0.0), h['p_crit'])
+        if h['scored']: return (1, h['p_crit'], 0)
+        return (2, 0, 0)
+    sects = []
+    for tag, title in groups:
+        pids = sorted((p for p in live if area_tag(hotels_meta[p]) == tag),
+                      key=lambda p: (order(p), card_name(hotels_meta[p]['title'])))
+        if not pids: continue
+        rows = ''.join(hotel_row(p, hotels_meta[p], H[p], 0) for p in pids)
+        sects.append(f'''<section class="hl-sect" aria-labelledby="hl-{len(sects)}">
+                <h2 class="hl-h2" id="hl-{len(sects)}">{E(title)} {len(pids)}곳</h2>
+                <ul class="hrows">{rows}</ul>
+            </section>''')
+    desc = (f'{CITY["ko"]} 호텔 {n_live}곳의 실망 확률·등급·평일 가격을 한 페이지에서 볼 수 있어요. '
+            f'{asof_txt} 기준이고 매주 갱신해요.')
+    return head(f'{CITY["ko"]} 호텔 전체 목록 {n_live}곳 | 캐치플로', depth=0, description=desc,
+                canonical=f'{BASE}/hotels') + site_header(0, back='./') + f'''
+    <main id="container">
+        <section id="hlist">
+            <h1 class="page-title">{CITY["ko"]} 호텔 전체 목록</h1>
+            <p class="hl-lead">{n_live}곳의 최근 1년 리뷰를 분석해 실망 확률을 매겼어요. {asof_txt} 기준이고 매주 갱신해요. 동네마다 추천순이고, 리뷰가 적은 호텔과 분석 준비 중인 호텔은 뒤에 있어요. 산출 방법은 <a href="./about">소개·산출 방법</a>에 있어요.</p>
+            {''.join(sects)}
+            <a class="btn-gray btn-block" href="./search">조건으로 걸러 보기</a>
+        </section>
+    </main>''' + build_footer(0) + FOOT
+
 # ───────────────────────── main ─────────────────────────
 def city_averages(monthly, monthly_cat):
     """빌드타임 도시(후쿠오카) 평균 시리즈 (TREND-V2 §2-a). 전 호텔 monthly 합산 기준
@@ -4433,7 +4475,7 @@ def headers_txt():
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
     out += '/data/q/*\n  Cache-Control: public, max-age=3600\n/data/fe/*\n  Cache-Control: public, max-age=3600\n/img/*\n  Cache-Control: public, max-age=86400\n'
     out += f'/\n  Link: {pre}, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"\n'
-    for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent'):
+    for r in ('/hotels/*', '/hotels', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent'):
         out += f'{r}\n  Link: {pre}\n'
     return out
 
@@ -4471,6 +4513,7 @@ def build_sitemap(detail_pids, collection_slugs=()):
     hl = hotel_lastmod()
     rows = [(f'{BASE}/', 'daily', '1.0', asof),
             (f'{BASE}/search', 'daily', '0.9', None),       # 앱 화면 — lastmod 생략
+            (f'{BASE}/hotels', 'weekly', '0.9', asof),      # 전체 호텔 목록 — 상세 전부로 가는 서버 렌더 링크(SEO-CRAWL §3-3)
             (f'{BASE}/recommend', 'weekly', '0.8', None),   # 맞춤 추천 (2026-10-10)
             (f'{BASE}/about', 'monthly', '0.5', None),      # 소개·방법론 (LEGAL-SOFTEN §2-c)
             *[(f'{BASE}/{slug}', 'weekly', '0.9', asof) for slug in collection_slugs],   # 허브: 순위가 매주 바뀜
@@ -4592,6 +4635,7 @@ def main():
     n = len(written)
     for _path, _body in SIDE_FILES.items():   # 상세 팝업·FAQ 폴백 데이터(HTML에서 분리)
         W(_path, _body)
+    W('hotels.html', build_hotels_list(hotels_meta, H))   # 전체 호텔 목록 /hotels (SEO-CRAWL §3-3) — docs/hotels/ 폴더와 나란히
 
     # ── 컬렉션 허브 페이지 생성 ──
     for col, pids in built_cols:
@@ -4607,7 +4651,7 @@ def main():
     W('sitemap.xml', build_sitemap([p for p in written if H[p]['scored']], col_slugs))   # 분석 준비 중(noindex)은 제외
     W(f'{INDEXNOW_KEY}.txt', INDEXNOW_KEY)
     scored = sum(1 for p in H if H[p]['scored'])
-    sitemap_n = sum(1 for p in written if H[p]['scored']) + 4 + len(col_slugs)   # 홈·검색·추천·about + 허브 + 점수 나온 상세
+    sitemap_n = sum(1 for p in written if H[p]['scored']) + 5 + len(col_slugs)   # 홈·검색·전체 목록·추천·about + 허브 + 점수 나온 상세
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 분석 준비 중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
     print(f'컬렉션 생성 {len(built_cols)}개: ' + ', '.join(f'{c["slug"]}({len(p)})' for c, p in built_cols))
     print(f'추천순 모수 {len(REC)}곳 · 비교 쌍 {len(PAIRS)}개(검색량 자동 {len(_auto)}) · 검색량 {len(SV)}곳 · 한국인 리뷰 최대 {max(list(KRN.values()) or [0])}건')

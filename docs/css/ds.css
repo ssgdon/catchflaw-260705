@@ -1159,3 +1159,15 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .hrow-meta b{font-weight:var(--fw-bold);color:var(--ink);}
 #hub .hrows + .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}   /* 섹션 끝 전폭 회색 버튼: 위 32, 아래 12(§18-5) — 카드 목록(.hub-list)과 같게 */
 
+/* ════════ §v3 전체 호텔 목록 /hotels (SEO-CRAWL-DESIGN §3-3, 2026-10-20) — 문서 리듬: 32 제목 → 리드 16 → 동네 섹션(28/20 + 1px 선, 제목 22 → 16 → 행) ════════ */
+#hlist{padding:0 var(--page-x) var(--sp-12);}
+#hlist .page-title{margin-left:0;margin-right:0;}
+#hlist .hl-lead{font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
+#hlist .hl-lead a{font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}
+#hlist .hl-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}
+#hlist .hl-h2{margin:0 0 var(--head-gap);font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);color:var(--ink);}
+#hlist > .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}
+/* 진입 링크: 홈 '동네·동행·테마별로 보기' 끝 · 검색 목록 아래(JS가 그리지 않는 자리) */
+#main .home-collections .hl-all{margin-top:var(--sp-6);}
+#search .search-all{padding:var(--sp-8) var(--page-x) var(--sp-3);}
+

@@ -131,6 +131,7 @@
     #search > *{grid-column:1;min-width:0;}
     #search .list-head{padding-left:0;padding-right:0;}
     #search .list,#search .notice{padding:0;}
+    #search .search-all{padding-left:0;padding-right:0;}
     #search .rec-header{padding-left:0;padding-right:0;}
     #results{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--sp-8) var(--sp-6);}
     #results > .rec-group,#results > .rec-more-wrap,#results > .rec-empty{grid-column:1 / -1;}
@@ -263,6 +264,9 @@
 
     /* ════════ 컬렉션 허브·소개·최근 본 ════════ */
     #hub{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #hlist{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}   /* 전체 호텔 목록: 허브와 같은 틀, 리드만 읽는 폭 */
+    #hlist .page-title{margin-top:0;}
+    #hlist .hl-lead{max-width:736px;}
     #about{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     #about > *{max-width:736px;}   /* 읽는 폭은 그대로, 왼쪽 끝만 틀에 맞춤 */
     .page-empty{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-5) var(--pc-x) var(--sp-12);}
