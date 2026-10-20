@@ -1043,6 +1043,31 @@ def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_c
         </a>
     </li>'''
 
+def hotel_url(pid, depth=0):
+    """상세 페이지 상대 주소 — 상세로 가는 href는 전부 이 함수로 만든다."""
+    return f'{"../" * depth}hotels/{pid}'
+
+def hotel_row(pid, meta, h, depth=0):
+    """한 줄 호텔 행 .hrow (SEO-CRAWL-DESIGN §3-1 · UI-STANDARDS §18-5 목록 행) — 허브 '나머지 N곳'·'리뷰가 적은 호텔'·전체 목록 공용.
+       이름(링크, 행 전체가 눌림) + 메타 '텐진역 도보 3분 · 3성급 호텔 · 실망 확률 2% 적어요 · 평일 약 14만원'.
+       상자·배지·보라 없음 — 등급은 색이 아니라 판정어 글자로(적어요·평균 수준·잦아요·많아요, 리뷰 적음·분석 준비 중)."""
+    if not h['scored']:
+        prob = '분석 준비 중'
+    else:
+        k, p = badge_key(h), pct(h['p_crit'])
+        ratio = h['p_crit'] / (CITY.get('crit') or 1e-9)
+        if k == 'safe': prob = f'실망 확률 <b>{p}%</b> 적어요'
+        elif k == 'warning': prob = f'실망 확률 <b>{p}%</b> {"평균 수준" if ratio < 1.15 else "잦아요"}'
+        elif k == 'danger': prob = f'실망 확률 <b>{p}%</b> 많아요'
+        elif k == 'lowdanger': prob = f'실망 확률 <b>{p}%</b> 많아요 · 리뷰 적음'   # 리뷰 적음이어도 위험이 확실하면 위험 판정 유지(UI-STANDARDS §5)
+        else: prob = f'실망 확률 <b>{p}%</b> · 리뷰 적음'
+    # 메타 = [위치 · 성급] {DSEP} [실망 확률 판정 · 가격] — 모바일은 두 묶음이 두 줄(구분점이 줄 끝에 매달리지 않게, UI-STANDARDS §15), PC는 한 줄
+    seg = lambda xs: ' · '.join(f'<span class="seg">{x}</span>' for x in xs if x)
+    where = seg([E(station_short(meta) or area_tag(meta)), E(stars_label(meta))])
+    what = seg([prob, E(meta.get('price_txt') or '')])
+    return (f'<li class="hrow"><a class="hrow-name" href="{hotel_url(pid, depth)}">{E(card_name(meta["title"]))}</a>'
+            f'<span class="hrow-meta">{where + DSEP if where else ""}{what}</span></li>')
+
 # ───────────────────────── index ─────────────────────────
 def ai_reviews_total():
     """AI가 실제로 읽은 글 리뷰 수(agg_reviewlevel.analyzed 합) — 'AI가 N건 분석' 문구용. 별점만 리뷰는 제외."""
@@ -4087,28 +4112,43 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         if col['kind'] != 'bath': return None
         return _bath_chips(p) or [AMENITY_LABEL['spa_bath']]
     rank_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], i + 1, depth, chips_of(p)) for i, p in enumerate(top))
-    if col['kind'] == 'who':
-        _g = _who_group(col['who'])
+    order_word = '불만 적은 순' if col['kind'] in ('who', 'family') else '추천순'   # collection_members 정렬과 같은 말(동행·가족 = 세 항목 불만 평균 순)
+    if col['kind'] in ('who', 'family'):
         rank_note = f'불만 적은 순 · 세 항목 모두 위험이 아닌 곳 · 최근 1년 리뷰 {RANK_MIN}건 이상'
     else:
         rank_note = (f'추천순 · 최근 1년 리뷰 {RANK_MIN}건 이상은 여기, 미만은 아래 따로' if is_all else
                      f'추천순 · 최근 1년 리뷰 {RANK_MIN}건 이상인 호텔만')
     search_link = f'<a class="btn-gray btn-block" href="{"../" * depth}search{("?area=" + col["area"]) if col["kind"]=="area" else ""}">{E(col["name"]) if col["kind"]=="area" else CITY["ko"]} 호텔 모두 보기</a>'
-    rank_block = (f'''<div class="hub-sect">
-        <div class="hub-h2">추천 TOP {len(top)}</div>
-        <div class="hub-sub">{rank_note}</div>
-        <ul class="hub-list">{rank_cards}</ul>
-        {search_link}
-    </div>''' if top else '')
-    # 리뷰 적은 호텔: 순위 없이 참고용 목록 (전부 비교 컬렉션이거나 순위 대상이 적을 때만 — 지역 TOP15엔 섞지 않음)
-    if low_p and (is_all or len(ranked_p) < 5):
-        low_cards = '\n'.join(hub_card(p, hotels_meta[p], H[p], '–', depth, chips_of(p)) for p in low_p)
-        rank_block += f'''<div class="hub-sect">
-        <div class="hub-h2">리뷰가 적은 호텔 {len(low_p)}곳</div>
-        <div class="hub-sub">최근 1년 리뷰 {RANK_MIN}건 미만이라 순위 없이 보여드려요</div>
-        <ul class="hub-list">{low_cards}</ul>
-        {'' if top else search_link}
-    </div>'''
+    # 블록 = (머리 HTML, 목록 HTML). 검색 버튼은 마지막 블록 끝에 한 번(SEO-CRAWL §3-2: TOP 끝 → 행 목록 끝)
+    blocks = []
+    if top:
+        blocks.append((f'<div class="hub-h2">추천 TOP {len(top)}</div>\n        <div class="hub-sub">{rank_note}</div>',
+                       f'<ul class="hub-list">{rank_cards}</ul>'))
+    # 회원 전체를 HTML로(SEO-CRAWL §3-2): TOP 15 다음 '나머지 N곳'(추천순 한 줄 행) → '리뷰가 적은 호텔'(행, 순위 없이)
+    rest = [] if is_all else ranked_p[len(top):]
+    if rest:
+        blocks.append((f'<h2 class="hub-h2">나머지 {len(rest)}곳</h2>\n        <div class="hub-sub">{order_word} · 최근 1년 리뷰 {RANK_MIN}건 이상</div>',
+                       f'<ol class="hrows hub-rows">{"".join(hotel_row(p, hotels_meta[p], H[p], depth) for p in rest)}</ol>'))
+    if low_p:
+        if is_all:   # 전부 비교 컬렉션(캡슐 5곳)은 와이드 카드 그대로
+            low_list = f'<ul class="hub-list">{chr(10).join(hub_card(p, hotels_meta[p], H[p], "–", depth, chips_of(p)) for p in low_p)}</ul>'
+        else:
+            low_list = f'<ul class="hrows hub-rows">{"".join(hotel_row(p, hotels_meta[p], H[p], depth) for p in low_p)}</ul>'
+        blocks.append((f'<h2 class="hub-h2">리뷰가 적은 호텔 {len(low_p)}곳</h2>\n        <div class="hub-sub">최근 1년 리뷰 {RANK_MIN}건 미만이라 순위 없이 보여드려요</div>',
+                       low_list))
+    # 분석 준비 중(동네 허브만 — 위치는 리뷰와 무관한 사실, SEO-CRAWL §8 결정 4): 링크 + '분석 준비 중'
+    if col['kind'] == 'area':
+        _ar = _area_by_code(col['area'])
+        prep = sorted((p for p in hotels_meta if p in H and not H[p]['scored'] and _in_area(hotels_meta[p], _ar)),
+                      key=lambda p: card_name(hotels_meta[p]['title']))
+        if prep:
+            blocks.append((f'<h2 class="hub-h2">분석 준비 중 {len(prep)}곳</h2>\n        <div class="hub-sub">최근 1년 리뷰가 {MIN_REVIEWS}건 이상 쌓이면 실망 확률을 공개해요</div>',
+                           f'<ul class="hrows hub-rows">{"".join(hotel_row(p, hotels_meta[p], H[p], depth) for p in prep)}</ul>'))
+    rank_block = ''.join(f'''<div class="hub-sect">
+        {hd}
+        {lst}
+        {search_link if i == len(blocks) - 1 else ''}
+    </div>''' for i, (hd, lst) in enumerate(blocks))
 
     # ── 4. 가격대별 베스트 (지역 컬렉션만) — v3 §7-6: 회색 띠 → 그룹 머리 18 + 캐러셀 카드 ──
     price_block = ''

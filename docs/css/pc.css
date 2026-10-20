@@ -280,4 +280,8 @@
     #main .sec-vs .home-vs{padding-left:var(--pc-x);padding-right:var(--pc-x);}
     #main .home-vs .vs-list{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-5);overflow:visible;align-items:stretch;}   /* 모바일 flex의 align-items:flex-start를 풀어 4장 높이 통일 */
     #main .vs-card{flex:auto;}
+
+    /* 한 줄 호텔 행 .hrow(SEO-CRAWL §3-1): 이름 왼쪽 · 메타 오른쪽 한 줄 — 메타가 안 들어가면 줄을 바꿔 2줄 유지 */
+    .hrow{flex-direction:row;flex-wrap:wrap;align-items:baseline;align-content:center;justify-content:space-between;column-gap:var(--sp-6);}
+    .hrow-meta{white-space:nowrap;}
 }

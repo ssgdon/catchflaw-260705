@@ -1146,3 +1146,16 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
 #detail .information .info-answer b{font-weight:var(--fw-bold);}
 
+/* ════════ §v3 한 줄 호텔 행 .hrow (SEO-CRAWL-DESIGN §3-1 · UI-STANDARDS §18-5 목록 행, 2026-10-20) ════════
+   허브 '나머지 N곳'·'리뷰가 적은 호텔'·전체 목록(/hotels) 공용. 행 64 이상 + 행 사이 1px 선, 이름 16/600 잉크 · 메타 14 회색(숫자만 잉크 700).
+   모바일 2줄(이름/메타), PC는 한 줄(이름 왼쪽·메타 오른쪽, 안 들어가면 2줄 — pc.css). 상자·배지·보라 없음. 이름 링크가 행 전체를 덮어 터치 영역 = 행 */
+.hrows{margin:0;padding:0;list-style:none;}
+.hrow{position:relative;display:flex;flex-direction:column;justify-content:center;gap:var(--sp-1);min-height:64px;padding:var(--sp-3) 0;list-style:none;word-break:keep-all;}
+.hrow + .hrow{border-top:1px solid var(--line);}
+.hrow-name{font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);}
+.hrow-name::after{content:"";position:absolute;inset:0;}
+.hrow-name:active{text-decoration:underline;}
+.hrow-meta{font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}
+.hrow-meta b{font-weight:var(--fw-bold);color:var(--ink);}
+#hub .hrows + .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}   /* 섹션 끝 전폭 회색 버튼: 위 32, 아래 12(§18-5) — 카드 목록(.hub-list)과 같게 */
+
