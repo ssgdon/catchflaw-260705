@@ -154,8 +154,8 @@ report(3, '사이트맵 <loc> 수·파일', errs, f'{len(locs)}개 = 채점 상�
 # ── 4 ──
 errs = []
 lines = [l for l in rd.splitlines() if l.strip()]
-if len(lines) != len(details) + 2:
-    errs.append(f'_redirects {len(lines)}줄 ≠ 상세 {len(details)} + 2')
+if len(lines) != 2 * len(details) + 2:   # 상세마다 무확장·.html 2줄 + 허브 2줄
+    errs.append(f'_redirects {len(lines)}줄 ≠ 상세 {len(details)}×2 + 2')
 targets, sources = {}, set()
 for l in lines:
     parts = l.split()
