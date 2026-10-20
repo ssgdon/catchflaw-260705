@@ -3121,7 +3121,22 @@ def answer_paragraph(name, h, city, per, v_ans='', tier_txt='', neg=(), pos=(), 
             rest, neg_only = f'{lead}, 두드러진 불만은 없어요.', ''
         else:
             rest, neg_only = '항목별 불만은 평균과 비슷해요.', ''
-    para = f'<p class="info-answer">{" ".join(head_s)} {E(rest)}{tail}</p>'
+    # ── 화면용은 짧게(2026-10-20 사용자 피드백: 긴 문단이 안 읽히고 줄바꿈이 나쁨): 판정 한 문장 + 근거 한 줄.
+    #    호텔명은 바로 위 h1, 걸리는 점·괜찮은 점은 바로 아래 '한눈에 보기'가 맡는다. 긴 전체 문장은 description(desc)에만 남긴다.
+    _nw = lambda t: re.sub(r'(평균\(\d+%\)(?:보다|과))', r'<span class="nw">\1</span>', t)
+    _asof_txt = f'{int(str(asof)[:4])}년 {md_ko(asof)} 기준' if asof else ''
+    if not h['scored']:
+        lead = f'분석한 리뷰가 <b>{n:,}건</b>뿐이라 아직 실망 확률을 내지 않았어요. {MIN_REVIEWS}건 이상 쌓이면 공개해요.'
+        basis = _asof_txt
+    elif h['ranked']:
+        lead = f'<span class="nw">실망 확률 <b>{v}%</b>로</span> {_nw(E(v_ans))}.' + (f' {E(tier_txt)}{josa(tier_txt, "이에요", "예요")}.' if tier_txt else '')
+        basis = ' · '.join(x for x in (f'{E(per)} 리뷰 {n:,}건 분석', _asof_txt) if x)
+    else:
+        lead = (f'{E(per)} 리뷰가 <b>{n:,}건</b>뿐이라 참고용이에요. '
+                + (f'<span class="nw">실망 확률 <b>{v}%</b>로</span> {_nw(E(v_ans))}.' if v_ans
+                   else f'<span class="nw">실망 확률 <b>{v}%</b></span>, {E(CITY["ko"])} 평균은 {avg}%예요.'))
+        basis = _asof_txt
+    para = f'<p class="info-answer">{lead}' + (f'<span class="ia-meta">{basis}</span>' if basis else '') + '</p>'
     plain = lambda x: html.unescape(re.sub(r'<[^>]+>', '', x))
     desc = plain(head_s[0])
     for s in [plain(x) for x in head_s[1:]] + ([neg_only] if neg_only else []):

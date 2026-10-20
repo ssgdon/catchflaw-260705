@@ -2384,6 +2384,7 @@ body[data-page=compare] .det-header{position:static;}
 .intro-item .ic-close{position:absolute;top:var(--sp-1);right:var(--sp-1);}
 #detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
 #detail .information .info-answer b{font-weight:var(--fw-bold);}
+#detail .information .info-answer .ia-meta{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   
 .hrows{margin:0;padding:0;list-style:none;}
 .hrow{position:relative;display:flex;flex-direction:column;justify-content:center;gap:var(--sp-1);min-height:64px;padding:var(--sp-3) 0;list-style:none;word-break:keep-all;}
 .hrow + .hrow{border-top:1px solid var(--line);}

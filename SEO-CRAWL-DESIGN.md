@@ -125,6 +125,8 @@
 ## 4. C. 상세 '답 문단' + description
 
 ### 4-1. 위치·마크업
+> **2026-10-20 수정(배포 뒤 사용자 피드백 "길고 줄바꿈이 나빠 안 읽힘")**: 화면에 보이는 문단은 §4-2 전체 문장이 아니라 **판정 한 문장 + 근거 한 줄**(`.ia-meta`)로 줄였다. 호텔명은 h1, 걸리는 점·괜찮은 점은 '한눈에 보기'가 맡는다. §4-2의 전체 문장은 **meta description에만** 쓴다. 정본 = UI-STANDARDS §7 '상세 답 문단'.
+
 - `.sect.information` 안 `{info_sum}` **바로 다음, `{lowrev_html}` 앞**에 `<p class="info-answer">…</p>`. 상자·배경 없음. `ds.css` §v3: `#detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}` + 숫자 `<b>` 700. PC는 같은 글자(pc.css 추가 없음). 글자 토큰·색 토큰만(E1·E3).
 - `polish_breaks`가 자동 적용되니 `{DSEP}`·`.seg`는 쓰지 않는다(문단은 줄바꿈 자유).
 
