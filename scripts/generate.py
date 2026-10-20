@@ -268,11 +268,13 @@ def price_stats(rows):
 
 MASCOT_DIMS = {'wave': (400, 433), 'peek': (400, 429), 'report': (400, 405), 'look': (400, 459), 'jump': (400, 409)}   # = js/backnav.js CF.MASCOT
 
-def mascot_scene(pose, root='./', img_cls='', scene_cls=''):
-    """캐치플로 수달(로딩·빈 화면·완료 전용, ds.css §v3) — 보라 원 받침 + 그림. 장식이라 alt="" · aria-hidden."""
+def mascot_scene(pose, root='./', img_cls='', scene_cls='', lazy=False):
+    """캐치플로 수달(로딩·빈 화면·완료 전용, ds.css §v3) — 보라 원 받침 + 그림. 장식이라 alt="" · aria-hidden.
+       lazy: 첫 화면 아래(홈 안내 카드)면 True — 로딩·빈 화면은 보이는 순간 바로 떠야 하니 False."""
     w, h = MASCOT_DIMS[pose]
+    lz = ' loading="lazy"' if lazy else ''
     return (f'<div class="mascot-scene{(" " + scene_cls) if scene_cls else ""}" aria-hidden="true"><img class="mascot{(" " + img_cls) if img_cls else ""}" '
-            f'src="{root}img/mascot/otter-{pose}.webp" width="{w}" height="{h}" alt="" decoding="async"></div>')
+            f'src="{root}img/mascot/otter-{pose}.webp" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
 
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
@@ -579,19 +581,11 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="icon" type="image/svg+xml" href="{p}img/favicon.svg">
     <link rel="apple-touch-icon" href="{p}img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="{p}css/tokens.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/common.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/layout.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/swiper.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/uplift.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/mvp.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/ds.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}">
+    <link rel="stylesheet" href="{p}css/site.css?v={BUILD}">
     <script src="{p}js/backnav.js?v={BUILD}"></script>
     <script src="{p}js/common.js?v={BUILD}" defer></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="{p}js/swiper.js"></script>
+    <script src="{p}js/vendor/jquery-3.7.1.min.js?v={BUILD}"></script>
+    <script src="{p}js/swiper.js?v={BUILD}" defer></script>
     <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_PRICE_BANDS={json.dumps({'wd': [[c, l] for c, l, _, _ in PRICE_BANDS], 'we': [[c, l] for c, l, _, _ in PRICE_BANDS_WE]}, ensure_ascii=False)};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
     <script src="{p}js/engage.js?v={BUILD}" defer></script>
     <script src="{p}js/recommend.js?v={BUILD}"></script>
@@ -890,7 +884,7 @@ def city_row_html():
            'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
     items = []
     for name, slug, live in HOME_CITIES:
-        img = f'style="background-image:url(./img/city/{slug}.jpg)"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
+        img = f'style="background-image:url(./img/city/{slug}.webp)"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
         if live:
             items.append(f'<a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" {img}><span class="ct-n">{pin}{name}</span></a>')
         else:
@@ -1118,8 +1112,11 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드려요. '
                     '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
+    <link rel="preload" as="image" href="./img/home_bg_otter_1080.webp" media="(max-width:1099px)" fetchpriority="high">
     <link rel="preload" as="image" href="./img/home_bg_pc.jpg" media="(min-width:1100px)" fetchpriority="high">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">''' + site_header(0, search=False, is_home=True) + f'''
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>''' + site_header(0, search=False, is_home=True) + f'''
     <main id="container">
         <section id="main">
             <article class="section sec-1">
@@ -1147,14 +1144,14 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     <div class="intro-item" data-intro="calc">
                         <a class="intro-card" href="./about" data-ga="intro_calc">
                             <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
-                            <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene')}</span>
+                            <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene', lazy=True)}</span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
                     <div class="intro-item" data-intro="rec">
                         <a class="intro-card" href="./recommend" data-ga="intro_rec">
                             <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">네 가지만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
-                            <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene')}</span>
+                            <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene', lazy=True)}</span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
@@ -1214,13 +1211,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             {col_chips}
         </section>
     </main>
-    <script src="./data/index.js?v={BUILD}"></script>
+    <script defer src="./data/index.js?v={BUILD}"></script>
     <script defer src="./data/search_index.js?v={BUILD}"></script>
-    <script src="./js/search-key.js?v={BUILD}"></script>
-    <script src="./js/search-ac.js?v={BUILD}"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="./js/search-key.js?v={BUILD}"></script>
+    <script defer src="./js/search-ac.js?v={BUILD}"></script>
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-    // ───── 메인: 지도 (한국어 라벨 타일) ─────
+    // ───── 메인: 지도 (한국어 라벨 타일) ───── (아래 외부 스크립트는 전부 defer — 이 블록은 $(function) 안에서만 쓴다, 2026-10-20)
     $(function(){{
         var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
         var map = L.map('map', {{scrollWheelZoom: false}}).setView([33.5902, 130.4017], 13);
@@ -2233,7 +2230,9 @@ def build_search(city_avg_pct):
         description=f'{CITY["ko"]} 호텔을 실망 확률 낮은 순으로 비교하세요. '
                    f'지역·가격·불만 적은 항목으로 골라 볼 수 있어요({CITY["ko"]} 평균 실망 확률 {city_avg_pct}%).',
         canonical=f'{BASE}/search').replace('<body>', '<body data-page="search">') + f'''
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>
     <main id="container">
         ''' + site_header(0, back='./', search=False) + f'''
         <h1 class="page-title blind">{CITY['ko']} 호텔 검색</h1>
@@ -3771,7 +3770,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {DETAIL_TABS_JS}
         </section>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="../js/compare.js?v={BUILD}" data-root="../"></script>
     <script src="../js/detail-page.js?v={BUILD}"></script>''' + build_footer(1) + FOOT
 
@@ -4284,6 +4283,34 @@ Allow: /
 Sitemap: {BASE}/sitemap.xml
 '''
 
+# ── 속도 최적화(2026-10-20): CSS 번들 · 캐시 헤더 ──
+CSS_ORDER = ['vendor/pretendard.css', 'tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css', 'pc.css']   # = CLAUDE.md 로드 순서 (앞에 글꼴)
+
+def build_css_bundle():
+    """css/ 원본을 로드 순서대로 이어 붙인 docs/css/site.css — 렌더 차단 요청 9개(교차 출처 1 포함) → 같은 출처 1개.
+       원본·순서·규칙은 손대지 않고 주석과 @charset만 뺀다(상대 url(../img/…)은 docs/css/ 안이라 그대로 유효)."""
+    parts = []
+    for name in CSS_ORDER:
+        s = open(os.path.join(ROOT, 'css', name), encoding='utf-8').read()
+        s = re.sub(r'@charset\s+"[^"]*";', '', s)
+        s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
+        s = re.sub(r'\n[ \t]*\n+', '\n', s).strip()
+        parts.append(f'/* == {name} == */\n{s}')
+    return '@charset "utf-8";\n' + '\n'.join(parts) + '\n'
+
+def headers_txt():
+    """docs/_headers (Cloudflare 정적 자산). ?v={BUILD}로 버전이 붙는 css·js·data/*.js는 1년 immutable, 버전 없는 data/q·fe JSON은 1시간,
+       이미지 1일. HTML에는 Link preload(Cloudflare Early Hints 103으로 나가 응답 대기 중에 CSS·jQuery·홈 히어로를 먼저 받게)."""
+    pre = f'</css/site.css?v={BUILD}>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v={BUILD}>; rel=preload; as=script'
+    out = ''
+    for r in ('/css/*', '/js/*', '/data/index.js', '/data/search_index.js', '/data/compare.js'):
+        out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
+    out += '/data/q/*\n  Cache-Control: public, max-age=3600\n/data/fe/*\n  Cache-Control: public, max-age=3600\n/img/*\n  Cache-Control: public, max-age=86400\n'
+    out += f'/\n  Link: {pre}, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"\n'
+    for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent'):
+        out += f'{r}\n  Link: {pre}\n'
+    return out
+
 def sv_priority(pid):
     """상세 페이지 사이트맵 우선순위: 네이버 검색량 상위 25% 0.9 · 중앙 이상 0.8 · 나머지 0.7 (검색량 없으면 0.8)."""
     if not SV: return '0.8'
@@ -4368,6 +4395,8 @@ def main():
     os.makedirs(os.path.join(OUT, 'data'))
     for d in ('css', 'js', 'img'):
         shutil.copytree(os.path.join(ROOT, d), os.path.join(OUT, d))
+    with open(os.path.join(OUT, 'css', 'site.css'), 'w', encoding='utf-8') as f:   # 로드 순서 그대로 한 파일(head()가 이것만 싣는다)
+        f.write(build_css_bundle())
     hotels_img = os.path.join(ROOT, 'assets', 'hotels')
     if os.path.exists(hotels_img):
         shutil.copytree(hotels_img, os.path.join(OUT, 'img', 'hotels'))
@@ -4447,6 +4476,7 @@ def main():
     # 없어진 허브 → 가장 가까운 허브로 301 (Cloudflare 정적 자산 _redirects: 파일 조회보다 먼저 적용 —
     #  배포가 삭제된 파일을 남겨 둬도 옛 페이지가 뜨지 않게). best/pool(수영장)은 2026-10 허브 재구성(ecaf414)에서 제거 → 고급 숙소
     W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS))
+    W('_headers', headers_txt())   # 정적 자산 캐시·Link preload(Early Hints) — 2026-10-20 속도 최적화
     col_slugs = [c['slug'] for c, _ in built_cols]
     W('sitemap.xml', build_sitemap([p for p in written if H[p]['scored']], col_slugs))   # 분석 준비 중(noindex)은 제외
     W(f'{INDEXNOW_KEY}.txt', INDEXNOW_KEY)

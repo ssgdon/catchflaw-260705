@@ -32,27 +32,22 @@
     <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
     <link rel="apple-touch-icon" href="img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
-    <link rel="stylesheet" href="css/tokens.css?v=1791769884">
-    <link rel="stylesheet" href="css/common.css?v=1791769884">
-    <link rel="stylesheet" href="css/layout.css?v=1791769884">
-    <link rel="stylesheet" href="css/swiper.css?v=1791769884">
-    <link rel="stylesheet" href="css/uplift.css?v=1791769884">
-    <link rel="stylesheet" href="css/mvp.css?v=1791769884">
-    <link rel="stylesheet" href="css/ds.css?v=1791769884">
-    <link rel="stylesheet" href="css/pc.css?v=1791769884">
-    <script src="js/backnav.js?v=1791769884"></script>
-    <script src="js/common.js?v=1791769884" defer></script>
-    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-    <script src="js/swiper.js"></script>
+    <link rel="stylesheet" href="css/site.css?v=1792460158">
+    <script src="js/backnav.js?v=1792460158"></script>
+    <script src="js/common.js?v=1792460158" defer></script>
+    <script src="js/vendor/jquery-3.7.1.min.js?v=1792460158"></script>
+    <script src="js/swiper.js?v=1792460158" defer></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_PRICE_BANDS={"wd": [["b1", "10만원 미만"], ["b2", "10~15만원"], ["b3", "15~20만원"], ["b4", "20만원 이상"]], "we": [["w1", "30만원 미만"], ["w2", "30~40만원"], ["w3", "40~50만원"], ["w4", "50만원 이상"]]};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"청결": "청결", "냄새": "냄새", "소음": "소음", "객실": "객실", "직원": "직원", "위치": "위치", "안전": "안전"};</script>
-    <script src="js/engage.js?v=1791769884" defer></script>
-    <script src="js/recommend.js?v=1791769884"></script>
+    <script src="js/engage.js?v=1792460158" defer></script>
+    <script src="js/recommend.js?v=1792460158"></script>
 </head>
 <body>
 <div id="wrapper">
+    <link rel="preload" as="image" href="./img/home_bg_otter_1080.webp" media="(max-width:1099px)" fetchpriority="high">
     <link rel="preload" as="image" href="./img/home_bg_pc.jpg" media="(min-width:1100px)" fetchpriority="high">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"><div class="det-header dh-home">
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript><div class="det-header dh-home">
                 
                 <a class="dh-logo" href="./" aria-label="CATCHFLAW 홈"><img src="img/logo.svg" alt="CATCHFLAW"></a>
                 
@@ -106,7 +101,7 @@
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
-                    <div class="city-row" role="group" aria-label="도시"><a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" style="background-image:url(./img/city/fukuoka.jpg)"><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>후쿠오카</span></a><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/tokyo.jpg)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>도쿄</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/osaka.jpg)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>오사카</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/kyoto.jpg)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>교토</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/sapporo.jpg)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>삿포로</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/okinawa.jpg)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>오키나와</span></span></div>
+                    <div class="city-row" role="group" aria-label="도시"><a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" style="background-image:url(./img/city/fukuoka.webp)"><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>후쿠오카</span></a><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/tokyo.webp)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>도쿄</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/osaka.webp)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>오사카</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/kyoto.webp)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>교토</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/sapporo.webp)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>삿포로</span></span><span class="city-tile is-off" aria-disabled="true" style="background-image:url(./img/city/okinawa.webp)"><span class="soon-tag">준비 중</span><span class="ct-n"><svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>오키나와</span></span></div>
                     <a href="./recommend" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
                     <div class="hero-photo" aria-hidden="true"></div>
                 </div>
@@ -115,43 +110,43 @@
                 <div class="home-vs init" data-ga-block>
                     <div class="head"><div class="title" data-ga-title><em>많이 찾는</em> 호텔끼리 <em>비교</em></div>
                     </div>
-                    <div class="vs-list"><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJ9yX8lJyRQTURlJxzdI5_KrA,ChIJkXqoOZORQTURyBBg18vUy4o">
+                    <div class="vs-list"><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJGx1HCEKRQTURbfYt-t2KS6s,ChIJP-fgBg2RQTUR8cwEcdKIQgo">
+        <div class="vs-topic">텐진 · 10~15만원 숙소</div>
+        <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJP-fgBg2RQTUR8cwEcdKIQgo/0.webp" alt="호텔 오리엔탈 익스프레스 후쿠오카 텐진" width="300" height="225" loading="lazy"></span></div>
+        <div class="vs-heads"><span class="vs-col"><span class="vs-n">몬토레</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.4 (1,222)</span></span><span class="vs-col"><span class="vs-n">오리엔탈 익스프레스 텐진</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (1,249)</span></span></div>
+        <div class="vs-rows">
+            <div class="vs-r"><b class="vs-v vs-p is-win">2%</b><span class="vs-k">실망 확률</span><b class="vs-v vs-p">8%</b></div>
+            <div class="vs-r"><span class="vs-v">207건<span class=vs-r>43%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">219건<span class=vs-r>41%</span></span></div>
+            <div class="vs-r"><span class="vs-v">약 14만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 11만원</span></div>
+        </div>
+        <div class="vs-end"><b class="vs-verdict"><span class="seg">몬토레가</span> <span class="seg">실망 확률 3.4배 낮아요</span></b><span class="vs-sub"><span class="seg">오리엔탈 익스프레스 텐진은</span> <span class="seg">주로 냄새 불만이에요</span></span></div>
+    </a><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJ9yX8lJyRQTURlJxzdI5_KrA,ChIJkXqoOZORQTURyBBg18vUy4o">
         <div class="vs-topic">기온 vs 나카스</div>
         <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9yX8lJyRQTURlJxzdI5_KrA/0.webp" alt="더 블라섬 하카타 프리미어" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJkXqoOZORQTURyBBg18vUy4o/0.webp" alt="더 로얄 파크 캔버스 후쿠오카 나카스" width="300" height="225" loading="lazy"></span></div>
-        <div class="vs-heads"><span class="vs-col"><span class="vs-n">더 블라섬 하카타 프리미어</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.5 (1,618)</span></span><span class="vs-col"><span class="vs-n">더 로얄 파크 캔버스 나카스</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.3 (793)</span></span></div>
+        <div class="vs-heads"><span class="vs-col"><span class="vs-n">더 블라섬 하카타 프리미어</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.5 (1,636)</span></span><span class="vs-col"><span class="vs-n">더 로얄 파크 캔버스 나카스</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.3 (799)</span></span></div>
         <div class="vs-rows">
             <div class="vs-r"><b class="vs-v vs-p is-win">2%</b><span class="vs-k">실망 확률</span><b class="vs-v vs-p">6%</b></div>
-            <div class="vs-r"><span class="vs-v">122건<span class=vs-r>27%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">136건<span class=vs-r>38%</span></span></div>
-            <div class="vs-r"><span class="vs-v">약 25만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 25만원</span></div>
+            <div class="vs-r"><span class="vs-v">125건<span class=vs-r>28%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">134건<span class=vs-r>37%</span></span></div>
+            <div class="vs-r"><span class="vs-v">약 26만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 22만원</span></div>
         </div>
-        <div class="vs-end"><b class="vs-verdict"><span class="seg">더 블라섬 하카타 프리미어가</span> <span class="seg">실망 확률 3.1배 낮아요</span></b><span class="vs-sub"><span class="seg">더 로얄 파크 캔버스 나카스는</span> <span class="seg">주로 청결 불만이에요</span></span></div>
-    </a><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJMZBRyoiRQTURoKCXNbiVF0E,ChIJP-fgBg2RQTUR8cwEcdKIQgo">
-        <div class="vs-topic">텐진 · 10~15만원 숙소</div>
-        <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMZBRyoiRQTURoKCXNbiVF0E/0.webp" alt="호텔 몬토레 라 스루 후쿠오카" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJP-fgBg2RQTUR8cwEcdKIQgo/0.webp" alt="호텔 오리엔탈 익스프레스 후쿠오카 텐진" width="300" height="225" loading="lazy"></span></div>
-        <div class="vs-heads"><span class="vs-col"><span class="vs-n">몬토레 라 스루</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (2,365)</span></span><span class="vs-col"><span class="vs-n">오리엔탈 익스프레스 텐진</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (1,241)</span></span></div>
+        <div class="vs-end"><b class="vs-verdict"><span class="seg">더 블라섬 하카타 프리미어가</span> <span class="seg">실망 확률 3.4배 낮아요</span></b><span class="vs-sub"><span class="seg">더 로얄 파크 캔버스 나카스는</span> <span class="seg">주로 청결 불만이에요</span></span></div>
+    </a><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJHzNwgZSRQTURrA4sA7FemCw,ChIJOSpAft2RQTURutvK_470dzA">
+        <div class="vs-topic">나카스 vs 텐진</div>
+        <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJHzNwgZSRQTURrA4sA7FemCw/0.webp" alt="호텔 리솔 트리니티 하카타" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJOSpAft2RQTURutvK_470dzA/0.webp" alt="코코 호텔 후쿠오카 텐진" width="300" height="225" loading="lazy"></span></div>
+        <div class="vs-heads"><span class="vs-col"><span class="vs-n">리솔 트리니티 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (2,614)</span></span><span class="vs-col"><span class="vs-n">코코 호텔 텐진</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">3.8 (573)</span></span></div>
         <div class="vs-rows">
             <div class="vs-r"><b class="vs-v vs-p is-win">3%</b><span class="vs-k">실망 확률</span><b class="vs-v vs-p">8%</b></div>
-            <div class="vs-r"><span class="vs-v">195건<span class=vs-r>61%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">224건<span class=vs-r>42%</span></span></div>
-            <div class="vs-r"><span class="vs-v">약 11만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 12만원</span></div>
+            <div class="vs-r"><span class="vs-v">55건<span class=vs-r>30%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">57건<span class=vs-r>50%</span></span></div>
+            <div class="vs-r"><span class="vs-v">약 13만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 13만원</span></div>
         </div>
-        <div class="vs-end"><b class="vs-verdict"><span class="seg">몬토레 라 스루가</span> <span class="seg">실망 확률 2.7배 낮아요</span></b><span class="vs-sub"><span class="seg">오리엔탈 익스프레스 텐진은</span> <span class="seg">주로 냄새 불만이에요</span></span></div>
-    </a><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJHzNwgZSRQTURrA4sA7FemCw,ChIJR8JER5KRQTURR1mNYi4ePNk">
-        <div class="vs-topic">나카스 vs 텐진</div>
-        <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJHzNwgZSRQTURrA4sA7FemCw/0.webp" alt="호텔 리솔 트리니티 하카타" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJR8JER5KRQTURR1mNYi4ePNk/0.webp" alt="니시테츠 인 후쿠오카" width="300" height="225" loading="lazy"></span></div>
-        <div class="vs-heads"><span class="vs-col"><span class="vs-n">리솔 트리니티 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (2,611)</span></span><span class="vs-col"><span class="vs-n">니시테츠 인</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.0 (1,854)</span></span></div>
-        <div class="vs-rows">
-            <div class="vs-r"><b class="vs-v vs-p is-win">3%</b><span class="vs-k">실망 확률</span><b class="vs-v vs-p">7%</b></div>
-            <div class="vs-r"><span class="vs-v">54건<span class=vs-r>30%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">73건<span class=vs-r>37%</span></span></div>
-            <div class="vs-r"><span class="vs-v">약 13만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 11만원</span></div>
-        </div>
-        <div class="vs-end"><b class="vs-verdict"><span class="seg">리솔 트리니티 하카타가</span> <span class="seg">실망 확률 2.1배 낮아요</span></b><span class="vs-sub"><span class="seg">니시테츠 인은</span> <span class="seg">주로 청결 불만이에요</span></span></div>
+        <div class="vs-end"><b class="vs-verdict"><span class="seg">리솔 트리니티 하카타가</span> <span class="seg">실망 확률 2.5배 낮아요</span></b><span class="vs-sub"><span class="seg">코코 호텔 텐진은</span> <span class="seg">주로 소음 불만이에요</span></span></div>
     </a><a class="vs-card" data-ga="vs_card" href="compare?ids=ChIJNWMSRISRQTURHEpvfWlCev0,ChIJy_hLcceRQTURnbO4mkaV_Vs">
         <div class="vs-topic">하카타역 · 10~15만원 숙소</div>
         <div class="vs-pics"><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJNWMSRISRQTURHEpvfWlCev0/0.webp" alt="종크 호텔 하카타" width="300" height="225" loading="lazy"></span><span class="vs-badge">VS</span><span class="vs-pic"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJy_hLcceRQTURnbO4mkaV_Vs/0.webp" alt="컴포트 호텔 하카타" width="300" height="225" loading="lazy"></span></div>
-        <div class="vs-heads"><span class="vs-col"><span class="vs-n">종크 호텔 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (787)</span></span><span class="vs-col"><span class="vs-n">컴포트 호텔 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">3.7 (2,085)</span></span></div>
+        <div class="vs-heads"><span class="vs-col"><span class="vs-n">종크 호텔 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">4.1 (792)</span></span><span class="vs-col"><span class="vs-n">컴포트 호텔 하카타</span><span class="vs-g"><img src="img/star.svg" alt="" width="14" height="14">3.7 (2,090)</span></span></div>
         <div class="vs-rows">
             <div class="vs-r"><b class="vs-v vs-p is-win">4%</b><span class="vs-k">실망 확률</span><b class="vs-v vs-p">7%</b></div>
-            <div class="vs-r"><span class="vs-v">114건<span class=vs-r>59%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">141건<span class=vs-r>38%</span></span></div>
+            <div class="vs-r"><span class="vs-v">114건<span class=vs-r>60%</span></span><span class="vs-k">한국인 리뷰</span><span class="vs-v">140건<span class=vs-r>39%</span></span></div>
             <div class="vs-r"><span class="vs-v">약 12만원</span><span class="vs-k">1박 평일</span><span class="vs-v">약 10만원</span></div>
         </div>
         <div class="vs-end"><b class="vs-verdict"><span class="seg">종크 호텔 하카타가</span> <span class="seg">실망 확률 1.9배 낮아요</span></b><span class="vs-sub"><span class="seg">컴포트 호텔 하카타는</span> <span class="seg">주로 객실 불만이에요</span></span></div>
@@ -162,12 +157,23 @@
                 <div class="hotel-list init" data-ga-block>
             <div class="head"><a class="title head-link" href="./search" data-ga="home_more" data-ga-title>한국인이 찾고 실망은 적은 숙소</a><span class="slider-nav"><button type="button" class="sn-prev" aria-label="이전 호텔"></button><button type="button" class="sn-next" aria-label="다음 호텔"></button></span></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper"><li class="swiper-slide">
+        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
+                <div class="hcard-meta">★ 4.5 · 나카스</div>
+                <div class="hcard-price">평일 약 <b>18만원</b></div>
+                
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
         <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="hcard hcard--carousel" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
                 <h3 class="hcard-name">호텔 몬토레 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.4 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>16만원</b></div>
+                <div class="hcard-price">평일 약 <b>14만원</b></div>
                 
             </div>
         </a>
@@ -184,34 +190,23 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
-                <div class="hcard-meta">★ 4.4 · 나카스</div>
-                <div class="hcard-price">평일 약 <b>14만원</b></div>
-                
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
-        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
-                <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>17만원</b></div>
-                
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
         <a href="hotels/ChIJ9yX8lJyRQTURlJxzdI5_KrA" class="hcard hcard--carousel" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9yX8lJyRQTURlJxzdI5_KrA/0.webp" alt="더 블라섬 하카타 프리미어" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
                 <h3 class="hcard-name">더 블라섬 하카타 프리미어</h3>
                 <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>25만원</b></div>
+                <div class="hcard-price">평일 약 <b>26만원</b></div>
+                
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 3%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <div class="hcard-price">평일 약 <b>16만원</b></div>
                 
             </div>
         </a>
@@ -228,11 +223,11 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 4%</span></div>
+        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
+                <div class="hcard-meta">★ 4.5 · 기온</div>
                 <div class="hcard-price">평일 약 <b>17만원</b></div>
                 
             </div>
@@ -244,7 +239,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">호텔 몬토레 라 스루 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.1 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>11만원</b></div>
+                <div class="hcard-price">평일 약 <b>13만원</b></div>
                 
             </div>
         </a>
@@ -256,14 +251,14 @@
                     <div class="intro-item" data-intro="calc">
                         <a class="intro-card" href="./about" data-ga="intro_calc">
                             <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
-                            <span class="ic-art"><div class="mascot-scene ic-scene" aria-hidden="true"><img class="mascot ic-mascot" src="./img/mascot/otter-report.webp" width="400" height="405" alt="" decoding="async"></div></span>
+                            <span class="ic-art"><div class="mascot-scene ic-scene" aria-hidden="true"><img class="mascot ic-mascot" src="./img/mascot/otter-report.webp" width="400" height="405" alt="" decoding="async" loading="lazy"></div></span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
                     <div class="intro-item" data-intro="rec">
                         <a class="intro-card" href="./recommend" data-ga="intro_rec">
                             <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">네 가지만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
-                            <span class="ic-art"><div class="mascot-scene ic-scene" aria-hidden="true"><img class="mascot ic-mascot" src="./img/mascot/otter-look.webp" width="400" height="459" alt="" decoding="async"></div></span>
+                            <span class="ic-art"><div class="mascot-scene ic-scene" aria-hidden="true"><img class="mascot ic-mascot" src="./img/mascot/otter-look.webp" width="400" height="459" alt="" decoding="async" loading="lazy"></div></span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
@@ -297,11 +292,11 @@
             <div class="head"><div class="title" data-ga-title>평일 가격대별 추천</div></div>
             <div class="pt-tabs" role="group" aria-label="평일 가격대"><button type="button" class="pt-tab on" data-pt="b2" aria-pressed="true">10~15만원</button><button type="button" class="pt-tab" data-pt="b3" aria-pressed="false">15~20만원</button><button type="button" class="pt-tab" data-pt="b4" aria-pressed="false">20만원 이상</button></div>
             <div class="list hotel-slider pt-pane" data-pt="b2"><ul class="swiper-wrapper"><li class="swiper-slide">
-        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
-                <div class="hcard-meta">★ 4.4 · 나카스</div>
+                <h3 class="hcard-name">호텔 몬토레 후쿠오카</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
                 <div class="hcard-price">평일 약 <b>14만원</b></div>
                 
             </div>
@@ -324,6 +319,17 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">호텔 몬토레 라 스루 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.1 · 텐진</div>
+                <div class="hcard-price">평일 약 <b>13만원</b></div>
+                
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A/0.webp" alt="프린스 스마트 인 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">프린스 스마트 인 하카타</h3>
+                <div class="hcard-meta">★ 4.2 · 하카타역</div>
                 <div class="hcard-price">평일 약 <b>11만원</b></div>
                 
             </div>
@@ -372,24 +378,13 @@
                 
             </div>
         </a>
-    </li>
-<li class="swiper-slide">
-        <a href="hotels/ChIJrcuZL8CRQTURkKRU2AEsvuM" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJrcuZL8CRQTURkKRU2AEsvuM/0.webp" alt="호텔 트리피토 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 4%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">호텔 트리피토 하카타 기온</h3>
-                <div class="hcard-meta">★ 4.2 · 나카스</div>
-                <div class="hcard-price">평일 약 <b>13만원</b></div>
-                
-            </div>
-        </a>
     </li></ul></div><div class="list hotel-slider pt-pane" data-pt="b3" hidden><ul class="swiper-wrapper"><li class="swiper-slide">
-        <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">호텔 몬토레 후쿠오카</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>16만원</b></div>
+                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
+                <div class="hcard-meta">★ 4.5 · 나카스</div>
+                <div class="hcard-price">평일 약 <b>18만원</b></div>
                 
             </div>
         </a>
@@ -406,22 +401,22 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 3%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
-                <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>17만원</b></div>
+                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <div class="hcard-price">평일 약 <b>16만원</b></div>
                 
             </div>
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 4%</span></div>
+        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
+                <div class="hcard-meta">★ 4.5 · 기온</div>
                 <div class="hcard-price">평일 약 <b>17만원</b></div>
                 
             </div>
@@ -476,7 +471,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">더 블라섬 하카타 프리미어</h3>
                 <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>25만원</b></div>
+                <div class="hcard-price">평일 약 <b>26만원</b></div>
                 
             </div>
         </a>
@@ -487,7 +482,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">미야코 호텔 하카타</h3>
                 <div class="hcard-meta">★ 4.4 · 하카타역</div>
-                <div class="hcard-price">평일 약 <b>31만원</b></div>
+                <div class="hcard-price">평일 약 <b>35만원</b></div>
                 
             </div>
         </a>
@@ -498,7 +493,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">더 게이트 호텔 후쿠오카 바이 훌릭</h3>
                 <div class="hcard-meta">★ 4.6 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>31만원</b></div>
+                <div class="hcard-price">평일 약 <b>30만원</b></div>
                 
             </div>
         </a>
@@ -508,7 +503,7 @@
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9zVCKJSRQTURqNnQ59t_DTQ/0.webp" alt="더 원파이브 빌라 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
                 <h3 class="hcard-name">더 원파이브 빌라 후쿠오카</h3>
-                <div class="hcard-meta">★ 4.3 · 나카스</div>
+                <div class="hcard-meta">★ 4.4 · 나카스</div>
                 <div class="hcard-price">평일 약 <b>20만원</b></div>
                 
             </div>
@@ -520,7 +515,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">솔라리아 니시테츠 호텔 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.3 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>34만원</b></div>
+                <div class="hcard-price">평일 약 <b>30만원</b></div>
                 
             </div>
         </a>
@@ -531,7 +526,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">미쓰이 가든 호텔 후쿠오카 기온</h3>
                 <div class="hcard-meta">★ 4.3 · 기온</div>
-                <div class="hcard-price">평일 약 <b>34만원</b></div>
+                <div class="hcard-price">평일 약 <b>23만원</b></div>
                 
             </div>
         </a>
@@ -542,7 +537,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">그랜드 하얏트 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.3 · 기온</div>
-                <div class="hcard-price">평일 약 <b>40만원</b></div>
+                <div class="hcard-price">평일 약 <b>43만원</b></div>
                 
             </div>
         </a>
@@ -567,7 +562,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">미야코 호텔 하카타</h3>
                 <div class="hcard-meta">★ 4.4 · 하카타역</div>
-                <div class="hcard-price">평일 약 <b>31만원</b></div>
+                <div class="hcard-price">평일 약 <b>35만원</b></div>
                 
             </div>
         </a>
@@ -589,7 +584,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">더 게이트 호텔 후쿠오카 바이 훌릭</h3>
                 <div class="hcard-meta">★ 4.6 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>31만원</b></div>
+                <div class="hcard-price">평일 약 <b>30만원</b></div>
                 
             </div>
         </a>
@@ -606,23 +601,23 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0/0.webp" alt="도큐스테이 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">도큐스테이 하카타</h3>
-                <div class="hcard-meta">★ 4.3 · 하카타역</div>
-                
-                
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
         <a href="hotels/ChIJfe7LZRKRQTURMIG2H-Zgrmo" class="hcard hcard--carousel" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJfe7LZRKRQTURMIG2H-Zgrmo/0.webp" alt="비아인 하카타구치에키마에" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 1%</span></div>
             <div class="hcard-body">
                 <h3 class="hcard-name">비아인 하카타구치에키마에</h3>
                 <div class="hcard-meta">★ 4.3 · 하카타역</div>
+                <div class="hcard-price">평일 약 <b>11만원</b></div>
                 
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0/0.webp" alt="도큐스테이 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 3%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">도큐스테이 하카타</h3>
+                <div class="hcard-meta">★ 4.3 · 하카타역</div>
+                <div class="hcard-price">평일 약 <b>10만원</b></div>
                 
             </div>
         </a>
@@ -653,34 +648,34 @@
                 <div class="hotel-list init" data-ga-block>
             <div class="head"><a class="title head-link" href="./search?no=roach,bedbug" data-ga="home_more" data-ga-title>바퀴벌레 안심 숙소</a><span class="slider-nav"><button type="button" class="sn-prev" aria-label="이전 호텔"></button><button type="button" class="sn-next" aria-label="다음 호텔"></button></span></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper"><li class="swiper-slide">
-        <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">호텔 몬토레 후쿠오카</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>16만원</b></div>
+                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
+                <div class="hcard-meta">★ 4.5 · 나카스</div>
+                <div class="hcard-price">평일 약 <b>18만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ-xGcCSaRQTUR130d6GUlHdM/0.webp" alt="도큐스테이 후쿠오카 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJGx1HCEKRQTURbfYt-t2KS6s/0.webp" alt="호텔 몬토레 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">도큐스테이 후쿠오카 텐진</h3>
-                <div class="hcard-meta">★ 4.4 · 나카스</div>
+                <h3 class="hcard-name">호텔 몬토레 후쿠오카</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
                 <div class="hcard-price">평일 약 <b>14만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 3%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
-                <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>17만원</b></div>
+                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <div class="hcard-price">평일 약 <b>16만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -697,11 +692,11 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 4%</span></div>
+        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
+                <div class="hcard-meta">★ 4.5 · 기온</div>
                 <div class="hcard-price">평일 약 <b>17만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
@@ -713,7 +708,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">호텔 몬토레 라 스루 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.1 · 텐진</div>
-                <div class="hcard-price">평일 약 <b>11만원</b></div>
+                <div class="hcard-price">평일 약 <b>13만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -724,7 +719,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">미야코 호텔 하카타</h3>
                 <div class="hcard-meta">★ 4.4 · 하카타역</div>
-                <div class="hcard-price">평일 약 <b>31만원</b></div>
+                <div class="hcard-price">평일 약 <b>35만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -735,7 +730,7 @@
             <div class="hcard-body">
                 <h3 class="hcard-name">프린스 스마트 인 하카타</h3>
                 <div class="hcard-meta">★ 4.2 · 하카타역</div>
-                <div class="hcard-price">주말 약 <b>26만원</b></div>
+                <div class="hcard-price">평일 약 <b>11만원</b></div>
                 <div class="hcard-note"><span class="seg">바퀴벌레⁠·⁠빈대 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -755,22 +750,22 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 3%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
-                <div class="hcard-meta">★ 4.5 · 기온</div>
-                <div class="hcard-price">평일 약 <b>17만원</b></div>
+                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
+                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <div class="hcard-price">평일 약 <b>16만원</b></div>
                 <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJEwIjfVKRQTUR3P0lj4LagrI/0.webp" alt="리치몬드 호텔 텐진 니시도리" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 4%</span></div>
+        <a href="hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJp6Wz6r-RQTURmdpAUE0bDs8/0.webp" alt="니시테츠 호텔 크룸 하카타 기온" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">리치몬드 호텔 텐진 니시도리</h3>
-                <div class="hcard-meta">★ 4.4 · 텐진</div>
+                <h3 class="hcard-name">니시테츠 호텔 크룸 하카타 기온</h3>
+                <div class="hcard-meta">★ 4.5 · 기온</div>
                 <div class="hcard-price">평일 약 <b>17만원</b></div>
                 <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
@@ -788,23 +783,23 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A/0.webp" alt="프린스 스마트 인 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">프린스 스마트 인 하카타</h3>
-                <div class="hcard-meta">★ 4.2 · 하카타역</div>
-                <div class="hcard-price">주말 약 <b>26만원</b></div>
-                <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
-            </div>
-        </a>
-    </li>
-<li class="swiper-slide">
         <a href="hotels/ChIJMbD7rmWTQTURqhaRkee5VKQ" class="hcard hcard--carousel" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMbD7rmWTQTURqhaRkee5VKQ/0.webp" alt="언플랜 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
                 <h3 class="hcard-name">언플랜 후쿠오카</h3>
                 <div class="hcard-meta">★ 4.3</div>
-                <div class="hcard-price">평일 약 <b>8만원</b></div>
+                <div class="hcard-price">평일 약 <b>9만원</b></div>
+                <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
+            </div>
+        </a>
+    </li>
+<li class="swiper-slide">
+        <a href="hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJw4TrhWmRQTURwPmIw-eiY4A/0.webp" alt="프린스 스마트 인 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">프린스 스마트 인 하카타</h3>
+                <div class="hcard-meta">★ 4.2 · 하카타역</div>
+                <div class="hcard-price">평일 약 <b>11만원</b></div>
                 <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -821,12 +816,12 @@
         </a>
     </li>
 <li class="swiper-slide">
-        <a href="hotels/ChIJse2TgpORQTURltanf1kfWlg" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJse2TgpORQTURltanf1kfWlg/0.webp" alt="하카타 엑셀 호텔 도큐" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+        <a href="hotels/ChIJ9zVCKJSRQTURqNnQ59t_DTQ" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ9zVCKJSRQTURqNnQ59t_DTQ/0.webp" alt="더 원파이브 빌라 후쿠오카" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
             <div class="hcard-body">
-                <h3 class="hcard-name">하카타 엑셀 호텔 도큐</h3>
-                <div class="hcard-meta">★ 4.1 · 나카스</div>
-                <div class="hcard-price">평일 약 <b>16만원</b></div>
+                <h3 class="hcard-name">더 원파이브 빌라 후쿠오카</h3>
+                <div class="hcard-meta">★ 4.4 · 나카스</div>
+                <div class="hcard-price">평일 약 <b>20만원</b></div>
                 <div class="hcard-note"><span class="seg">곰팡이 0건</span> <span class="seg">최근 1년 기준</span></div>
             </div>
         </a>
@@ -863,13 +858,13 @@
             </article>
         </section>
     </main>
-    <script src="./data/index.js?v=1791769884"></script>
-    <script defer src="./data/search_index.js?v=1791769884"></script>
-    <script src="./js/search-key.js?v=1791769884"></script>
-    <script src="./js/search-ac.js?v=1791769884"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script defer src="./data/index.js?v=1792460158"></script>
+    <script defer src="./data/search_index.js?v=1792460158"></script>
+    <script defer src="./js/search-key.js?v=1792460158"></script>
+    <script defer src="./js/search-ac.js?v=1792460158"></script>
+    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
-    // ───── 메인: 지도 (한국어 라벨 타일) ─────
+    // ───── 메인: 지도 (한국어 라벨 타일) ───── (아래 외부 스크립트는 전부 defer — 이 블록은 $(function) 안에서만 쓴다, 2026-10-20)
     $(function(){
         var BAND_COLOR = {safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')};
         var map = L.map('map', {scrollWheelZoom: false}).setView([33.5902, 130.4017], 13);
