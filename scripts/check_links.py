@@ -169,13 +169,13 @@ for l in lines:
     if not to_file(b):
         errs.append(f'대상 파일 없음: {l}')
     if a.startswith('/hotels/'):
-        if not re.fullmatch(r'/hotels/ChIJ[\w-]+', a):
+        if not re.fullmatch(r'/hotels/ChIJ[\w-]+(\.html)?', a):
             errs.append(f'옛 주소가 pid가 아님: {l}')
         targets[b] = targets.get(b, 0) + 1
 for p in sorted(detail_urls):
-    if targets.get(p, 0) != 1:
-        errs.append(f'옛 주소 301 {targets.get(p, 0)}줄: {p}')
-report(4, '_redirects 줄 수·대상', errs, f'{len(lines)}줄 = 상세 {len(details)} + 허브 2')
+    if targets.get(p, 0) != 2:   # 무확장 + .html
+        errs.append(f'옛 주소 301 {targets.get(p, 0)}줄(2여야): {p}')
+report(4, '_redirects 줄 수·대상', errs, f'{len(lines)}줄 = 상세 {len(details)}×2(무확장·.html) + 허브 2')
 
 # ── 5 ──
 errs = []

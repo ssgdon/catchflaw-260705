@@ -4711,7 +4711,7 @@ def main():
     #  배포가 삭제된 파일을 남겨 둬도 옛 페이지가 뜨지 않게). best/pool(수영장)은 2026-10 허브 재구성(ecaf414)에서 제거 → 고급 숙소
     #  + 상세 옛 주소 /hotels/{pid} → /hotels/{slug} (SEO-CRAWL §2-2, 정적 규칙 = 호텔 수 + 2, Cloudflare 한도 2,000 안).
     #    '.html' 옛 주소는 플랫폼이 먼저 확장자를 떼고(308) 이 301로 이어진다(2홉) — 따로 넣지 않는다
-    W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS + [(f'/hotels/{p}', f'/hotels/{SLUG[p]}') for p in written]))
+    W('_redirects', ''.join(f'{a} {b} 301\n' for a, b in REDIRECTS + [x for p in written for x in ((f'/hotels/{p}', f'/hotels/{SLUG[p]}'), (f'/hotels/{p}.html', f'/hotels/{SLUG[p]}'))]))
     W('_headers', headers_txt())   # 정적 자산 캐시·Link preload(Early Hints) — 2026-10-20 속도 최적화
     col_slugs = [c['slug'] for c, _ in built_cols]
     W('sitemap.xml', build_sitemap([p for p in written if H[p]['scored']], col_slugs))   # 분석 준비 중(noindex)은 제외
