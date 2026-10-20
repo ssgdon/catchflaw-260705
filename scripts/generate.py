@@ -1228,7 +1228,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
                     <div class="title" data-ga-title>
-                        <h1 class="tit hero-title">이 호텔,<br><span class="hero-key">실망할 확률</span>은<br>몇&nbsp;%일까요?</h1>
+                        <h1 class="tit hero-title">리뷰 대신 다 읽고<br><span class="hero-key">실망 확률</span>로<br>알려드려요</h1>
                         <picture class="hero-mascot" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/mascot/otter-look-pc.webp"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="640" height="763" alt="" decoding="async"></picture>
                     </div>
                     <form class="input" action="./search" method="get" autocomplete="off">

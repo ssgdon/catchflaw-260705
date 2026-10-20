@@ -1608,7 +1608,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #main .search-box{display:flex;flex-direction:column;padding:var(--sp-5) var(--page-x) var(--sp-4);background:var(--surface-card);}
 #main .search-box{position:relative;isolation:isolate;}
 #main .search-box::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;   
-  background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 8%, transparent 55%),   
+  background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 20%, transparent 62%),   
              linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   
              url(../img/home_bg_otter_1080.webp) right 100% / min(100%, 390px) auto no-repeat;}   
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}

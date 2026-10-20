@@ -208,7 +208,7 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
    왼쪽·위·아래를 흰색(--surface-card)으로 흐리게 덮어 글자는 흰 면 위에서 읽히고 오른쪽에만 건물·수영장이 보인다. 사진은 장식(aria 없음) */
 #main .search-box{position:relative;isolation:isolate;}
 #main .search-box::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;   /* 히어로 전체 = 세로 사진(보라 하늘·호텔·인피니티 풀) — 2026-10-10 */
-  background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 8%, transparent 55%),   /* 제목 쪽 하늘을 한 번 더 밝게 · 390 넘는 폭에서 사진 왼쪽 끝을 흰 면으로 덮음 */
+  background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 20%, transparent 62%),   /* 제목 뒤 흰 그늘을 넓힘(8→20%, 2026-10-20 사용자: 첫 화면이 빽빽해 글자 뒤를 더 비움) · 390 넘는 폭에서 사진 왼쪽 끝을 흰 면으로 덮음 */
              linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   /* 아래 칩 줄은 흰 면 */
              url(../img/home_bg_otter_1080.webp) right 100% / min(100%, 390px) auto no-repeat;}   /* 2026-10-11 수달이 풀 데크에 선 장면(사진 안에 합성): 오른쪽 아래 정렬 — 귀는 제목 둘째 줄, 돋보기는 '까요?' 오른쪽, 몸은 검색창 뒤. 390 넘는 폭에선 키우지 않음(귀가 머리 바에 닿지 않게) */
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}
