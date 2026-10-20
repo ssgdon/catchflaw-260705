@@ -28,7 +28,7 @@
 | 줄바꿈 | `word-break: keep-all`, 버튼·칩 라벨은 `nowrap`, 묶음은 §15 | — |
 
 - 새 스타일은 토큰만 쓴다. 레거시(layout·uplift)는 **지우는 쪽으로만** 고친다. 새 부품은 `ds.css` 끝 `§v3` 블록에 두고, 대체된 레거시 셀렉터는 같은 PR에서 지운다.
-- 로드 순서: tokens → common → layout → swiper → uplift → mvp → **ds** → pc. 서빙은 빌드가 이 순서로 합친 `docs/css/site.css` 한 파일(앞에 `css/vendor/pretendard.css` 글꼴 선언, 2026-10-20) — 원본·순서는 그대로. PC 값(72·48·리듬 48/48/24)은 `pc.css` `@media(min-width:1100px)`의 `:root`에서만 바꾼다.
+- 로드 순서: tokens → common → layout → swiper → uplift → mvp → **ds** → pc. 서빙은 빌드가 ds까지 합친 `docs/css/site.css` 한 파일(앞에 `css/vendor/pretendard.css` 글꼴 선언, 2026-10-20) + `pc.css`는 `media="(min-width:770px)"` 링크로 따로(모바일에서 내려받기만 하고 렌더를 막지 않음; PC 전용 요소 기본 숨김은 ds.css) — 원본·순서는 그대로. PC 값(72·48·리듬 48/48/24)은 `pc.css` `@media(min-width:1100px)`의 `:root`에서만 바꾼다.
 - 차트·지도처럼 CSS 밖에서 색을 쓰는 JS는 hex 대신 `CF.tok('--ink')`·`CF.rgba('--primary', .13)`(js/backnav.js, 동기 로드)를 쓴다(R-jshex).
 - 측정(GA4) 훅은 클래스가 아니라 속성에 건다: 나가는 링크 `data-out="cta|google|map"`, 홈 클릭 `data-ga="placement"` + `data-ga-block`/`data-ga-title`. 클래스 이름을 바꿔도 이벤트가 끊기지 않게.
 

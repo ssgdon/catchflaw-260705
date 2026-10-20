@@ -27,7 +27,7 @@ CF.root = (function () { var s = document.currentScript && document.currentScrip
 CF.MASCOT = { wave: [400, 433], peek: [400, 429], report: [400, 405], look: [400, 459], jump: [400, 409] };   // 그림별 크기(자리 잡기용 width·height)
 CF.mascot = function (pose, cls) {
   var p = CF.MASCOT[pose] ? pose : 'look', d = CF.MASCOT[p];
-  return '<img class="mascot' + (cls ? ' ' + cls : '') + '" src="' + CF.root + 'img/mascot/otter-' + p + '.webp" width="' + d[0] + '" height="' + d[1] + '" alt="" aria-hidden="true" decoding="async">';
+  return '<img class="mascot' + (cls ? ' ' + cls : '') + '" src="' + CF.root + 'img/mascot/otter-' + p + '.webp' + (window.CF_BUILD ? '?v=' + window.CF_BUILD : '') + '" width="' + d[0] + '" height="' + d[1] + '" alt="" aria-hidden="true" decoding="async">';
 };
 CF.mascotScene = function (pose, cls, imgCls) {
   return '<div class="mascot-scene' + (cls ? ' ' + cls : '') + '" aria-hidden="true">' + CF.mascot(pose, imgCls) + '</div>';

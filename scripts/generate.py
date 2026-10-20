@@ -274,7 +274,7 @@ def mascot_scene(pose, root='./', img_cls='', scene_cls='', lazy=False):
     w, h = MASCOT_DIMS[pose]
     lz = ' loading="lazy"' if lazy else ''
     return (f'<div class="mascot-scene{(" " + scene_cls) if scene_cls else ""}" aria-hidden="true"><img class="mascot{(" " + img_cls) if img_cls else ""}" '
-            f'src="{root}img/mascot/otter-{pose}.webp" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
+            f'src="{root}img/mascot/otter-{pose}.webp?v={BUILD}" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
 
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
@@ -553,26 +553,37 @@ WHO_JS = '''<script>
 </script>'''
 
 # Microsoft Clarity (히트맵·세션 리플레이). f-string 아님 — JS 중괄호 리터럴 보존.
-CLARITY = '''<script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "xi5o022ef1");
-</script>'''
+CLARITY = ''   # 2026-10-20: ANALYTICS(아래)에 합쳐 로드 뒤로 미룸
 
 # Google Analytics 4 (전 페이지 head). gtag 로드 + 자동 페이지뷰.
 GA4_ID = 'G-4M1BGXJZYQ'
-GA4 = f'''<script async src="https://www.googletagmanager.com/gtag/js?id={GA4_ID}"></script>
-<script>
+CLARITY_ID = 'xi5o022ef1'
+# 2026-10-20 속도: gtag.js(176KB)·clarity(30KB)는 첫 화면이 끝난 뒤(load + 1.5초) 또는 첫 터치·키·스크롤 때 싣는다.
+# gtag()·clarity() 호출은 그 전에도 큐(dataLayer·clarity.q)에 쌓여 로드되면 그대로 보내진다(페이지뷰 포함).
+GA4 = f'''<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
   gtag('config', '{GA4_ID}');
+  window.clarity = window.clarity || function(){{(window.clarity.q = window.clarity.q || []).push(arguments);}};
+  (function(){{
+    var done = false;
+    function go(){{
+      if (done) return; done = true;
+      var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id={GA4_ID}'; document.head.appendChild(g);
+      var c = document.createElement('script'); c.async = true; c.src = 'https://www.clarity.ms/tag/{CLARITY_ID}'; document.head.appendChild(c);
+    }}
+    function arm(){{ setTimeout(go, 1500); }}
+    if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
+    ['pointerdown', 'keydown', 'scroll'].forEach(function(e){{ window.addEventListener(e, go, {{once: true, passive: true}}); }});
+  }})();
 </script>'''
 
-def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head=''):
+def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head='', sync_js=False):
+    """sync_js=True(검색 페이지만): 인라인이 파싱 시점에 $·CF·CFRec을 쓰므로 backnav·jQuery·recommend를 동기로. 그 외 페이지는 전부 defer —
+       인라인의 $(function…)은 shim이 모아 두었다가 js/vendor/jq-flush.js가 jQuery.ready로 넘긴다(2026-10-20 속도)."""
     p = '../' * depth
+    D = '' if sync_js else ' defer'
     seo = []
     d = None
     if description:
@@ -604,13 +615,16 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="apple-touch-icon" href="{p}img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
     <link rel="stylesheet" href="{p}css/site.css?v={BUILD}">
-    <script src="{p}js/backnav.js?v={BUILD}"></script>
+    <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}" media="(min-width:770px)">
+    <script>window.CF_BUILD='{BUILD}';window.$=window.jQuery=function(f){{(window.__cfq=window.__cfq||[]).push(f);}};</script>
+    <script src="{p}js/backnav.js?v={BUILD}"{D}></script>
     <script src="{p}js/common.js?v={BUILD}" defer></script>
-    <script src="{p}js/vendor/jquery-3.7.1.min.js?v={BUILD}"></script>
+    <script src="{p}js/vendor/jquery-3.7.1.min.js?v={BUILD}"{D}></script>
+    <script src="{p}js/vendor/jq-flush.js?v={BUILD}" defer></script>
     <script src="{p}js/swiper.js?v={BUILD}" defer></script>
     <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_PRICE_BANDS={json.dumps({'wd': [[c, l] for c, l, _, _ in PRICE_BANDS], 'we': [[c, l] for c, l, _, _ in PRICE_BANDS_WE]}, ensure_ascii=False)};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
     <script src="{p}js/engage.js?v={BUILD}" defer></script>
-    <script src="{p}js/recommend.js?v={BUILD}"></script>
+    <script src="{p}js/recommend.js?v={BUILD}"{D}></script>
 </head>
 <body>
 <div id="wrapper">'''
@@ -907,7 +921,7 @@ def city_row_html():
            'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
     items = []
     for name, slug, live in HOME_CITIES:
-        img = f'style="background-image:url(./img/city/{slug}.webp)"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
+        img = f'style="background-image:url(./img/city/{slug}.webp?v={BUILD})"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
         if live:
             items.append(f'<a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" {img}><span class="ct-n">{pin}{name}</span></a>')
         else:
@@ -992,7 +1006,7 @@ def img_path(pid, meta, depth=0):
     if meta.get('r2_img'):
         return meta['r2_img']                       # R2 절대 URL
     if meta.get('local_img'):
-        return f'{p}img/hotels/{pid}.jpg'
+        return f'{p}img/hotels/{pid}.jpg?v={BUILD}'   # img/hotels/*·mascot·city·히어로는 _headers 1년 캐시 → 참조에 빌드 버전(2026-10-20)
     return f'{p}img/placeholder.svg'
 
 def fmt_score(v):
@@ -1218,8 +1232,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드려요. '
                     '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
-    <link rel="preload" as="image" href="./img/home_bg_otter_1080.webp" media="(max-width:1099px)" fetchpriority="high">
-    <link rel="preload" as="image" href="./img/home_bg_pc.jpg" media="(min-width:1100px)" fetchpriority="high">
     <link rel="preconnect" href="https://unpkg.com" crossorigin>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"></noscript>''' + site_header(0, search=False, is_home=True) + f'''
@@ -1227,6 +1239,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         <section id="main">
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
+                    <picture class="hero-bg" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/home_bg_pc.jpg?v={BUILD}"><img src="./img/home_bg_otter_m.webp?v={BUILD}" width="960" height="1120" alt="" fetchpriority="high" decoding="async"></picture>
                     <div class="title" data-ga-title>
                         <h1 class="tit hero-title">리뷰 대신 다 읽고<br><span class="hero-key">실망 확률</span>로<br>알려드려요</h1>
                         <picture class="hero-mascot" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/mascot/otter-look-pc.webp"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="640" height="763" alt="" decoding="async"></picture>
@@ -1238,7 +1251,6 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     </form>
                     {city_row_html()}
                     <a href="./recommend" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
-                    <div class="hero-photo" aria-hidden="true"></div>
                 </div>
             </article>
             {vs_block}
@@ -1317,15 +1329,31 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             {col_chips}
         </section>
     </main>
-    <script defer src="./data/index.js?v={BUILD}"></script>
-    <script defer src="./data/search_index.js?v={BUILD}"></script>
-    <script defer src="./js/search-key.js?v={BUILD}"></script>
-    <script defer src="./js/search-ac.js?v={BUILD}"></script>
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     function hurl(h){{ return './hotels/' + (h.u || h.id); }}   // 상세 주소 = 슬러그(u, SEO-CRAWL §2) — 데이터에 없으면 pid(301로 이어짐)
-    // ───── 메인: 지도 (한국어 라벨 타일) ───── (아래 외부 스크립트는 전부 defer — 이 블록은 $(function) 안에서만 쓴다, 2026-10-20)
-    $(function(){{
+    // ───── 홈 데이터(호텔 199곳 JSON 83KB)·검색 자동완성·지도(leaflet 42KB)는 첫 화면 뒤에 — 검색창 터치/포커스, 지도 영역 600px 근접, 로드 뒤 2.5초 중 먼저 오는 때(2026-10-20 속도) ─────
+    (function(){{
+        var state = 0, cbs = [];   // 0 대기 · 1 받는 중 · 2 완료
+        var SRC = ['./data/index.js?v={BUILD}', './data/search_index.js?v={BUILD}', './js/search-key.js?v={BUILD}', './js/search-ac.js?v={BUILD}', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+        function flush(){{ state = 2; var c = cbs; cbs = []; c.forEach(function(f){{ try {{ f(); }} catch (e) {{ if (window.console) console.error(e); }} }}); }}
+        window.cfHomeLoad = function(cb){{
+            if (cb) cbs.push(cb);
+            if (state === 2) {{ flush(); return; }}
+            if (state === 1) return;
+            state = 1;
+            var left = SRC.length;
+            SRC.forEach(function(src){{ var s = document.createElement('script'); s.src = src; s.async = false; s.onload = s.onerror = function(){{ if (--left === 0) flush(); }}; document.body.appendChild(s); }});
+        }};
+        var q = document.getElementById('hero-q');
+        if (q) ['focus', 'pointerdown', 'touchstart'].forEach(function(e){{ q.addEventListener(e, function(){{ window.cfHomeLoad(); }}, {{once: true, passive: true}}); }});
+        var m = document.getElementById('map');
+        if (m && 'IntersectionObserver' in window) {{ var io = new IntersectionObserver(function(en){{ if (en.some(function(x){{ return x.isIntersecting; }})) {{ io.disconnect(); window.cfHomeLoad(); }} }}, {{rootMargin: '600px'}}); io.observe(m); }}
+        function late(){{ setTimeout(function(){{ window.cfHomeLoad(); }}, 2500); }}
+        if (document.readyState === 'complete') late(); else window.addEventListener('load', late);
+    }})();
+    // ───── 메인: 지도 (한국어 라벨 타일) ───── 데이터·leaflet이 받아진 뒤 실행(cfHomeLoad 콜백)
+    window.cfHomeLoad(function(){{
+        if (!window.L || !window.HOTELS || !document.getElementById('map')) return;
         var BAND_COLOR = {{safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')}};
         var map = L.map('map', {{scrollWheelZoom: false}}).setView([33.5902, 130.4017], 13);
         // 팝업이 열리면 범례를 숨긴다 — 범례(.map-legend)는 Leaflet 지도 판(z 400) 밖이라 z로는 팝업 아래에 둘 수 없음(P0a)
@@ -1368,10 +1396,10 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             var blk = $(this).closest('[data-ga-block]').find('[data-ga-title]').first().text().replace(/\u2060/g, '').replace(/\s+/g, ' ').trim();
             gtag('event', 'home_click', {{placement: pl, block: blk.slice(0, 40), link_url: this.getAttribute('href') || ''}});
         }});
-        // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행)
-        if (window.CFAutocomplete) {{
-            window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=' }});
-        }}
+        // 공용 자동완성 엔진 연결 (별칭 인덱스 매칭 · 키보드 · 미매칭 요청행) — 데이터·search-ac.js가 받아진 뒤(검색창 터치가 곧 로드 신호)
+        window.cfHomeLoad(function(){{
+            if (window.CFAutocomplete) window.CFAutocomplete.attach($q.get(0), {{ hrefPrefix: './hotels/', areaHref: './search?area=' }});
+        }});
 
         $q.closest('form').on('submit', function(e){{
             var v = $q.val().trim();
@@ -1469,7 +1497,7 @@ def build_recent(hotels_meta, H):
 def abs_img(pid, meta):
     """페이지 깊이와 무관한 썸네일 URL (비교함 localStorage 공유용): R2 절대 → 루트 기준 로컬 → 빈값."""
     if meta.get('r2_img'): return meta['r2_img']
-    if meta.get('local_img'): return f'/img/hotels/{pid}.jpg'
+    if meta.get('local_img'): return f'/img/hotels/{pid}.jpg?v={BUILD}'
     return ''
 
 # ── '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6.1) — 검색 인덱스 x·검색 필터·AI 추천이 같은 숫자를 쓴다 ──
@@ -2337,7 +2365,7 @@ def build_search(city_avg_pct):
           .replace('@@BADGE@@', json.dumps(BADGE_STATES, ensure_ascii=False)))
     f_chips = ''.join(f'<button type="button" class="chip-filter chip-filter--sm" data-f="{k}">{lab}</button>'
                       for k, lab in (('area', '지역'), ('price', '가격'), ('cat', '불만 적은 항목'), ('no', '한 번도 없어야')))
-    return head(f'{CITY["ko"]} 호텔 검색 | 캐치플로',
+    return head(f'{CITY["ko"]} 호텔 검색 | 캐치플로', sync_js=True,
         description=f'{CITY["ko"]} 호텔을 실망 확률 낮은 순으로 비교하세요. '
                    f'지역·가격·불만 적은 항목으로 골라 볼 수 있어요({CITY["ko"]} 평균 실망 확률 {city_avg_pct}%).',
         canonical=f'{BASE}/search').replace('<body>', '<body data-page="search">') + f'''
@@ -3965,7 +3993,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     </main>
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="../js/compare.js?v={BUILD}" data-root="../"></script>
-    <script src="../js/detail-page.js?v={BUILD}"></script>''' + build_footer(1) + FOOT
+    <script src="../js/detail-page.js?v={BUILD}" defer></script>''' + build_footer(1) + FOOT
 
 # ───────────────────────── 컬렉션 허브 (HUB-NORMALIZE §3) ─────────────────────────
 # 지역 3 + 테마 5. slug=URL(무확장), kind, H1, min N 가드. 선정 로직은 collection_members().
@@ -4530,7 +4558,7 @@ Sitemap: {BASE}/sitemap.xml
 '''
 
 # ── 속도 최적화(2026-10-20): CSS 번들 · 캐시 헤더 ──
-CSS_ORDER = ['vendor/pretendard.css', 'tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css', 'pc.css']   # = CLAUDE.md 로드 순서 (앞에 글꼴)
+CSS_ORDER = ['vendor/pretendard.css', 'tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css']   # = CLAUDE.md 로드 순서 (앞에 글꼴). pc.css는 head()가 media=(min-width:1100px) 링크로 따로(모바일에서 비차단, 2026-10-20)
 
 def build_css_bundle():
     """css/ 원본을 로드 순서대로 이어 붙인 docs/css/site.css — 렌더 차단 요청 9개(교차 출처 1 포함) → 같은 출처 1개.
@@ -4541,6 +4569,7 @@ def build_css_bundle():
         s = re.sub(r'@charset\s+"[^"]*";', '', s)
         s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
         s = re.sub(r'\n[ \t]*\n+', '\n', s).strip()
+        s = re.sub(r'url\((["\']?)(\.\./img/[^"\')?]+)\1\)', lambda m: f'url({m.group(1)}{m.group(2)}?v={BUILD}{m.group(1)})', s)   # 이미지 1년 캐시 → 참조에 빌드 버전
         parts.append(f'/* == {name} == */\n{s}')
     return '@charset "utf-8";\n' + '\n'.join(parts) + '\n'
 
@@ -4552,8 +4581,11 @@ def headers_txt():
     for r in ('/css/*', '/js/*', '/data/index.js', '/data/search_index.js', '/data/compare.js'):
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
     out += '/data/q/*\n  Cache-Control: public, max-age=3600\n/data/fe/*\n  Cache-Control: public, max-age=3600\n/img/*\n  Cache-Control: public, max-age=86400\n'
-    out += f'/\n  Link: {pre}, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"\n'
-    for r in ('/hotels/*', '/hotels', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent'):
+    # 큰 이미지는 1년(참조에 ?v=BUILD가 붙어 바뀌면 새 URL): 히어로·수달·도시 타일·로컬 호텔 사진. 아이콘 svg는 1일 유지
+    for r in ('/img/home_bg_otter_m.webp', '/img/home_bg_pc.jpg', '/img/mascot/*', '/img/city/*', '/img/hotels/*'):
+        out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
+    out += f'/\n  Link: {pre}\n'   # 히어로 이미지는 Link preload에서 뺐다 — Link 경로는 우선순위 Low로 시작해 오히려 늦어짐(2026-10-20 Lighthouse). <img fetchpriority=high>가 맡는다
+    for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent', '/hotels'):
         out += f'{r}\n  Link: {pre}\n'
     return out
 

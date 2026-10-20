@@ -14,23 +14,33 @@
   Cache-Control: public, max-age=3600
 /img/*
   Cache-Control: public, max-age=86400
+/img/home_bg_otter_m.webp
+  Cache-Control: public, max-age=31536000, immutable
+/img/home_bg_pc.jpg
+  Cache-Control: public, max-age=31536000, immutable
+/img/mascot/*
+  Cache-Control: public, max-age=31536000, immutable
+/img/city/*
+  Cache-Control: public, max-age=31536000, immutable
+/img/hotels/*
+  Cache-Control: public, max-age=31536000, immutable
 /
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /hotels/*
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
-/hotels
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /area/*
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /best/*
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /search
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /recommend
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /about
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /compare
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
 /recent
-  Link: </css/site.css?v=1792478164>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792478164>; rel=preload; as=script
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script
+/hotels
+  Link: </css/site.css?v=1792489436>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792489436>; rel=preload; as=script

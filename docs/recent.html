@@ -6,32 +6,40 @@
     <title>최근 본 호텔 | 캐치플로</title>
     
     <meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-4M1BGXJZYQ"></script>
-<script>
+    <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
   gtag('config', 'G-4M1BGXJZYQ');
+  window.clarity = window.clarity || function(){(window.clarity.q = window.clarity.q || []).push(arguments);};
+  (function(){
+    var done = false;
+    function go(){
+      if (done) return; done = true;
+      var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id=G-4M1BGXJZYQ'; document.head.appendChild(g);
+      var c = document.createElement('script'); c.async = true; c.src = 'https://www.clarity.ms/tag/xi5o022ef1'; document.head.appendChild(c);
+    }
+    function arm(){ setTimeout(go, 1500); }
+    if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
+    ['pointerdown', 'keydown', 'scroll'].forEach(function(e){ window.addEventListener(e, go, {once: true, passive: true}); });
+  })();
 </script>
-    <script type="text/javascript">
-    (function(c,l,a,r,i,t,y){
-        c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
-        t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
-        y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
-    })(window, document, "clarity", "script", "xi5o022ef1");
-</script>
+    
     <meta name="robots" content="noindex">
     <link rel="icon" type="image/svg+xml" href="img/favicon.svg">
     <link rel="apple-touch-icon" href="img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="css/site.css?v=1792478164">
-    <script src="js/backnav.js?v=1792478164"></script>
-    <script src="js/common.js?v=1792478164" defer></script>
-    <script src="js/vendor/jquery-3.7.1.min.js?v=1792478164"></script>
-    <script src="js/swiper.js?v=1792478164" defer></script>
+    <link rel="stylesheet" href="css/site.css?v=1792489436">
+    <link rel="stylesheet" href="css/pc.css?v=1792489436" media="(min-width:770px)">
+    <script>window.CF_BUILD='1792489436';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
+    <script src="js/backnav.js?v=1792489436" defer></script>
+    <script src="js/common.js?v=1792489436" defer></script>
+    <script src="js/vendor/jquery-3.7.1.min.js?v=1792489436" defer></script>
+    <script src="js/vendor/jq-flush.js?v=1792489436" defer></script>
+    <script src="js/swiper.js?v=1792489436" defer></script>
     <script>window.CF_SB={url:'https://iixztaazwpjvxnpgegod.supabase.co',key:'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlpeHp0YWF6d3BqdnhucGdlZ29kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk3NTM2MzQsImV4cCI6MjA4NTMyOTYzNH0.SJSDMieyC7CLMowW04ArmFcaQxGhG2gzPi5b3FQzpmg'};window.CF_PRICE_BANDS={"wd": [["b1", "10만원 미만"], ["b2", "10~15만원"], ["b3", "15~20만원"], ["b4", "20만원 이상"]], "we": [["w1", "30만원 미만"], ["w2", "30~40만원"], ["w3", "40~50만원"], ["w4", "50만원 이상"]]};window.CF_AREAS=[{"code": "hakata", "ko": "하카타역", "lat": 33.5897, "lng": 130.4207, "r": 1.3}, {"code": "tenjin", "ko": "텐진", "lat": 33.5914, "lng": 130.3986, "r": 1.2}, {"code": "nakasu", "ko": "나카스·캐널시티", "lat": 33.593, "lng": 130.4085, "r": 1.0}, {"code": "gion", "ko": "기온·오호리", "lat": 33.5915, "lng": 130.412, "r": 1.0}];window.CAT_KO={"청결": "청결", "냄새": "냄새", "소음": "소음", "객실": "객실", "직원": "직원", "위치": "위치", "안전": "안전"};</script>
-    <script src="js/engage.js?v=1792478164" defer></script>
-    <script src="js/recommend.js?v=1792478164"></script>
+    <script src="js/engage.js?v=1792489436" defer></script>
+    <script src="js/recommend.js?v=1792489436" defer></script>
 </head>
 <body>
 <div id="wrapper"><div class="det-header">
@@ -84,7 +92,7 @@
             <div id="recent-groups"></div>
             <div class="page-empty recent-empty" id="recent-empty" hidden>
                 <p class="pe-txt">아직 본 호텔이 없어요</p>
-                <div class="mascot-scene" aria-hidden="true"><img class="mascot mascot--lg" src="./img/mascot/otter-wave.webp" width="400" height="433" alt="" decoding="async"></div>
+                <div class="mascot-scene" aria-hidden="true"><img class="mascot mascot--lg" src="./img/mascot/otter-wave.webp?v=1792489436" width="400" height="433" alt="" decoding="async"></div>
                 <div class="pe-btns"><a class="btn-brand" href="./search">호텔 둘러보기</a></div>
             </div>
             <ul id="recent-pool" hidden><li class="recent-li" data-pid="ChIJw4TrhWmRQTURwPmIw-eiY4A">

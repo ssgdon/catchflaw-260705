@@ -210,7 +210,9 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #main .search-box::before{content:"";position:absolute;z-index:-1;inset:0;pointer-events:none;   /* 히어로 전체 = 세로 사진(보라 하늘·호텔·인피니티 풀) — 2026-10-10 */
   background:linear-gradient(to right, var(--surface-card) 0%, var(--surface-card) 20%, transparent 62%),   /* 제목 뒤 흰 그늘을 넓힘(8→20%, 2026-10-20 사용자: 첫 화면이 빽빽해 글자 뒤를 더 비움) · 390 넘는 폭에서 사진 왼쪽 끝을 흰 면으로 덮음 */
              linear-gradient(to bottom, transparent 0%, transparent 78%, var(--surface-card) 100%),   /* 아래 칩 줄은 흰 면 */
-             url(../img/home_bg_otter_1080.webp) right 100% / min(100%, 390px) auto no-repeat;}   /* 2026-10-11 수달이 풀 데크에 선 장면(사진 안에 합성): 오른쪽 아래 정렬 — 귀는 제목 둘째 줄, 돋보기는 '까요?' 오른쪽, 몸은 검색창 뒤. 390 넘는 폭에선 키우지 않음(귀가 머리 바에 닿지 않게) */
+             transparent;}   /* 사진 자체는 아래 .hero-bg <img>(LCP 후보를 img로 — CSS 배경은 CSS 파싱 뒤 낮은 우선순위로 받아져 LCP가 늦었다, 2026-10-20) */
+#main .search-box .hero-bg{position:absolute;z-index:-2;inset:0;margin:0;overflow:hidden;pointer-events:none;}   /* 상자 전체를 덮고 넘치는 사진 위쪽을 스스로 자른다(.search-box에 overflow를 주면 자동완성 드롭다운이 잘림) */
+#main .search-box .hero-bg img{position:absolute;right:0;bottom:0;display:block;width:min(100%, 390px);height:auto;}   /* 모바일 = 960×1120(원본 아래쪽 크롭) 오른쪽 아래 정렬, 폭 390 */   /* 2026-10-11 수달이 풀 데크에 선 장면(사진 안에 합성): 오른쪽 아래 정렬 — 귀는 제목 둘째 줄, 돋보기는 '까요?' 오른쪽, 몸은 검색창 뒤. 390 넘는 폭에선 키우지 않음(귀가 머리 바에 닿지 않게) */
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
@@ -229,7 +231,6 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 .city-tile.is-on{box-shadow:0 0 0 2px var(--surface-card), 0 0 0 4px var(--ink);}   /* 선택 = 잉크 테두리(흰 틈 2) */
 .city-tile.is-off{cursor:default;filter:grayscale(.7);opacity:.75;}
 .soon-tag{position:absolute;top:var(--sp-2);left:var(--sp-2);padding:2px var(--sp-2);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-micro);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
-#main .search-box .hero-photo{display:none;}   /* PC 전용 사진(pc.css) */
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
 #main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-2);}
@@ -1086,7 +1087,7 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 }
 
 /* ════════ §v3 홈 히어로 캐릭터 (2026-10-11) — 캐치플로 수달 ════════
-   모바일: 히어로 배경 사진 안에 합성(img/home_bg_otter_1080.webp, 위 #main .search-box::before) — 따로 얹지 않는다.
+   모바일: 히어로 사진 안에 합성(img/home_bg_otter_m.webp = .hero-bg <img>, 2026-10-20 CSS 배경에서 img로) — 따로 얹지 않는다.
    PC: 배경이 화면 폭만큼 커지므로 사진에 굽지 않고, 노을 빛에 맞춰 색을 입힌 컷아웃을 오른쪽 칸에 세운다(pc.css).
    그래서 .hero-mascot(<picture>)은 PC 소스만 있고 모바일에선 숨김(1px 자리표시 이미지만 받음). 장식이라 aria-hidden */
 #main .search-box .hero-mascot{display:none;}
@@ -1146,6 +1147,9 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
 #detail .information .info-answer b{font-weight:var(--fw-bold);}
 #detail .information .info-answer .ia-meta{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* 근거 한 줄: '최근 1년 리뷰 640건 분석 · 2026년 10월 18일 기준' */
+
+/* PC 전용 요소는 기본 숨김(≥1100 pc.css가 다시 보인다). 2026-10-20 pc.css를 media 링크로 분리하면서 pc.css 맨 위에서 옮겨 옴 */
+.det-header .dh-nav,.det-header .dh-search,#detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
 
 /* ════════ §v3 한 줄 호텔 행 .hrow (SEO-CRAWL-DESIGN §3-1 · UI-STANDARDS §18-5 목록 행, 2026-10-20) ════════
    허브 '나머지 N곳'·'리뷰가 적은 호텔'·전체 목록(/hotels) 공용. 행 64 이상 + 행 사이 1px 선, 이름 16/600 잉크 · 메타 14 회색(숫자만 잉크 700).
