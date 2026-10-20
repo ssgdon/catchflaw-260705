@@ -15,20 +15,20 @@
 /img/*
   Cache-Control: public, max-age=86400
 /
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script, </img/home_bg_otter_1080.webp>; rel=preload; as=image; media="(max-width:1099px)"
 /hotels/*
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /area/*
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /best/*
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /search
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /recommend
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /about
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /compare
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script
 /recent
-  Link: </css/site.css?v=1792460158>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792460158>; rel=preload; as=script
+  Link: </css/site.css?v=1792462732>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v=1792462732>; rel=preload; as=script

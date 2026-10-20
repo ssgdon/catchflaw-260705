@@ -1141,3 +1141,8 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .intro-card .ic-mascot{width:104px;}
 .intro-item .ic-close{position:absolute;top:var(--sp-1);right:var(--sp-1);}
 
+/* ════════ §v3 상세 '답 문단' (SEO-CRAWL-DESIGN §4, 2026-10-20) ════════
+   요약 3칸 바로 아래 인용용 한 문단: 호텔명·기간·리뷰 수·실망 확률·평균·판정·걸리는 점·기준일. 상자·배경 없음, 본문 16 잉크(숫자만 700) */
+#detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
+#detail .information .info-answer b{font-weight:var(--fw-bold);}
+

@@ -2382,6 +2382,8 @@ body[data-page=compare] .det-header{position:static;}
 .intro-card .ic-scene::before{display:none;}   
 .intro-card .ic-mascot{width:104px;}
 .intro-item .ic-close{position:absolute;top:var(--sp-1);right:var(--sp-1);}
+#detail .information .info-answer{margin-top:var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);word-break:keep-all;}
+#detail .information .info-answer b{font-weight:var(--fw-bold);}
 /* == pc.css == */
 .det-header .dh-nav,.det-header .dh-search,
 #detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
@@ -2415,7 +2417,7 @@ body[data-page=compare] .det-header{position:static;}
     #detail .content > .visual{display:none;}                       
     #detail > .button{display:none;}                                  
     
-    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"crumb" "cont" "sum" "note";margin-top:0;padding:var(--sp-2) 0 var(--sp-5);border-radius:0;overflow:visible;}
+    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"crumb" "cont" "sum" "ans" "note";margin-top:0;padding:var(--sp-2) 0 var(--sp-5);border-radius:0;overflow:visible;}
     #detail .information .pc-crumb{grid-area:crumb;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
     #detail .information .pc-crumb a{color:var(--ink-3);}
     #detail .information .pc-crumb a:hover{color:var(--ink);text-decoration:underline;}
@@ -2424,6 +2426,7 @@ body[data-page=compare] .det-header{position:static;}
     #detail .information .info-cont .name .name-ko{font-size:var(--fs-title);line-height:var(--lh-title);}   
     #detail .information .info-meta .dsep{display:inline;height:auto;overflow:visible;}   
     #detail .information .info-sum{grid-area:sum;max-width:560px;}
+    #detail .information .info-answer{grid-area:ans;max-width:560px;}   
     #detail .information .lowrev-note{grid-area:note;max-width:560px;}
     #detail .information .info-price{display:none;}   
     

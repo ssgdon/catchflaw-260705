@@ -2,7 +2,7 @@
 """캐치플로 정적 사이트 생성기 — data-src/*.json → docs/
 사용: python scripts/generate.py
 """
-import json, os, shutil, sys, html, re, time, math, statistics
+import json, os, shutil, sys, html, re, time, math, statistics, unicodedata
 from collections import defaultdict
 from datetime import date, timedelta
 from urllib.parse import quote as urlquote
@@ -320,6 +320,25 @@ def josa_iga(word):
         return '이' if (ord(ch) - 0xAC00) % 28 else '가'
     return '이'
 
+_JONG_DIGIT = {'0': 1, '1': 1, '2': 0, '3': 1, '4': 0, '5': 0, '6': 1, '7': 1, '8': 1, '9': 0}   # 영·일·이·삼·사·오·육·칠·팔·구 (10·20·100은 십·백 → 받침)
+
+def josa(word, with_jong, without_jong):
+    """받침에 따라 조사 고르기 — 상세 답 문단용(SEO-CRAWL §4-2). josa_eun과 같지만 호텔 이름 끝의 숫자·로마자·괄호까지 읽는다:
+       '레지던스 호텔 하카타 19' → 구 → 는 · '호텔 XYZ' → 제트 → 는 · '하카타(구 텐자…)' → 괄호 앞 '하카타' → 는 · '8%' → 퍼센트 → 예요."""
+    w = str(word or '').rstrip()
+    while True:                                   # 끝 괄호는 떼고 본다(조사는 괄호 앞 말에 맞춘다)
+        w2 = re.sub(r'\s*\([^()]*\)$', '', w).rstrip()
+        if w2 == w or not w2: break
+        w = w2
+    w = unicodedata.normalize('NFKC', w)          # Ⅱ → II, 전각 숫자 → 반각
+    ch = w[-1] if w else ''
+    if '가' <= ch <= '힣': jong = (ord(ch) - 0xAC00) % 28 != 0
+    elif ch in _JONG_DIGIT: jong = bool(_JONG_DIGIT[ch])
+    elif ch.isascii() and ch.isalpha(): jong = ch.lower() in 'lmnr'   # 글자 이름: 엘·엠·엔·알만 받침
+    elif ch == '%': jong = False
+    else: jong = True
+    return with_jong if jong else without_jong
+
 # ── 모바일 줄바꿈 다듬기 (UI-STANDARDS §15) ──
 # 좁은 화면에서 "많은 / 편이에요", "4.2% / (3건)", "다른 도시는 / 준비 중이에요"처럼 뜻이 갈리는 줄바꿈을 막는다.
 # W()가 모든 .html을 쓰기 직전에 본문 텍스트(스크립트·스타일·속성 제외)에만 적용 → 새 문구도 자동으로 같은 규칙.
@@ -344,6 +363,9 @@ _GLUE = [
     (re.compile(r'(\d[\d.,]*만?) (건|곳|개|명)(?=[\s.,·)]|$)'), r'\1' + NB + r'\2'),
     # 라벨과 건수는 한 덩어리: "실망 리뷰 / 27건" "벌레 / 2건" 처럼 숫자만 다음 줄로 떨어지지 않게 (360px 상세 근거 줄 실측)
     (re.compile(r'(?<=[가-힣]) (\d[\d,]*건)'), NB + r'\1'),
+    # 날짜는 한 덩어리: "10월 18일 기준" (상세 답 문단 끝 '(2026년 10월 18일 기준, 캐치플로)'에서 '18일 / 기준'으로 갈리던 것)
+    (re.compile(r'(\d+월) (\d+일)'), r'\1' + NB + r'\2'),
+    (re.compile(r'(\d+일) (기준|확인)'), r'\1' + NB + r'\2'),
     # 짧은 괄호 묶음은 통째로: "(직선 199m)" "(가격 2026년 10월 기준)" "(트립닷컴 등은 별점 미제공)"
     (re.compile(r'\(([^()<>]{1,16})\)'), lambda m: '(' + m.group(1).replace(' ', NB) + ')'),
 ]
@@ -2963,6 +2985,60 @@ def faq_jsonld(faq):
     if not entries: return None
     return {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': entries}
 
+def answer_paragraph(name, h, city, per, v_ans='', tier_txt='', neg=(), pos=(), has_price=False):
+    """상세 '답 문단'(SEO-CRAWL-DESIGN §4) — 호텔명·기간·리뷰 수·실망 확률·평균·판정·걸리는 점·괜찮은 점·기준일이 한 문단에 다 있는
+       인용용 첫 문단(AI가 문단 하나만 떼어 가도 뜻이 서게). 반환 (<p class="info-answer"> HTML, meta description 평문).
+       재료는 전부 화면의 다른 숫자와 같은 변수: n = 요약 3칸 '분석 리뷰' · v = 실망 확률 · v_ans = 위험도 섹션 v_head와 같은 분기 ·
+       neg = 한눈에 보기 _neg(6번째 = (종류, 평문)) · pos = _pos와 같은 순서의 평문. 새 계산 없음.
+       description = 첫 문장(+순위 구간) + 걸리는 점 문장 — 150자 안에 들어가는 만큼만(head()가 150자에서 자르니 문장 단위로 끊는다)."""
+    nm = card_name(name)                              # 영문 괄호 병기를 뺀 이름 — '… (The Royal Park…)은' 같은 조사 어긋남 방지
+    subj = f'{E(nm)}{josa(nm, "은", "는")}'
+    asof = CITY.get('asof')
+    tail = f' ({int(str(asof)[:4])}년 {md_ko(asof)} 기준, 캐치플로)' if asof else ' (캐치플로)'
+    n = h['analyzed']
+    if not h['scored']:
+        what = '위치·가격·구글 평점' if has_price else '위치·구글 평점'
+        head_s = [f'{subj} 분석한 리뷰가 <b>{n:,}건</b>뿐이라 아직 실망 확률을 내지 않았어요.',
+                  f'{MIN_REVIEWS}건 이상 쌓이면 공개해요.']
+        rest, neg_only = f'{what}은 이 페이지에서 볼 수 있어요.', ''
+    else:
+        v, avg = pct(h['p_crit']), pct(city['crit'])
+        if h['ranked']:                               # (1) 채점 + 순위 모수
+            head_s = [f'{subj} {E(per)} 투숙객 리뷰 <b>{n:,}건</b>을 분석한 결과 실망 확률 <b>{v}%</b>로, {E(v_ans)}.']
+            if tier_txt:
+                head_s.append(f'{E(tier_txt)}{josa(tier_txt, "이에요", "예요")}.')
+        else:                                         # (2) 채점 + 리뷰 적음 — 참고용임을 먼저(위험이 확실하면 위험 판정 유지)
+            head_s = [f'{subj} {E(per)} 리뷰가 <b>{n:,}건</b>뿐이라 참고용이에요.',
+                      (f'그 리뷰로 본 실망 확률은 <b>{v}%</b>로 {E(v_ans)}.' if v_ans else
+                       f'그 리뷰로 본 실망 확률은 <b>{v}%</b>({E(CITY["ko"])} 평균 {avg}%)예요.')]
+        items = [x[5] for x in list(neg)[:2]]
+        p0 = pos[0] if pos else None
+        def pos_sent(p):                              # 괜찮은 점 완결 문장
+            kind, a, b = p
+            return f'{a}{josa(a, "은", "는")} {b}.' if kind == 'cat' else f'{a}으로 가까워요.'
+        if items and items[0][0] == 'cl':             # 폴백(최고 위험 항목) — 절이라 '걸리는 점은 …' 틀 대신 그대로 잇는다
+            stem = items[0][1]
+            neg_only = f'{stem}아요.'
+            rest = f'{stem}고, {pos_sent(p0)}' if p0 else neg_only
+        elif items:
+            a = [t for _, t in items]
+            joined = a[0] if len(a) == 1 else f'{a[0]}{josa(a[0], "과", "와")} {a[1]}'
+            neg_only = f'걸리는 점은 {joined}{josa(joined, "이에요", "예요")}.'
+            rest = f'걸리는 점은 {joined}{josa(joined, "이고", "고")}, {pos_sent(p0)}' if p0 else neg_only
+        elif p0:                                      # 걸리는 점 없음 — 한눈에 보기 '두드러진 불만이 없는 호텔'과 같은 판정
+            kind, a, b = p0
+            lead = f'{a}{josa(a, "이", "가")} {re.sub(r"적어요$", "적고", b)}' if kind == 'cat' else f'{a}으로 가깝고'
+            rest, neg_only = f'{lead}, 두드러진 불만은 없어요.', ''
+        else:
+            rest, neg_only = '항목별 불만은 평균과 비슷해요.', ''
+    para = f'<p class="info-answer">{" ".join(head_s)} {E(rest)}{tail}</p>'
+    plain = lambda x: html.unescape(re.sub(r'<[^>]+>', '', x))
+    desc = plain(head_s[0])
+    for s in [plain(x) for x in head_s[1:]] + ([neg_only] if neg_only else []):
+        if len(desc) + 1 + len(s) > 150: break
+        desc += ' ' + s
+    return para, desc
+
 def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_rank_pct=None, kr_1y=None, monthly=None, monthly_cat=None, city_avg=None, city_cat_avg=None, crit_rank_pct=None, hotel_cols=(), kr_dist=None, faq=None, social=None):
     name = meta['title']
     img = img_path(pid, meta, depth=1)
@@ -3082,6 +3158,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     who_html = ''
     tabs_html = ''
     v_head, v_tone = '', 'safe'
+    v_ans, tier_txt, _neg, _pos_txt = '', '', [], []   # 답 문단 재료(채점 호텔만 채움)
     if not h['scored']:
         body_scored = f'''<div class="sect"><div class="head">
             <div class="title">아직 분석 리뷰가 부족해요</div>
@@ -3103,16 +3180,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _all_safe = all(h['cats'][c]['band'] == 'safe' for c in CATS)
         # ── 판정(1줄, 배지와 같은 색) → 기준(평균 + 확실할 때만 순위 구간) → 근거 2줄. 비유·시험 말투 없이 한 말투 (2026-10 카피 개편) ──
         _band = h['badge'][0]
+        # v_ans = 답 문단(SEO-CRAWL §4-2)의 판정 구 — v_head와 같은 분기·같은 말을 '평균(N%)' 비교 문장으로
+        _avg_p = f'{CITY["ko"]} 평균({avg}%)'
         if _band == 'low':
             v_head, v_tone = '리뷰가 적어 참고용이에요', 'low'
+            v_ans = ''
         elif _band == 'safe':
             v_head, v_tone = '실망한 투숙객이 적어요', 'safe'
+            v_ans = f'{_avg_p}보다 낮아 실망한 투숙객이 적어요'
         elif _band == 'danger':
             v_head, v_tone = '실망한 투숙객이 많아요', 'danger'
+            v_ans = f'{_avg_p}보다 훨씬 높아 실망한 투숙객이 많아요'
         elif ratio < 1.15:
             v_head, v_tone = f'{CITY["ko"]} 평균 수준이에요', 'warning'
+            v_ans = f'{_avg_p}과 비슷한 수준이에요'
         else:
             v_head, v_tone = '평균보다 실망이 잦아요', 'warning'
+            v_ans = f'{_avg_p}보다 실망이 잦아요'
         # 순위 구간: '상위 25% 이내' → '실망 적은 호텔 상위 25% 이내' (낮을수록 좋다는 방향을 말에 넣는다, FEEDBACK-2610 §10)
         _tier = h.get('rank_tier')
         tier_txt = ''
@@ -3211,11 +3295,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         # ── P1 한눈에 보기: 걸리는 점 = 딜브레이커 발동분(희소 심각 최근 1년 ≥3, db_data와 동일 캘리브레이션) 우선
         #    + 주의·위험 소분류 중 최근 1년 3건+ & 비율 2%+ (위험도순). 없는데 판정이 C·D면 최고 위험 카테고리로 폴백.
         #    괜찮은 점 = 양호 카테고리(위험도 낮은 순 2) + 역 도보 5분 이내(위치 양호일 때만). 전부 실측 조립.
-        _neg = []    # (dot, lead용 구문, 상세 html, 카테고리)
+        _neg = []    # (dot, lead용 구문, 상세 html, 카테고리, 소분류 평문|None, 답 문단용 (종류, 평문)) — 종류 np = 명사구 · cl = '…많' 절 줄기
         for _rc, _rl, _rcl, _rn in db_data:
             _scat = _rl                  # 칩 라벨 = 소분류명 (벌레·곰팡이·동네 분위기·객실 보안)
             _neg.append(('danger', f'<em>{E(SUB_PHRASE[_scat])} 심각 리뷰</em>가 반복돼요',
-                         f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · {per} {_rn}건', _rc, None))
+                         f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · {per} {_rn}건', _rc, None,
+                         ('np', f'{SUB_PHRASE[_scat]} 심각 리뷰 {_rn}건')))
         _cand = []
         for _c in CATS:
             for _s in SUBS[_c]:
@@ -3225,20 +3310,25 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                         and _n1 / h['analyzed'] >= 0.02):
                     _cand.append((-_sb['score'], _s, _sb['band'], _n1, _c))
         for _x, _s, _bd, _n1, _c in sorted(_cand):
+            _sp = round(_n1 / h["analyzed"] * 100, 1)
             _neg.append((_bd, f'<em>{E(SUB_PHRASE[_s])}</em> 불만이 반복돼요',
-                         f'<b>{E(SUB_PHRASE[_s])} 불만</b>{DSEP}<span class="seg">{per} 리뷰의 {round(_n1 / h["analyzed"] * 100, 1)}%{NB}({_n1}건)</span>', _c,
-                         SUB_PHRASE[_s]))
+                         f'<b>{E(SUB_PHRASE[_s])} 불만</b>{DSEP}<span class="seg">{per} 리뷰의 {_sp}%{NB}({_n1}건)</span>', _c,
+                         SUB_PHRASE[_s], ('np', f'{SUB_PHRASE[_s]} 불만({per} 리뷰의 {_sp}%)')))
         if not _neg and ratio >= 1.15 and h['cats'][_worst]['band'] in ('warning', 'danger'):
             _neg.append((h['cats'][_worst]['band'], f'<em>{E(cat_ko(_worst))}</em> 불만이 평균보다 많아요',
-                         f'<b>{E(cat_ko(_worst))} 불만</b>{DSEP}<span class="seg">{E(ratio_text(_worst_sc))}</span>', _worst, None))
+                         f'<b>{E(cat_ko(_worst))} 불만</b>{DSEP}<span class="seg">{E(ratio_text(_worst_sc))}</span>', _worst, None,
+                         ('cl', f'{cat_ko(_worst)} 불만이 평균보다 많')))
         _neg = _neg[:3]
         _negc = {n[3] for n in _neg}    # 걸리는 점과 같은 카테고리는 괜찮은 점에서 제외(모순 문장 방지)
         _safe = sorted((c for c in CATS if h['cats'][c]['band'] == 'safe' and c not in _negc),
                        key=lambda c: h['cats'][c]['score'])
         _pos = [f'<b>{E(cat_ko(c))} 불만 적음</b>{DSEP}<span class="seg">{E(ratio_text(h["cats"][c]["score"]))}</span>' for c in _safe[:2]]
+        # 답 문단용 괜찮은 점 평문(_pos와 같은 순서·같은 문장): ('cat', '위치 불만', '평균보다 63% 적어요') · ('st', '하카타역 도보 3분', '')
+        _pos_txt = [('cat', f'{cat_ko(c)} 불만', ratio_text(h['cats'][c]['score'])) for c in _safe[:2]]
         _st = nearest_station(meta.get('latitude'), meta.get('longitude'))
         if _st and _st[1] <= 5 and h['cats']['위치']['band'] == 'safe' and '위치' not in _negc:
             _pos.append(f'<b>역 가까움</b>{DSEP}<span class="seg">{E(_st[0])} 도보 {_st[1]}분</span>')
+            _pos_txt.append(('st', f'{_st[0]} 도보 {_st[1]}분', ''))
         if _neg or _pos:
             _ok = ratio < 1.15          # verdict A·B(통과) — 어조를 "무난 + 굳이 꼽자면"으로
             if _ok and _neg and _neg[0][4]:
@@ -3715,17 +3805,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         SIDE_FILES[f'data/q/{pid}.json'] = json.dumps(sheet_data, ensure_ascii=False, separators=(',', ':'))
     canonical = f'{BASE}/hotels/{pid}'
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
+    # 답 문단 + description(SEO-CRAWL §4): 같은 문장 — description은 첫 문장 + 걸리는 점(150자 안)
+    answer_html, seo_desc = answer_paragraph(name, h, city, per, v_ans, tier_txt, _neg, _pos_txt, has_price=bool(_pt))
     if h['scored']:
-        _v = pct(h['p_crit']); _avg = pct(city['crit'])
-        _t = h.get('rank_tier')
-        rank_txt = f' 실망 적은 호텔 {CITY["ko"]} {_t[1]}예요.' if (_t and _t[0] == 'top') else ''
-        seo_title = f'{name} 리뷰 위험도 · 실망 확률 {_v}% | 캐치플로'
-        seo_desc = (f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%).{rank_txt} '
-                    '청결·냄새·소음·객실·직원·위치 6개 항목의 리뷰 위험도와 안전 신호를 예약 전에 확인하세요.')
+        seo_title = f'{name} 리뷰 위험도 · 실망 확률 {pct(h["p_crit"])}% | 캐치플로'
     else:
         seo_title = f'{name} 리뷰 위험도 분석 | 캐치플로'
-        seo_desc = (f'{name}의 리뷰를 분석하고 있어요. 위치·가격·구글 평점과 '
-                    '주변의 실망 확률 낮은 추천 호텔을 캐치플로에서 확인하세요.')
     _faqld = faq_jsonld(faq) if h['scored'] else None
     _extra_head = jsonld_detail(pid, meta) + (('\n' + _jsonld(_faqld)) if _faqld else '')
     if not h['scored']:   # 분석 준비 중 = 내용이 얇아 사이트 품질 평가를 깎음 → 색인 제외·사이트맵 제외(점수 나오면 자동 해제, 2026-10-10)
@@ -3753,6 +3838,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {price_info}
                     {info_sum}
+                    {answer_html}
                     {lowrev_html}
                 </div>
                 {pc_side}

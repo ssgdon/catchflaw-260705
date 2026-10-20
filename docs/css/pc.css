@@ -50,7 +50,7 @@
     #detail > .button{display:none;}                                  /* 모바일 하단 CTA 바 → 결정 카드 CTA */
 
     /* 제목줄(정보 섹션): 경로 · 호텔명·메타 · 3칸 요약 행(sum, 가로 560 안) — v3 §7-3 (4) */
-    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"crumb" "cont" "sum" "note";margin-top:0;padding:var(--sp-2) 0 var(--sp-5);border-radius:0;overflow:visible;}
+    #detail .content > .information{grid-column:1 / -1;grid-row:1;display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"crumb" "cont" "sum" "ans" "note";margin-top:0;padding:var(--sp-2) 0 var(--sp-5);border-radius:0;overflow:visible;}
     #detail .information .pc-crumb{grid-area:crumb;display:flex;flex-wrap:wrap;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-4);font-size:var(--fs-meta);color:var(--ink-3);}
     #detail .information .pc-crumb a{color:var(--ink-3);}
     #detail .information .pc-crumb a:hover{color:var(--ink);text-decoration:underline;}
@@ -59,6 +59,7 @@
     #detail .information .info-cont .name .name-ko{font-size:var(--fs-title);line-height:var(--lh-title);}   /* PC도 모바일과 같은 26(v3 §2-1) */
     #detail .information .info-meta .dsep{display:inline;height:auto;overflow:visible;}   /* PC는 한 줄: '후쿠오카 · 3성급 호텔 · 텐진역 도보 3분' */
     #detail .information .info-sum{grid-area:sum;max-width:560px;}
+    #detail .information .info-answer{grid-area:ans;max-width:560px;}   /* 답 문단(SEO-CRAWL §4): 모바일과 같은 순서(요약 3칸 → 문단 → 리뷰 적음 주의), 같은 폭 */
     #detail .information .lowrev-note{grid-area:note;max-width:560px;}
     #detail .information .info-price{display:none;}   /* PC는 오른쪽 결정 카드에 평일·주말 가격 + '가격 기준 ?'(2026-10-12) */
 
