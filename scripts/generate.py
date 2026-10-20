@@ -7,7 +7,27 @@ from collections import defaultdict, Counter
 from datetime import date, timedelta
 from urllib.parse import quote as urlquote
 
-BUILD = str(int(time.time()))  # 에셋 캐시버스터
+BUILD = str(int(time.time()))  # 데이터 파일(data/*.js) 캐시버스터 — 매 빌드 바뀜
+_VC = {}
+def V(rel):
+    """정적 자산(css·js·img) 버전 = 파일 내용 md5 앞 10자. 배포해도 안 바뀐 파일은 같은 URL → 엣지·브라우저 캐시 유지(2026-10-21).
+       img/hotels/*는 원본이 assets/hotels/*. css/site.css(번들)는 main()이 만든 뒤 _VC에 넣는다. 파일이 없으면 BUILD."""
+    if rel in _VC: return _VC[rel]
+    import hashlib
+    src = os.path.join(ROOT, 'assets', rel[4:]) if rel.startswith('img/hotels/') else os.path.join(ROOT, rel)
+    try:
+        v = hashlib.md5(open(src, 'rb').read()).hexdigest()[:10]
+    except OSError:
+        v = BUILD
+    _VC[rel] = v
+    return v
+
+def thumb(url):
+    """R2 갤러리 원본(hotels/{pid}/{n}.webp, 긴 변 960·최대 160KB) → 카드용 썸네일(_s.webp, 긴 변 480·pipeline/images.py가 항상 같이 올림).
+       카드·목록·비교·지도 팝업은 썸네일, 상세 갤러리·OG는 원본(2026-10-21 속도: 홈 호텔 사진 1.8MB → 약 0.5MB)."""
+    if url and 'r2.dev/hotels/' in url and url.endswith('.webp') and not url.endswith('_s.webp'):
+        return url[:-5] + '_s.webp'
+    return url
 
 sys.path.insert(0, os.path.dirname(__file__))
 from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS, RANK_MIN, rec_scores, bayes_rating, SAFE_MULT
@@ -274,7 +294,7 @@ def mascot_scene(pose, root='./', img_cls='', scene_cls='', lazy=False):
     w, h = MASCOT_DIMS[pose]
     lz = ' loading="lazy"' if lazy else ''
     return (f'<div class="mascot-scene{(" " + scene_cls) if scene_cls else ""}" aria-hidden="true"><img class="mascot{(" " + img_cls) if img_cls else ""}" '
-            f'src="{root}img/mascot/otter-{pose}.webp?v={BUILD}" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
+            f'src="{root}img/mascot/otter-{pose}.webp?v={V(f"img/mascot/otter-{pose}.webp")}" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
 
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
@@ -614,17 +634,17 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     <link rel="icon" type="image/svg+xml" href="{p}img/favicon.svg">
     <link rel="apple-touch-icon" href="{p}img/favicon.svg">
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="stylesheet" href="{p}css/site.css?v={BUILD}">
-    <link rel="stylesheet" href="{p}css/pc.css?v={BUILD}" media="(min-width:770px)">
-    <script>window.CF_BUILD='{BUILD}';window.$=window.jQuery=function(f){{(window.__cfq=window.__cfq||[]).push(f);}};</script>
-    <script src="{p}js/backnav.js?v={BUILD}"{D}></script>
-    <script src="{p}js/common.js?v={BUILD}" defer></script>
-    <script src="{p}js/vendor/jquery-3.7.1.min.js?v={BUILD}"{D}></script>
-    <script src="{p}js/vendor/jq-flush.js?v={BUILD}" defer></script>
-    <script src="{p}js/swiper.js?v={BUILD}" defer></script>
+    <link rel="stylesheet" href="{p}css/site.css?v={V("css/site.css")}">
+    <link rel="stylesheet" href="{p}css/pc.css?v={V("css/pc.css")}" media="(min-width:770px)">
+    <script>window.CF_BUILD='{BUILD}';window.CF_IMGV='{V("img/mascot")}';window.$=window.jQuery=function(f){{(window.__cfq=window.__cfq||[]).push(f);}};</script>
+    <script src="{p}js/backnav.js?v={V("js/backnav.js")}"{D}></script>
+    <script src="{p}js/common.js?v={V("js/common.js")}" defer></script>
+    <script src="{p}js/vendor/jquery-3.7.1.min.js?v={V("js/vendor/jquery-3.7.1.min.js")}"{D}></script>
+    <script src="{p}js/vendor/jq-flush.js?v={V("js/vendor/jq-flush.js")}" defer></script>
+    <script src="{p}js/swiper.js?v={V("js/swiper.js")}" defer></script>
     <script>window.CF_SB={{url:'{SUPABASE_URL}',key:'{SUPABASE_ANON}'}};window.CF_PRICE_BANDS={json.dumps({'wd': [[c, l] for c, l, _, _ in PRICE_BANDS], 'we': [[c, l] for c, l, _, _ in PRICE_BANDS_WE]}, ensure_ascii=False)};window.CF_AREAS={json.dumps(AREAS, ensure_ascii=False)};window.CAT_KO={CAT_KO_JSON};</script>
-    <script src="{p}js/engage.js?v={BUILD}" defer></script>
-    <script src="{p}js/recommend.js?v={BUILD}"{D}></script>
+    <script src="{p}js/engage.js?v={V("js/engage.js")}" defer></script>
+    <script src="{p}js/recommend.js?v={V("js/recommend.js")}"{D}></script>
 </head>
 <body>
 <div id="wrapper">'''
@@ -921,7 +941,7 @@ def city_row_html():
            'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
     items = []
     for name, slug, live in HOME_CITIES:
-        img = f'style="background-image:url(./img/city/{slug}.webp?v={BUILD})"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
+        img = f'style="background-image:url(./img/city/{slug}.webp?v={V(f"img/city/{slug}.webp")})"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
         if live:
             items.append(f'<a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" {img}><span class="ct-n">{pin}{name}</span></a>')
         else:
@@ -1004,9 +1024,9 @@ def badge_html(h, kind='photo'):
 def img_path(pid, meta, depth=0):
     p = '../' * depth
     if meta.get('r2_img'):
-        return meta['r2_img']                       # R2 절대 URL
+        return thumb(meta['r2_img'])                # R2 절대 URL — 카드는 썸네일(_s)
     if meta.get('local_img'):
-        return f'{p}img/hotels/{pid}.jpg?v={BUILD}'   # img/hotels/*·mascot·city·히어로는 _headers 1년 캐시 → 참조에 빌드 버전(2026-10-20)
+        return f'{p}img/hotels/{pid}.jpg?v={V(f"img/hotels/{pid}.jpg")}'   # img/hotels/*·mascot·city·히어로는 _headers 1년 캐시 → 참조에 내용 해시
     return f'{p}img/placeholder.svg'
 
 def fmt_score(v):
@@ -1239,7 +1259,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         <section id="main">
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
-                    <picture class="hero-bg" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/home_bg_pc.jpg?v={BUILD}"><img src="./img/home_bg_otter_m.webp?v={BUILD}" width="960" height="1120" alt="" fetchpriority="high" decoding="async"></picture>
+                    <picture class="hero-bg" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/home_bg_pc.jpg?v={V("img/home_bg_pc.jpg")}"><img src="./img/home_bg_otter_m.webp?v={V("img/home_bg_otter_m.webp")}" width="960" height="1120" alt="" fetchpriority="high" decoding="async"></picture>
                     <div class="title" data-ga-title>
                         <h1 class="tit hero-title">리뷰 대신 다 읽고<br><span class="hero-key">실망 확률</span>로<br>알려드려요</h1>
                         <picture class="hero-mascot" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/mascot/otter-look-pc.webp"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="640" height="763" alt="" decoding="async"></picture>
@@ -1334,7 +1354,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     // ───── 홈 데이터(호텔 199곳 JSON 83KB)·검색 자동완성·지도(leaflet 42KB)는 첫 화면 뒤에 — 검색창 터치/포커스, 지도 영역 600px 근접, 로드 뒤 2.5초 중 먼저 오는 때(2026-10-20 속도) ─────
     (function(){{
         var state = 0, cbs = [];   // 0 대기 · 1 받는 중 · 2 완료
-        var SRC = ['./data/index.js?v={BUILD}', './data/search_index.js?v={BUILD}', './js/search-key.js?v={BUILD}', './js/search-ac.js?v={BUILD}', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+        var SRC = ['./data/index.js?v={BUILD}', './data/search_index.js?v={BUILD}', './js/search-key.js?v={V("js/search-key.js")}', './js/search-ac.js?v={V("js/search-ac.js")}', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
         function flush(){{ state = 2; var c = cbs; cbs = []; c.forEach(function(f){{ try {{ f(); }} catch (e) {{ if (window.console) console.error(e); }} }}); }}
         window.cfHomeLoad = function(cb){{
             if (cb) cbs.push(cb);
@@ -1496,8 +1516,8 @@ def build_recent(hotels_meta, H):
 
 def abs_img(pid, meta):
     """페이지 깊이와 무관한 썸네일 URL (비교함 localStorage 공유용): R2 절대 → 루트 기준 로컬 → 빈값."""
-    if meta.get('r2_img'): return meta['r2_img']
-    if meta.get('local_img'): return f'/img/hotels/{pid}.jpg?v={BUILD}'
+    if meta.get('r2_img'): return thumb(meta['r2_img'])   # 비교함·비교표 썸네일
+    if meta.get('local_img'): return f'/img/hotels/{pid}.jpg?v={V(f"img/hotels/{pid}.jpg")}'
     return ''
 
 # ── '1년 안에 한 번도 없어야' 조건 (FEEDBACK-2610 §6.1) — 검색 인덱스 x·검색 필터·AI 추천이 같은 숫자를 쓴다 ──
@@ -1619,8 +1639,8 @@ def build_compare():
     </main>
     <script>window.CF_CMP_RARE = {json.dumps([[s, SUB_PHRASE[s]] for s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if s in RARE_SUBS], ensure_ascii=False)}; window.CF_CMP_FAQ = {json.dumps(CMP_FAQ, ensure_ascii=False)}; window.CF_CITY_KO = {json.dumps(CITY['ko'], ensure_ascii=False)}; window.CF_CITY_AVG = {pct(CITY.get('crit') or 0)};</script>
     <script src="./data/compare.js?v={BUILD}"></script>
-    <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
-    <script src="./js/compare-page.js?v={BUILD}"></script>''' + build_footer(0) + FOOT
+    <script src="./js/compare.js?v={V("js/compare.js")}" data-root="./"></script>
+    <script src="./js/compare-page.js?v={V("js/compare-page.js")}"></script>''' + build_footer(0) + FOOT
 
 # ───────────────────────── search ─────────────────────────
 def build_search_index(hotels_meta, H, quotes=None):
@@ -1639,7 +1659,7 @@ def build_search_index(hotels_meta, H, quotes=None):
             'name': meta['title'], 'en': meta.get('sub_title') or '',
             'stars': stars_label(meta), 'g': float(meta.get('total_score') or 0),
             'rc': meta.get('reviews_count') or 0,
-            'img': meta.get('r2_img') or (f'img/hotels/{pid}.jpg' if meta.get('local_img') else ''),
+            'img': thumb(meta.get('r2_img')) or (f'img/hotels/{pid}.jpg?v={V(f"img/hotels/{pid}.jpg")}' if meta.get('local_img') else ''),   # 검색 목록·지도 카드·자동완성 = 썸네일
             'scored': h['scored'],
             'lr': bool(h['scored'] and not h['ranked']),    # 리뷰 적음 → 실망 확률·안심순 정렬에서 뒤로
             'p': pct(h['p_crit']) if h['scored'] else None,
@@ -2408,12 +2428,12 @@ def build_search(city_avg_pct):
             <button type="button" class="map-toggle" id="map-toggle" aria-pressed="false"><svg class="mt-ic mt-ic-map" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M1.5 3.5 5.5 2l5 1.5 4-1.5v10.5l-4 1.5-5-1.5-4 1.5V3.5ZM5.5 2v10.5M10.5 3.5V14" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg><svg class="mt-ic mt-ic-list" width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M2.5 4h11M2.5 8h11M2.5 12h11" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg><span class="mt-t">지도</span></button>
         </section>
     </main>
-    <script src="./js/compare.js?v={BUILD}" data-root="./"></script>
+    <script src="./js/compare.js?v={V("js/compare.js")}" data-root="./"></script>
 
     <script src="./data/index.js?v={BUILD}"></script>
     <script defer src="./data/search_index.js?v={BUILD}"></script>
-    <script src="./js/search-key.js?v={BUILD}"></script>
-    <script src="./js/search-ac.js?v={BUILD}"></script>
+    <script src="./js/search-key.js?v={V("js/search-key.js")}"></script>
+    <script src="./js/search-ac.js?v={V("js/search-ac.js")}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>
     {js}
@@ -3953,9 +3973,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
                 og_image=og_img, extra_head=_extra_head) + f'''
     <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
-    <script src="../js/report.js?v={BUILD}" defer></script>
+    <script src="../js/report.js?v={V("js/report.js")}" defer></script>
     <script>window.CF_IMGS={json.dumps(meta.get('r2_imgs') or [], ensure_ascii=False)};</script>
-    <script src="../js/lightbox.js?v={BUILD}" defer></script>
+    <script src="../js/lightbox.js?v={V("js/lightbox.js")}" defer></script>
     <main id="container">
         <section id="detail">
             {site_header(1, back='../search', menu=False, actions=hdr_actions, back_cls=' btn-icon btn-icon--photo')}
@@ -3992,8 +4012,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         </section>
     </main>
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="../js/compare.js?v={BUILD}" data-root="../"></script>
-    <script src="../js/detail-page.js?v={BUILD}" defer></script>''' + build_footer(1) + FOOT
+    <script src="../js/compare.js?v={V("js/compare.js")}" data-root="../"></script>
+    <script src="../js/detail-page.js?v={V("js/detail-page.js")}" defer></script>''' + build_footer(1) + FOOT
 
 # ───────────────────────── 컬렉션 허브 (HUB-NORMALIZE §3) ─────────────────────────
 # 지역 3 + 테마 5. slug=URL(무확장), kind, H1, min N 가드. 선정 로직은 collection_members().
@@ -4569,14 +4589,14 @@ def build_css_bundle():
         s = re.sub(r'@charset\s+"[^"]*";', '', s)
         s = re.sub(r'/\*.*?\*/', '', s, flags=re.S)
         s = re.sub(r'\n[ \t]*\n+', '\n', s).strip()
-        s = re.sub(r'url\((["\']?)(\.\./img/[^"\')?]+)\1\)', lambda m: f'url({m.group(1)}{m.group(2)}?v={BUILD}{m.group(1)})', s)   # 이미지 1년 캐시 → 참조에 빌드 버전
+        s = re.sub(r'url\((["\']?)(\.\./img/[^"\')?]+)\1\)', lambda m: f'url({m.group(1)}{m.group(2)}?v={V(m.group(2)[3:])}{m.group(1)})', s)   # 이미지 1년 캐시 → 참조에 내용 해시
         parts.append(f'/* == {name} == */\n{s}')
     return '@charset "utf-8";\n' + '\n'.join(parts) + '\n'
 
 def headers_txt():
     """docs/_headers (Cloudflare 정적 자산). ?v={BUILD}로 버전이 붙는 css·js·data/*.js는 1년 immutable, 버전 없는 data/q·fe JSON은 1시간,
        이미지 1일. HTML에는 Link preload(Cloudflare Early Hints 103으로 나가 응답 대기 중에 CSS·jQuery·홈 히어로를 먼저 받게)."""
-    pre = f'</css/site.css?v={BUILD}>; rel=preload; as=style, </js/vendor/jquery-3.7.1.min.js?v={BUILD}>; rel=preload; as=script'
+    pre = f'</css/site.css?v={V("css/site.css")}>; rel=preload; as=style'   # jQuery는 뺐다(2026-10-21): preload가 High 우선순위로 히어로 사진과 대역폭을 다퉜다. defer면 Low로 뒤에 받는다
     out = ''
     for r in ('/css/*', '/js/*', '/data/index.js', '/data/search_index.js', '/data/compare.js'):
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
@@ -4675,8 +4695,12 @@ def main():
     os.makedirs(os.path.join(OUT, 'data'))
     for d in ('css', 'js', 'img'):
         shutil.copytree(os.path.join(ROOT, d), os.path.join(OUT, d))
-    with open(os.path.join(OUT, 'css', 'site.css'), 'w', encoding='utf-8') as f:   # 로드 순서 그대로 한 파일(head()가 이것만 싣는다)
-        f.write(build_css_bundle())
+    _bundle = build_css_bundle()   # 로드 순서 그대로 한 파일(head()가 이것만 싣는다)
+    with open(os.path.join(OUT, 'css', 'site.css'), 'w', encoding='utf-8') as f:
+        f.write(_bundle)
+    import hashlib as _hl
+    _VC['css/site.css'] = _hl.md5(_bundle.encode('utf-8')).hexdigest()[:10]   # 번들 내용 해시 → head()·_headers의 ?v=
+    _VC['img/mascot'] = _hl.md5(b''.join(open(os.path.join(ROOT, 'img', 'mascot', n), 'rb').read() for n in sorted(os.listdir(os.path.join(ROOT, 'img', 'mascot'))))).hexdigest()[:10]   # 런타임(CF.mascot)용 묶음 해시
     hotels_img = os.path.join(ROOT, 'assets', 'hotels')
     if os.path.exists(hotels_img):
         shutil.copytree(hotels_img, os.path.join(OUT, 'img', 'hotels'))
