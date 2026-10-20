@@ -14,7 +14,8 @@
 
 ## 프론트 규칙
 
-- 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / recommend(맞춤형 추천) / compare / hotels/{id}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
+- 정적 HTML + jQuery + Swiper, 빌드 없음, 모바일 360px 기준. 페이지: index / search / recommend(맞춤형 추천) / compare / hotels(전체 목록 — 동네별 한 줄 행, 푸터·홈·검색·404에서 링크) / hotels/{slug}(상세, generate.py 생성) / 목업 detail·detail-2·detail-3 / review / recent / wishlist.
+- **상세 주소 = `/hotels/{slug}`**(2026-10-20 SEO-CRAWL): 정본 `scripts/slugs.json`(pid → slug, git 추적, 한 번 정하면 안 바꿈). 새 호텔은 빌드가 `hotels_index.json` en으로 자동 추가하고(파일 바뀌면 산출물과 함께 커밋), 8자 미만이면 빌드가 멈추니 직접 적는다. 옛 `/hotels/{pid}`는 `_redirects` 301. 상세 href는 `generate.hotel_url()`·`hotel_abs()`, JS는 데이터의 `u`(인라인 `hurl()`). `data/q`·`data/fe`·`CF_PID`·`cf_recent`·`data-cmp-id`·`compare?ids=`는 pid 그대로. 빌드 뒤 `python scripts/check_links.py`(링크·사이트맵·_redirects·답 문단 6항목).
 - 상세 페이지 공용 스크립트(갤러리·리뷰 팝업·FAQ 시트·아코디언·차트)는 **`js/detail-page.js`** (2026-10-10 generate.py 인라인에서 분리 — 상세 HTML 경량화). 리뷰 팝업 임베드는 `docs/data/q/{pid}.json`, FAQ 폴백 근거는 `docs/data/fe/{pid}.json`(generate.py `SIDE_FILES`). 분석 준비 중 상세는 noindex·사이트맵 제외, 사이트맵 lastmod = 호텔별 최근 리뷰일, 배포 뒤 `python scripts/indexnow.py`(Bing 등 색인 알림).
 - CSS 로드 순서: `tokens.css → common.css(리셋) → layout.css(원본) → swiper.css → uplift.css → mvp.css(오버라이드) → ds.css(디자인 시스템 v3 정규화 + 끝 §v3 부품 블록) → pc.css(PC 전용, 미디어쿼리 안에서만)`. 모바일 규칙은 ds.css까지, PC(≥1100px) 레이아웃은 pc.css에만 쓴다. **서빙은 빌드가 같은 순서로 합친 `docs/css/site.css` 한 파일**(`generate.build_css_bundle`, 앞에 `css/vendor/pretendard.css` 글꼴 선언) — 원본 파일·순서는 그대로, 페이지가 개별 CSS를 싣지 않는다(2026-10-20 속도). `css/vendor/`·`js/vendor/`는 외부 라이브러리 전용(lint 제외).
 - **모든 화면 수정은 `UI-STANDARDS.md`(디자인 시스템 v3)를 따른다.** 설계 근거는 `DESIGN-SYSTEM-V3.md`(P−1~P2 적용 완료: 오버레이 §17·부품 §18·페이지 재구성). 색/폰트/간격은 `css/tokens.css` 변수만 사용. 이모지 미사용(제품 폴리시).
