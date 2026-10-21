@@ -161,13 +161,64 @@ AREAS = [
     {'code': 'gion', 'ko': '기온·오호리', 'lat': 33.5915, 'lng': 130.4120, 'r': 1.0},
 ]
 
-# ── 역 좌표 (역거리 계산 — HUB-NORMALIZE §2). AREAS 좌표 재사용 + 역 보정. ──
+# ── 역 (가까운 역·노선·관광 동선 — HUB-NORMALIZE §2 + 2026-10-21 역 보강) ──
+#   예전엔 4역뿐이라 와타나베도리·텐진미나미·구시다진자마에 옆 호텔이 '텐진역 도보 14분'처럼 멀게 나왔다(구글 도보 실측과 대조).
+#   좌표: 구글 Places(와타나베도리·텐진미나미·구시다진자마에·아카사카·고후쿠마치·니시테츠후쿠오카), 나머지는 OSM 역 노드
+#   (하카타·텐진·나카스카와바타·기온은 기존 값 유지 — 기온은 OSM 역 중심보다 하카타역 쪽 출구에 가까운 보정값이라 그대로 둔다).
+#   line = 화면 노선 표기, go = 관광객 기준 한 줄 동선. 정거장 수·역 순서는 후쿠오카시 지하철 공식 노선도
+#   (subway.city.fukuoka.lg.jp/eng/route/ — 공항선 K01 메이노하마~K13 후쿠오카공항, 하코자키선 H01 나카스카와바타~,
+#   나나쿠마선 ~N16 텐진미나미·N17 구시다진자마에·N18 하카타)와 니시테츠 노선도(nishitetsu.jp/train/rosen/ — T01 후쿠오카(텐진)·
+#   T02 야쿠인·T03 히라오·T05 오하시, 다자이후는 T13 후쓰카이치에서 갈아타기)로 확인. 관광지 도보는 각 시설 공식 교통 안내.
+#   새 역은 공식 자료로 확인한 문장만 쓴다(덴진↔덴진미나미 걷는 시간·베이사이드 플레이스 도보처럼 공식 근거 없는 건 안 씀).
 STATIONS = [
-    {'code': 'hakata', 'ko': '하카타역', 'lat': 33.5897, 'lng': 130.4207},
-    {'code': 'tenjin', 'ko': '텐진역', 'lat': 33.5914, 'lng': 130.3989},
-    {'code': 'nakasu', 'ko': '나카스카와바타역', 'lat': 33.5946, 'lng': 130.4064},
-    {'code': 'gion', 'ko': '기온역', 'lat': 33.5924, 'lng': 130.4157},
+    # 공항선 (K)
+    {'code': 'meinohama', 'ko': '메이노하마역', 'lat': 33.583698, 'lng': 130.325029, 'line': '공항선',
+     'go': '텐진역까지 갈아타지 않고 7정거장, JR 지쿠히선과 바로 이어져요'},
+    {'code': 'nishijin', 'ko': '니시진역', 'lat': 33.58373, 'lng': 130.35946, 'line': '공항선',
+     'go': '텐진역 4정거장, 후쿠오카공항까지 갈아타지 않고 9정거장, 후쿠오카 타워는 걸어서 20분'},
+    {'code': 'tojinmachi', 'ko': '도진마치역', 'lat': 33.59022, 'lng': 130.37024, 'line': '공항선',
+     'go': '텐진역 3정거장, 후쿠오카공항까지 갈아타지 않고 8정거장, 페이페이돔은 걸어서 15분'},
+    {'code': 'ohorikoen', 'ko': '오호리코엔역', 'lat': 33.59011, 'lng': 130.37876, 'line': '공항선',
+     'go': '오호리 공원 바로 앞, 텐진역 2정거장, 후쿠오카공항까지 갈아타지 않고 7정거장'},
+    {'code': 'akasaka', 'ko': '아카사카역', 'lat': 33.5890681, 'lng': 130.3906318, 'line': '공항선',
+     'go': '텐진역 1정거장, 후쿠오카공항까지 갈아타지 않고 6정거장, 후쿠오카성터는 걸어서 8분'},
+    {'code': 'tenjin', 'ko': '텐진역', 'lat': 33.5914, 'lng': 130.3989, 'line': '공항선',
+     'go': '텐진 쇼핑가 한가운데, 후쿠오카공항까지 갈아타지 않고 5정거장, 하카타역 3정거장'},
+    {'code': 'nakasu', 'ko': '나카스카와바타역', 'lat': 33.5946, 'lng': 130.4064, 'line': '공항선·하코자키선',
+     'go': '나카스 포장마차·하카타 리버레인 가까이, 후쿠오카공항까지 갈아타지 않고 4정거장'},
+    {'code': 'gion', 'ko': '기온역', 'lat': 33.5924, 'lng': 130.4157, 'line': '공항선',
+     'go': '하카타역 1정거장, 후쿠오카공항까지 갈아타지 않고 3정거장, 도초지는 걸어서 1분'},
+    {'code': 'hakata', 'ko': '하카타역', 'lat': 33.5897, 'lng': 130.4207, 'line': '공항선·나나쿠마선·JR',
+     'go': '후쿠오카공항까지 2정거장, 신칸센·JR 타는 역, 캐널시티는 걸어서 10분'},
+    {'code': 'higashihie', 'ko': '히가시히에역', 'lat': 33.58983, 'lng': 130.43129, 'line': '공항선',
+     'go': '후쿠오카공항·하카타역 모두 1정거장'},
+    # 하코자키선 (H) — 공항은 나카스카와바타역에서 공항선으로 갈아탄다
+    {'code': 'gofukumachi', 'ko': '고후쿠마치역', 'lat': 33.5979025, 'lng': 130.4096023, 'line': '하코자키선',
+     'go': '나카스카와바타역 1정거장, 거기서 공항선으로 갈아타요'},
+    {'code': 'chiyo', 'ko': '지요켄초구치역', 'lat': 33.60223, 'lng': 130.41408, 'line': '하코자키선',
+     'go': '나카스카와바타역 2정거장, 거기서 공항선으로 갈아타요'},
+    # 나나쿠마선 (N) — 2023-03 하카타 연장. 공항은 하카타역에서 공항선으로 갈아탄다
+    {'code': 'kushida', 'ko': '구시다진자마에역', 'lat': 33.5916517, 'lng': 130.4109756, 'line': '나나쿠마선',
+     'go': '캐널시티 걸어서 3분·구시다 신사 2분, 하카타역 1정거장'},
+    {'code': 'tenjinminami', 'ko': '텐진미나미역', 'lat': 33.5885459, 'lng': 130.4023766, 'line': '나나쿠마선',
+     'go': '텐진 쇼핑가 남쪽, 캐널시티 앞 역 1정거장·하카타역 2정거장을 갈아타지 않고 가요'},
+    {'code': 'watanabedori', 'ko': '와타나베도리역', 'lat': 33.5838745, 'lng': 130.4049918, 'line': '나나쿠마선',
+     'go': '텐진미나미역 1정거장, 캐널시티·하카타역까지 갈아타지 않고 가요'},
+    {'code': 'yakuin', 'ko': '야쿠인역', 'lat': 33.5817, 'lng': 130.40181, 'line': '나나쿠마선·니시테츠 전철',
+     'go': '다자이후 방면 니시테츠 전철 타는 역, 하카타역까지 갈아타지 않고 4정거장'},
+    {'code': 'yakuinodori', 'ko': '야쿠인오도리역', 'lat': 33.58054, 'lng': 130.39676, 'line': '나나쿠마선',
+     'go': '텐진미나미역 3정거장, 하카타역까지 갈아타지 않고 5정거장'},
+    {'code': 'sakurazaka', 'ko': '사쿠라자카역', 'lat': 33.57727, 'lng': 130.38686, 'line': '나나쿠마선',
+     'go': '텐진미나미역 4정거장, 하카타역까지 갈아타지 않고 6정거장'},
+    # 니시테츠 텐진오무타선 (T) — 지하철 텐진역과 별개 역(다자이후·야나가와 출발역이라 따로 둔다)
+    {'code': 'nishitetsu', 'ko': '니시테츠후쿠오카(텐진)역', 'lat': 33.5886887, 'lng': 130.3999665, 'line': '니시테츠 전철',
+     'go': '다자이후·야나가와 가는 전철 출발역, 지하철 텐진역·텐진미나미역과 이어져요'},
+    {'code': 'hirao', 'ko': '니시테츠히라오역', 'lat': 33.573599, 'lng': 130.406277, 'line': '니시테츠 전철',
+     'go': '니시테츠후쿠오카(텐진)역 2정거장, 다자이후 방면 전철'},
+    {'code': 'ohashi', 'ko': '오하시역', 'lat': 33.559203, 'lng': 130.426344, 'line': '니시테츠 전철',
+     'go': '니시테츠후쿠오카(텐진)역 4정거장, 다자이후 방면 전철'},
 ]
+STATION_BY_KO = {s['ko']: s for s in STATIONS}
 
 # ── 시설 표준키 → 한글 칩 라벨 (허브 카드 텍스트 칩용, 이모지 금지) ──
 AMENITY_LABEL = {
@@ -201,13 +252,9 @@ def nearest_station(lat, lng):
         return None
     return (ko, walk, int(round(dist_m)))
 
-def station_line(meta):
-    """상세/허브용 역거리 1줄 텍스트. 예: '하카타역 도보 약 7분(직선 450m)'. 없으면 ''."""
-    ns = nearest_station(meta.get('latitude'), meta.get('longitude'))
-    if not ns:
-        return ''
-    ko, walk, dist_m = ns
-    return f'{ko} 도보 약 {walk}분(직선 {dist_m}m)'
+def station_info(ns):
+    """nearest_station 결과 → STATIONS 항목(노선 line·동선 go). 없으면 None."""
+    return STATION_BY_KO.get(ns[0]) if ns else None
 
 # ── 피드백 저장 (Supabase anon key: 공개용, INSERT 전용 RLS) ──
 SUPABASE_URL = 'https://iixztaazwpjvxnpgegod.supabase.co'
@@ -3228,6 +3275,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         # ── 위치 정보 칩 (F9: 사실 기반만 — 역거리 실계산 + 권역. 리뷰 유래 칩은 FAQ 섹션이 전담) ──
         _loc = []
         _ns = nearest_station(meta.get('latitude'), meta.get('longitude'))
+        _si = station_info(_ns)
         if _ns:
             _loc.append(f'<span class="seg">{E(_ns[0])} 도보 {_ns[1]}분({_ns[2]}m)</span>')
         for _a in AREAS:
@@ -3235,6 +3283,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 _loc.append(f'<span class="seg">{E(_a["ko"].split("·")[0].rstrip("역"))}권</span>')
                 break
         loc_chips = f'<p class="loc-meta">{" · ".join(_loc[:2])}</p>' if _loc else ''   # 4A: 알약 칩 → 메타 글자 한 줄(v3 §7-3)
+        # 역 노선·관광 동선(2026-10-21): '나나쿠마선 · 캐널시티 앞 역 1정거장…' — 읽는 문장이라 본문 16 잉크, 노선은 라벨(§15 라벨·값)
+        if _si:
+            loc_chips += f'<p class="loc-go"><b>{E(_si["line"])}</b>{DSEP}<span class="seg">{E(_si["go"])}</span></p>'
         addr_html = (f'<div class="loc-addr">{E(meta.get("address") or "")}</div>'
                      if meta.get('address') else '')
         map_block = f'''<div class="sect location">

@@ -2403,3 +2403,6 @@ body[data-page=compare] .det-header{position:static;}
 #hlist > .btn-gray{margin:var(--sp-8) 0 var(--sp-3);}
 #main .home-collections .hl-all{margin-top:var(--sp-6);}
 #search .search-all{padding:var(--sp-8) var(--page-x) var(--sp-3);}
+#detail .location .loc-meta:has(+ .loc-go){margin-bottom:var(--sp-2);}
+#detail .location .loc-go{margin:0 0 var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
+#detail .location .loc-go b{font-weight:var(--fw-semi);}
