@@ -22,6 +22,9 @@ def V(rel):
     _VC[rel] = v
     return v
 
+CAROUSEL_EAGER = 3   # 캐러셀 줄당 src를 바로 주는 카드 수(360px에서 2장 + 셋째 일부가 보임, PC 600px 칼럼도 252px 카드 2.4장). 나머지는 data-src → js/common.js가 채움(2026-10-21 PSI: loading=lazy로도 숨은 슬라이드 34장 483KB가 LCP 전에 요청됐다)
+BLANK_GIF = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw=='   # 1×1 투명(히어로 수달·data-src 자리)
+
 def thumb(url):
     """R2 갤러리 원본(hotels/{pid}/{n}.webp, 긴 변 960·최대 160KB) → 카드용 썸네일(_s.webp, 긴 변 480·pipeline/images.py가 항상 같이 올림).
        카드·목록·비교·지도 팝업은 썸네일, 상세 갤러리·OG는 원본(2026-10-21 속도: 홈 호텔 사진 1.8MB → 약 0.5MB)."""
@@ -288,13 +291,16 @@ def price_stats(rows):
 
 MASCOT_DIMS = {'wave': (400, 433), 'peek': (400, 429), 'report': (400, 405), 'look': (400, 459), 'jump': (400, 409)}   # = js/backnav.js CF.MASCOT
 
-def mascot_scene(pose, root='./', img_cls='', scene_cls='', lazy=False):
+def mascot_scene(pose, root='./', img_cls='', scene_cls='', lazy=False, small=False):
     """캐치플로 수달(로딩·빈 화면·완료 전용, ds.css §v3) — 보라 원 받침 + 그림. 장식이라 alt="" · aria-hidden.
-       lazy: 첫 화면 아래(홈 안내 카드)면 True — 로딩·빈 화면은 보이는 순간 바로 떠야 하니 False."""
+       lazy: 첫 화면 아래(홈 안내 카드)면 True — 로딩·빈 화면은 보이는 순간 바로 떠야 하니 False.
+       small: 104px로 보이는 자리(홈 안내 카드)는 240px 판 otter-{pose}_s.webp(400px 판 35KB → 15KB, 2026-10-21 PSI)."""
     w, h = MASCOT_DIMS[pose]
+    if small: w, h = 240, round(h * 240 / w)
+    fn = f'otter-{pose}_s.webp' if small else f'otter-{pose}.webp'
     lz = ' loading="lazy"' if lazy else ''
     return (f'<div class="mascot-scene{(" " + scene_cls) if scene_cls else ""}" aria-hidden="true"><img class="mascot{(" " + img_cls) if img_cls else ""}" '
-            f'src="{root}img/mascot/otter-{pose}.webp?v={V(f"img/mascot/otter-{pose}.webp")}" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
+            f'src="{root}img/mascot/{fn}?v={V(f"img/mascot/{fn}")}" width="{w}" height="{h}" alt="" decoding="async"{lz}></div>')
 
 def md_ko(iso):
     """'2026-10-09' → '10월 9일'"""
@@ -599,6 +605,20 @@ GA4 = f'''<script>
   }})();
 </script>'''
 
+def font_loader(p):
+    """Pretendard(docs/css/fonts.css = css/vendor/pretendard.css, 92 @font-face·파일은 jsDelivr)를 site.css에서 빼고 싣는 때를 가른다
+       (2026-10-21 PSI: 글꼴 14파일 370KB가 첫 화면 전에 요청돼 LCP 계산에 잡혔다. font-display만 바꿔선 요청 시점이 같아 점수 이득 없음).
+       첫 방문(localStorage cf_fonts 없음): load 뒤에 싣는다 → 기본 글꼴로 먼저 보이고 Pretendard로 바뀜(swap — 느린 회선에선 지금도 그렇다). 글꼴이 다 오면 표시를 남긴다.
+       재방문(표시 있음): head에서 바로 blocking=render로 싣는다 → 캐시에서 즉시, 처음부터 Pretendard(깜빡임·글꼴 섞임 없음)."""
+    u = f'{p}css/fonts.css?v={V("css/fonts.css")}'
+    return ('<script>(function(){var u="' + u + '",K="cf_fonts",ok=false;try{ok=localStorage.getItem(K)==="1";}catch(e){}'
+            'function mark(){try{localStorage.setItem(K,"1");}catch(e){}}'
+            'function add(b){var c=document.createElement("link");c.rel="preconnect";c.href="https://cdn.jsdelivr.net";c.crossOrigin="";document.head.appendChild(c);'
+            'var l=document.createElement("link");l.rel="stylesheet";l.href=u;if(b)l.setAttribute("blocking","render");'
+            'if(!b)l.onload=function(){setTimeout(function(){if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mark);else mark();},100);};'
+            'document.head.appendChild(l);}'
+            'if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>')
+
 def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head='', sync_js=False):
     """sync_js=True(검색 페이지만): 인라인이 파싱 시점에 $·CF·CFRec을 쓰므로 backnav·jQuery·recommend를 동기로. 그 외 페이지는 전부 defer —
        인라인의 $(function…)은 shim이 모아 두었다가 js/vendor/jq-flush.js가 jQuery.ready로 넘긴다(2026-10-20 속도)."""
@@ -633,7 +653,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
     {extra_head}
     <link rel="icon" type="image/svg+xml" href="{p}img/favicon.svg">
     <link rel="apple-touch-icon" href="{p}img/favicon.svg">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    {font_loader(p)}
     <link rel="stylesheet" href="{p}css/site.css?v={V("css/site.css")}">
     <link rel="stylesheet" href="{p}css/pc.css?v={V("css/pc.css")}" media="(min-width:770px)">
     <script>window.CF_BUILD='{BUILD}';window.CF_IMGV='{V("img/mascot")}';window.$=window.jQuery=function(f){{(window.__cfq=window.__cfq||[]).push(f);}};</script>
@@ -1044,12 +1064,13 @@ def card_rate(meta):
     r = card_rating(meta)
     return f'{r} ({meta.get("reviews_count") or 0:,})' if r else ''
 
-def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_cls='swiper-slide'):
+def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_cls='swiper-slide', idx=None):
     """호텔 카드 .hcard (DESIGN-SYSTEM-V3 §6-4) — kind: carousel(홈·상세 대안, 20:19) · grid(최근 본, 1:1) · wide(허브, 4:3).
     글줄: ① 이름 15/600(최대 2줄) → ② 메타 15 --ink-3 → ③ 가격 15(숫자 700, 맨 아래 정렬).
       carousel·grid ② '★ 4.5 · 나카스'(위험이면 '● 위험 · ★ 4.5', 지역 생략 — 151px 카드 폭에 안 들어감)
       wide ① 오른쪽 '★ 4.5 (1,537)' · ② '하카타역 도보 5분 · 3성급' · ③ 사유(why_line) · ④ 가격 '평일 약 13만원 · 주말 약 34만원'
-    extra: 글 맨 아래 한 줄(상세 '약점 맞춤 대안'의 비교 줄 등). rank: 허브 순위(잉크 원 24)."""
+    extra: 글 맨 아래 한 줄(상세 '약점 맞춤 대안'의 비교 줄 등). rank: 허브 순위(잉크 원 24).
+    idx: 캐러셀 안 순번 — CAROUSEL_EAGER(3) 이상이면 사진을 data-src로 미루고 js/common.js가 채운다(2026-10-21 속도). 세로 목록(wide·grid)은 loading=lazy로 충분."""
     p = '../' * depth
     wide = kind == 'wide'
     danger = badge_key(h) in ('danger', 'lowdanger')
@@ -1066,9 +1087,11 @@ def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_c
         meta_html = f'<div class="hcard-meta">{line}</div>' if line else ''
         price = price_card_html(meta)
     rank_html = f'<span class="cnt">{rank}</span>' if rank else ''
+    src = img_path(pid, meta, depth)
+    img_attr = f'src="{BLANK_GIF}" data-src="{src}"' if (kind == 'carousel' and idx is not None and idx >= CAROUSEL_EAGER) else f'src="{src}"'
     return f'''<li class="{li_cls}" data-pid="{pid}">
         <a href="{hotel_url(pid, depth)}" class="hcard hcard--{kind}" data-ga="home_card">
-            <div class="hcard-photo"><img src="{img_path(pid, meta, depth)}" alt="{E(meta['title'])}" width="600" height="450" loading="lazy">{badge_html(h)}{rank_html}</div>
+            <div class="hcard-photo"><img {img_attr} alt="{E(meta['title'])}" width="600" height="450" loading="lazy">{badge_html(h)}{rank_html}</div>
             <div class="hcard-body">
                 {head}
                 {meta_html}
@@ -1187,7 +1210,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
 
     def slider(title, pids, href=None, note=''):   # note = 카드 아래 근거 한 줄(안심 목록)
         """홈 캐러셀 섹션 (v3 §6-6): 18/700 제목(+ href가 있으면 셰브론, 줄 전체가 링크) → 12 → 카드. 설명 없음."""
-        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], extra=(f'<div class="hcard-note">{note}</div>' if note else '')) for p in pids)
+        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], extra=(f'<div class="hcard-note">{note}</div>' if note else ''), idx=i) for i, p in enumerate(pids))
         t = (f'<a class="title head-link" href="{href}" data-ga="home_more" data-ga-title>{title}</a>' if href else
              f'<div class="title" data-ga-title>{title}</div>')
         return f'''<div class="hotel-list init" data-ga-block>
@@ -1204,7 +1227,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         if len(pids) < 3: continue
         on = not tabs
         tabs.append(f'<button type="button" class="pt-tab{" on" if on else ""}" data-pt="{code}" aria-pressed="{"true" if on else "false"}">{label}</button>')
-        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p]) for p in pids)
+        cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], idx=i) for i, p in enumerate(pids))
         panes.append(f'<div class="list hotel-slider pt-pane" data-pt="{code}"{"" if on else " hidden"}><ul class="swiper-wrapper">{cards}</ul></div>')
     price_sliders = (f'''<div class="hotel-list price-tabs init" data-ga-block>
             <div class="head"><div class="title" data-ga-title>평일 가격대별 추천</div></div>
@@ -1259,7 +1282,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         <section id="main">
             <article class="section sec-1">
                 <div class="search-box init" data-ga-block>
-                    <picture class="hero-bg" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/home_bg_pc.jpg?v={V("img/home_bg_pc.jpg")}"><img src="./img/home_bg_otter_m.webp?v={V("img/home_bg_otter_m.webp")}" width="960" height="1120" alt="" fetchpriority="high" decoding="async"></picture>
+                    <picture class="hero-bg" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/home_bg_pc.jpg?v={V("img/home_bg_pc.jpg")}"><img src="./img/home_bg_otter_m.webp?v={V("img/home_bg_otter_m.webp")}" srcset="./img/home_bg_otter_m_720.webp?v={V("img/home_bg_otter_m_720.webp")} 720w, ./img/home_bg_otter_m.webp?v={V("img/home_bg_otter_m.webp")} 960w" sizes="(min-width:390px) 390px, 100vw" width="960" height="1120" alt="" fetchpriority="high" decoding="async"></picture>
                     <div class="title" data-ga-title>
                         <h1 class="tit hero-title">리뷰 대신 다 읽고<br><span class="hero-key">실망 확률</span>로<br>알려드려요</h1>
                         <picture class="hero-mascot" aria-hidden="true"><source media="(min-width:1100px)" srcset="./img/mascot/otter-look-pc.webp"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" width="640" height="763" alt="" decoding="async"></picture>
@@ -1282,14 +1305,14 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     <div class="intro-item" data-intro="calc">
                         <a class="intro-card" href="./about" data-ga="intro_calc">
                             <span class="ic-txt"><b class="ic-tit" data-ga-title>실망 확률은 어떻게 계산할까요?</b><span class="ic-sub">리뷰를 어떻게 읽고 세는지 알려드려요</span><span class="ic-link">산출 방법 보기</span></span>
-                            <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene', lazy=True)}</span>
+                            <span class="ic-art">{mascot_scene('report', './', 'ic-mascot', 'ic-scene', lazy=True, small=True)}</span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
                     <div class="intro-item" data-intro="rec">
                         <a class="intro-card" href="./recommend" data-ga="intro_rec">
                             <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">네 가지만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
-                            <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene', lazy=True)}</span>
+                            <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene', lazy=True, small=True)}</span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
                     </div>
@@ -3287,7 +3310,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                                  f'<span class="seg">이 호텔은 {E(_mine)}</span></div>') for p in _alt}
     similar_block = ''
     if sim:
-        sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1, extra=sim_extra.get(p, '')) for p in sim)
+        sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1, extra=sim_extra.get(p, ''), idx=i) for i, p in enumerate(sim))
         similar_block = f'''<div class="sect hotel" id="sec-alt">
             <div class="head"><div class="title">{E(sim_title)}</div>
             <div class="desc">{E(sim_desc)}</div></div>
@@ -3298,8 +3321,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     pairs_block = ''
     partners = [(pb if pa == pid else pa) for pa, pb in PAIRS if pid in (pa, pb)]
     if partners and h['scored']:
-        _pc = '\n'.join(hotel_card(q, hotels_meta[q], H[q], depth=1,
-                         extra=f'<div class="hcard-note"><span class="seg">실망 확률 <b>{pct(H[q]["p_crit"])}%</b></span><span class="seg">이 호텔은 {pct(h["p_crit"])}%</span></div>') for q in partners)
+        _pc = '\n'.join(hotel_card(q, hotels_meta[q], H[q], depth=1, idx=i,
+                         extra=f'<div class="hcard-note"><span class="seg">실망 확률 <b>{pct(H[q]["p_crit"])}%</b></span><span class="seg">이 호텔은 {pct(h["p_crit"])}%</span></div>') for i, q in enumerate(partners))
         pairs_block = f'''<div class="sect hotel" id="sec-vs">
             <div class="head"><div class="title">이 호텔과 함께 고민하는 호텔</div>
             <div class="desc">한국인이 많이 찾는 호텔 중 가격·위치가 비슷한 곳이에요</div></div>
@@ -4287,7 +4310,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         for code, label, lo, hi in PRICE_BANDS:
             band_pids = [p for p in pids if H[p]['ranked'] and hotels_meta[p].get('band') and hotels_meta[p]['band'][0] == code][:2]
             if band_pids:
-                cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=depth) for p in band_pids)
+                cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=depth, idx=i) for i, p in enumerate(band_pids))
                 parts.append(f'<div class="hub-pb-band"><div class="pb-label">{E(label)}</div>'
                              f'<div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div></div>')
         if parts:
@@ -4578,7 +4601,7 @@ Sitemap: {BASE}/sitemap.xml
 '''
 
 # ── 속도 최적화(2026-10-20): CSS 번들 · 캐시 헤더 ──
-CSS_ORDER = ['vendor/pretendard.css', 'tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css']   # = CLAUDE.md 로드 순서 (앞에 글꼴). pc.css는 head()가 media=(min-width:1100px) 링크로 따로(모바일에서 비차단, 2026-10-20)
+CSS_ORDER = ['tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css']   # = CLAUDE.md 로드 순서. pc.css는 head()가 media=(min-width:770px) 링크로 따로(모바일에서 비차단, 2026-10-20). 글꼴(vendor/pretendard.css)은 docs/css/fonts.css로 따로 — font_loader() 참고(2026-10-21)
 
 def build_css_bundle():
     """css/ 원본을 로드 순서대로 이어 붙인 docs/css/site.css — 렌더 차단 요청 9개(교차 출처 1 포함) → 같은 출처 1개.
@@ -4602,7 +4625,7 @@ def headers_txt():
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
     out += '/data/q/*\n  Cache-Control: public, max-age=3600\n/data/fe/*\n  Cache-Control: public, max-age=3600\n/img/*\n  Cache-Control: public, max-age=86400\n'
     # 큰 이미지는 1년(참조에 ?v=BUILD가 붙어 바뀌면 새 URL): 히어로·수달·도시 타일·로컬 호텔 사진. 아이콘 svg는 1일 유지
-    for r in ('/img/home_bg_otter_m.webp', '/img/home_bg_pc.jpg', '/img/mascot/*', '/img/city/*', '/img/hotels/*'):
+    for r in ('/img/home_bg_otter_m.webp', '/img/home_bg_otter_m_720.webp', '/img/home_bg_pc.jpg', '/img/mascot/*', '/img/city/*', '/img/hotels/*'):
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
     out += f'/\n  Link: {pre}\n'   # 히어로 이미지는 Link preload에서 뺐다 — Link 경로는 우선순위 Low로 시작해 오히려 늦어짐(2026-10-20 Lighthouse). <img fetchpriority=high>가 맡는다
     for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent', '/hotels'):
@@ -4700,6 +4723,10 @@ def main():
         f.write(_bundle)
     import hashlib as _hl
     _VC['css/site.css'] = _hl.md5(_bundle.encode('utf-8')).hexdigest()[:10]   # 번들 내용 해시 → head()·_headers의 ?v=
+    _fonts = re.sub(r'/\*.*?\*/', '', open(os.path.join(ROOT, 'css', 'vendor', 'pretendard.css'), encoding='utf-8').read(), flags=re.S).strip() + '\n'   # 글꼴 선언은 따로(font_loader)
+    with open(os.path.join(OUT, 'css', 'fonts.css'), 'w', encoding='utf-8') as f:
+        f.write(_fonts)
+    _VC['css/fonts.css'] = _hl.md5(_fonts.encode('utf-8')).hexdigest()[:10]
     _VC['img/mascot'] = _hl.md5(b''.join(open(os.path.join(ROOT, 'img', 'mascot', n), 'rb').read() for n in sorted(os.listdir(os.path.join(ROOT, 'img', 'mascot'))))).hexdigest()[:10]   # 런타임(CF.mascot)용 묶음 해시
     hotels_img = os.path.join(ROOT, 'assets', 'hotels')
     if os.path.exists(hotels_img):

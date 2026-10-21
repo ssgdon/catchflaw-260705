@@ -14,3 +14,30 @@
     if (acc > 24) set(true); else if (acc < -24) set(false); // 24px 이상 움직였을 때만 (미세 떨림 무시)
   }, { passive: true });
 })();
+
+// 캐러셀 썸네일 지연(2026-10-21 속도): hotel_card(idx=)가 줄당 앞 3장만 src, 나머지는 data-src로 낸다 — 가로 캐러셀은 loading=lazy로도
+// 숨은 슬라이드까지 받아 PSI에서 LCP 전에 34장 483KB가 끼었다. 채우는 때: ① 그 줄을 만지거나(터치·마우스) 스크롤할 때 바로(PC 화살표는 scrollBy → scroll),
+// ② load 1.5초 뒤 화면 근처(위아래 300px) 줄을 미리. 숨은 가격 탭 줄은 보이게 될 때 ②가 잡는다.
+(function () {
+  function fill(row) {
+    var imgs = row.querySelectorAll('img[data-src]');
+    for (var i = 0; i < imgs.length; i++) { imgs[i].src = imgs[i].getAttribute('data-src'); imgs[i].removeAttribute('data-src'); }
+  }
+  function rowOf(t) { return t && t.closest ? t.closest('.hotel-slider') : null; }
+  ['touchstart', 'pointerdown'].forEach(function (ev) {
+    document.addEventListener(ev, function (e) { var r = rowOf(e.target); if (r) fill(r); }, { passive: true, capture: true });
+  });
+  document.addEventListener('scroll', function (e) {
+    var t = e.target; if (t && t.classList && t.classList.contains('hotel-slider')) fill(t);
+  }, { passive: true, capture: true });
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      var rows = document.querySelectorAll('.hotel-slider'), i;
+      if (!('IntersectionObserver' in window)) { for (i = 0; i < rows.length; i++) fill(rows[i]); return; }
+      var io = new IntersectionObserver(function (es) {
+        es.forEach(function (en) { if (en.isIntersecting) { fill(en.target); io.unobserve(en.target); } });
+      }, { rootMargin: '300px 0px' });
+      for (i = 0; i < rows.length; i++) { if (rows[i].querySelector('img[data-src]')) io.observe(rows[i]); }
+    }, 1500);
+  });
+})();
