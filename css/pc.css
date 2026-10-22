@@ -267,8 +267,8 @@
     #hlist{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}   /* 전체 호텔 목록: 허브와 같은 틀, 리드만 읽는 폭 */
     #hlist .page-title{margin-top:0;}
     #hlist .hl-lead{max-width:736px;}
-    #about{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
-    #about > *{max-width:736px;}   /* 읽는 폭은 그대로, 왼쪽 끝만 틀에 맞춤 */
+    #about,#privacy{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #about > *,#privacy > *{max-width:736px;}   /* 읽는 폭은 그대로, 왼쪽 끝만 틀에 맞춤 */
     .page-empty{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-5) var(--pc-x) var(--sp-12);}
     .page-empty > *{max-width:736px;}
     .page-empty .page-title,.page-empty .pe-txt,.page-empty .pe-btns{margin-left:0;margin-right:0;}

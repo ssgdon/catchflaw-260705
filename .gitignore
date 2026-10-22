@@ -29,3 +29,6 @@ UI-FIX3-DESIGN.md
 REVIEW-LAZYLOAD-DESIGN.md
 HYBRID-CRITERIA-DESIGN.md
 scripts/deploy.ps1
+
+# OAuth 비밀(유튜브 업로더)
+content/longform/secrets/

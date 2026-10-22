@@ -727,7 +727,7 @@ def build_footer(depth=0, root=None):
     return f'''
     <footer id="site-foot">
         <div class="foot-note">캐치플로의 실망 확률·위험도는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
-        <div class="foot-links"><a href="{p}about">캐치플로 소개·산출 방법</a> · <a href="{p}hotels">전체 호텔 목록</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
+        <div class="foot-links"><a href="{p}about">캐치플로 소개·산출 방법</a> · <a href="{p}hotels">전체 호텔 목록</a> · <a href="{p}privacy">개인정보 처리방침</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
 
@@ -4584,6 +4584,107 @@ def build_about(hotels_meta, H, city):
         </section>
     </main>''' + build_footer(0) + FOOT
 
+# ───────────────────────── privacy (개인정보 처리방침 · 2026-10-22, 구글 OAuth 동의 화면·YouTube API 심사용) ─────────────────────────
+PRIVACY_DATE = '2026년 10월 22일'
+
+def build_privacy():
+    """개인정보 처리방침 — about 과 같은 문서 리듬(.about-* 부품, #privacy 셀렉터). sitemap 제외(check_links 정적 5 유지)·색인은 허용.
+       마지막 절은 구글 API 서비스 이용 고지(한글 + 영문) — OAuth 동의 화면의 '개인정보처리방침 링크'와 YouTube API 규정 심사가 이 주소를 본다."""
+    desc = '캐치플로가 받는 정보(피드백·분석 요청·접속 기록), 쓰는 도구(Google Analytics·Microsoft Clarity·Supabase·Cloudflare), 보관 기간과 삭제 요청 방법을 안내해요.'
+
+    def sect(title, body, en=False):
+        lang = ' lang="en"' if en else ''
+        return (f'<div class="sect about-sect"{lang}><div class="head"><div class="title">{E(title)}</div></div>'
+                f'<div class="about-body">{body}</div></div>')
+
+    mail = f'<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>'
+    s1 = sect('누가 운영하나요',
+        f'캐치플로(catchflaw.com)는 개인이 운영하는 호텔 리뷰 분석 서비스예요. 로그인이나 회원 가입이 없어요. '
+        f'개인정보에 관한 문의·요청은 {mail}로 보내 주세요. 개인정보 보호 책임자도 운영자 본인이에요.')
+    s2 = sect('어떤 정보를 받나요',
+        '<ul class="about-list">'
+        '<li><b>직접 적어 주시는 것</b> — 상세 페이지 피드백 창의 의견 글과 휴대폰 번호(선택), 검색에서 못 찾은 호텔의 <b>분석 요청</b>에 적은 호텔 이름. '
+        '보내신 뒤에는 운영자만 열람해요.</li>'
+        '<li><b>자동으로 남는 것</b> — 방문한 페이지, 누른 곳, 스크롤, 기기·브라우저 종류, 대략적인 지역, 접속 시각. '
+        'Google Analytics와 Microsoft Clarity가 쿠키와 비슷한 식별자로 모으고, Cloudflare가 보안을 위해 접속 기록(IP 주소 포함)을 짧게 남겨요. '
+        '이름이나 연락처 같은 개인을 알아보는 정보는 여기에 넣지 않아요.</li>'
+        '<li><b>내 기기에만 저장되는 것</b> — 최근 본 호텔, 비교함, 신고·피드백 중복을 막는 무작위 식별자, 글꼴 캐시. '
+        '브라우저 저장소(localStorage)에만 있고 서버로 보내지 않아요. 브라우저 데이터를 지우면 함께 지워져요.</li>'
+        '</ul>')
+    s3 = sect('왜 쓰나요',
+        '<ul class="about-list">'
+        '<li>피드백에 답하고 서비스를 고치려고(휴대폰 번호는 답변이 필요할 때만 써요)</li>'
+        '<li>분석 요청한 호텔을 심사해 사이트에 추가하려고</li>'
+        '<li>어떤 화면이 어렵거나 느린지 알아 개선하려고(통계·사용성 기록)</li>'
+        '<li>공격과 오남용을 막으려고(접속 기록)</li>'
+        '</ul>'
+        '그 밖의 목적으로 쓰거나 광고에 팔지 않아요.')
+    s4 = sect('어디에 맡기나요',
+        '아래 서비스가 캐치플로를 대신해 정보를 저장하거나 처리해요. 모두 해외(미국 등) 서버라, 정보가 국외로 옮겨져요.'
+        '<ul class="about-list">'
+        '<li><b>Supabase</b> — 피드백·분석 요청 저장</li>'
+        '<li><b>Google Analytics</b> — 방문 통계</li>'
+        '<li><b>Microsoft Clarity</b> — 화면 사용 기록(누른 곳·스크롤), 입력한 글자는 가려져요</li>'
+        '<li><b>Cloudflare</b> — 사이트 전송·보안, 호텔 사진 저장</li>'
+        '</ul>'
+        '예약·지도 버튼을 눌러 구글, 트립닷컴 등 바깥 사이트로 가면 그곳의 정책이 적용돼요. '
+        '일부 예약 링크는 제휴 링크라 예약하면 캐치플로가 수수료를 받을 수 있지만, 그 과정에서 캐치플로가 받는 개인정보는 없어요.')
+    s5 = sect('얼마나 보관하나요',
+        '<ul class="about-list">'
+        '<li>피드백·분석 요청: 처리가 끝난 뒤 1년 안에 지워요. 휴대폰 번호는 답변을 마치면 바로 지워요</li>'
+        '<li>방문 통계·사용 기록: 각 도구의 기본 기간(Google Analytics 14개월, Microsoft Clarity 최대 13개월)</li>'
+        '<li>접속 기록: Cloudflare의 보안 로그 기본 기간</li>'
+        '</ul>')
+    s6 = sect('통계·사용 기록을 끄려면',
+        '브라우저 설정에서 쿠키와 사이트 데이터를 막거나, 방문 뒤 지우면 돼요. '
+        'Google Analytics는 <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">구글 차단 부가기능</a>으로도 끌 수 있어요. '
+        '끄더라도 캐치플로는 그대로 쓸 수 있어요.')
+    s7 = sect('내 정보에 대한 권리',
+        f'보낸 피드백·분석 요청을 보여 달라거나 고쳐 달라거나 지워 달라고 {mail}로 요청하면, 확인 뒤 10일 안에 처리하고 알려드려요. '
+        '브라우저에만 저장된 정보는 브라우저에서 직접 지울 수 있어요.')
+    s8 = sect('만 14세 미만',
+        '캐치플로는 만 14세 미만을 대상으로 하지 않고, 나이를 묻지 않아요. 만 14세 미만의 정보를 받았다고 알게 되면 바로 지워요.')
+    s9 = sect('구글·유튜브 API 이용 고지',
+        '캐치플로 운영자는 자체 제작 영상을 <b>캐치플로 유튜브 채널</b>에 올리는 내부 도구(캐치플로 콘텐츠 업로더)에 YouTube Data API를 써요. '
+        '이 도구는 운영자 본인만 쓰고, 운영자 채널 외의 구글 계정이나 시청자 정보에는 접근하지 않아요. '
+        '접근 권한(OAuth 토큰)과 올린 영상의 ID는 운영자 컴퓨터에만 저장되고 누구에게도 공유하지 않아요. '
+        '권한은 <a href="https://myaccount.google.com/permissions" rel="noopener">구글 계정 보안 설정</a>에서 언제든 취소할 수 있어요. '
+        '이 도구는 <a href="https://www.youtube.com/t/terms" rel="noopener">YouTube 서비스 약관</a>과 '
+        '<a href="https://policies.google.com/privacy" rel="noopener">Google 개인정보처리방침</a>을 따르고, '
+        '구글 API에서 받은 정보의 사용은 제한적 사용 요건을 포함한 Google API 서비스 사용자 데이터 정책을 지켜요.')
+    s9e = sect('Google API Services disclosure (English)',
+        'CatchFlaw (catchflaw.com) is a hotel-review analysis website operated by an individual. It has no sign-in and no user accounts. '
+        'The operator uses an internal tool, <b>CatchFlaw Content Uploader</b>, which uses the YouTube Data API v3 to upload videos and manage their '
+        'titles, descriptions, thumbnails, playlists, captions and comments on the operator\'s own YouTube channel (youtube.com/@캐치플로). '
+        '<ul class="about-list">'
+        '<li><b>Who uses it:</b> only the operator. The tool has no end users and never accesses any other person\'s Google account or YouTube data, '
+        'and it does not collect, store or share any information about viewers.</li>'
+        '<li><b>Data accessed:</b> the operator\'s channel details and the videos the tool uploads.</li>'
+        '<li><b>Data stored:</b> OAuth tokens and upload records (video IDs, titles, scheduled times) in local files on the operator\'s own computer. '
+        'Nothing is stored on a server.</li>'
+        '<li><b>Data shared:</b> none. Google user data is never sold, used for advertising, or transferred to third parties.</li>'
+        '<li><b>Retention and revocation:</b> tokens are kept until the operator revokes access at '
+        '<a href="https://myaccount.google.com/permissions" rel="noopener">myaccount.google.com/permissions</a>; local files can be deleted at any time.</li>'
+        '</ul>'
+        'CatchFlaw\'s use and transfer of information received from Google APIs adheres to the '
+        '<a href="https://developers.google.com/terms/api-services-user-data-policy" rel="noopener">Google API Services User Data Policy</a>, '
+        'including the Limited Use requirements. By using YouTube API Services, the tool is bound by the '
+        '<a href="https://www.youtube.com/t/terms" rel="noopener">YouTube Terms of Service</a> and the '
+        '<a href="https://policies.google.com/privacy" rel="noopener">Google Privacy Policy</a>. '
+        f'Contact: <a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>.', en=True)
+    s10 = sect('바뀌면',
+        f'내용이 바뀌면 이 페이지에서 알리고 시행일을 고쳐요. 이 방침은 {PRIVACY_DATE}부터 적용돼요.')
+
+    return head('개인정보 처리방침 | 캐치플로', depth=0,
+                description=desc, canonical=f'{BASE}/privacy') + site_header(0, back='./') + f'''
+    <main id="container">
+        <section id="privacy">
+            <h1 class="about-h1">개인정보 처리방침</h1>
+            <p class="about-lead"><span class="seg">캐치플로가 어떤 정보를 받고 어떻게 다루는지 알려드려요.</span> <span class="seg">시행일 {PRIVACY_DATE}</span></p>
+            {s1}{s2}{s3}{s4}{s5}{s6}{s7}{s8}{s9}{s9e}{s10}
+        </section>
+    </main>''' + build_footer(0) + FOOT
+
 # ───────────────────────── 전체 호텔 목록 /hotels (SEO-CRAWL-DESIGN §3-3) ─────────────────────────
 def build_hotels_list(hotels_meta, H):
     """사이트에 나오는 호텔 전부를 한 페이지에 서버 렌더 링크로 — 크롤러가 모든 상세로 가는 길(홈·허브에서 안 닿던 107곳 포함).
@@ -4679,7 +4780,7 @@ def headers_txt():
     for r in ('/img/home_bg_otter_m.webp', '/img/home_bg_otter_m_720.webp', '/img/home_bg_pc.jpg', '/img/mascot/*', '/img/city/*', '/img/hotels/*'):
         out += f'{r}\n  Cache-Control: public, max-age=31536000, immutable\n'
     out += f'/\n  Link: {pre}\n'   # 히어로 이미지는 Link preload에서 뺐다 — Link 경로는 우선순위 Low로 시작해 오히려 늦어짐(2026-10-20 Lighthouse). <img fetchpriority=high>가 맡는다
-    for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/compare', '/recent', '/hotels'):
+    for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/privacy', '/compare', '/recent', '/hotels'):
         out += f'{r}\n  Link: {pre}\n'
     return out
 
@@ -4813,6 +4914,7 @@ def main():
     W('404.html', build_404())
     W('recent.html', build_recent(hotels_meta, H))   # F40: 개인화 페이지 — sitemap 제외
     W('about.html', build_about(hotels_meta, H, city))
+    W('privacy.html', build_privacy())   # 개인정보 처리방침 — sitemap 제외(정적 5 유지), 구글 OAuth 동의 화면·YouTube API 심사용
     idx = build_search_index(hotels_meta, H, quotes)
     W('data/index.js', 'window.HOTELS=' + json.dumps(idx, ensure_ascii=False) + ';')
     W('data/search_index.js', 'window.CF_IDX=' + build_search_ac_index(hotels_meta, H) + ';')
