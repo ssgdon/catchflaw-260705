@@ -291,7 +291,7 @@ body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h
 #hub .hub-h2{font-size:var(--fs-h2);line-height:var(--lh-title);font-weight:var(--fw-bold);letter-spacing:var(--ls-title);}
 
 /* ════════ 소개 ════════ */
-#about{padding:var(--sp-8) var(--page-x) var(--sp-12);}
+#about,#privacy{padding:var(--sp-8) var(--page-x) var(--sp-12);}
 
 /* ════════ 푸터 ════════ */
 #site-foot{margin-top:0;padding:var(--sp-8) var(--page-x) var(--sp-12);background:var(--surface-2);border-top:1px solid var(--line);}

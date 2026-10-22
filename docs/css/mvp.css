@@ -428,15 +428,15 @@ body[data-page="recommend"] #site-foot{padding-bottom:calc(var(--sp-10) + var(--
 
 /* about 페이지 */
 #about{padding:var(--sp-6) var(--page-x) var(--sp-8);}
-#about .about-h1{line-height:var(--lh-title);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);color:var(--ink);letter-spacing:var(--ls-title);}
-#about .about-lead{margin-top:8px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
-#about .about-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬 */
-#about .about-sect .head .title{line-height:var(--lh-title);letter-spacing:var(--ls-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);color:var(--ink);}
-#about .about-body{margin-top:var(--head-gap);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
-#about .about-body b{color:var(--ink);font-weight:var(--fw-bold);}
-#about .about-body a{color:var(--ink);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}   /* 텍스트 링크 = 잉크 + 밑줄(v3 §3-2) */
-#about .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:var(--sp-2);}
-#about .about-list li{list-style:disc;}
+#about .about-h1,#privacy .about-h1{line-height:var(--lh-title);font-size:var(--fs-title-xl);font-weight:var(--fw-bold);color:var(--ink);letter-spacing:var(--ls-title);}
+#about .about-lead,#privacy .about-lead{margin-top:8px;line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
+#about .about-sect,#privacy .about-sect{margin-top:var(--section-pb);padding-top:var(--section-pt);border-top:1px solid var(--line);}   /* 문서 리듬 */
+#about .about-sect .head .title,#privacy .about-sect .head .title{line-height:var(--lh-title);letter-spacing:var(--ls-title);font-size:var(--fs-h2);font-weight:var(--fw-bold);color:var(--ink);}
+#about .about-body,#privacy .about-body{margin-top:var(--head-gap);line-height:var(--lh-body);font-size:var(--fs-body);color:var(--ink);}
+#about .about-body b,#privacy .about-body b{color:var(--ink);font-weight:var(--fw-bold);}
+#about .about-body a,#privacy .about-body a{color:var(--ink);font-weight:var(--fw-semi);text-decoration:underline;text-underline-offset:3px;}   /* 텍스트 링크 = 잉크 + 밑줄(v3 §3-2) */
+#about .about-list,#privacy .about-list{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:var(--sp-2);}
+#about .about-list li,#privacy .about-list li{list-style:disc;}
 
 /* ── 희소·고위험 소분류 칩 (심각 리뷰 캐스케이드 — F33+F43) — TAXONOMY v4 §3-c. 시맨틱 3색 규칙 준수 ── */
 
