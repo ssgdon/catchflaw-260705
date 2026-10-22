@@ -33,7 +33,7 @@ def thumb(url):
     return url
 
 sys.path.insert(0, os.path.dirname(__file__))
-from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS, RANK_MIN, rec_scores, bayes_rating, SAFE_MULT
+from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS, RANK_MIN, rec_scores, bayes_rating, SAFE_MULT, DANGER_MULT
 # 분류 v5: 점수로 보여주는 대분류(6)만 CATS로 쓴다. 칩 전용 대분류(안전)는 위험 칩·별도 펼침 항목으로만 표시
 CATS = SCORED_CATS
 CAT_INDEX = {c: i for i, c in enumerate(ALL_CATS)}   # 펼침 항목 id="risk-{i}" — 점수 대분류는 CATS.index와 같고 안전이 마지막
@@ -3782,22 +3782,29 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
 
-        # 산출 기준(?): ① 단순 비율과 다른 이유(암산한 고객용) ② 실망 리뷰 정의 ③ 리뷰 구성 ④ 출처·기준일 (2026-10 카피 개편)
+        # 산출 기준(?) — 2026-10-22 사용자 '더 쉽게': 문단 대신 '리뷰 N건 → 실망 리뷰 → 별점만 리뷰 → 최신성 → 평균 보정 → N%' 5단계 목록(이 호텔 숫자로)
+        #   + '항목별 불만은 많은데 왜 N%?'(항목 점수 = 불만이 한 번이라도 적힌 비율, 실망 확률 = 심하게 데인 리뷰만) 한 문답. 부품 .steps-list(ds.css §v3)
         _so = h['star_only_1y']
         _raw = (crit_reviews_1y / h['text_1y'] * 100) if h['text_1y'] else None
-        if _raw is not None and abs(_raw - h['p_crit'] * 100) >= 0.5:
-            _why1 = (f"<b>{v}%는 글 리뷰 {h['text_1y']:,}건 중 {crit_reviews_1y}건을 그대로 나눈 값({_raw:.1f}%)이 아니에요.</b> "
-                     f"최근 리뷰일수록 크게 보고(6개월 지나면 절반), 리뷰가 적은 호텔은 {CITY['ko']} 평균 쪽으로 보정해서 조금 달라요")
-        else:
-            _why1 = (f"최근 리뷰일수록 크게 보고(6개월 지나면 절반), 리뷰가 적은 호텔은 {CITY['ko']} 평균 쪽으로 보정해요. "
-                     f"이 호텔은 글 리뷰 {h['text_1y']:,}건 중 {crit_reviews_1y}건을 나눈 값과 거의 같아요")
+        _steps = [(f'{per} 리뷰 <b>{h["analyzed"]:,}건</b>을 모았어요',
+                   f'글 리뷰 {h["text_1y"]:,}건' + (f' + 별점만 남긴 {_so:,}건' if _so else ' — 전부 AI가 읽었어요')),
+                  (f'글 리뷰에서 <b>실망 리뷰 {crit_reviews_1y}건</b>을 골랐어요',
+                   '심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰만이에요'
+                   + (f'<span class="seg"> · 그냥 나누면 {_raw:.1f}%</span>' if _raw is not None and abs(_raw - h['p_crit'] * 100) >= 0.5 else ''))]
         if _so and city.get('star_p'):
-            _so_txt = (f"{per} 리뷰 {h['analyzed']:,}건 = 글 리뷰 {h['text_1y']:,}건 + 별점만 남긴 {_so:,}건. "
-                       f"별점만 남긴 리뷰는 같은 별점 리뷰의 실망 비율로 추정해 약 {h.get('imp_1y', 0):.1f}건으로 반영했어요")
+            _steps.append((f'별점만 남긴 <b>{_so:,}건</b>도 넣었어요', f'같은 별점 리뷰가 실망한 비율로 추정하면 약 {h.get("imp_1y", 0):.1f}건이에요'))
         elif _so:
-            _so_txt = f"{per} 리뷰 {h['analyzed']:,}건 = 글 리뷰 {h['text_1y']:,}건 + 별점만 남긴 {_so:,}건('문제 언급 없음'으로 셈)"
+            _steps.append((f'별점만 남긴 <b>{_so:,}건</b>도 넣었어요', "'문제 언급 없음'으로 셌어요"))
+        _steps += [('최근 리뷰를 더 크게 봤어요', '6개월 지나면 절반, 1년 넘으면 안 세요'),
+                   (f'{CITY["ko"]} 평균({avg}%) 쪽으로 조금 당겼어요', '리뷰 몇 건에 숫자가 크게 흔들리지 않게요')]
+        _steps_html = ''.join(f'<li><span class="steps-badge">{i}</span><div class="steps-t"><b>{t}</b><span>{s}</span></div></li>' for i, (t, s) in enumerate(_steps, 1))
+        _bad_cats = sum(1 for c in CATS if h['cats'][c]['score'] >= 55)       # '많은 편' 이상인 항목 수
+        if _bad_cats >= 3 and h['p_crit'] < DANGER_MULT * city['crit']:
+            _basis_q = (f'<b>항목별 불만은 많은데 왜 {v}%인가요?</b><span>항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이에요. 실망 확률은 그중 '
+                        f'심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요. 불평은 많아도 떠나지는 않는 호텔이면 둘이 달라요</span>')
         else:
-            _so_txt = f"{per} 리뷰 {h['text_1y']:,}건 모두 글 리뷰라 AI가 전부 읽었어요"
+            _basis_q = ('<b>항목별 점수와는 뭐가 다른가요?</b><span>항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이고, 실망 확률은 그중 '
+                        '심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요</span>')
         body_scored = f'''
         <div class="sect disappear" id="sec-prob">
             <div class="head">
@@ -3811,9 +3818,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {overall_trend}
             <div class="basis-fold">
                 <div class="basis">
-                    <p>{_why1}</p>
-                    <p>실망 리뷰 = 심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰</p>
-                    <p>{_so_txt}</p>
+                    <div class="steps-lead">{v}%는 이렇게 나온 숫자예요</div>
+                    <ol class="steps-list">{_steps_html}</ol>
+                    <div class="steps-result">그래서 <b>{v}%</b>{DSEP}<span class="seg">100명 중 {v}명꼴</span></div>
+                    <div class="steps-q">{_basis_q}</div>
                     <p class="basis-note">구글·트립닷컴 등 공개 리뷰 기준 · {CITY['data_asof']} · 참고용 의견이라 실제 경험과 다를 수 있어요 · <a href="../about">계산 방법 자세히</a></p>
                 </div>
             </div>
@@ -4543,12 +4551,18 @@ def build_about(hotels_meta, H, city):
         f'{CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt} 중 글 리뷰 {ai_reviews_total():,}건을 AI로 분석해요. '
         '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드려요. '
         '별점에 묻힌 치명적인 단점을 예약 전에 확인하세요.')
+    _how = [('최근 1년 리뷰를 모아요', '구글·트립닷컴 등에 올라온 글 리뷰와 별점만 남긴 리뷰 전부예요'),
+            ('글 리뷰에서 <b>실망 리뷰</b>를 골라요', '심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰만이에요. 가벼운 불평은 세지 않아요'),
+            ('별점만 남긴 리뷰도 넣어요', '같은 별점 리뷰가 실망한 비율로 추정해요 (4점은 100건 중 2건쯤, 5점은 거의 0)'),
+            ('최근 리뷰를 더 크게 봐요', '6개월 지나면 절반, 1년 넘으면 안 세요'),
+            (f'{CITY["ko"]} 평균 쪽으로 조금 당겨요', '리뷰가 적은 호텔이 몇 건에 크게 흔들리지 않게요'),
+            ('100명 중 몇 명꼴인지 보여드려요', '그래서 5%면 100명 중 5명꼴이에요')]
     s2 = sect('실망 확률은 이렇게 계산해요',
+        '<div class="steps-lead">리뷰 수백 건이 숫자 하나가 되기까지 다섯 단계</div>'
+        '<ol class="steps-list">' + ''.join(f'<li><span class="steps-badge">{i}</span><div class="steps-t"><b>{t}</b><span>{s}</span></div></li>' for i, (t, s) in enumerate(_how, 1)) + '</ol>'
+        '<div class="steps-q"><b>항목별 점수와는 뭐가 다른가요?</b><span>항목별 점수(청결·냄새·소음·객실·직원·위치)는 불만이 한 번이라도 적힌 리뷰의 비율이에요. '
+        '실망 확률은 그중 심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요. 그래서 불평은 많아도 떠나지는 않는 호텔은 항목 점수는 나빠도 실망 확률은 평균 근처일 수 있어요</span></div>'
         '<ul class="about-list">'
-        '<li>심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰를 <b>실망 리뷰</b>로 세요</li>'
-        '<li>최근 1년 리뷰만 쓰고, 최근일수록 크게 반영해요 (6개월 지난 리뷰는 절반 비중)</li>'
-        '<li>별점만 남긴 리뷰는 같은 별점 리뷰의 실망 비율로 추정해요</li>'
-        f'<li>리뷰가 적은 호텔은 몇 건에 크게 흔들리지 않게 {CITY["ko"]} 평균 쪽으로 보정해요</li>'
         f'<li>최근 1년 리뷰(별점만 남긴 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
         f'<li>최근 1년 리뷰가 {RANK_MIN}건 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 위험 신호가 뚜렷하면 위험으로 알려드려요</li>'
         '<li>순위는 정밀한 백분위 대신 \'상위 25% 이내\'처럼 넉넉한 구간으로, 80% 이상 확실할 때만 보여드려요</li>'

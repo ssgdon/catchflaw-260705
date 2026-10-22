@@ -1180,3 +1180,20 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .location .loc-meta:has(+ .loc-go){margin-bottom:var(--sp-2);}
 #detail .location .loc-go{margin:0 0 var(--sp-4);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .location .loc-go b{font-weight:var(--fw-semi);}
+/* ════════ §v3 단계 목록 .steps-list (2026-10-22 사용자 '실망 확률 계산을 더 쉽게') — 상세 산출 기준(?) 펼침 · 소개 페이지 공용 ════════
+   리드 16/600 → 번호 배지 26 + 제목 16/600 + 설명 16 --ink-3 → 결과 한 줄 → 문답(제목 600 + 설명). 행마다 1px 선(긴 행 목록 규칙), 상자 없음 */
+.steps-lead{font-size:var(--fs-body);font-weight:var(--fw-semi);line-height:var(--lh-ui);color:var(--ink);}
+.steps-list{list-style:none;margin:var(--sp-3) 0 0;padding:0;}
+.steps-list li{display:flex;gap:var(--sp-3);align-items:flex-start;padding:var(--sp-3) 0;border-top:1px solid var(--line);}
+.steps-list li:last-child{border-bottom:1px solid var(--line);}
+.steps-list .steps-badge{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-badge);height:var(--h-badge);margin-top:1px;border-radius:var(--radius-pill);background:var(--ink);color:var(--surface-card);font-size:var(--fs-micro);font-weight:var(--fw-bold);line-height:1;}
+.steps-list .steps-t{display:flex;flex-direction:column;gap:var(--sp-1);min-width:0;font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);text-align:left;}
+.steps-list .steps-t b{font-weight:var(--fw-semi);}
+.steps-list .steps-t span{color:var(--ink-3);}
+.steps-result{margin-top:var(--sp-3);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);text-align:left;}
+.steps-result b{font-weight:var(--fw-semi);}
+.steps-q{margin-top:var(--sp-4);padding-top:var(--sp-3);border-top:1px solid var(--line);font-size:var(--fs-body);line-height:var(--lh-ui);color:var(--ink);text-align:left;}
+.steps-q b{display:block;font-weight:var(--fw-semi);}
+.steps-q span{display:block;margin-top:var(--sp-1);color:var(--ink-3);}
+#detail .disappear .basis .basis-note{display:block;margin-top:var(--sp-4);}
+#about .about-body .about-list{margin-top:var(--sp-4);}
