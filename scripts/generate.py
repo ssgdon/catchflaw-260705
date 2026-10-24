@@ -3577,9 +3577,14 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 _cr = int(h['cats'][SUB_CAT[_s]]['subs'][_s].get('crit_1y', 0) or 0)
                 _tone = 'danger' if _cr >= 3 else 'warning' if _cr else 'zero'
                 _in = f'<b>{_cr}건</b><span>{E(SUB_PHRASE[_s])}</span>'
+                _sub_aria = ''
+                if _s == '벌레' and _cr:   # 그중 바퀴벌레 N건(2026-10-24) — 검색 필터 '바퀴벌레 0건'(no=roach)과 같은 rare_counts()['roach']
+                    _rn = int((rare_counts(pid, h, quotes) or {}).get('roach', 0) or 0)
+                    _in += f'<span class="gl-sub{"" if _rn else " is-0"}">그중 바퀴벌레 {_rn}건</span>'
+                    _sub_aria = f', 그중 바퀴벌레 {_rn}건'
                 if _cr:
                     _in = (f'<button type="button" class="stat-count has-reviews gl-rv" data-cat="{E(SUB_CAT[_s])}" data-sub="{E(_s)}" '
-                           f'aria-label="{E(SUB_PHRASE[_s])} 심각 리뷰 {_cr}건 보기">{_in}</button>')
+                           f'aria-label="{E(SUB_PHRASE[_s])} 심각 리뷰 {_cr}건{_sub_aria} 보기">{_in}</button>')
                 return f'<li class="is-{_tone}">{_in}</li>'
             _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 동안 심각했던 경험만 셌어요</p>'
                          '<ul class="gl-rg">' + ''.join(_rare_cell(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS) + '</ul></div>')

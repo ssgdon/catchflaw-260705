@@ -1498,7 +1498,9 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #detail .glance .gl-rg li.is-zero span{color:var(--ink-3);font-weight:var(--fw-regular);}
 #detail .glance .gl-rg li.is-warning b{color:var(--warning-text);}
 #detail .glance .gl-rg li.is-danger b{color:var(--danger-text);}
-#detail .glance .gl-rv span::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 1px var(--sp-1);border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg);}   
+#detail .glance .gl-rg .gl-sub{margin-top:var(--sp-1);}   
+#detail .glance .gl-rg .gl-sub.is-0{color:var(--ink-3);font-weight:var(--fw-regular);}
+#detail .glance .gl-rv span:not(.gl-sub)::after{content:"";display:inline-block;width:6px;height:6px;margin:0 0 1px var(--sp-1);border-top:1.5px solid currentColor;border-right:1.5px solid currentColor;transform:rotate(45deg);}   
 #detail .glance .gl-col ul{padding-left:var(--sp-3);}   
 #detail .glance li{padding:var(--sp-2) 0;font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);}
 #detail .glance li b{font-weight:var(--fw-semi);}
