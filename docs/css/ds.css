@@ -1199,3 +1199,7 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 .steps-q span{display:block;margin-top:var(--sp-1);color:var(--ink-3);}
 #detail .disappear .basis .basis-note{display:block;margin-top:var(--sp-4);}
 #about .about-body .about-list{margin-top:var(--sp-4);}
+/* ════════ §v3 최근 1년 구글 줄 .is-gnote (2026-10-26 SCORE-LOWSTAR §4-2) — 상세 첫 화면 요약 행 바로 아래 '최근 1년 구글 ★4.1 · 1~2점 리뷰 7%'
+   14 메타 --ink-3, 숫자만 600(§3 '14 강조 600'). 색 점·시맨틱 색 없음(판정은 실망 확률이 맡는다). 아래 답 문단과 같은 시작선. PC는 결정 카드 행(pc.css에서 숨김) ════════ */
+#detail .information .is-gnote{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:var(--lh-ui);color:var(--ink-3);text-align:left;}
+#detail .information .is-gnote b{font-weight:var(--fw-semi);}

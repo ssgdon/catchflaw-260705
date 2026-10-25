@@ -2423,3 +2423,5 @@ body[data-page=compare] .det-header{position:static;}
 .steps-q span{display:block;margin-top:var(--sp-1);color:var(--ink-3);}
 #detail .disappear .basis .basis-note{display:block;margin-top:var(--sp-4);}
 #about .about-body .about-list{margin-top:var(--sp-4);}
+#detail .information .is-gnote{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:var(--lh-ui);color:var(--ink-3);text-align:left;}
+#detail .information .is-gnote b{font-weight:var(--fw-semi);}
