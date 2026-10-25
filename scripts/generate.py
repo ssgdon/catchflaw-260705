@@ -395,15 +395,18 @@ def city_g1y(stars, H, hotels_meta):
     g = sorted(float(hotels_meta[p]['total_score']) for p in pool if hotels_meta[p].get('total_score'))
     CITY['g_q1'], _, CITY['g_q3'] = statistics.quantiles(g, n=4, method='inclusive') if len(g) >= 4 else (None, None, None)
 
+GGAP_LOW_MULT = 0.6    # A '왜 낮나요?' 문턱: 실망 확률이 도시 평균의 0.6배 이하 (양호 경계 0.8배는 9곳이라 2026-10-25 사용자 결정으로 좁힘 — 근거 분석 mismatch.py와 같은 기준)
+GGAP_HIGH_MULT = 1.2   # B '왜 높나요?' 문턱: 도시 평균의 1.2배 이상 (SCORE-LOWSTAR §4-6)
+
 def google_gap_q(h, meta, g, city_crit):
     """산출 기준(?) '구글 평점은 ★G인데 왜 실망 확률이 낮나요/높나요?' 문답 (SCORE-LOWSTAR §4-6) — 참인 조각만 이어 붙이고, 없으면 None.
-       A = 구글 하위 25%인데 양호 구간 · B = 구글 상위 25%인데 평균의 1.2배 이상. 숫자에는 비교값을 같이 쓴다(화면 문구 원칙)."""
+       A = 구글 하위 25%인데 평균의 0.6배 이하 · B = 구글 상위 25%인데 평균의 1.2배 이상. 숫자에는 비교값을 같이 쓴다(화면 문구 원칙)."""
     try: G = float(meta.get('total_score') or 0)
     except (TypeError, ValueError): G = 0
     if not (g and G and CITY.get('low_share') and CITY.get('g_q1') is not None): return None
     cl, ct, pc = round(CITY['low_share']), CITY['three_share'], h['p_crit']
     a1y = f'★{g["avg"]:.1f}'
-    if G <= CITY['g_q1'] and pc <= SAFE_MULT * city_crit:
+    if G <= CITY['g_q1'] and pc <= GGAP_LOW_MULT * city_crit:
         q, a = f'구글 평점은 ★{G:.1f}인데 왜 실망 확률이 낮나요?', []
         if round(g['avg'] - G, 1) >= 0.2:
             a.append(f'구글 평점은 몇 년치 리뷰의 평균이에요. 최근 1년만 보면 {a1y}이에요.')
@@ -411,7 +414,7 @@ def google_gap_q(h, meta, g, city_crit):
             a.append(f'최근 1년 1~2점은 {g["low_txt"]}%로 {CITY["ko"]} 평균({cl}%)보다 적어요.')
             if g['three'] >= 1.2 * ct:
                 a.append(f'대신 3점이 {round(g["three"])}%로 많아요. 아쉬운 점은 있어도 크게 실망한 사람은 적다는 뜻이에요.')
-    elif G >= CITY['g_q3'] and pc >= 1.2 * city_crit:
+    elif G >= CITY['g_q3'] and pc >= GGAP_HIGH_MULT * city_crit:
         q, a = f'구글 평점은 ★{G:.1f}인데 왜 실망 확률이 높나요?', []
         b1 = g['low'] >= 1.15 * CITY['low_share']
         if b1:
