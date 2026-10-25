@@ -375,6 +375,55 @@ def emph(s):
 
 def pct(x): return round(x * 100)
 
+# ── 최근 1년 구글 별점 (SCORE-LOWSTAR §4, 2026-10-26) — 구글 평점은 몇 년치 누적이라 실망 확률(최근 1년)과 어긋나 보이는 호텔이 있다.
+#    상세 첫 화면 줄 '최근 1년 구글 ★4.1 · 1~2점 리뷰 7%'·PC 결정 카드 행·산출 기준 '구글 평점과 왜 다른가' 문답이 같은 숫자를 쓴다 ──
+def g1y(st):
+    """이 호텔 최근 1년 구글 별점 요약. avg = 평균(소수 둘째 자리에서 반올림한 한 자리) · low/three = 1~2점·3점 비율(%, 반올림 전)
+       · low_txt = 화면 정수 %(별점 분포 섹션과 같은 반올림). 최근 1년 별점이 MIN_REVIEWS(실망 확률 노출 게이트와 같은 수) 미만이면 None."""
+    if not st or st['total_1y'] < MIN_REVIEWS: return None
+    t = st['total_1y']
+    return {'avg': math.floor(st['avg_1y'] * 10 + 0.5) / 10, 'low': st['low_1y'] / t * 100,
+            'three': st['three_1y'] / t * 100, 'low_txt': round(st['low_1y'] / t * 100)}
+
+def city_g1y(stars, H, hotels_meta):
+    """도시 비교값 → CITY: low_share·three_share = 순위 모수(최근 1년 리뷰 100건+) 호텔의 최근 1년 구글 별점 합으로 낸 1~2점·3점 비율(%),
+       g_q1·g_q3 = 같은 모수 구글 평점의 25%·75% 분위. 하드코딩하지 않는다(매주 바뀜). 2026-10-18 기준 9.4%·10.2%·★3.9·★4.2."""
+    pool = [p for p in hotels_meta if p in H and H[p]['scored'] and H[p]['ranked']]
+    t = sum(stars[p]['total_1y'] for p in pool if p in stars)
+    CITY['low_share'] = sum(stars[p]['low_1y'] for p in pool if p in stars) / t * 100 if t else None
+    CITY['three_share'] = sum(stars[p]['three_1y'] for p in pool if p in stars) / t * 100 if t else None
+    g = sorted(float(hotels_meta[p]['total_score']) for p in pool if hotels_meta[p].get('total_score'))
+    CITY['g_q1'], _, CITY['g_q3'] = statistics.quantiles(g, n=4, method='inclusive') if len(g) >= 4 else (None, None, None)
+
+def google_gap_q(h, meta, g, city_crit):
+    """산출 기준(?) '구글 평점은 ★G인데 왜 실망 확률이 낮나요/높나요?' 문답 (SCORE-LOWSTAR §4-6) — 참인 조각만 이어 붙이고, 없으면 None.
+       A = 구글 하위 25%인데 양호 구간 · B = 구글 상위 25%인데 평균의 1.2배 이상. 숫자에는 비교값을 같이 쓴다(화면 문구 원칙)."""
+    try: G = float(meta.get('total_score') or 0)
+    except (TypeError, ValueError): G = 0
+    if not (g and G and CITY.get('low_share') and CITY.get('g_q1') is not None): return None
+    cl, ct, pc = round(CITY['low_share']), CITY['three_share'], h['p_crit']
+    a1y = f'★{g["avg"]:.1f}'
+    if G <= CITY['g_q1'] and pc <= SAFE_MULT * city_crit:
+        q, a = f'구글 평점은 ★{G:.1f}인데 왜 실망 확률이 낮나요?', []
+        if round(g['avg'] - G, 1) >= 0.2:
+            a.append(f'구글 평점은 몇 년치 리뷰의 평균이에요. 최근 1년만 보면 {a1y}이에요.')
+        if g['low_txt'] < cl:
+            a.append(f'최근 1년 1~2점은 {g["low_txt"]}%로 {CITY["ko"]} 평균({cl}%)보다 적어요.')
+            if g['three'] >= 1.2 * ct:
+                a.append(f'대신 3점이 {round(g["three"])}%로 많아요. 아쉬운 점은 있어도 크게 실망한 사람은 적다는 뜻이에요.')
+    elif G >= CITY['g_q3'] and pc >= 1.2 * city_crit:
+        q, a = f'구글 평점은 ★{G:.1f}인데 왜 실망 확률이 높나요?', []
+        b1 = g['low'] >= 1.15 * CITY['low_share']
+        if b1:
+            a.append(f'최근 1년 1~2점이 {g["low_txt"]}%로 {CITY["ko"]} 평균({cl}%)보다 많아요. 별점 평균이 높아도 크게 실망한 사람이 그만큼 있어요.')
+        if round(G - g['avg'], 1) >= 0.2:
+            a.append(f'최근 1년만 보면 {a1y}이에요.')
+        if not b1:
+            a.append(f'1~2점은 평균 수준이지만, 글 리뷰 중 심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰가 {h.get("crit_1y", 0)}건이에요.')
+    else:
+        return None
+    return (q, ' '.join(a)) if a else None
+
 def josa_eun(word):
     """받침 유무로 '은'/'는' 선택 (F13). 한글 음절 종성 기준. 예: 냄새→는, 위생/소음/시설/불친절/위치·안전→은."""
     w = str(word or '').rstrip()
@@ -523,6 +572,9 @@ def load():
         st['total'] += s['n']
         st['total_1y'] += s['n_1y']
         if int(s['stars']) <= 2: st['low_1y'] += s['n_1y']
+    for st in stars.values():     # 최근 1년 구글 평균 별점·3점 수 (SCORE-LOWSTAR §4-1: 첫 화면 줄·PC 행·'구글 평점과 왜 다른가' 문답)
+        st['avg_1y'] = (sum(i * st['dist_1y'][i] for i in range(1, 6)) / st['total_1y']) if st['total_1y'] else None
+        st['three_1y'] = st['dist_1y'][3]
     kr = {}
     for r in (J('kr_stats.json') if os.path.exists(os.path.join(SRC, 'kr_stats.json')) else []):
         kr[(r['place_id'], r['period'])] = r
@@ -3780,9 +3832,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 w = round(st['dist_1y'][i] / st['total_1y'] * 100)
                 bars.append(f'''<li><div class="num">{i}점</div><div class="bar"><i style="width:{w}%"></i></div><div class="per">{w}%</div></li>''')
             low_share = round(st['low_1y'] / st['total_1y'] * 100)
-            stars_block = f'''<div class="sect recent">
+            # 용어는 '1~2점'(첫 화면 줄·산출 기준 문답과 같은 말), 비교값 = 순위 모수 호텔의 최근 1년 1~2점 비율 (SCORE-LOWSTAR §4-4)
+            _cl = f' ({CITY["ko"]} 평균 {round(CITY["low_share"])}%)' if CITY.get('low_share') else ''
+            stars_block = f'''<div class="sect recent" id="sec-stars">
                 <div class="head"><div class="title">구글 별점 분포</div>
-                <div class="desc">{per} 구글 리뷰 중 <b>2점 이하가 {low_share}%</b>예요{DSEP}<span class="seg">별점은 구글 리뷰만 있어요</span></div>
+                <div class="desc">{per} 구글 리뷰 중 <span class="seg"><b>1~2점이 {low_share}%</b>예요{_cl}</span>{DSEP}<span class="seg">별점은 구글 리뷰만 있어요</span></div>
                 <div class="count">{per} {st['total_1y']:,}건</div></div>
                 <div class="list"><ul>{''.join(bars)}</ul></div>
             </div>'''
@@ -3796,20 +3850,31 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                   (f'글 리뷰에서 <b>실망 리뷰 {crit_reviews_1y}건</b>을 골랐어요',
                    '심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰만이에요'
                    + (f'<span class="seg"> · 그냥 나누면 {_raw:.1f}%</span>' if _raw is not None and abs(_raw - h['p_crit'] * 100) >= 0.5 else ''))]
+        if h.get('low_n_1y'):     # 1·2점 바닥값 (SCORE-LOWSTAR §4-5) — 실제 리뷰 건수(실망 리뷰 M건)와 따로, 더한 몫만 적는다
+            _steps.append((f'1~2점을 준 글 리뷰 <b>{h["low_n_1y"]:,}건</b>도 넣었어요',
+                           f'글에 큰 문제가 안 적혀 있어도 1~2점을 줬다면, 같은 별점 리뷰가 실망한 비율만큼 세요 — 약 {h["low_add_1y"]:.1f}건이에요'))
         if _so and city.get('star_p'):
-            _steps.append((f'별점만 남긴 <b>{_so:,}건</b>도 넣었어요', f'같은 별점 리뷰가 실망한 비율로 추정하면 약 {h.get("imp_1y", 0):.1f}건이에요'))
+            _steps.append((f'별점만 남긴 <b>{_so:,}건</b>도 넣었어요',
+                           (f'글을 남겼다면 셌을 만큼으로 추정하면 약 {h.get("imp_1y", 0):.1f}건이에요' if city.get('low_floor') else
+                            f'같은 별점 리뷰가 실망한 비율로 추정하면 약 {h.get("imp_1y", 0):.1f}건이에요')))
         elif _so:
             _steps.append((f'별점만 남긴 <b>{_so:,}건</b>도 넣었어요', "'문제 언급 없음'으로 셌어요"))
         _steps += [('최근 리뷰를 더 크게 봤어요', '6개월 지나면 절반, 1년 넘으면 안 세요'),
                    (f'{CITY["ko"]} 평균({avg}%) 쪽으로 조금 당겼어요', '리뷰 몇 건에 숫자가 크게 흔들리지 않게요')]
         _steps_html = ''.join(f'<li><span class="steps-badge">{i}</span><div class="steps-t"><b>{t}</b><span>{s}</span></div></li>' for i, (t, s) in enumerate(_steps, 1))
+        # 문답 목록 (SCORE-LOWSTAR §4-6, 최대 2개): '구글 평점은 ★G인데 왜?'(해당 호텔만, 실측 조각 조립) → 항목별 점수 문답
+        _basis_qs = []
+        _gq = google_gap_q(h, meta, g1y(stars.get(pid)), city['crit'])
+        if _gq: _basis_qs.append(_gq)
+        _def = ('심하게 데였거나 다시 안 가겠다고 한 리뷰, 1~2점 리뷰로 낸 비율이에요' if city.get('low_floor') else
+                '그중 심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요')
         _bad_cats = sum(1 for c in CATS if h['cats'][c]['score'] >= 55)       # '많은 편' 이상인 항목 수
         if _bad_cats >= 3 and h['p_crit'] < DANGER_MULT * city['crit']:
-            _basis_q = (f'<b>항목별 불만은 많은데 왜 {v}%인가요?</b><span>항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이에요. 실망 확률은 그중 '
-                        f'심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요. 불평은 많아도 떠나지는 않는 호텔이면 둘이 달라요</span>')
+            _basis_qs.append((f'항목별 불만은 많은데 왜 {v}%인가요?', f'항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이에요. 실망 확률은 '
+                              f'{_def}. 불평은 많아도 떠나지는 않는 호텔이면 둘이 달라요'))
         else:
-            _basis_q = ('<b>항목별 점수와는 뭐가 다른가요?</b><span>항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이고, 실망 확률은 그중 '
-                        '심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요</span>')
+            _basis_qs.append(('항목별 점수와는 뭐가 다른가요?', f'항목별 점수는 불만이 한 번이라도 적힌 리뷰의 비율이고, 실망 확률은 {_def}'))
+        _basis_q_html = ''.join(f'<div class="steps-q"><b>{q}</b><span>{a}</span></div>' for q, a in _basis_qs)
         body_scored = f'''
         <div class="sect disappear" id="sec-prob">
             <div class="head">
@@ -3826,7 +3891,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     <div class="steps-lead">{v}%는 이렇게 나온 숫자예요</div>
                     <ol class="steps-list">{_steps_html}</ol>
                     <div class="steps-result">그래서 <b>{v}%</b>{DSEP}<span class="seg">100명 중 {v}명꼴</span></div>
-                    <div class="steps-q">{_basis_q}</div>
+                    {_basis_q_html}
                     <p class="basis-note">구글·트립닷컴 등 공개 리뷰 기준 · {CITY['data_asof']} · 참고용 의견이라 실제 경험과 다를 수 있어요 · <a href="../about">계산 방법 자세히</a></p>
                 </div>
             </div>
@@ -3970,6 +4035,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     _an_in = f'<b class="sv">{h["analyzed"]:,}건</b><span class="sl">분석 리뷰</span>'
     cell_an = (f'<a class="is-cell is-an" href="#risk-detail">{_an_in}</a>' if h['scored'] else f'<div class="is-cell is-an">{_an_in}</div>')
     info_sum = f'<div class="info-sum" role="group" aria-label="요약">{cell_prob}<i class="is-vr" aria-hidden="true"></i>{cell_google}<i class="is-vr" aria-hidden="true"></i>{cell_an}</div>'
+    # 요약 행 바로 아래 '최근 1년 구글 ★4.1 · 1~2점 리뷰 7%'(SCORE-LOWSTAR §4-2) — 구글 평점(몇 년치)과 실망 확률(최근 1년)이 어긋나 보일 때 스스로 이해하게.
+    #   색 없음(판정은 실망 확률이 맡는다). 분석 준비 중·최근 1년 별점 30건 미만이면 숨김. PC는 결정 카드 행(_rows)이 대신한다(pc.css)
+    _g1 = g1y(stars.get(pid)) if h['scored'] else None
+    info_gnote = (f'<p class="is-gnote"><span class="seg">최근 1년 구글 <b>★{_g1["avg"]:.1f}</b></span> · '
+                  f'<span class="seg">1~2점 리뷰 <b>{_g1["low_txt"]}%</b></span></p>') if _g1 else ''
     _st_txt = station_short(meta)
     info_meta = (f'<p class="info-meta">{" · ".join(x for x in [E(CITY["ko"]), hstars] if x)}'
                  + (f'{DSEP}<span class="seg">{E(_st_txt)}</span>' if _st_txt else '') + '</p>')
@@ -4021,8 +4091,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 + (f'<span>›</span><a href="../search?area={_area["code"]}">{E(_area["ko"])}</a>' if _area else '')
                 + f'<span>›</span><b>{E(name)}</b></nav>')
     _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
-    _rows = [('구글 평점', f'<b>★ {fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}건)'),
-             ('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}')]
+    _rows = [('구글 평점', f'<b>★ {fmt_score(meta.get("total_score"))}</b> ({meta.get("reviews_count") or 0:,}건)')]
+    if _g1:   # PC는 폭이 있어 도시 평균을 같이 (SCORE-LOWSTAR §4-3)
+        _rows.append(('최근 1년 구글', f'<b>★{_g1["avg"]:.1f}</b> · 1~2점 <b>{_g1["low_txt"]}%</b>'
+                      + (f' (평균 {round(CITY["low_share"])}%)' if CITY.get('low_share') else '')))
+    _rows.append(('분석 리뷰', f'<b>{h["analyzed"]:,}건</b> · {per}'))
     if _pt: _rows.append(('평일' if _pt.startswith('평일') else '주말', f'<b>{E(_pt[3:].strip())}</b>'))
     if _pwe: _rows.append(('주말', f'<b>{E(_pwe)}</b>'))
     if _pt: _rows.append(('', '<button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">2인 1박 · 가격 기준</span><i class="ip-q" aria-hidden="true"></i></button>'))
@@ -4080,6 +4153,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     </div>
                     {price_info}
                     {info_sum}
+                    {info_gnote}
                     {answer_html}
                     {lowrev_html}
                 </div>
@@ -4412,7 +4486,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     xlink_block = f'''<div class="hub-sect">
         <div class="hub-h2">다른 동네·동행·테마 보기</div>
         <div class="hub-xlinks">{link_cards}</div>
-        <div class="hub-method"><span class="seg">실망 확률 = 심각한 문제·재방문 거부 리뷰의 비율(최근일수록 크게 반영)</span>{DSEP}<span class="seg">글 리뷰 {round(ai_reviews_total() / 10000)}만 건 AI 분석 · {CITY['data_asof']} 기준</span></div>
+        <div class="hub-method"><span class="seg">{"실망 확률 = 심각한 문제·재방문 거부 리뷰 비율(1~2점 리뷰 반영, 최근일수록 크게)" if city.get("low_floor") else "실망 확률 = 심각한 문제·재방문 거부 리뷰의 비율(최근일수록 크게 반영)"}</span>{DSEP}<span class="seg">글 리뷰 {round(ai_reviews_total() / 10000)}만 건 AI 분석 · {CITY['data_asof']} 기준</span></div>
     </div>'''
 
     # ── 메타·JSON-LD ──
@@ -4554,19 +4628,30 @@ def build_about(hotels_meta, H, city):
 
     s1 = sect('어떤 서비스인가요',
         f'{CITY["ko"]} 호텔 {n_live}곳의 공개 리뷰 {reviews_txt} 중 글 리뷰 {ai_reviews_total():,}건을 AI로 분석해요. '
-        '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드려요. '
-        '별점에 묻힌 치명적인 단점을 예약 전에 확인하세요.')
+        + ('심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰, 1~2점 리뷰로 낸 비율을 <b>실망 확률</b>로 보여드려요. ' if city.get('low_floor') else
+           '심각한 문제를 겪었거나 다시 안 가겠다고 한 리뷰의 비율을 <b>실망 확률</b>로 보여드려요. ')
+        + '별점에 묻힌 치명적인 단점을 예약 전에 확인하세요.')
+    # 단계 숫자는 data(city['star_p']·['star_e'])에서 — 하드코딩하면 매주 틀린다(2026-10-26 SCORE-LOWSTAR §4-7: 4점 '2건쯤'은 실제 1.1%였음)
+    _sp = lambda s: round((city.get('star_p') or {}).get(s, 0) * 100)
+    _se = lambda s: round((city.get('star_e') or {}).get(s, 0) * 100)
     _how = [('최근 1년 리뷰를 모아요', '구글·트립닷컴 등에 올라온 글 리뷰와 별점만 남긴 리뷰 전부예요'),
-            ('글 리뷰에서 <b>실망 리뷰</b>를 골라요', '심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰만이에요. 가벼운 불평은 세지 않아요'),
-            ('별점만 남긴 리뷰도 넣어요', '같은 별점 리뷰가 실망한 비율로 추정해요 (4점은 100건 중 2건쯤, 5점은 거의 0)'),
-            ('최근 리뷰를 더 크게 봐요', '6개월 지나면 절반, 1년 넘으면 안 세요'),
-            (f'{CITY["ko"]} 평균 쪽으로 조금 당겨요', '리뷰가 적은 호텔이 몇 건에 크게 흔들리지 않게요'),
-            ('100명 중 몇 명꼴인지 보여드려요', '그래서 5%면 100명 중 5명꼴이에요')]
+            ('글 리뷰에서 <b>실망 리뷰</b>를 골라요', '심각한 문제(벌레·파손·안전 위협 등)를 겪었거나, 불만과 함께 다시 안 가겠다고 한 리뷰만이에요. 가벼운 불평은 세지 않아요')]
+    if city.get('low_floor'):
+        _how += [('1~2점 리뷰는 글에 큰 불만이 없어도 넣어요',
+                  f'1~2점을 줬다면 실망했을 가능성이 높아서, 같은 별점 리뷰가 실망한 비율만큼 세요 (1점은 100건 중 {_sp(1)}건, 2점은 {_sp(2)}건)'),
+                 ('별점만 남긴 리뷰도 넣어요', f'글을 남겼다면 셌을 만큼으로 추정해요 (1점은 100건 중 {_se(1)}건, 4점은 {_se(4)}건쯤, 5점은 거의 0)')]
+    else:
+        _how += [('별점만 남긴 리뷰도 넣어요', f'같은 별점 리뷰가 실망한 비율로 추정해요 (1점은 100건 중 {_se(1)}건, 4점은 {_se(4)}건쯤, 5점은 거의 0)')]
+    _how += [('최근 리뷰를 더 크게 봐요', '6개월 지나면 절반, 1년 넘으면 안 세요'),
+             (f'{CITY["ko"]} 평균 쪽으로 조금 당겨요', '리뷰가 적은 호텔이 몇 건에 크게 흔들리지 않게요'),
+             ('100명 중 몇 명꼴인지 보여드려요', '그래서 5%면 100명 중 5명꼴이에요')]
+    _def = ('심하게 데였거나 다시 안 가겠다고 한 리뷰, 1~2점 리뷰로 낸 비율이에요' if city.get('low_floor') else
+            '그중 심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요')
     s2 = sect('실망 확률은 이렇게 계산해요',
-        '<div class="steps-lead">리뷰 수백 건이 숫자 하나가 되기까지 다섯 단계</div>'
+        f'<div class="steps-lead">리뷰 수백 건이 숫자 하나가 되기까지 {len(_how)}단계</div>'
         '<ol class="steps-list">' + ''.join(f'<li><span class="steps-badge">{i}</span><div class="steps-t"><b>{t}</b><span>{s}</span></div></li>' for i, (t, s) in enumerate(_how, 1)) + '</ol>'
         '<div class="steps-q"><b>항목별 점수와는 뭐가 다른가요?</b><span>항목별 점수(청결·냄새·소음·객실·직원·위치)는 불만이 한 번이라도 적힌 리뷰의 비율이에요. '
-        '실망 확률은 그중 심하게 데였거나 다시 안 가겠다고 한 리뷰만 세요. 그래서 불평은 많아도 떠나지는 않는 호텔은 항목 점수는 나빠도 실망 확률은 평균 근처일 수 있어요</span></div>'
+        f'실망 확률은 {_def}. 그래서 불평은 많아도 떠나지는 않는 호텔은 항목 점수는 나빠도 실망 확률은 평균 근처일 수 있어요</span></div>'
         '<ul class="about-list">'
         f'<li>최근 1년 리뷰(별점만 남긴 리뷰 포함)가 {MIN_REVIEWS}건 미만이면 신뢰도가 낮아 확률을 공개하지 않아요</li>'
         f'<li>최근 1년 리뷰가 {RANK_MIN}건 미만이면 \'리뷰 적음\'으로 표시하고 순위·추천에서 빼요. 위험 신호가 뚜렷하면 위험으로 알려드려요</li>'
@@ -4854,6 +4939,25 @@ def build_sitemap(detail_pids, collection_slugs=()):
             f'{urls}\n</urlset>\n')
 
 
+def lowstar_log(city, H, stars, hotels_meta):
+    """1·2점 바닥값 감시 줄 (SCORE-LOWSTAR §2 '알려진 한계'·§6-4) — 바닥값은 별점 있는 글 리뷰에만 붙어서, 글 리뷰 중 별점 있는 비율이
+       높은 호텔이 더 오른다. 순위 모수 호텔을 그 비율로 4등분해 상·하위 25%의 평균 상승(%p)을 매주 본다(2026-10-18 시뮬레이션 +2.0 / +1.3)."""
+    if not city.get('low_floor'):
+        print(f'1~2점 바닥값 꺼짐(LOW_STAR_FLOOR 비었거나 low1_nodis 열 없음) · 도시 {city["crit"] * 100:.2f}%')
+        return
+    rows = []
+    for p in hotels_meta:
+        h, st = H.get(p), stars.get(p)
+        if not (h and h['scored'] and h['ranked'] and st and h.get('text_1y')): continue
+        share = min(max(st['total_1y'] - h['star_only_1y'], 0) / h['text_1y'], 1.0)   # 글 리뷰 중 별점 있는 비율(구글 별점 − 별점만 리뷰)
+        rows.append((share, (h['p_crit'] - h['p_crit_base']) * 100))
+    if len(rows) < 8: return
+    q1, _, q3 = statistics.quantiles([s for s, _ in rows], n=4, method='inclusive')
+    lo = statistics.mean(d for s, d in rows if s <= q1); hi = statistics.mean(d for s, d in rows if s >= q3)
+    print(f'1~2점 바닥값 {city["low_floor"]}: 도시 {city["crit_base"] * 100:.2f}% → {city["crit"] * 100:.2f}% · '
+          f'별점 비율 상위 25% 평균 +{hi:.2f}%p / 하위 25% +{lo:.2f}%p ({len(rows)}곳)')
+
+
 def prev_badges():
     """지난 빌드의 배지(docs/data/compare.js의 b) — 배지 흔들림 방지용(scoring.assess). docs를 지우기 전에 읽는다. 없으면 {}."""
     f = os.path.join(OUT, 'data', 'compare.js')
@@ -4874,6 +4978,8 @@ def main():
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
     # 추천순·수요 신호·비교 쌍 (RECOMMEND-PRICE-DESIGN §4 / HOME-CONCEPT-DESIGN) — 홈·검색·허브·상세 대안이 공용
     CITY['crit'] = city['crit']
+    city_g1y(stars, H, hotels_meta)   # 최근 1년 구글 별점 비교값(1~2점·3점 비율, 구글 평점 분위) — 상세 첫 화면 줄·문답
+    lowstar_log(city, H, stars, hotels_meta)
     KRN.clear(); KRN.update(kr_n_map(kr_stats))
     KRR.clear(); KRR.update({p: round(100 * n / H[p]['text_1y']) for p, n in KRN.items()
                              if n >= 10 and p in H and (H[p].get('text_1y') or 0) > 0})

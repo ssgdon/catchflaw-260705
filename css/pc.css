@@ -59,6 +59,7 @@
     #detail .information .info-sum{grid-area:sum;max-width:560px;}
     #detail .information .info-answer{grid-area:ans;max-width:560px;}   /* 답 문단(SEO-CRAWL §4): 모바일과 같은 순서(요약 3칸 → 문단 → 리뷰 적음 주의), 같은 폭 */
     #detail .information .lowrev-note{grid-area:note;max-width:560px;}
+    #detail .information .is-gnote{display:none;}   /* '최근 1년 구글 ★4.1 · 1~2점 7%'는 PC에선 결정 카드 행(평균까지)이 맡는다 — SCORE-LOWSTAR §4-3 */
     #detail .information .info-price{display:none;}   /* PC는 오른쪽 결정 카드에 평일·주말 가격 + '가격 기준 ?'(2026-10-12) */
 
     /* 사진 그리드: 장수별 배치 (호텔당 사진 1~2장이 대부분) */

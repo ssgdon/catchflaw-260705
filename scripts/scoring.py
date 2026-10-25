@@ -2,6 +2,9 @@
 """캐치플로 점수 산식 v2 (UI-STANDARDS.md §5)
 도시평균=50, 3배=100 구간선형 · k=20 보정 · 가드(최근 1년 불만 5건 미만 상한 65) · 분석 30건 미만 미노출
 최신성 가중 = 반감기 180일 감쇠(1년 초과 ×0) · 별점만 리뷰는 같은 별점 분석 리뷰의 실망 비율로 대체 (2026-10 산식 개선)
+실망 확률 분자(리뷰 한 건의 실망 값, 2026-10-26 V1b — SCORE-LOWSTAR §2):
+  글 리뷰 · 실망(심각 OR 거부+불만) = 1 / 실망 아님 1·2점 = p₁·p₂(같은 별점 글 리뷰의 실망 비율, star_crit.json) / 그 밖 = 0
+  별점만 1·2점 = e_s = p_s + (1−p_s)·p_s / 별점만 3~5점 = p_s.  LOW_STAR_FLOOR = () 또는 low{s}_nodis 열 없는 옛 데이터면 이전 산식
 """
 import json, os
 from collections import defaultdict
@@ -72,6 +75,9 @@ SCORED_CATS = [c for c in CATS if c != '안전']
 CHIP_ONLY_CATS = {'안전'}
 # 실망 확률의 분자: True면 '심각 있음 OR (재방문·추천 거부 AND 불만 있음)' 리뷰, False면 '심각 있음'만 (v4 정의)
 DISAPPOINT_INCLUDES_REFUSAL = True
+# 1·2점 바닥값 (2026-10-26, SCORE-LOWSTAR §2 V1b): 글 있는 1·2점 리뷰는 내용 판정이 '실망 아님'이어도 같은 별점 실망 비율만큼
+# 실망으로 센다(최근 1년 1점 글 리뷰 55%·2점 76%를 0으로 세던 것), 별점만 1·2점은 e_s = p_s + (1−p_s)·p_s. 빈 튜플이면 이전 산식(롤백 스위치)
+LOW_STAR_FLOOR = (1, 2)
 
 def _score_from_ratio(ratio):
     if ratio <= 1:
@@ -183,6 +189,10 @@ def assess(hotels, city, prev=None, seed=7, draws=2000):
             hotels[p]['rank_tier'] = t
 
 def compute(data_dir, prev_badges=None):
+    """data-src → (city, hotels). 실망 확률 p_crit = (Σ 실망 값×가중 + K×도시) / (Σ 가중 + K).
+       실망 값: 글 리뷰 실망 1 · 실망 아닌 1·2점 글 리뷰 p_s(LOW_STAR_FLOOR) · 별점만 리뷰 e_s(1·2점) 또는 p_s(3~5점).
+       화면용: crit_1y = 실제 실망 리뷰 '건수'(바닥값 제외) · low_n_1y/low_add_1y = 최근 1년 바닥값 대상 건수/더한 몫 ·
+       imp_1y = 별점만 리뷰 추정 몫 · p_crit_base = 바닥값을 끈 값(감시용). low{s}_nodis 열이 없으면 바닥값·e_s 모두 꺼짐."""
     J = lambda f: json.load(open(os.path.join(data_dir, f), encoding='utf-8'))
     denoms, findings_main, findings_sub, reviewlevel = (
         J('agg_denom.json'), J('agg_findings.json'), J('findings_sub.json'), J('agg_reviewlevel.json'))
@@ -218,30 +228,43 @@ def compute(data_dir, prev_badges=None):
                 s_crit_1y[k] += f['n']
                 if in_3m(f['bucket']): s_crit_3m[k] += f['n']
 
-    crit_w = defaultdict(float)
-    text_1y = defaultdict(int); crit_1y = defaultdict(int); any_1y = defaultdict(int)
-    for r in reviewlevel:
-        # 실망 리뷰 수: v5 내보내기의 has_disappoint(심각 OR 거부+불만), 없으면(구 데이터) has_crit
-        dis = r.get('has_disappoint', r['has_crit']) if DISAPPOINT_INCLUDES_REFUSAL else r['has_crit']
-        crit_w[r['place_id']] += dis * wt(r['bucket'])
-        if r['bucket'] != 'w015':          # 글이 있어 LLM이 읽은 리뷰(별점만 리뷰 제외)와 그중 실망·불만 리뷰 수
-            text_1y[r['place_id']] += r['analyzed']
-            crit_1y[r['place_id']] += dis
-            any_1y[r['place_id']] += r.get('has_any', 0)
-
+    # 별점 → 실망 비율 p_s (도시 단위, 최근 1년 글 리뷰, star_crit.json) — 1·2점 바닥값과 별점만 보정이 같이 쓰므로 먼저 구한다.
     # 별점만 리뷰 보정 (2026-10 산식 개선): 미분석 & 별점 있는 리뷰(대부분 글 없는 구글 리뷰)는 분모에만 들어가고
     # 분자는 0이었다 — 1점짜리도 '실망 아님'. 별점만 리뷰가 많은 호텔일수록 낮게 나와 출처 구성에 따라 불공정.
-    # → 같은 별점 분석 리뷰의 실망 비율(도시 단위, star_crit.json)을 기대값으로 더한다. 파일이 없으면(구 데이터) 보정 없음.
+    # → 같은 별점 분석 리뷰의 실망 비율을 기대값으로 더한다. 파일이 없으면(구 데이터) 보정 없음.
     star_p = {}
     if os.path.exists(os.path.join(data_dir, 'star_crit.json')):
         for r in J('star_crit.json'):
             num = r.get('n_disappoint', r['n_crit']) if DISAPPOINT_INCLUDES_REFUSAL else r['n_crit']
             if r['n']: star_p[int(r['stars'])] = num / r['n']
+    # 1·2점 바닥값은 내보내기에 low{s}_nodis 열이 있을 때만 — 없으면(옛 data-src) 바닥값도 e_s도 쓰지 않는다(반쪽 적용 금지)
+    floor = tuple(LOW_STAR_FLOOR) if (LOW_STAR_FLOOR and star_p and any('low1_nodis' in r for r in reviewlevel)) else ()
+    star_e = {s: (p + (1 - p) * p if s in floor else p) for s, p in star_p.items()}   # 별점만 리뷰 기대 실망(글을 봤다면 셌을 값)
+
+    crit_w = defaultdict(float); crit_w0 = defaultdict(float)     # crit_w0 = 바닥값을 끈 분자(감시용 p_crit_base)
+    text_1y = defaultdict(int); crit_1y = defaultdict(int); any_1y = defaultdict(int)
+    low_n_1y = defaultdict(int); low_add_1y = defaultdict(float)
+    for r in reviewlevel:
+        # 실망 리뷰 수: v5 내보내기의 has_disappoint(심각 OR 거부+불만), 없으면(구 데이터) has_crit
+        dis = r.get('has_disappoint', r['has_crit']) if DISAPPOINT_INCLUDES_REFUSAL else r['has_crit']
+        low_n = sum(r.get(f'low{s}_nodis', 0) for s in floor)                       # 실망 아닌 1·2점 글 리뷰 수
+        low_add = sum(r.get(f'low{s}_nodis', 0) * star_p.get(s, 0.0) for s in floor)   # 그만큼 실망으로 더하는 몫
+        crit_w[r['place_id']] += (dis + low_add) * wt(r['bucket'])
+        crit_w0[r['place_id']] += dis * wt(r['bucket'])
+        if r['bucket'] != 'w015':          # 글이 있어 LLM이 읽은 리뷰(별점만 리뷰 제외)와 그중 실망·불만 리뷰 수
+            text_1y[r['place_id']] += r['analyzed']
+            crit_1y[r['place_id']] += dis      # '실망 리뷰 N건'·리뷰 팝업은 실제 리뷰만 — 바닥값은 더하지 않는다
+            any_1y[r['place_id']] += r.get('has_any', 0)
+            low_n_1y[r['place_id']] += low_n
+            low_add_1y[r['place_id']] += low_add
+
     imp_1y = defaultdict(float)
     if star_p and os.path.exists(os.path.join(data_dir, 'agg_staronly.json')):
         for r in J('agg_staronly.json'):
-            e = r['n'] * star_p.get(int(r['stars']), 0.0)
+            s = int(r['stars'])
+            e = r['n'] * star_e.get(s, 0.0)
             crit_w[r['place_id']] += e * wt(r['bucket'])
+            crit_w0[r['place_id']] += r['n'] * star_p.get(s, 0.0) * wt(r['bucket'])
             if r['bucket'] != 'w015': imp_1y[r['place_id']] += e   # 표시용: 최근 1년 별점만 리뷰의 추정 실망 건수
 
     scored = [p for p in den if den_1y[p] >= MIN_REVIEWS]   # 노출 게이트 = 최근 1년 리뷰 ≥30 (전체기간 아님)
@@ -249,7 +272,10 @@ def compute(data_dir, prev_badges=None):
 
     city = {
         'crit': sum(crit_w[p] for p in scored) / tot_den,
-        'star_p': star_p,                  # 별점 → 실망 비율 (보정 근거, 없으면 빈 dict)
+        'crit_base': sum(crit_w0[p] for p in scored) / tot_den,   # 바닥값을 끈 도시 평균(감시용, 화면 비노출)
+        'star_p': star_p,                  # 별점 → 실망 비율 = 1·2점 글 리뷰 바닥값 (보정 근거, 없으면 빈 dict)
+        'star_e': star_e,                  # 별점 → 별점만 리뷰 기대 실망 (소개 페이지 숫자)
+        'low_floor': floor,                # 실제로 켜진 바닥값 별점 (열 없는 옛 데이터·롤백이면 ())
         'cat': {c: sum(m_num[(p, c)] for p in scored) / tot_den for c in CATS},
         'sub': {(c, s): max(sum(s_num[(p, c, s)] for p in scored) / tot_den, 1e-6)
                 for c in CATS for s in SUBS[c]},
@@ -261,10 +287,12 @@ def compute(data_dir, prev_badges=None):
         h = {'analyzed': den_1y[p], 'analyzed_all': den_n[p], 'scored': den_1y[p] >= MIN_REVIEWS,
              'ranked': den_1y[p] >= RANK_MIN,      # 순위·추천·랭킹 모수 포함 여부
              'text_1y': text_1y[p], 'star_only_1y': max(den_1y[p] - text_1y[p], 0),
-             'crit_1y': crit_1y[p], 'any_1y': any_1y[p], 'imp_1y': imp_1y[p]}
+             'crit_1y': crit_1y[p], 'any_1y': any_1y[p], 'imp_1y': imp_1y[p],
+             'low_n_1y': low_n_1y[p], 'low_add_1y': low_add_1y[p]}
         if h['scored']:
             pc = (crit_w[p] + K * city['crit']) / (den[p] + K)
             h['p_crit'] = pc
+            h['p_crit_base'] = (crit_w0[p] + K * city['crit_base']) / (den[p] + K)
             h['badge'] = hotel_badge(pc, city['crit'])      # assess()가 표본 공정성 기준으로 덮어씀
             h['_unc'] = (den[p], den2[p], crit_w[p])
             h['cats'] = {}
