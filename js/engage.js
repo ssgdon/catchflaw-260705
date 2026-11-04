@@ -70,6 +70,7 @@
       e.preventDefault();
       var data = { title: document.title, text: H.name + ' — 캐치플로 분석', url: location.href };
       // OS 네이티브 공유(카카오톡 등 앱 목록) 우선
+      if (typeof gtag === 'function') gtag('event', 'share', { method: navigator.share ? 'os' : 'sheet', hotel_id: H.pid || '' });   // UX-2611 A: 공유 측정
       if (navigator.share) { navigator.share(data).catch(function () {}); }
       else { openShare(this); }  // 미지원(카카오 인앱 등) → 자체 공유 시트
     });
@@ -102,12 +103,14 @@
         if (!text && !phone) { fbEnd('fb_skip', { empty: 1 }); go(); return; }  // 빈 값이면 그냥 이동
         fbEnd('fb_submit', { has_text: text ? 1 : 0, has_phone: phone ? 1 : 0, text_len: text.length });  // 내용·번호는 GA로 보내지 않는다
         submit(text, phone);
-        // 저장 성공 여부와 무관하게 UX는 즉시 진행
+        // 저장 성공 여부와 무관하게 UX는 즉시 진행. 새 탭은 지금(사용자 클릭 안)에서 열어야 모바일 팝업 차단에 안 걸린다(UX-2611 A) —
+        // 예전엔 완료 화면 1.2초 뒤 setTimeout에서 열어 사파리·크롬 모바일이 막을 수 있었다
+        go(true);
         m.querySelector('.fb-body').setAttribute('hidden', '');
         m.querySelector('.ov-hero').setAttribute('hidden', '');
         m.querySelector('.ov-foot').setAttribute('hidden', '');
         m.querySelector('.fb-done').removeAttribute('hidden');
-        setTimeout(go, 1200);
+        setTimeout(function () { if (fbModal) CF.sheet.close(fbModal); }, 1200);
       });
       return m;
     }
@@ -126,10 +129,10 @@
         }).catch(function () {});
       } catch (e) {}
     }
-    function go() {
+    function go(keepOpen) {   // keepOpen = 완료 화면을 잠시 보여 주는 쪽이 시트를 닫는다
       markShown();
       var url = pendingUrl || H.gmap;
-      if (fbModal) CF.sheet.close(fbModal);
+      if (fbModal && !keepOpen) CF.sheet.close(fbModal);
       window.open(url, '_blank', 'noopener');
     }
     // 2026-11-04 피드백 창 GA 기록: fb_shown(뜸) → fb_submit(보냄)·fb_skip(그냥 이동, empty=1은 빈 채로 '보내고 이동')

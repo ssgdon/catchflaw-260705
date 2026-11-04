@@ -4120,7 +4120,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     _dot = '' if _bst['dot'] is None else '<i class="sdot' + (' ' + _bst['dot'] if _bst['dot'] else '') + '"></i>'
     if h['scored']:
         _plab = '<span class="nw">실망 확률</span>' + (' · <span class="nw">리뷰 적음</span>' if _bk in ('low', 'lowdanger') else '')
-        cell_prob = f'<div class="is-cell is-prob"><b class="sv">{_dot}{_sr}{pct(h["p_crit"])}%</b><span class="sl">{_plab}</span></div>'
+        cell_prob = f'<a class="is-cell is-prob" href="#sec-prob" data-ga="sum_prob"><b class="sv">{_dot}{_sr}{pct(h["p_crit"])}%</b><span class="sl">{_plab}</span></a>'
     else:
         cell_prob = '<div class="is-cell is-prob"><b class="sv">—</b><span class="sl"><span class="nw">분석 준비 중</span></span></div>'
     cell_google = (f'<a class="is-cell is-google" data-out="google" href="{E(gmap)}" target="_blank" rel="noopener">'
