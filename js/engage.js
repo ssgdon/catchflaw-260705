@@ -95,11 +95,12 @@
           + '<button type="button" class="btn-ink" data-act="send">보내고 이동</button>'
       });
       m.querySelector('.ov-sub').classList.add('is-text');
-      m.querySelector('[data-act="skip"]').addEventListener('click', function () { go(); });
+      m.querySelector('[data-act="skip"]').addEventListener('click', function () { fbEnd('fb_skip', { empty: 0 }); go(); });
       m.querySelector('[data-act="send"]').addEventListener('click', function () {
         var text = (m.querySelector('#fb-text').value || '').trim();
         var phone = (m.querySelector('#fb-phone').value || '').trim();
-        if (!text && !phone) { go(); return; }  // 빈 값이면 그냥 이동
+        if (!text && !phone) { fbEnd('fb_skip', { empty: 1 }); go(); return; }  // 빈 값이면 그냥 이동
+        fbEnd('fb_submit', { has_text: text ? 1 : 0, has_phone: phone ? 1 : 0, text_len: text.length });  // 내용·번호는 GA로 보내지 않는다
         submit(text, phone);
         // 저장 성공 여부와 무관하게 UX는 즉시 진행
         m.querySelector('.fb-body').setAttribute('hidden', '');
@@ -131,12 +132,24 @@
       if (fbModal) CF.sheet.close(fbModal);
       window.open(url, '_blank', 'noopener');
     }
-    function openFb(url, opener) {
+    // 2026-11-04 피드백 창 GA 기록: fb_shown(뜸) → fb_submit(보냄)·fb_skip(그냥 이동, empty=1은 빈 채로 '보내고 이동')
+    // ·fb_dismiss(X·뒤로가기로 닫고 이동 안 함). 응답 0건이 '저장 실패'인지 '아무도 안 씀'인지 가르기 위함.
+    var fbCtx = {}, fbDone = false;
+    function fbEv(name, p) {
+      if (typeof gtag !== 'function') return;
+      var o = { hotel_id: H.pid || '', placement: fbCtx.placement || '' };
+      for (var k in p) o[k] = p[k];
+      gtag('event', name, o);
+    }
+    function fbEnd(name, p) { if (fbDone) return; fbDone = true; fbEv(name, p || {}); }
+    function openFb(url, opener, kind) {
       pendingUrl = url;
+      fbCtx = { placement: OUT_PLACEMENT[kind] || 'map_link' }; fbDone = false;
       if (!fbModal) fbModal = buildFbModal();
       ['.fb-body', '.ov-hero', '.ov-foot'].forEach(function (q) { fbModal.querySelector(q).removeAttribute('hidden'); });
       fbModal.querySelector('.fb-done').setAttribute('hidden', '');
-      CF.sheet.open(fbModal, { opener: opener });
+      CF.sheet.open(fbModal, { opener: opener, onClose: function () { fbEnd('fb_dismiss'); } });
+      fbEv('fb_shown', {});
     }
 
     // 구글맵으로 나가는 링크 가로채기 (세션당 1회만 피드백)
@@ -157,7 +170,7 @@
       }
       if (alreadyShown()) return;  // 이미 봤으면 정상 이동
       e.preventDefault();
-      openFb(url, this);
+      openFb(url, this, kind);
     });
   });
 })();
