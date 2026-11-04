@@ -1,5 +1,5 @@
 /* 캐치플로 검색 자동완성 (홈 #hero-q + search.html #q 공용) — §7-c
-   의존: jQuery, js/search-key.js(CFSearchKey), data/search_index.js(window.CF_IDX)
+   의존: jQuery, data/search_index.js(window.CF_IDX) — 소리 키 매칭은 이 파일 안(search-key.js 불필요, 2026-11-04)
    window.CF_AREAS(인기 지역), window.CF_SB(Supabase INSERT)
    각 검색창은 data-ac-href 로 상세 링크 접두사(홈="./hotels/", search="./hotels/") 지정.
    상세 주소 = 접두사 + 슬러그(u, SEO-CRAWL §2 — CF_IDX·HOTELS 항목의 u). u가 없으면 pid(옛 주소, 301로 이어짐). */
@@ -14,95 +14,143 @@
     return String(s == null ? '' : s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
   }
 
-  /* ── 토큰 매칭 (FEEDBACK-2610 §15) ──
-     쿼리를 공백·구두점으로 나누고, 붙여 쓴 덩어리(6자모+)는 인덱스 토큰 사전(전 호텔 tok 합집합)으로 최장일치 분할.
-     불용어(호텔·후쿠오카·더) 제거 → 쿼리 토큰 **전부**가 호텔 tok 중 하나와 접두 일치 또는 자모 편집거리 ≤1(6자모+)이면 매칭.
-     기존 keys 전체 부분일치·초성 매칭은 그대로 두고(가산점 5) 합친다. 점수 = 정확×3 + 접두×2 + 오타×1 + keys 보너스 5 + pop. */
-  var STOP = null, DICT = null, DICT_MAX = 0;
-  function K(s) { return window.CFSearchKey.toKey(s).full; }
-  function prep() {
-    if (DICT) return;
-    STOP = {}; ['호텔', 'hotel', 'ホテル', '후쿠오카', 'fukuoka', '福岡', '더', 'the'].forEach(function (w) { STOP[K(w)] = 1; });
-    DICT = {};
-    (window.CF_IDX || []).forEach(function (it) {
-      (it.tok || []).forEach(function (t) { DICT[t] = 1; if (t.length > DICT_MAX) DICT_MAX = t.length; });
-    });
+  /* ── 소리 키 퍼지 매칭 (SEARCH-2611, 2026-11-04) ──
+     예전엔 빌드가 호텔마다 표기 조합(하카타/하까다/hakata…)을 미리 만들어 두고 그중 하나와 맞아야 찾았다 — 상한 40개에서 73곳이 잘렸고,
+     만들지 않은 표기(리졸↔리솔·치구시↔치쿠시·에키↔역·2↔Ⅱ)는 늘 실패했다. 이제는 호텔 200곳 이름을 검색할 때마다 직접 비교한다.
+     ① 정규화: NFKC 소문자, 한글↔로마자·숫자 경계에서 띄우기, 같은 뜻 묶기(에키·스테이션→역, 에키마에→역앞, ii→2), 불용어(호텔·후쿠오카·더·숙소) 빼기
+     ② 소리 키: 한글은 자모로 풀고 예사·된·거센소리(ㄱㄲㅋ·ㄷㄸㅌ·ㅂㅃㅍ·ㅈㅉㅊ·ㅅㅆ)와 ㅐ/ㅔ·ㅒ/ㅖ/ㅔ·ㅙ/ㅚ/ㅞ를 한 소리로, 로마자는 tsu/tu·shi/si·chi/ti·장음을 한 소리로
+     ③ 토큰마다: 같음 3 · 앞부분 일치 2 · 오타(길이의 1/4까지 편집거리, 4자모는 낱말 전체만) 1.5 · 안에 포함 1, 드문 말일수록 무겁게(idf) — 쿼리 토큰 전부가 맞으면 '찾음', 절반 이상이면 '혹시'
+     ④ 붙여 쓴 쿼리는 이름 전체(공백 없는 소리 키)에 들어 있으면 찾음, 이름과 똑같으면 가산. 초성(ㄷㅁㅇ)은 이름 초성에 들어 있으면 찾음
+     호텔 토큰 = 이름(t)·영문(en) + 파이프라인 토큰(tok, pipeline/token_dict) + 사람이 확인한 별칭(al, scripts/search_aliases.json).
+     회귀 검사: node scripts/check_search.js (실검색 실패어 scripts/search_cases.json). 콘솔: CFAutocomplete.selfTest() */
+  var CHO = 'ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ', JUNG = 'ㅏㅐㅑㅒㅓㅔㅕㅖㅗㅘㅙㅚㅛㅜㅝㅞㅟㅠㅡㅢㅣ';
+  var JONG = ['', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ'];
+  var FOLD = { 'ㄲ': 'ㄱ', 'ㅋ': 'ㄱ', 'ㄸ': 'ㄷ', 'ㅌ': 'ㄷ', 'ㅃ': 'ㅂ', 'ㅍ': 'ㅂ', 'ㅉ': 'ㅈ', 'ㅊ': 'ㅈ', 'ㅆ': 'ㅅ',
+               'ㅐ': 'ㅔ', 'ㅒ': 'ㅔ', 'ㅖ': 'ㅔ', 'ㅙ': 'ㅞ', 'ㅚ': 'ㅞ' };
+  var SYN = { 'eki': '역', 'station': '역', 'ekimae': '역앞', 'i': '1', 'ii': '2', 'iii': '3', 'iv': '4', '駅': '역', '駅前': '역앞' };
+  var STOPW = ['호텔', 'hotel', 'hotels', 'ホテル', '후쿠오카', 'fukuoka', '福岡', '더', 'the', '숙소', 'by', '바이', 'and', '앤'];
+  var SEP = /[\s\-·・.,'"&()~!?\/|:;\[\]_+]+/;
+
+  function fold(s) {   // 한글 음절 → 자모 소리 키, 낱자모·로마자도 같은 규칙으로
+    var o = '', i, c, t, ch;
+    for (i = 0; i < s.length; i++) {
+      c = s.charCodeAt(i); ch = s.charAt(i);
+      if (c >= 0xAC00 && c <= 0xD7A3) {
+        t = c - 0xAC00;
+        var a = CHO.charAt(Math.floor(t / 588)), b = JUNG.charAt(Math.floor((t % 588) / 28)), z = JONG[t % 28];
+        o += (FOLD[a] || a) + (FOLD[b] || b) + (z ? (FOLD[z] || z) : '');
+      } else o += FOLD[ch] || ch;
+    }
+    if (/[a-z]/.test(o)) o = o.replace(/tsu/g, 'tu').replace(/shi/g, 'si').replace(/chi/g, 'ti').replace(/ou/g, 'o').replace(/oo/g, 'o').replace(/uu/g, 'u').replace(/nn/g, 'n');
+    return o;
   }
-  function segment(k) {   // 자모키 덩어리 → 사전 최장일치 조각들(사전에 없는 부분은 이어 붙여 한 조각)
+  function cho(s) {    // 이름의 초성 줄(ㄷㅁㅇ 검색용)
+    var o = '';
+    for (var i = 0; i < s.length; i++) { var c = s.charCodeAt(i); if (c >= 0xAC00 && c <= 0xD7A3) o += CHO.charAt(Math.floor((c - 0xAC00) / 588)); }
+    return o;
+  }
+  var STOP = null;
+  function words(s) {   // 글 → 정규화한 낱말(접기 전). 한글 덩어리 안의 '호텔·후쿠오카'와 같은 뜻 말도 여기서 정리
+    s = String(s || '').normalize('NFKC').toLowerCase().replace(/\(.*?\)/g, ' ');
+    s = s.replace(/에키마에|역마에|역 앞/g, ' 역앞 ').replace(/스테이션/g, ' 역 ').replace(/에키(?!마)/g, ' 역 ');
+    s = s.replace(/([가-힣]+)/g, ' $1 ').replace(/([0-9]+)/g, ' $1 ');           // 한글 ↔ 로마자·숫자·가나 경계
+    s = s.replace(/([가-힣]{2,})(호텔스|호텔|후쿠오카)/g, '$1 ').replace(/(호텔스|호텔|후쿠오카)([가-힣]{2,})/g, ' $2');
+    return s.split(SEP).filter(Boolean).map(function (w) { return SYN[w] || w; });
+  }
+  function toks(s) {
+    if (!STOP) { STOP = {}; STOPW.forEach(function (w) { STOP[fold(w)] = 1; }); }
+    return words(s).map(fold).filter(function (t) { return t && !STOP[t]; });
+  }
+
+  var PREP = null, DICT = null, DICT_MAX = 0;
+  function prep() {   // CF_IDX를 처음 쓸 때 한 번: 호텔마다 소리 키 토큰·이름 전체 키·초성
+    var idx = window.CF_IDX || [];
+    if (PREP && PREP.n === idx.length) return PREP.list;
+    DICT = {}; DICT_MAX = 0;
+    var list = idx.map(function (it) {
+      var set = {}, full = [], add = function (t) { if (t && !set[t]) { set[t] = 1; DICT[t] = 1; if (t.length > DICT_MAX) DICT_MAX = t.length; } };
+      var main = toks(it.t);
+      main.forEach(add);
+      [it.en].concat(it.al || []).forEach(function (n) { var tk = toks(n); tk.forEach(add); if (tk.length) full.push(tk.join('')); });
+      (it.tok || []).forEach(function (t) { var f = fold(String(t).toLowerCase()); if (!STOP[f]) add(f); });
+      full.unshift(main.join(''));
+      return { it: it, tk: Object.keys(set), main: main, full: full, cho: cho(it.t.replace(/호텔스|호텔|후쿠오카|숙소/g, '')) };
+    });
+    PREP = { n: idx.length, list: list };
+    return list;
+  }
+  function segment(k) {   // 붙여 쓴 덩어리 → 호텔 토큰 사전 최장일치 조각(없는 부분은 이어 붙여 한 조각)
     var out = [], buf = '', i = 0;
     while (i < k.length) {
       var hit = 0;
-      for (var j = Math.min(k.length, i + DICT_MAX); j > i + 1; j--) { if (DICT[k.slice(i, j)]) { hit = j; break; } }
+      for (var j = Math.min(k.length, i + DICT_MAX); j > i + 2; j--) { if (DICT[k.slice(i, j)]) { hit = j; break; } }
       if (hit) { if (buf) { out.push(buf); buf = ''; } out.push(k.slice(i, hit)); i = hit; }
       else { buf += k.charAt(i); i++; }
     }
     if (buf) out.push(buf);
-    return out;
+    return out.filter(function (t) { return !STOP[t]; });
   }
   function qTokens(q) {
     prep();
-    var parts = String(q).split(/[\s\-·・.,'"&()~!?/|:;\[\]]+/), toks = [];
-    parts.forEach(function (p) {
-      var k = K(p); if (!k) return;
-      (k.length >= 6 ? segment(k) : [k]).forEach(function (t) { if (!STOP[t]) toks.push(t); });
-    });
-    return toks;
+    var out = [];
+    toks(q).forEach(function (t) { (t.length >= 9 && !DICT[t] ? segment(t) : [t]).forEach(function (x) { out.push(x); }); });
+    return out;
   }
-  function lev1(a, b) {   // 편집거리 ≤ 1 여부
-    if (a === b) return true;
-    var la = a.length, lb = b.length;
-    if (Math.abs(la - lb) > 1) return false;
-    var i = 0, j = 0, d = 0;
-    while (i < la && j < lb) {
-      if (a.charAt(i) === b.charAt(j)) { i++; j++; continue; }
-      if (++d > 1) return false;
-      if (la > lb) i++; else if (lb > la) j++; else { i++; j++; }
+  function lev(a, b, max) {   // 편집거리(max 넘으면 max+1)
+    if (Math.abs(a.length - b.length) > max) return max + 1;
+    var p = [], c, i, j;
+    for (j = 0; j <= b.length; j++) p[j] = j;
+    for (i = 1; i <= a.length; i++) {
+      c = [i]; var lo = i;
+      for (j = 1; j <= b.length; j++) { c[j] = Math.min(p[j] + 1, c[j - 1] + 1, p[j - 1] + (a.charAt(i - 1) === b.charAt(j - 1) ? 0 : 1)); if (c[j] < lo) lo = c[j]; }
+      if (lo > max) return max + 1;
+      p = c;
     }
-    return d + (la - i) + (lb - j) <= 1;
+    return p[b.length];
   }
-  function tokScore(qt, toks) {   // 쿼리 토큰 1개의 최고 점수: 정확 3 · 접두 2 · 오타 1 · 없음 0
-    var best = 0;
-    for (var i = 0; i < toks.length; i++) {
-      var t = toks[i];
+  function tokScore(qt, tk) {   // 쿼리 토큰 1개의 최고 점수: 같음 3 · 앞부분 2 · 오타 1.5 · 포함 1 · 없음 0
+    var best = 0, L = qt.length, lim = Math.floor(L / 4);
+    for (var i = 0; i < tk.length; i++) {
+      var t = tk[i];
       if (t === qt) return 3;
-      if (t.indexOf(qt) === 0) { best = 2; continue; }
-      if (best < 1 && qt.length >= 6 && (lev1(qt, t) || lev1(qt, t.slice(0, qt.length)))) best = 1;
+      if (L >= 2 && t.indexOf(qt) === 0) { best = 2; continue; }
+      if (best < 1.5 && L >= 4 && lim && (lev(qt, t, lim) <= lim || (L >= 5 && t.length > L && lev(qt, t.slice(0, L), lim) <= lim))) { best = 1.5; continue; }   // 4자모(니코↔닛코)는 낱말 전체만, 5자모부터 앞부분도(메이가 마이스테이스에 붙지 않게)
+      if (best < 1 && L >= 4 && t.indexOf(qt) > 0) best = 1;
     }
     return best;
   }
   function scoreAll(q) {
-    var idx = window.CF_IDX || [];
-    if (!q || !window.CFSearchKey) return [];
-    var k = window.CFSearchKey.toKey(q);
-    var kf = k.full, kc = k.cho;
-    if (!kf && !kc) return [];
-    var qt = qTokens(q), res = [];
-    for (var i = 0; i < idx.length; i++) {
-      var it = idx[i], old = false, s = 0;
-      var keys = it.keys || [];
-      for (var a = 0; a < keys.length; a++) { if (keys[a].indexOf(kf) >= 0) { old = true; break; } }
-      if (!old && kc && kc.length >= 2) {
-        var cho = it.cho || [];
-        for (var b = 0; b < cho.length; b++) { if (cho[b].indexOf(kc) >= 0) { old = true; break; } }
-      }
-      var tokHit = qt.length > 0;
-      for (var c = 0; c < qt.length && tokHit; c++) { var ts = tokScore(qt[c], it.tok || []); if (!ts) tokHit = false; else s += ts; }
-      if (!tokHit) s = 0;
-      if (!old && !tokHit) continue;
-      res.push({ it: it, s: s + (old ? 5 : 0) + (it.pop || 0) });
+    if (!q || !(window.CF_IDX || []).length) return [];
+    var list = prep(), qt = qTokens(q), qc = qt.join(''), res = [], i, c;
+    var qcho = /^[ㄱ-ㅎ\s]+$/.test(q) ? q.replace(/\s+/g, '') : '';
+    if (!qt.length && !qcho) return [];
+    // 토큰마다 맞는 호텔 수(df) → 드문 말(브랜드)일수록 무겁게: '라이브맥스 에키마에'에서 '역앞'보다 '라이브맥스'
+    var sc = list.map(function (h) { return qt.map(function (t) { return tokScore(t, h.tk); }); }), df = qt.map(function () { return 0; });
+    sc.forEach(function (row) { row.forEach(function (v, k) { if (v) df[k]++; }); });
+    var idf = df.map(function (d) { return Math.log(1 + list.length / Math.max(d, 1)); });
+    for (i = 0; i < list.length; i++) {
+      var h = list[i], s = 0, hit = 0, fs = 0, ch = false, v;
+      for (c = 0; c < qt.length; c++) { v = sc[i][c]; if (v) { hit++; s += v * idf[c]; } }
+      for (c = 0; c < h.full.length; c++) { if (h.full[c] === qc && qc.length >= 2) { fs = 10; break; } if (qc.length >= 4 && h.full[c].indexOf(qc) >= 0) fs = Math.max(fs, 4); }
+      if (qcho.length >= 2 && h.cho.indexOf(qcho) >= 0) ch = true;
+      var r = qt.length ? hit / qt.length : 0;
+      if (!r && !fs && !ch) continue;
+      var cov = 0;   // 호텔 이름 토큰 중 쿼리가 덮은 비율 — '아파호텔 하카타 에키마에'가 '…3초메'보다 앞에 오게
+      if (h.main.length) { for (c = 0; c < h.main.length; c++) { for (var d = 0; d < qt.length; d++) { if (tokScore(qt[d], [h.main[c]]) >= 1.5) { cov++; break; } } } cov /= h.main.length; }
+      res.push({ it: h.it, strong: r === 1 || fs > 0 || ch, r: r, s: s + fs + (ch ? 3 : 0) + cov + Math.min(h.it.pop || 0, 20) * 0.1 });
     }
-    res.sort(function (x, y) { return y.s - x.s; });
+    res.sort(function (x, y) { return (y.strong - x.strong) || (y.r - x.r) || (y.s - x.s); });
     return res;
   }
-  // CF_IDX 매칭: 토큰 매칭 ∪ (keys 부분일치 OR 초성 2+ 부분일치). 점수 내림차순 상위 N.
+  // 찾음(쿼리 토큰 전부 일치·이름 전체에 포함·초성) 상위 N
   function match(q, limit) {
-    return scoreAll(q).slice(0, limit || 8).map(function (r) { return r.it; });
+    return scoreAll(q).filter(function (r) { return r.strong; }).slice(0, limit || 8).map(function (r) { return r.it; });
   }
   // 목록 필터용: 매칭된 id 집합 (search.html run에서 사용)
   function matchIds(q) {
     return match(q, 9999).map(function (it) { return it.id; });
   }
-  // 매칭 0건일 때 '혹시 이 호텔인가요?' — 자모 바이그램 Dice 유사도 ≥0.45, 최대 3
+  // 찾음 0건일 때 '혹시 이 호텔인가요?' — 쿼리 토큰 절반 이상 일치, 없으면 소리 키 바이그램 유사도 ≥0.45, 최대 3
   function bigrams(s) { var o = {}, n = 0; for (var i = 0; i < s.length - 1; i++) { var g = s.substr(i, 2); o[g] = (o[g] || 0) + 1; n++; } return { g: o, n: n }; }
   function dice(a, b) {
     if (!a.n || !b.n) return 0;
@@ -110,24 +158,21 @@
     return 2 * inter / (a.n + b.n);
   }
   function suggest(q, limit) {
-    if (!q || !window.CFSearchKey) return [];
-    prep();
-    var qt = qTokens(q).join('');
-    var bq = bigrams(qt || K(q)), out = [];
-    (window.CF_IDX || []).forEach(function (it) {
+    if (!q) return [];
+    var qt = qTokens(q);
+    var part = scoreAll(q).filter(function (r) { return !r.strong && r.r >= 0.5 && qt.length >= 2; });
+    if (part.length) return part.slice(0, limit || 3).map(function (r) { return r.it; });
+    var bq = bigrams(qt.join('')), out = [];
+    if (!bq.n) return [];
+    prep().forEach(function (h) {
       var best = 0;
-      (it.keys || []).forEach(function (key) {
-        var d = dice(bq, bigrams(key));
-        if (d > best) best = d;
-      });
-      var tj = (it.tok || []).filter(function (t) { return !STOP[t]; }).join('');
-      var d2 = dice(bq, bigrams(tj)); if (d2 > best) best = d2;
-      if (best >= 0.45) out.push({ it: it, s: best });
+      h.full.forEach(function (f) { var d = dice(bq, bigrams(f)); if (d > best) best = d; });
+      if (best >= 0.45) out.push({ it: h.it, s: best });
     });
     out.sort(function (x, y) { return y.s - x.s || (y.it.pop || 0) - (x.it.pop || 0); });
     return out.slice(0, limit || 3).map(function (r) { return r.it; });
   }
-  // 콘솔 자가검증 (FEEDBACK-2610 §15-6): window.CFAutocomplete.selfTest()
+  // 콘솔 자가검증: window.CFAutocomplete.selfTest() — 전체 회귀는 node scripts/check_search.js
   function selfTest() {
     var cases = [
       ['톈진오리엔탈호텔', /오리엔탈 익스프레스.*텐진/],
@@ -135,7 +180,9 @@
       ['니시테츠그랜드', /니시테츠 그랜드/],
       ['솔라리아', /솔라리아/],
       ['ㄷㅁㅇ', /도미 ?인/],
-      ['Hyatt', /하얏트/]
+      ['Hyatt', /하얏트/],
+      ['리졸 트리니티 하카타', /리솔 트리니티/],
+      ['더크로스라이프하카타텐진', /크로스라이프 하카타 텐진/]
     ];
     var ok = true;
     cases.forEach(function (c) {
@@ -144,20 +191,19 @@
       // eslint-disable-next-line no-console
       console.log((pass ? '[OK]  ' : '[FAIL]') + ' ' + c[0] + ' → ' + (top ? top.t : '(없음)'));
     });
-    var keyOk = window.CFSearchKey && window.CFSearchKey.selfTest ? window.CFSearchKey.selfTest() : true;
     // eslint-disable-next-line no-console
-    console.log(ok && keyOk ? 'search-ac selfTest: ALL PASS' : 'search-ac selfTest: FAILED');
-    return ok && keyOk;
+    console.log(ok ? 'search-ac selfTest: ALL PASS' : 'search-ac selfTest: FAILED');
+    return ok;
   }
 
   // 미매칭 → 분석 요청 (Supabase analysis_requests · anon INSERT RLS — engage.js 피드백과 동일 패턴). 검색 결과 없음 화면의 '분석 요청하기'도 이 함수
-  function requestAnalysis(q, quiet) {   // quiet = 부른 쪽이 완료 화면을 따로 그림(검색 결과 없음 화면) → 토스트 생략. 보냈으면 true
+  function requestAnalysis(q, quiet, place) {   // quiet = 부른 쪽이 완료 화면을 따로 그림(검색 결과 없음 화면) → 토스트 생략. place = 구글 장소(우리 목록에 없는 호텔) → 이름·장소 ID를 같이. 보냈으면 true
     if (window.CF_SB && window.CF_SB.url && window.CF_SB.key) {
       fetch(window.CF_SB.url + '/rest/v1/analysis_requests', {
         method: 'POST',
         headers: { 'apikey': window.CF_SB.key, 'Authorization': 'Bearer ' + window.CF_SB.key,
           'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
-        body: JSON.stringify({ hotel_name: q, source: 'search_miss' })
+        body: JSON.stringify({ hotel_name: place ? place.name + ' · 검색어 ' + q + ' · ' + place.id : q, source: 'search_miss' })
       }).catch(function () {});
       if (!quiet) toast('요청했어요. 분석되면 사이트에 올라와요');
       return true;
@@ -206,6 +252,38 @@
     }
     if ((m = s.match(/@(-?\d+\.\d+),(-?\d+\.\d+)/)) && (h = nearest(+m[1], +m[2], 40))) return { hit: { id: h.id, t: h.name, u: h.u } };
     return { kind: 'none' };
+  }
+
+  /* ── 구글 장소 검색으로 한 번 더 (SEARCH-2611) — functions/api/find.js ──
+     사이트 안에서 못 찾았을 때만 부른다(검색 결과 없음 화면 · 공유 짧은 링크). 우리 호텔 ID = 구글 장소 ID라 id로 바로 맞추고,
+     ID가 다르면(장소 ID 갱신) 25m 안의 우리 호텔. 그래도 아니면 '아직 분석 전' 호텔(other). 실패·키 없음 = null → 화면은 그대로. */
+  function remote(q) {
+    if (!window.fetch) return Promise.resolve(null);
+    var ctl = window.AbortController ? new AbortController() : null, tm = ctl ? setTimeout(function () { ctl.abort(); }, 6000) : 0;
+    return fetch('/api/find?q=' + encodeURIComponent(q), ctl ? { signal: ctl.signal } : {})
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .then(function (j) {
+        clearTimeout(tm);
+        if (!j) return null;
+        if (j.url) return { url: j.url, ours: [], other: [] };
+        var ours = [], other = [], seen = {}, ps = j.places || [];
+        // 이름이 검색어와 닮았거나(소리 키 바이그램 0.3 이상) 구글이 딱 1곳만 준 경우만 믿는다 — '방음 좋은 숙소' 같은 말에 아무 호텔이나 붙지 않게
+        var bq = bigrams(qTokens(q).join(''));
+        ps = ps.filter(function (p) { return ps.length === 1 || dice(bq, bigrams(toks(p.name).join(''))) >= 0.3; });
+        ps.forEach(function (p) {
+          var h = byId(p.id), n;
+          if (!h && p.lat != null && (n = nearest(+p.lat, +p.lng, 25))) h = { id: n.id, t: n.name, u: n.u };
+          if (h) { if (!seen[h.id]) { seen[h.id] = 1; ours.push(h); } } else other.push(p);
+        });
+        return { ours: ours, other: other };
+      })
+      .catch(function () { clearTimeout(tm); return null; });
+  }
+  // 링크 → 호텔: 긴 링크는 바로 읽고, 공유 짧은 링크(maps.app.goo.gl·cid)는 /api/find가 리다이렉트를 따라가 준 주소로 다시 읽는다
+  function resolveLink(v) {
+    var r = resolveUrl(v);
+    if (r.kind !== 'short') return Promise.resolve(r);
+    return remote(String(v).trim()).then(function (res) { return res && res.url ? resolveUrl(res.url) : { kind: 'short' }; });
   }
 
   function attach(input, opts) {
@@ -284,12 +362,21 @@
     function renderUrl(v) {
       var r = resolveUrl(v);
       lastList = [];
+      if (r.kind === 'short') {   // 공유 짧은 링크: 확인 중 안내 → /api/find로 풀어서 다시 그림
+        $box.prop('hidden', false).html('<div class="ac-none">링크를 확인하고 있어요</div>');
+        resolveLink(v).then(function (r2) { if ($input.val().trim() !== v) return; paintUrl(r2); });
+        return;
+      }
+      paintUrl(r);
+    }
+    function paintUrl(r) {
       if (r.hit) {
-        $box.prop('hidden', false).html('<div class="ac-section">링크의 호텔</div>' + hotelRow({ id: r.hit.id, u: r.hit.u, t: r.hit.t, p: null, band: null }, 0).replace('<span class="ac-p dim">분석 준비 중</span>', ''));
+        var it = (window.CF_IDX || []).filter(function (x) { return x.id === r.hit.id; })[0];   // 동네·실망 확률은 인덱스에서(없을 때만 '분석 준비 중')
+        $box.prop('hidden', false).html('<div class="ac-section">링크의 호텔</div>' + hotelRow(it || { id: r.hit.id, u: r.hit.u, t: r.hit.t, p: null, band: null }, 0));
         sel = 0; highlight();
       } else {
         $box.prop('hidden', false).html('<div class="ac-none">' + (r.kind === 'short'
-          ? '공유 링크는 아직 읽지 못해요. 호텔 이름으로 검색해 주세요'
+          ? '공유 링크를 읽지 못했어요. 호텔 이름으로 검색해 주세요'
           : '링크에서 호텔을 찾지 못했어요. 호텔 이름으로 검색해 주세요') + '</div>');
         sel = -1;
       }
@@ -325,5 +412,5 @@
   }
 
   window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest, requestAnalysis: requestAnalysis,
-                            isMapsUrl: isMapsUrl, resolveUrl: resolveUrl };
+                            isMapsUrl: isMapsUrl, resolveUrl: resolveUrl, resolveLink: resolveLink, remote: remote };
 })();

@@ -147,7 +147,11 @@ _load_asof()
 UNSUPPORTED_KEYWORDS = ['도쿄', 'tokyo', '오사카', 'osaka', '교토', 'kyoto', '삿포로', 'sapporo',
     '나고야', 'nagoya', '오키나와', 'okinawa', '서울', 'seoul', '부산', 'busan', '제주', 'jeju',
     '방콕', 'bangkok', '다낭', 'danang', '나트랑', '타이베이', 'taipei', '싱가포르', 'singapore',
-    '홍콩', 'hongkong', 'hong kong', '괌', 'guam', '세부', 'cebu', '파리', 'paris', '런던', 'london']
+    '홍콩', 'hongkong', 'hong kong', '괌', 'guam', '세부', 'cebu', '파리', 'paris', '런던', 'london',
+    # 2026-11-04 규슈·근교(실검색 '뱃푸'가 '호텔을 찾지 못했어요'로 끝남) — 검색 결과가 0건일 때만 보므로 호텔 이름과 겹쳐도 안전
+    '벳푸', '뱃푸', 'beppu', '유후인', 'yufuin', '기타큐슈', '키타큐슈', 'kitakyushu', '고쿠라', 'kokura', '나가사키', 'nagasaki',
+    '구마모토', 'kumamoto', '가고시마', 'kagoshima', '오이타', 'oita', '미야자키', 'miyazaki', '사세보', 'sasebo', '우레시노', 'ureshino',
+    '히로시마', 'hiroshima', '고베', 'kobe', '요코하마', 'yokohama', '하코네', 'hakone']
 
 CAT_ICON = {c: '' for c in ALL_CATS}
 BAND_KO = {'danger': '위험', 'warning': '주의', 'safe': '양호'}
@@ -1496,7 +1500,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     // ───── 홈 데이터(호텔 199곳 JSON 83KB)·검색 자동완성·지도(leaflet 42KB)는 첫 화면 뒤에 — 검색창 터치/포커스, 지도 영역 600px 근접, 로드 뒤 2.5초 중 먼저 오는 때(2026-10-20 속도) ─────
     (function(){{
         var state = 0, cbs = [];   // 0 대기 · 1 받는 중 · 2 완료
-        var SRC = ['./data/index.js?v={BUILD}', './data/search_index.js?v={BUILD}', './js/search-key.js?v={V("js/search-key.js")}', './js/search-ac.js?v={V("js/search-ac.js")}', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
+        var SRC = ['./data/index.js?v={BUILD}', './data/search_index.js?v={BUILD}', './js/search-ac.js?v={V("js/search-ac.js")}', 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js'];
         function flush(){{ state = 2; var c = cbs; cbs = []; c.forEach(function(f){{ try {{ f(); }} catch (e) {{ if (window.console) console.error(e); }} }}); }}
         window.cfHomeLoad = function(cb){{
             if (cb) cbs.push(cb);
@@ -1568,8 +1572,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             // 구글맵 링크: 공용 해석기(js/search-ac.js). 못 읽으면 검색 페이지로 넘기지 않고 드롭다운 안내 유지
             if (window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(v)) {{
                 e.preventDefault();
-                var r = window.CFAutocomplete.resolveUrl(v);
-                if (r.hit) location.href = hurl(r.hit);
+                window.CFAutocomplete.resolveLink(v).then(function(r){{ if (r.hit) location.href = hurl(r.hit); }});   // 공유 짧은 링크는 /api/find가 풀어 준다
             }}
         }});
     }});
@@ -1826,12 +1829,16 @@ def build_search_index(hotels_meta, H, quotes=None):
     return items
 
 def build_search_ac_index(hotels_meta, H):
-    """자동완성용 슬림 인덱스 (§7-a): hotels_index.json(별칭키) + 계산된 실망확률/밴드.
-       항목당 {id,t,p,band,krn,pop,keys(≤40),cho(≤10)}. closed/미노출 제외. window.CF_IDX 로 노출."""
+    """자동완성용 슬림 인덱스 (§7-a): hotels_index.json(이름·토큰) + 계산된 실망확률/밴드. window.CF_IDX 로 노출.
+       항목당 {id,u,t,en,al,ar,p,band,krn,pop,tok}. closed/미노출 제외.
+       2026-11-04 SEARCH-2611: 표기 조합 keys(≤40)·초성 cho를 뺐다 — js/search-ac.js가 이름을 소리 키로 접어 검색 때 직접 비교한다(336KB → 약 1/4).
+       al = scripts/search_aliases.json(사람이 확인한 별칭: 실제 검색어 → 이 호텔, pipeline/search_learn.py가 GA4 search_resolved에서 후보를 모음)."""
     src = os.path.join(SRC, 'hotels_index.json')
     if not os.path.exists(src):
         return '[]'
     raw = json.load(open(src, encoding='utf-8'))
+    ap = os.path.join(ROOT, 'scripts', 'search_aliases.json')
+    aliases = json.load(open(ap, encoding='utf-8')).get('aliases', {}) if os.path.exists(ap) else {}
     out = []
     for r in raw:
         pid = r['id']
@@ -1841,23 +1848,19 @@ def build_search_ac_index(hotels_meta, H):
         meta = hotels_meta.get(pid)
         if not h or not meta:            # 사이트 미노출(상세 페이지 없음) 제외
             continue
-        # 짧은 키 우선 보존(브랜드/초성 축약형이 매칭에 가장 유용) 후 상한 절단
-        keys = sorted(r.get('keys') or [], key=lambda s: (len(s), s))[:40]
-        cho = sorted(r.get('cho') or [], key=lambda s: (len(s), s))[:10]
-        if not keys and not cho:
-            continue
+        al = [a for a in (aliases.get(pid) or []) if a]
         out.append({
             'id': pid,
             'u': SLUG[pid],                  # 상세 주소 슬러그 — 자동완성 링크(js/search-ac.js hrefPrefix + u)
             't': meta['title'],
+            'en': r.get('en') or '',         # 영문 이름(로마자 검색)
+            **({'al': al} if al else {}),
             'ar': area_tag(meta),            # 자동완성 컴팩트 행 메타 '나카스 · ● 실망 확률 4%'
             'p': pct(h['p_crit']) if h['scored'] else None,
             'band': h['badge'][0] if h['scored'] else None,
             'krn': KRN.get(pid, 0),          # 카드·사유줄과 같은 최근 1년 기준 (hotels_index의 krn은 전체 기간이라 숫자가 달라 보였음)
             'pop': r.get('pop') or 0,
-            'keys': keys,
-            'cho': cho,
-            'tok': (r.get('tok') or [])[:60],   # 토큰 매칭(FEEDBACK-2610 §15) — pipeline/build_index.py token_keys
+            'tok': (r.get('tok') or [])[:60],   # 파이프라인 토큰(일본어 읽기·표기 사전, pipeline/build_index.py token_keys) — JS가 소리 키로 접는다
         })
     out.sort(key=lambda x: -x['pop'])
     return json.dumps(out, ensure_ascii=False, separators=(',', ':'))
@@ -2116,22 +2119,46 @@ SEARCH_JS = r"""(function(){
         emptyView('아직 ' + CITY_KO + '만 지원해요', '‘' + esc(q) + '’ 지역은 준비 중이에요. ' + CITY_KO + ' 호텔부터 둘러보세요.', '',
             '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 둘러보기</a>', 'wave');
     }
+    function sugList(hs){   // '혹시 이 호텔인가요?' 컴팩트 행 — data-id는 고른 호텔을 GA4 search_resolved로 남겨 별칭 학습에 쓴다(pipeline/search_learn.py)
+        return hs.length ? '<div class="es-sug"><div class="es-sug-t">혹시 이 호텔인가요?</div><ul class="cp-list">' + hs.map(function(h){
+            return '<li><a class="cp-item" data-id="' + esc(h.id) + '" href="' + hurl(h) + '"><span class="cp-img"><img src="' + imgSrc(h) + '" alt="" loading="lazy"></span>'
+                + '<span class="cp-info"><span class="cp-nm">' + esc(h.name) + '</span><span class="cp-meta">' + [h.ar, bandText(h)].filter(Boolean).join(' · ') + '</span></span></a></li>'; }).join('') + '</ul></div>' : '';
+    }
+    // 사이트 안에서 못 찾으면 구글 장소 검색으로 한 번 더 (SEARCH-2611, functions/api/find.js). 키가 없거나 실패하면 화면은 그대로
+    var remotePlace = null;   // 우리 목록에 없는 호텔(구글 장소) — '분석 요청하기'가 이름·장소 ID를 같이 보낸다
+    function askRemote(q, sug, rm){
+        if (!window.CFAutocomplete || !window.CFAutocomplete.remote) return;
+        window.CFAutocomplete.remote(q).then(function(res){
+            if (!res || $q.val().trim() !== q) return;
+            var byId = {}; HOTELS.forEach(function(h){ byId[h.id] = h; });
+            var ours = res.ours.map(function(x){ return byId[x.id]; }).filter(Boolean);
+            ga('search_remote', {search_term: q, results: ours.length, other: res.other.length});
+            if (ours.length) {
+                var seen = {}, hs = ours.concat(sug).filter(function(h){ if (seen[h.id]) return false; seen[h.id] = 1; return true; }).slice(0, 3);
+                emptyView('‘' + esc(q) + '’ 호텔을 찾지 못했어요', '', sugList(hs), '<button type="button" class="btn-ink btn-sm" id="req-analysis">분석 요청하기</button>' + rm);
+            } else if (res.other.length) {
+                remotePlace = res.other[0];
+                var nm = remotePlace.name, lc = nm.charCodeAt(nm.length - 1), eun = (lc >= 0xAC00 && lc <= 0xD7A3 && (lc - 0xAC00) % 28) ? '은' : '는';   // 받침 있으면 '은'
+                emptyView('‘' + esc(nm) + '’' + eun + ' 아직 분석하지 않은 호텔이에요', '요청해 주시면 리뷰를 분석해서 올려 드릴게요.', sugList(sug),
+                    '<button type="button" class="btn-ink btn-sm" id="req-analysis">분석 요청하기</button>' + rm);
+            }
+        });
+    }
     function noResult(q){   // 이름이 안 맞음 → '혹시 이 호텔인가요?' 비슷한 이름 + 분석 요청 / 조건 때문에 안 보이면 조건 빼기 칩
         var ids = {}, all = q ? matchQ(HOTELS, q) : HOTELS;
         var sug = [];
         if (q && !all.length && window.CFAutocomplete && window.CFAutocomplete.suggest) {
-            window.CFAutocomplete.suggest(q, 3).forEach(function(it){ ids[it.id] = 1; });
-            sug = HOTELS.filter(function(h){ return ids[h.id]; });
+            HOTELS.forEach(function(h){ ids[h.id] = h; });
+            sug = window.CFAutocomplete.suggest(q, 3).map(function(it){ return ids[it.id]; }).filter(Boolean);   // 비슷한 순서 그대로
         }
         var rm = nFilters() ? removeChips() : '';
         if (q && all.length) {   // 이름은 있는데 조건 때문에 빠짐
             emptyView('조건에 맞는 ‘' + esc(q) + '’ 호텔이 없어요', '', '', rm);
         } else if (q) {
-            var list = sug.length ? '<div class="es-sug"><div class="es-sug-t">혹시 이 호텔인가요?</div><ul class="cp-list">' + sug.map(function(h){
-                return '<li><a class="cp-item" href="' + hurl(h) + '"><span class="cp-img"><img src="' + imgSrc(h) + '" alt="" loading="lazy"></span>'
-                    + '<span class="cp-info"><span class="cp-nm">' + esc(h.name) + '</span><span class="cp-meta">' + [h.ar, bandText(h)].filter(Boolean).join(' · ') + '</span></span></a></li>'; }).join('') + '</ul></div>' : '';
-            emptyView('‘' + esc(q) + '’ 호텔을 찾지 못했어요', sug.length ? '' : '아직 분석하지 않은 호텔일 수 있어요. 요청해 주시면 확인할게요.', list,
+            remotePlace = null;
+            emptyView('‘' + esc(q) + '’ 호텔을 찾지 못했어요', sug.length ? '' : '아직 분석하지 않은 호텔일 수 있어요. 요청해 주시면 확인할게요.', sugList(sug),
                 '<button type="button" class="btn-ink btn-sm" id="req-analysis">분석 요청하기</button>' + rm);
+            askRemote(q, sug, rm);
         } else {
             emptyView('조건에 맞는 호텔이 없어요', '아래 조건을 빼면 더 보여요.', '', rm);
         }
@@ -2141,8 +2168,7 @@ SEARCH_JS = r"""(function(){
         // 구글맵 링크는 목록 검색어가 아님 — 호텔로 바로 이동, 못 읽으면 드롭다운 안내만(분석 요청으로 보내지 않음)
         var q0 = $q.val().trim();
         if (q0 && window.CFAutocomplete && window.CFAutocomplete.isMapsUrl(q0)) {
-            var r = window.CFAutocomplete.resolveUrl(q0);
-            if (r.hit) location.href = hurl(r.hit);
+            window.CFAutocomplete.resolveLink(q0).then(function(r){ if (r.hit) location.href = hurl(r.hit); });   // 공유 짧은 링크는 /api/find가 풀어 준다
             return;
         }
         var q = q0, pool = HOTELS.filter(function(h){ return passFilters(h); }), list = pool, suggested = false;
@@ -2173,10 +2199,13 @@ SEARCH_JS = r"""(function(){
         renderVisible();
     }
     $notice.on('click', '#req-analysis', function(){   // 보낸 뒤엔 같은 자리에 완료 화면(점프하는 수달) — 토스트 대신
-        var q = $q.val().trim();
-        if (window.CFAutocomplete && window.CFAutocomplete.requestAnalysis(q, true))
-            emptyView('‘' + esc(q) + '’ 분석을 요청했어요', '분석이 끝나면 사이트에 올라와요. 그동안 다른 호텔을 둘러보세요.', '',
+        var q = $q.val().trim(), nm = remotePlace ? remotePlace.name : q;
+        if (window.CFAutocomplete && window.CFAutocomplete.requestAnalysis(q, true, remotePlace))
+            emptyView('‘' + esc(nm) + '’ 분석을 요청했어요', '분석이 끝나면 사이트에 올라와요. 그동안 다른 호텔을 둘러보세요.', '',
                 '<a class="btn-line btn-sm" href="./search">' + CITY_KO + ' 호텔 둘러보기</a>', 'jump');
+    });
+    $notice.on('click', '.es-sug .cp-item', function(){   // 검색어 → 고른 호텔 (별칭 학습 재료)
+        ga('search_resolved', {search_term: $q.val().trim(), link_url: '/hotels/' + $(this).data('id')});
     });
     $notice.on('click', '[data-rm]', function(){
         var k = $(this).data('rm'), v = String($(this).data('v') || '');
@@ -2573,8 +2602,7 @@ def build_search(city_avg_pct):
     <script src="./js/compare.js?v={V("js/compare.js")}" data-root="./"></script>
 
     <script src="./data/index.js?v={BUILD}"></script>
-    <script defer src="./data/search_index.js?v={BUILD}"></script>
-    <script src="./js/search-key.js?v={V("js/search-key.js")}"></script>
+    <script src="./data/search_index.js?v={BUILD}"></script>   <!-- 동기: ?q= 첫 검색이 인덱스보다 먼저 돌면 이름 부분 문자열로만 찾던 문제(2026-11-04 SEARCH-2611) -->
     <script src="./js/search-ac.js?v={V("js/search-ac.js")}"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
     <script>

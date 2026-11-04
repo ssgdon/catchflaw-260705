@@ -1,0 +1,4 @@
+{
+ "note": "검색 별칭 — pid → 실제로 쓰인 검색어 목록(SEARCH-2611). generate.build_search_ac_index가 CF_IDX의 al로 넣고 js/search-ac.js가 이름처럼 비교한다. 후보는 pipeline/search_learn.py(GA4 search_resolved)가 모으고 --apply로 더한다. 사람이 고쳐도 된다.",
+ "aliases": {}
+}

@@ -221,8 +221,7 @@
     return new Promise(function (ok, no) { var s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = no; document.head.appendChild(s); });
   }
   function loadIdx() {
-    if (!idxP) idxP = loadScript('./data/search_index.js').then(function () { return loadScript('./js/search-key.js'); })
-      .then(function () { return loadScript('./js/search-ac.js'); }).catch(function () {});
+    if (!idxP) idxP = loadScript('./data/search_index.js').then(function () { return loadScript('./js/search-ac.js'); }).catch(function () {});
     return idxP;
   }
   function norm(s) { return String(s || '').toLowerCase().replace(/\s+/g, ''); }

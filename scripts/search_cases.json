@@ -1,0 +1,199 @@
+{
+ "note": "검색 회귀 검사 사례 — node scripts/check_search.js. top = 찾음 1위, has = 찾음 3위 안, sug = 찾음 또는 혹시 3위 안, none = 찾음 없음. 이름(name)은 사람이 읽기용. 실검색 실패어(GA4 search_no_result)를 고치면 여기에 더한다.",
+ "cases": [
+  {
+   "q": "리졸 트리니티 하카타",
+   "top": "hotel-resol-trinity-hakata",
+   "name": "호텔 리솔 트리니티 하카타"
+  },
+  {
+   "q": "호텔 리졸 트리니티 하카타",
+   "top": "hotel-resol-trinity-hakata",
+   "name": "호텔 리솔 트리니티 하카타"
+  },
+  {
+   "q": "호텔 포르자 하카타에키 치구시-구치",
+   "has": "hotel-forza-hakataeki-chikushiguchi-i",
+   "name": "호텔 포르자 하카타역 치쿠시구치Ⅰ 숙소"
+  },
+  {
+   "q": "치쿠시구치2",
+   "top": "hotel-forza-hakataeki-chikushiguchi-ii",
+   "name": "호텔 포르자 하카타역 치쿠시구치Ⅱ"
+  },
+  {
+   "q": "더베이직",
+   "top": "the-basics-fukuoka",
+   "name": "더 베이직스 후쿠오카"
+  },
+  {
+   "q": "더베이직스",
+   "top": "the-basics-fukuoka",
+   "name": "더 베이직스 후쿠오카"
+  },
+  {
+   "q": "THE BASICS",
+   "top": "the-basics-fukuoka",
+   "name": "더 베이직스 후쿠오카"
+  },
+  {
+   "q": "더크로스라이프하카타텐진",
+   "top": "cross-life-hakata-tenjin",
+   "name": "크로스라이프 하카타 텐진"
+  },
+  {
+   "q": "더크로스라이프",
+   "has": "cross-life-hakata-tenjin",
+   "name": "크로스라이프 하카타 텐진"
+  },
+  {
+   "q": "미쓰이가든 후쿠오카",
+   "has": "mitsui-garden-hotel-fukuoka-gion",
+   "name": "미쓰이 가든 호텔 후쿠오카 기온"
+  },
+  {
+   "q": "칸데오 후쿠오카 텐진",
+   "top": "candeo-hotels-fukuoka-tenjin",
+   "name": "칸데오 호텔스 후쿠오카 텐진"
+  },
+  {
+   "q": "퀸테사흐크트",
+   "sug": "quintessa-hotel-fukuoka-tenjin-comic-books",
+   "name": "퀸테사 호텔 후쿠오카 텐진 코믹앤북스"
+  },
+  {
+   "q": "토요코인 하카타에키 버스터미널마에",
+   "top": "toyoko-inn-hakata-station-bus-terminal",
+   "name": "토요코인 하카타 에키 버스터미널 마에"
+  },
+  {
+   "q": "니시테츠크롬하카타",
+   "has": "nishitetsu-hotel-croom-hakata",
+   "name": "니시테츠 호텔 크룸 하카타"
+  },
+  {
+   "q": "호텔 니코 후쿠오카",
+   "top": "hotel-nikko-fukuoka",
+   "name": "호텔 닛코 후쿠오카"
+  },
+  {
+   "q": "호텔 닛코",
+   "top": "hotel-nikko-fukuoka",
+   "name": "호텔 닛코 후쿠오카"
+  },
+  {
+   "q": "신칸센구치",
+   "top": "koko-hotel-hakata-shinkansenguchi",
+   "name": "KOKO HOTEL 하카타 신칸센구치"
+  },
+  {
+   "q": "더 루이간스",
+   "top": "the-luigans-spa-resort",
+   "name": "더 루이간즈 스파 & 리조트"
+  },
+  {
+   "q": "텐진 오리엔탈 호텔",
+   "top": "hotel-oriental-express-fukuoka-tenjin",
+   "name": "호텔 오리엔탈 익스프레스 후쿠오카 텐진"
+  },
+  {
+   "q": "프린스 스마트인",
+   "top": "prince-smart-inn-hakata",
+   "name": "프린스 스마트 인 하카타"
+  },
+  {
+   "q": "코코호텔",
+   "has": "koko-hotel-fukuoka-tenjin",
+   "name": "코코 호텔 후쿠오카 텐진"
+  },
+  {
+   "q": "그랜드 하얏트 후쿠오카",
+   "top": "grand-hyatt-fukuoka",
+   "name": "그랜드 하얏트 후쿠오카"
+  },
+  {
+   "q": "서튼호텔하카타시티",
+   "top": "sutton-hotel-hakata-city",
+   "name": "서튼호텔 하카타시티"
+  },
+  {
+   "q": "톈진오리엔탈호텔",
+   "top": "hotel-oriental-express-fukuoka-tenjin",
+   "name": "호텔 오리엔탈 익스프레스 후쿠오카 텐진"
+  },
+  {
+   "q": "하카타 도미인",
+   "has": "dormy-inn-hakata-gion",
+   "name": "도미 인 하카타기온"
+  },
+  {
+   "q": "니시테츠그랜드",
+   "top": "nishitetsu-grand-hotel",
+   "name": "니시테츠 그랜드 호텔"
+  },
+  {
+   "q": "솔라리아",
+   "top": "solaria-nishitetsu-hotel",
+   "name": "솔라리아 니시테츠 호텔 후쿠오카"
+  },
+  {
+   "q": "ㄷㅁㅇ",
+   "has": "dormy-inn-hakata-gion",
+   "name": "도미 인 하카타기온"
+  },
+  {
+   "q": "Hyatt",
+   "top": "grand-hyatt-fukuoka",
+   "name": "그랜드 하얏트 후쿠오카"
+  },
+  {
+   "q": "블러썸",
+   "has": "the-blossom-hakata-premier",
+   "name": "더 블라섬 하카타 프리미어"
+  },
+  {
+   "q": "dormy",
+   "has": "dormy-inn-hakata-gion",
+   "name": "도미 인 하카타기온"
+  },
+  {
+   "q": "hilton",
+   "top": "hilton-fukuoka-sea-hawk",
+   "name": "힐튼 후쿠오카 씨호크"
+  },
+  {
+   "q": "씨호크",
+   "top": "hilton-fukuoka-sea-hawk",
+   "name": "힐튼 후쿠오카 씨호크"
+  },
+  {
+   "q": "ㄴㅅㅌ",
+   "has": "nishitetsu-grand-hotel",
+   "name": "니시테츠 그랜드 호텔"
+  },
+  {
+   "q": "호텔 라이브맥스 에키마에",
+   "none": true
+  },
+  {
+   "q": "Hotel LiveMax Hakata-Ekimae",
+   "none": true
+  },
+  {
+   "q": "지라프",
+   "none": true
+  },
+  {
+   "q": "뱃푸",
+   "none": true
+  },
+  {
+   "q": "방음 좋은 숙소",
+   "none": true
+  },
+  {
+   "q": "서울",
+   "none": true
+  }
+ ]
+}
