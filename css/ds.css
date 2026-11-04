@@ -1210,3 +1210,7 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 /* 비교해 볼 만한 호텔: 결론 바로 뒤 .hrow 3행(허브·전체 목록과 같은 부품) + 밑줄 링크 1개 */
 #detail .det-next .hrows{margin:0;}
 #detail .det-next .dn-foot{margin-top:var(--sp-3);}
+
+/* 전체 목록 동네 제목 + 허브 링크 한 줄 (SEO-GOOGLE §3-3 — 목록 → 허브 내부 링크) */
+#hlist .hl-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);margin:0 0 var(--head-gap);}
+#hlist .hl-head .hl-h2{margin:0;}

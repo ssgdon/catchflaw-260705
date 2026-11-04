@@ -2428,3 +2428,5 @@ body[data-page=compare] .det-header{position:static;}
 #detail .glance .gl-item .seg + .gl-chev{display:none;}   
 #detail .det-next .hrows{margin:0;}
 #detail .det-next .dn-foot{margin-top:var(--sp-3);}
+#hlist .hl-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);margin:0 0 var(--head-gap);}
+#hlist .hl-head .hl-h2{margin:0;}

@@ -99,6 +99,9 @@ def rank_text(pctl_worse):
     if pctl_worse > 10: return f'{CITY["ko"]} 호텔 중 많은 편'
     return f'{CITY["ko"]}에서 가장 많은 편'
 CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
+# ── 구조화 데이터 공용 (SEO-GOOGLE-DESIGN §3-4): 운영 주체·사이트 @id, 호텔별 갱신일 ──
+SOCIAL_LINKS = ['https://www.youtube.com/channel/UCoySmjKYzKxd_CjExL_asYw']   # 인스타·스레드는 주소 확정 뒤 추가(§6-3)
+LASTMOD = {}   # pid → 사이트맵 lastmod(가장 최근 리뷰일) — main()이 hotel_lastmod()로 채움, 상세 WebPage.dateModified와 같은 값
 
 def mask_name(s):
     """리뷰어 실명 마스킹 (LEGAL-SOFTEN §3): 첫 글자 + '**'. 빈값은 '투숙객'."""
@@ -125,7 +128,7 @@ REC_SORT_DESC = '실망 확률이 낮고, 한국인 리뷰가 많고, 구글 평
 
 # ── SEO 기반 상수 ──
 BASE = 'https://catchflaw.com'   # canonical 기준 도메인 (apex). www/pages.dev 금지.
-DEFAULT_OG = f'{BASE}/img/search_bg.jpg'   # 대표 이미지 없는 페이지용 기본 OG
+DEFAULT_OG = f'{BASE}/img/home_bg_pc.jpg'   # 대표 이미지 없는 페이지용 기본 OG (1600×900 — SEO-GOOGLE §3-5)
 # 검색엔진 소유확인 메타 (전 페이지 head 공통 삽입). 구글은 Cloudflare DNS로 자동확인됨 → 태그 불요.
 VERIFY_META = '<meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />'
 
@@ -746,7 +749,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
        인라인의 $(function…)은 shim이 모아 두었다가 js/vendor/jq-flush.js가 jQuery.ready로 넘긴다(2026-10-20 속도)."""
     p = '../' * depth
     D = '' if sync_js else ' defer'
-    seo = []
+    seo = ['<meta name="robots" content="max-image-preview:large">']   # 큰 미리보기 허용(SEO-GOOGLE §3-5) — noindex 메타와 공존
     d = None
     if description:
         d = description if len(description) <= 150 else description[:149].rstrip() + '…'
@@ -759,6 +762,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
         seo.append(f'<meta property="og:url" content="{canonical}">')
         seo.append('<meta property="og:type" content="website">')
         seo.append('<meta property="og:site_name" content="캐치플로">')
+        seo.append('<meta property="og:locale" content="ko_KR">')
         seo.append(f'<meta property="og:image" content="{og_image or DEFAULT_OG}">')
         seo.append('<meta name="twitter:card" content="summary_large_image">')
     seo_block = '\n    '.join(seo)
@@ -1334,8 +1338,8 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     def slider(title, pids, href=None, note=''):   # note = 카드 아래 근거 한 줄(안심 목록)
         """홈 캐러셀 섹션 (v3 §6-6): 18/700 제목(+ href가 있으면 셰브론, 줄 전체가 링크) → 12 → 카드. 설명 없음."""
         cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], extra=(f'<div class="hcard-note">{note}</div>' if note else ''), idx=i) for i, p in enumerate(pids))
-        t = (f'<a class="title head-link" href="{href}" data-ga="home_more" data-ga-title>{title}</a>' if href else
-             f'<div class="title" data-ga-title>{title}</div>')
+        t = (f'<h2 class="title" data-ga-title><a class="head-link" href="{href}" data-ga="home_more">{title}</a></h2>' if href else
+             f'<h2 class="title" data-ga-title>{title}</h2>')   # 섹션 제목은 h2(SEO-GOOGLE §3-2) — CSS는 .title/.head-link 클래스 기준
         return f'''<div class="hotel-list init" data-ga-block>
             <div class="head">{t}<span class="slider-nav"><button type="button" class="sn-prev" aria-label="이전 호텔"></button><button type="button" class="sn-next" aria-label="다음 호텔"></button></span></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div>
@@ -1353,7 +1357,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], idx=i) for i, p in enumerate(pids))
         panes.append(f'<div class="list hotel-slider pt-pane" data-pt="{code}"{"" if on else " hidden"}><ul class="swiper-wrapper">{cards}</ul></div>')
     price_sliders = (f'''<div class="hotel-list price-tabs init" data-ga-block>
-            <div class="head"><div class="title" data-ga-title>평일 가격대별 추천</div></div>
+            <div class="head"><h2 class="title" data-ga-title>평일 가격대별 추천</h2></div>
             <div class="pt-tabs" role="group" aria-label="평일 가격대">{''.join(tabs)}</div>
             {''.join(panes)}
         </div>''' if tabs else '')
@@ -1370,7 +1374,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
         _n_all = sum(1 for pid in hotels_meta if pid in H)
         col_chips = f'''<article class="section sec-collections">
                 <div class="home-collections init" data-ga-block>
-                    <div class="head"><div class="title" data-ga-title>동네·동행·테마별로 보기</div></div>
+                    <div class="head"><h2 class="title" data-ga-title>동네·동행·테마별로 보기</h2></div>
                     {''.join(rows)}
                     <a class="btn-gray btn-block hl-all" data-ga="all_hotels" href="./hotels">호텔 전체 목록 {_n_all}곳</a>
                 </div>
@@ -1382,7 +1386,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     vs_cards = ''.join(vs_card(pa, pb, hotels_meta, H) for pa, pb in sorted(PAIRS[:4], key=_gap, reverse=True))
     vs_block = f'''<article class="section sec-vs">
                 <div class="home-vs init" data-ga-block>
-                    <div class="head"><div class="title" data-ga-title><em>많이 찾는</em> 호텔끼리 <em>비교</em></div>
+                    <div class="head"><h2 class="title" data-ga-title><em>많이 찾는</em> 호텔끼리 <em>비교</em></h2>
                     </div>
                     <div class="vs-list">{vs_cards}</div>
                 </div>
@@ -1390,11 +1394,13 @@ def build_index(hotels_meta, H, quotes, col_index=()):
     gems_slider = slider('숨겨진 보석 같은 곳', gems) if len(gems) >= 3 else ''
 
     n_live = sum(1 for pid in hotels_meta if pid in H)   # 상세 생성되는 호텔 수
-    home_ld = _jsonld({'@context':'https://schema.org','@type':'WebSite','name':'캐치플로','alternateName':'CATCHFLAW',
-        'url':f'{BASE}/', 'potentialAction':{'@type':'SearchAction',
-        'target':{'@type':'EntryPoint','urlTemplate':f'{BASE}/search?q={{search_term_string}}'},
-        'query-input':'required name=search_term_string'}})
-    html_out = head('캐치플로 — 후쿠오카 호텔 리뷰 위험도·실망 확률 분석',
+    home_ld = _jsonld({'@context':'https://schema.org','@graph':[
+        {'@type':'WebSite','@id':WEBSITE_ID,'name':'캐치플로','alternateName':'CATCHFLAW','url':f'{BASE}/','inLanguage':'ko',
+         'publisher':{'@id':ORG_ID}, 'potentialAction':{'@type':'SearchAction',
+         'target':{'@type':'EntryPoint','urlTemplate':f'{BASE}/search?q={{search_term_string}}'},
+         'query-input':'required name=search_term_string'}},
+        org_ld()]})
+    html_out = head('캐치플로 — 후쿠오카 호텔 후기·단점 분석과 실망 확률',   # 브랜드 검색이 느니 브랜드가 앞(SEO-GOOGLE §3-1)
         description=f'{CITY["ko"]} 호텔 {n_live}곳의 실제 리뷰를 AI로 분석해 실망 확률을 알려드려요. '
                     '청결·냄새·소음·객실·직원·위치 6개 항목과 안전 신호를 예약 전에 확인하세요.',
         canonical=f'{BASE}/', extra_head=home_ld) + f'''
@@ -1455,7 +1461,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
             }})();</script>
             <article class="section sec-map">
                 <div class="home-map init">
-                    <div class="head"><div class="title">지도로 한눈에</div>
+                    <div class="head"><h2 class="title">지도로 한눈에</h2>
                     </div>
                     <div class="map-wrap"><div id="map"></div>
                         <div class="map-legend">
@@ -3005,7 +3011,7 @@ def korean_card(kr, h, kr_rank_pct=None, kr_dist=None, per='최근 1년'):
     return f'''
         <div class="sect kr-card">
             <div class="head kr-head">
-                <div class="title">한국인 리뷰 현황</div>
+                <h2 class="title">한국인 리뷰 현황</h2>
                 <div class="kr-count">{count_txt}</div>
             </div>
             {dist_block}
@@ -3058,20 +3064,29 @@ def _jsonld(obj):
             + json.dumps(obj, ensure_ascii=False).replace('</', '<\\/')
             + '</script>')
 
-def jsonld_detail(pid, meta):
+ORG_ID = f'{BASE}/#organization'
+WEBSITE_ID = f'{BASE}/#website'
+
+def org_ld():
+    """운영 주체(E-E-A-T) — 홈·소개·상세·허브 JSON-LD에 같은 @id로 들어간다(SEO-GOOGLE §3-4)."""
+    return {'@type': 'Organization', '@id': ORG_ID, 'name': '캐치플로', 'alternateName': 'CATCHFLAW',
+            'url': f'{BASE}/', 'logo': f'{BASE}/img/favicon.svg', 'email': CONTACT_EMAIL, 'sameAs': SOCIAL_LINKS}
+
+def jsonld_detail(pid, meta, page_title=''):
     url = hotel_abs(pid)
     def num(x):
         try: return float(x)
         except (TypeError, ValueError): return None
+    addr = {'@type': 'PostalAddress', 'addressLocality': 'Fukuoka', 'addressRegion': 'Fukuoka', 'addressCountry': 'JP'}
+    if meta.get('address'): addr['streetAddress'] = meta['address']   # 빈 문자열은 검증 도구가 경고(SEO-GOOGLE §3-4)
     hotel = {
-        '@context': 'https://schema.org', '@type': 'Hotel',
-        'name': meta['title'], 'url': url,
-        'address': {'@type': 'PostalAddress',
-                    'streetAddress': meta.get('address') or '',
-                    'addressLocality': 'Fukuoka', 'addressCountry': 'JP'},
+        '@type': 'Hotel', '@id': f'{url}#hotel',
+        'name': meta['title'], 'url': url, 'address': addr,
     }
-    img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
-    if img: hotel['image'] = img
+    if meta.get('sub_title'): hotel['alternateName'] = meta['sub_title']   # 일본어 공식명 — 엔터티 대조
+    imgs = (meta.get('r2_imgs') or [])[:3] or ([meta['r2_img']] if meta.get('r2_img') else
+            ([f'{BASE}/img/hotels/{pid}.jpg'] if meta.get('local_img') else []))
+    if imgs: hotel['image'] = imgs if len(imgs) > 1 else imgs[0]
     lat, lng = num(meta.get('latitude')), num(meta.get('longitude'))
     if lat and lng:
         hotel['geo'] = {'@type': 'GeoCoordinates', 'latitude': lat, 'longitude': lng}
@@ -3083,14 +3098,18 @@ def jsonld_detail(pid, meta):
     # aggregateRating 의도적 미포함: 평점 출처가 구글 지도라 리뷰 스니펫 정책(타 사이트 평점 집계 마크업 금지) 위반.
     # 자체 사용자 평점이 생기기 전까지 넣지 말 것.
     crumbs = {
-        '@context': 'https://schema.org', '@type': 'BreadcrumbList',
+        '@type': 'BreadcrumbList',
         'itemListElement': [
             {'@type': 'ListItem', 'position': 1, 'name': '캐치플로', 'item': f'{BASE}/'},
-            {'@type': 'ListItem', 'position': 2, 'name': f'{CITY["ko"]} 호텔', 'item': f'{BASE}/search'},
+            {'@type': 'ListItem', 'position': 2, 'name': f'{CITY["ko"]} 호텔', 'item': f'{BASE}/hotels'},   # /search는 JS 페이지 → 전체 목록
             {'@type': 'ListItem', 'position': 3, 'name': meta['title'], 'item': url},
         ],
     }
-    return _jsonld(hotel) + '\n' + _jsonld(crumbs)
+    page = {'@type': 'WebPage', '@id': url, 'url': url, 'name': page_title or meta['title'], 'inLanguage': 'ko',
+            'isPartOf': {'@id': WEBSITE_ID}, 'about': {'@id': f'{url}#hotel'}, 'publisher': {'@id': ORG_ID}}
+    mod = LASTMOD.get(pid) or CITY.get('asof')
+    if mod: page['dateModified'] = mod   # 사이트맵 lastmod와 같은 값(가장 최근 리뷰일)
+    return _jsonld({'@context': 'https://schema.org', '@graph': [hotel, page, org_ld(), crumbs]})
 
 # ── B층 FAQ 섹션 (TAXONOMY-V4 §3-d). faq = [{t,g,q,a,c:[chips],e:[{q,d,st,o}],n}] 또는 None ──
 FAQ_GROUP_ORDER = ['가족·인원', '시설·어메니티', '서비스·정책', '위치']
@@ -3207,7 +3226,7 @@ def faq_section(faq, price_html='', pid=None):
     else:
         evid_script = (f'<script>window.FAQEVID={json.dumps(faqevid, ensure_ascii=False)};</script>' if faqevid else '')
     return f'''<div class="sect faq" id="hotel-faq">
-            <div class="head"><div class="title">리뷰로 확인한 실전 정보</div>
+            <div class="head"><h2 class="title">리뷰로 확인한 실전 정보</h2>
             <div class="desc">투숙객 리뷰에서 뽑았어요{DSEP}<span class="seg">정책은 바뀔 수 있으니 호텔에 확인하세요</span></div></div>
             {price_html}
             <div class="faq-tabs tabs-u">{''.join(tabs)}</div>
@@ -3241,7 +3260,7 @@ def social_section(soc, name):
         more = (f'<button type="button" class="btn-gray btn-block" data-act="nb-more">블로그 후기 {len(blogs) - 3}건 더 보기</button>'
                 if len(blogs) > 3 else '')
         out.append(f'''<div class="sect social-blog">
-            <div class="head"><div class="title">네이버 블로그 후기</div>
+            <div class="head"><h2 class="title">네이버 블로그 후기</h2>
             <div class="desc">네이버 상위 글을 여기서 바로 읽어요</div></div>
             <div class="nb-list">{''.join(cards)}</div>
             {more}
@@ -3259,7 +3278,7 @@ def social_section(soc, name):
                 </div>
             </li>''')
         out.append(f'''<div class="sect social-video">
-            <div class="head"><div class="title">관련 영상</div>
+            <div class="head"><h2 class="title">관련 영상</h2>
             <div class="desc">유튜브 후기 영상을 여기서 바로 봐요</div></div>
             <div class="yt-slider"><ul class="swiper-wrapper">{''.join(slides)}</ul></div>
         </div>''')
@@ -3389,7 +3408,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         addr_html = (f'<div class="loc-addr">{E(meta.get("address") or "")}</div>'
                      if meta.get('address') else '')
         map_block = f'''<div class="sect location">
-            <div class="head"><div class="title">위치</div></div>
+            <div class="head"><h2 class="title">위치</h2></div>
             {addr_html}
             {loc_chips}
             <div class="map"><iframe src="https://maps.google.com/maps?q={lat},{lng}&z=16&hl=ko&output=embed"
@@ -3438,7 +3457,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if hotel_cols:
         chips = ''.join(f'<a class="chip-go det-col-chip" href="../{E(slug)}">{E(name)}</a>' for slug, name in hotel_cols)
         col_chip_block = f'''<div class="sect hub-detail-cols">
-            <div class="head"><div class="title">같은 조건의 호텔 모아보기</div></div>
+            <div class="head"><h2 class="title">같은 조건의 호텔 모아보기</h2></div>
             <div class="det-col-chips">{chips}</div>
         </div>'''
 
@@ -3463,7 +3482,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if sim:
         sim_cards = '\n'.join(hotel_card(p, hotels_meta[p], H[p], depth=1, extra=sim_extra.get(p, ''), idx=i) for i, p in enumerate(sim))
         similar_block = f'''<div class="sect hotel" id="sec-alt">
-            <div class="head"><div class="title">{E(sim_title)}</div>
+            <div class="head"><h2 class="title">{E(sim_title)}</h2>
             <div class="desc">{E(sim_desc)}</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{sim_cards}</ul></div>
         </div>'''
@@ -3475,7 +3494,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _pc = '\n'.join(hotel_card(q, hotels_meta[q], H[q], depth=1, idx=i,
                          extra=f'<div class="hcard-note"><span class="seg">실망 확률 <b>{pct(H[q]["p_crit"])}%</b></span><span class="seg">이 호텔은 {pct(h["p_crit"])}%</span></div>') for i, q in enumerate(partners))
         pairs_block = f'''<div class="sect hotel" id="sec-vs">
-            <div class="head"><div class="title">이 호텔과 함께 고민하는 호텔</div>
+            <div class="head"><h2 class="title">이 호텔과 함께 고민하는 호텔</h2>
             <div class="desc">한국인이 많이 찾는 호텔 중 가격·위치가 비슷한 곳이에요</div></div>
             <div class="list hotel-slider"><ul class="swiper-wrapper">{_pc}</ul></div>
             <a class="vs-more-link btn-text" href="../compare?ids={pid},{partners[0]}">나란히 비교하기</a>
@@ -3508,7 +3527,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     v_ans, tier_txt, _neg, _pos_txt = '', '', [], []   # 답 문단 재료(채점 호텔만 채움)
     if not h['scored']:
         body_scored = f'''<div class="sect"><div class="head">
-            <div class="title">아직 분석 리뷰가 부족해요</div>
+            <h2 class="title">아직 분석 리뷰가 부족해요</h2>
             <div class="desc">분석한 리뷰가 {h['analyzed']}건뿐이라 확률을 내기 어려워요{DSEP}<span class="seg">{MIN_REVIEWS}건 이상 쌓이면 공개할게요</span></div>
         </div></div>'''
     else:
@@ -3632,7 +3651,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _chips.append(f'<button type="button" class="chip-view who-chip{" is-on" if _on else ""}" data-who="{_gk}" aria-pressed="{"true" if _on else "false"}">{E(_gl)}</button>')
             _panels.append(f'<div class="who-panel" data-who="{_gk}"{"" if _on else " hidden"}><div class="who-h">{_head}</div><ul>{_li}</ul>{_qhtml}</div>')
         who_html = f'''<div class="sect who" id="sec-who">
-            <div class="head"><div class="title">누구와 가세요?</div>
+            <div class="head"><h2 class="title">누구와 가세요?</h2>
             <div class="desc">일행에 맞는 리뷰와 실전 정보만 모았어요</div></div>
             <div class="who-chips">{''.join(_chips)}</div>
             {''.join(_panels)}
@@ -3909,7 +3928,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             # 용어는 '1~2점'(첫 화면 줄·산출 기준 문답과 같은 말), 비교값 = 순위 모수 호텔의 최근 1년 1~2점 비율 (SCORE-LOWSTAR §4-4)
             _cl = f' ({CITY["ko"]} 평균 {round(CITY["low_share"])}%)' if CITY.get('low_share') else ''
             stars_block = f'''<div class="sect recent" id="sec-stars">
-                <div class="head"><div class="title">구글 별점 분포</div>
+                <div class="head"><h2 class="title">구글 별점 분포</h2>
                 <div class="desc">{per} 구글 리뷰 중 <span class="seg"><b>1~2점이 {low_share}%</b>예요{_cl}</span>{DSEP}<span class="seg">별점은 구글 리뷰만 있어요</span></div>
                 <div class="count">{per} {st['total_1y']:,}건</div></div>
                 <div class="list"><ul>{''.join(bars)}</ul></div>
@@ -3971,7 +3990,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             </div>
         </div>
         <div class="sect risk">
-            <div class="head"><div class="title">항목별로 보면</div>
+            <div class="head"><h2 class="title">항목별로 보면</h2>
             <div class="desc">{CITY['ko']} 평균과 비교한 불만 정도예요{DSEP}<span class="seg">항목을 누르면 실제 리뷰가 펼쳐져요</span></div></div>
             <div class="chart">
                 <div class="radar-box"><canvas id="radar"></canvas></div>
@@ -4161,7 +4180,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
     # ── PC 전용: 브레드크럼(JSON-LD BreadcrumbList와 동일 경로) + 오른쪽 결정 카드(실망 확률·핵심 수치·CTA) ──
     _area = next((a for a in AREAS if _in_area(meta, a)), None)
-    pc_crumb = (f'<nav class="pc-crumb" aria-label="경로"><a href="../">캐치플로</a><span>›</span><a href="../search">{CITY["ko"]} 호텔</a>'
+    pc_crumb = (f'<nav class="pc-crumb" aria-label="경로"><a href="../">캐치플로</a><span>›</span><a href="../hotels">{CITY["ko"]} 호텔</a>'
                 + (f'<span>›</span><a href="../search?area={_area["code"]}">{E(_area["ko"])}</a>' if _area else '')
                 + f'<span>›</span><b>{E(name)}</b></nav>')
     _st2 = nearest_station(meta.get('latitude'), meta.get('longitude'))
@@ -4197,11 +4216,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # 답 문단 + description(SEO-CRAWL §4): 같은 문장 — description은 첫 문장 + 걸리는 점(150자 안)
     answer_html, seo_desc = answer_paragraph(name, h, city, per, v_ans, tier_txt, _neg, _pos_txt, has_price=bool(_pt))
     if h['scored']:
-        seo_title = f'{name} 리뷰 위험도 · 실망 확률 {pct(h["p_crit"])}% | 캐치플로'
+        seo_title = f'{name} 후기·단점 분석 · 실망 확률 {pct(h["p_crit"])}% | {CITY["ko"]} 호텔 캐치플로'   # 검색어 = '{호텔} 후기/단점'(SEO-GOOGLE §3-1) — 화면 문구는 '리뷰' 그대로
     else:
-        seo_title = f'{name} 리뷰 위험도 분석 | 캐치플로'
+        seo_title = f'{name} 후기 분석 준비 중 | {CITY["ko"]} 호텔 캐치플로'
     _faqld = faq_jsonld(faq) if h['scored'] else None
-    _extra_head = jsonld_detail(pid, meta) + (('\n' + _jsonld(_faqld)) if _faqld else '')
+    _extra_head = jsonld_detail(pid, meta, seo_title) + (('\n' + _jsonld(_faqld)) if _faqld else '')
     if not h['scored']:   # 분석 준비 중 = 내용이 얇아 사이트 품질 평가를 깎음 → 색인 제외·사이트맵 제외(점수 나오면 자동 해제, 2026-10-10)
         _extra_head += '\n    <meta name="robots" content="noindex,follow">'
     return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
@@ -4465,7 +4484,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         dev_rows.append(f'<li class="hub-dev"><i class="sdot {"is-danger" if d > 0 else "is-safe"}"></i><span class="hd-cat">{E(word)} 불만</span>'
                         f'<span class="hd-val">{E(ratio_text(50 + d))}</span></li>')
     risk_card = (f'''<div class="hub-sect hub-risk">
-        <div class="hub-h2">항목별로 보면</div>
+        <h2 class="hub-h2">항목별로 보면</h2>
         <ul class="hub-devs">{"".join(dev_rows)}</ul>
     </div>''' if dev_rows else '')
 
@@ -4488,7 +4507,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     # 블록 = (머리 HTML, 목록 HTML). 검색 버튼은 마지막 블록 끝에 한 번(SEO-CRAWL §3-2: TOP 끝 → 행 목록 끝)
     blocks = []
     if top:
-        blocks.append((f'<div class="hub-h2">추천 TOP {len(top)}</div>\n        <div class="hub-sub">{rank_note}</div>',
+        blocks.append((f'<h2 class="hub-h2">추천 TOP {len(top)}</h2>\n        <div class="hub-sub">{rank_note}</div>',
                        f'<ul class="hub-list">{rank_cards}</ul>'))
     # 회원 전체를 HTML로(SEO-CRAWL §3-2): TOP 15 다음 '나머지 N곳'(추천순 한 줄 행) → '리뷰가 적은 호텔'(행, 순위 없이)
     rest = [] if is_all else ranked_p[len(top):]
@@ -4528,7 +4547,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
                              f'<div class="list hotel-slider"><ul class="swiper-wrapper">{cards}</ul></div></div>')
         if parts:
             price_block = f'''<div class="hub-sect">
-                <div class="hub-h2">가격대별 안심 숙소</div>
+                <h2 class="hub-h2">가격대별 안심 숙소</h2>
                 <div class="hub-sub">가격대별 추천순 2곳 · 평일 2인 1박 기준</div>
                 <div class="hub-pb">{''.join(parts)}</div>
             </div>
@@ -4550,7 +4569,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         f'<div class="hub-faq-item"><div class="hf-q">{E(q)}</div><div class="hf-a">{a}</div></div>'
         for q, a, _ in faqs)
     faq_block = f'''<div class="hub-sect">
-        <div class="hub-h2">자주 묻는 질문</div>
+        <h2 class="hub-h2">자주 묻는 질문</h2>
         <div class="hub-faqs">{faq_items}</div>
     </div>'''
 
@@ -4559,7 +4578,7 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
         f'<a class="chip-go hub-xlink" href="{_col_href(s, depth)}">{E(nm)}</a>'
         for s, nm in other_cols if s != slug)
     xlink_block = f'''<div class="hub-sect">
-        <div class="hub-h2">다른 동네·동행·테마 보기</div>
+        <h2 class="hub-h2">다른 동네·동행·테마 보기</h2>
         <div class="hub-xlinks">{link_cards}</div>
         <div class="hub-method"><span class="seg">{"실망 확률 = 심각한 문제·재방문 거부 리뷰 비율(1~2점 리뷰 반영, 최근일수록 크게)" if city.get("low_floor") else "실망 확률 = 심각한 문제·재방문 거부 리뷰의 비율(최근일수록 크게 반영)"}</span>{DSEP}<span class="seg">글 리뷰 {round(ai_reviews_total() / 10000)}만 건 AI 분석 · {CITY['data_asof']} 기준</span></div>
     </div>'''
@@ -4578,15 +4597,28 @@ def build_collection(col, pids, hotels_meta, H, city, monthly, monthly_cat, city
     crumbs = {'@context': 'https://schema.org', '@type': 'BreadcrumbList',
               'itemListElement': [
                   {'@type': 'ListItem', 'position': 1, 'name': '캐치플로', 'item': f'{BASE}/'},
-                  {'@type': 'ListItem', 'position': 2, 'name': f'{CITY["ko"]} 호텔', 'item': f'{BASE}/search'},
+                  {'@type': 'ListItem', 'position': 2, 'name': f'{CITY["ko"]} 호텔', 'item': f'{BASE}/hotels'},
                   {'@type': 'ListItem', 'position': 3, 'name': col['name'], 'item': canonical}]}
-    ld = _jsonld(itemlist) + '\n' + _jsonld(faqpage) + '\n' + _jsonld(crumbs)
+    # <title> = 검색어 모양(SEO-GOOGLE §3-1): '후쿠오카 텐진 호텔 추천 TOP 15 · 리뷰 17,940건 분석'. h1·화면 문구는 그대로
+    _kw = col['title'].split(' | ')[0].rsplit(' ', 1)[0]   # '후쿠오카 텐진 호텔' / '후쿠오카 캡슐호텔'
+    if is_all and top:
+        seo_title = f'{_kw} 전부 비교 {len(top)}곳 · 리뷰 {reviews:,}건 분석 | 캐치플로'
+    elif top:
+        seo_title = f'{_kw} 추천 TOP {len(top)} · 리뷰 {reviews:,}건 분석 | 캐치플로'
+    else:
+        seo_title = col['title']
+    page_ld = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'CollectionPage', '@id': canonical, 'url': canonical, 'name': seo_title, 'inLanguage': 'ko',
+         'isPartOf': {'@id': WEBSITE_ID}, 'publisher': {'@id': ORG_ID},
+         **({'dateModified': CITY['asof']} if CITY.get('asof') else {})},
+        org_ld()]}
+    ld = _jsonld(itemlist) + '\n' + _jsonld(faqpage) + '\n' + _jsonld(crumbs) + '\n' + _jsonld(page_ld)
 
-    return head(col['title'], depth=depth, description=summary_full, canonical=canonical,
+    return head(seo_title, depth=depth, description=summary_full, canonical=canonical,
                 og_image=og_img, extra_head=ld) + site_header(depth, back=('../' * depth or './')) + f'''
     <main id="container">
         <section id="hub">
-            <nav class="hub-crumb"><a href="{'../' * depth}">캐치플로</a> › <a href="{'../' * depth}search">{CITY['ko']} 호텔</a> › <span>{E(col['name'])}</span></nav>
+            <nav class="hub-crumb"><a href="{'../' * depth}">캐치플로</a> › <a href="{'../' * depth}hotels">{CITY['ko']} 호텔</a> › <span>{E(col['name'])}</span></nav>
             {hub_h1_html(col['h1'])}
             <p class="hub-summary">{E(summary2)}</p>
             <div class="hub-stat-strip">
@@ -4698,7 +4730,7 @@ def build_about(hotels_meta, H, city):
             '데이터 출처·한계, 정정 창구를 안내해요.')
 
     def sect(title, body):
-        return (f'<div class="sect about-sect"><div class="head"><div class="title">{E(title)}</div></div>'
+        return (f'<div class="sect about-sect"><div class="head"><h2 class="title">{E(title)}</h2></div>'
                 f'<div class="about-body">{body}</div></div>')
 
     s1 = sect('어떤 서비스인가요',
@@ -4753,8 +4785,13 @@ def build_about(hotels_meta, H, city):
         '일부 예약 링크는 제휴 링크라서, 예약하면 캐치플로가 수수료를 받을 수 있어요. '
         '수수료는 분석 결과와 추천 순서에 영향을 주지 않아요.')
 
+    about_ld = _jsonld({'@context': 'https://schema.org', '@graph': [
+        {'@type': 'AboutPage', '@id': f'{BASE}/about', 'url': f'{BASE}/about', 'name': '캐치플로 소개 — 실망 확률은 이렇게 계산해요',
+         'inLanguage': 'ko', 'isPartOf': {'@id': WEBSITE_ID}, 'about': {'@id': ORG_ID}, 'publisher': {'@id': ORG_ID},
+         **({'dateModified': CITY['asof']} if CITY.get('asof') else {})},
+        org_ld()]})   # E-E-A-T: 운영 주체·갱신일(SEO-GOOGLE §3-4)
     return head('캐치플로 소개 — 실망 확률은 이렇게 계산해요', depth=0,
-                description=desc, canonical=f'{BASE}/about') + site_header(0, back='./') + f'''
+                description=desc, canonical=f'{BASE}/about', extra_head=about_ld) + site_header(0, back='./') + f'''
     <main id="container">
         <section id="about">
             <h1 class="about-h1">캐치플로 소개</h1>
@@ -4773,7 +4810,7 @@ def build_privacy():
 
     def sect(title, body, en=False):
         lang = ' lang="en"' if en else ''
-        return (f'<div class="sect about-sect"{lang}><div class="head"><div class="title">{E(title)}</div></div>'
+        return (f'<div class="sect about-sect"{lang}><div class="head"><h2 class="title">{E(title)}</h2></div>'
                 f'<div class="about-body">{body}</div></div>')
 
     mail = f'<a href="mailto:{CONTACT_EMAIL}">{CONTACT_EMAIL}</a>'
@@ -4876,25 +4913,27 @@ def build_hotels_list(hotels_meta, H):
     n_live = len(live)
     asof = CITY.get('asof')
     asof_txt = f'{int(str(asof)[:4])}년 {md_ko(asof)}' if asof else CITY['data_asof']
-    groups = [(a['ko'].split('·')[0], a['ko']) for a in AREAS] + [('', '그 외')]   # (area_tag 값, 섹션 제목)
+    groups = [(a['ko'].split('·')[0], a['ko'], a['code']) for a in AREAS] + [('', '그 외', None)]   # (area_tag 값, 섹션 제목, 허브 code)
     def order(p):
         h = H[p]
         if h['scored'] and h['ranked']: return (0, -REC.get(p, 0.0), h['p_crit'])
         if h['scored']: return (1, h['p_crit'], 0)
         return (2, 0, 0)
     sects = []
-    for tag, title in groups:
+    for tag, title, code in groups:
         pids = sorted((p for p in live if area_tag(hotels_meta[p]) == tag),
                       key=lambda p: (order(p), card_name(hotels_meta[p]['title'])))
         if not pids: continue
         rows = ''.join(hotel_row(p, hotels_meta[p], H[p], 0) for p in pids)
+        hub = (f'<a class="btn-text btn-text--sm" href="./area/{code}" data-ga="list_hub">추천 TOP 보기</a>'
+               if code and f'area/{code}' in COL_BY_SLUG else '')   # 목록 → 허브 내부 링크(SEO-GOOGLE §3-3)
         sects.append(f'''<section class="hl-sect" aria-labelledby="hl-{len(sects)}">
-                <h2 class="hl-h2" id="hl-{len(sects)}">{E(title)} {len(pids)}곳</h2>
+                <div class="hl-head"><h2 class="hl-h2" id="hl-{len(sects)}">{E(title)} {len(pids)}곳</h2>{hub}</div>
                 <ul class="hrows">{rows}</ul>
             </section>''')
     desc = (f'{CITY["ko"]} 호텔 {n_live}곳의 실망 확률·등급·평일 가격을 한 페이지에서 볼 수 있어요. '
             f'{asof_txt} 기준이고 매주 갱신해요.')
-    return head(f'{CITY["ko"]} 호텔 전체 목록 {n_live}곳 | 캐치플로', depth=0, description=desc,
+    return head(f'{CITY["ko"]} 호텔 전체 목록 {n_live}곳 · 실망 확률·가격 한눈에 | 캐치플로', depth=0, description=desc,
                 canonical=f'{BASE}/hotels') + site_header(0, back='./') + f'''
     <main id="container">
         <section id="hlist">
@@ -5050,6 +5089,7 @@ def main():
     city, H = compute(SRC, prev_badges=prev_badges())
     hotels_meta, quotes, stars, kr_stats, monthly, monthly_cat, faq_data, social_data = load()
     ensure_slugs(hotels_meta)   # 상세 주소 슬러그(SEO-CRAWL §2-1) — 정할 수 없는 새 호텔이 있으면 여기서 빌드 중단
+    LASTMOD.clear(); LASTMOD.update(hotel_lastmod())   # 상세 WebPage.dateModified = 사이트맵 lastmod(SEO-GOOGLE §3-4)
     city_n, city_avg, city_cat_avg = city_averages(monthly, monthly_cat)
     # 추천순·수요 신호·비교 쌍 (RECOMMEND-PRICE-DESIGN §4 / HOME-CONCEPT-DESIGN) — 홈·검색·허브·상세 대안이 공용
     CITY['crit'] = city['crit']
