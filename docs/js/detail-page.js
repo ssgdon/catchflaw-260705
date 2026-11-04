@@ -3,6 +3,12 @@
    (generate.py f-string이 아니므로 중괄호를 두 번 쓰지 않는다)
    2026-10-10 v3 디자인 시스템 병합: 리뷰 근거 시트(CF.sheet, #ov-review)·리뷰 항목(.rv) 마크업은 v3 기준 */
 $(function(){
+    // 상세 안 다음 행동 측정(UX-2611): data-ga 속성이 있는 링크·버튼 → detail_click(placement · 섹션 id · 링크)
+    $('#detail').on('click', '[data-ga]', function(){
+        if (typeof gtag !== 'function') return;
+        var $s = $(this).closest('.sect, .det-tabs');
+        gtag('event', 'detail_click', {placement: this.getAttribute('data-ga'), block: String($s.attr('id') || $s.attr('class') || '').slice(0, 40), link_url: this.getAttribute('href') || ''});
+    });
     $('.hotel-gallery').each(function(i, el){
         var cnt = el.querySelector('.gallery-count'), total = el.querySelectorAll('.swiper-slide').length;
         new Swiper(el, {slidesPerView:1, spaceBetween:0, loop:true,
@@ -314,6 +320,12 @@ $(function(){
         open($(this).data('cat'), $(this).data('sub'), this);
     });
     $(document).on('click', '[data-act="rv-more"]', function(){ open($(this).data('cat'), null, this); });
+    // 한눈에 보기 '걸리는 점·괜찮은 점' 항목(.gl-item) → 그 카테고리(·소분류) 리뷰 시트 (UX-2611: 결론 줄을 누르던 데드 클릭을 근거 열람으로)
+    $(document).on('click', '.gl-item[data-cat]', function(){
+        var c = $(this).data('cat'), s = $(this).data('sub') || null;
+        open(c, s, this);
+        if (typeof gtag === 'function') gtag('event', 'glance_item', {cat: c, sub: s || ''});
+    });
     $sheet.on('click', '.rs-more-btn', function(){ loadFull(render); });
     $sheet.on('click', '.rs-chip', function(){ curSub = $(this).data('sub') || null; render(); });
     // 한국인 리뷰만: 정확한 한국어 총건 위해 미로드 상태면 전체 먼저 로드

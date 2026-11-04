@@ -218,11 +218,8 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #main .search-box .title .tit{margin:0;line-height:var(--lh-title);font-size:var(--fs-hero);font-weight:var(--fw-hero);letter-spacing:var(--ls-title);color:var(--ink);}
 #main .search-box .title .tit .hero-key{color:var(--primary);}   /* 브랜드 표식 1곳 — 핵심어만 보라(v3 §3-2 #4) */
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
-/* 추천받기 = 모바일 떠 있는 보라 알약(§6-11 떠 있는 컨트롤과 같은 자리) · 비교함이 있으면 그 위로 · 검색창 입력 중엔 숨김(키보드 위로 뜨지 않게) */
-#main .search-box .btn-airec{position:fixed;z-index:var(--z-float);left:50%;bottom:calc(var(--sp-6) + env(safe-area-inset-bottom));transform:translateX(-50%);width:max-content;max-width:calc(100% - var(--page-x) * 2);margin:0;padding:0 var(--sp-6);border-radius:var(--radius-pill);box-shadow:var(--shadow-float);}
-html.has-cmp #main .search-box .btn-airec{bottom:calc(var(--sp-6) + var(--h-float) + var(--sp-3) + env(safe-area-inset-bottom));}
-#main .search-box .input:focus-within ~ .btn-airec{display:none;}
-body:has(#main .btn-airec) #site-foot{padding-bottom:calc(var(--sp-12) + var(--h-btn) + var(--sp-6) + env(safe-area-inset-bottom));}   /* 떠 있는 알약이 푸터 끝 글자를 가리지 않게 */
+/* 추천받기 = 히어로 안 전폭 보라 버튼(도시 줄 아래) — 2026-11-04 UX-2611: 떠 있는 알약(0c18fe29)은 비교 카드 숫자·안내 카드를 가렸고 60일 recommend 조회 7건이라 PC와 같이 히어로 안으로 */
+#main .search-box .btn-airec{margin-top:var(--sp-4);}
 /* 도시 선택 줄(2026-10-10): 검색창 아래 가로 스크롤. 열린 도시 = 잉크 칩, 준비 중 = 흐린 칩 + 꼬리표 */
 #main .search-box .city-row{display:flex;gap:var(--sp-2);margin:var(--sp-4) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x) var(--sp-2);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
 #main .search-box .city-row::-webkit-scrollbar{display:none;}
@@ -1203,3 +1200,13 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
    14 메타 --ink-3, 숫자만 600(§3 '14 강조 600'). 색 점·시맨틱 색 없음(판정은 실망 확률이 맡는다). 아래 답 문단과 같은 시작선. PC는 결정 카드 행(pc.css에서 숨김) ════════ */
 #detail .information .is-gnote{margin-top:var(--sp-2);font-size:var(--fs-meta);font-weight:var(--fw-regular);line-height:var(--lh-ui);color:var(--ink-3);text-align:left;}
 #detail .information .is-gnote b{font-weight:var(--fw-semi);}
+
+/* ════════ §v3 상세 — 한눈에 보기 항목 버튼 · 비교해 볼 만한 호텔(UX-2611, 2026-11-04) ════════
+   .gl-item = 걸리는 점·괜찮은 점 한 항목 전체가 버튼(글자 그대로, 끝에 › 6px) → 그 카테고리 리뷰 시트. 상자·배지 없음(§4) */
+#detail .glance .gl-item{display:block;flex:1;min-width:0;margin:0;padding:0;border:0;background:none;font:inherit;color:inherit;text-align:left;cursor:pointer;word-break:keep-all;}
+#detail .glance .gl-item:active{text-decoration:underline;}
+#detail .glance .gl-item .gl-chev{display:inline-block;width:6px;height:6px;margin:0 0 2px var(--sp-1);border-top:1.5px solid var(--ink-3);border-right:1.5px solid var(--ink-3);transform:rotate(45deg);vertical-align:baseline;}
+#detail .glance .gl-item .seg + .gl-chev{display:none;}   /* 수치 줄이 둘째 줄로 내려간 항목은 이름 줄 끝에만 › — 아래 줄엔 붙이지 않음 */
+/* 비교해 볼 만한 호텔: 결론 바로 뒤 .hrow 3행(허브·전체 목록과 같은 부품) + 밑줄 링크 1개 */
+#detail .det-next .hrows{margin:0;}
+#detail .det-next .dn-foot{margin-top:var(--sp-3);}

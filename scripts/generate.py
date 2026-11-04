@@ -1279,7 +1279,7 @@ def hotel_abs(pid):
     """상세 페이지 절대 주소(canonical·og:url·JSON-LD·사이트맵·허브 ItemList)."""
     return f'{BASE}/hotels/{SLUG[pid]}'
 
-def hotel_row(pid, meta, h, depth=0):
+def hotel_row(pid, meta, h, depth=0, ga=''):
     """한 줄 호텔 행 .hrow (SEO-CRAWL-DESIGN §3-1 · UI-STANDARDS §18-5 목록 행) — 허브 '나머지 N곳'·'리뷰가 적은 호텔'·전체 목록 공용.
        이름(링크, 행 전체가 눌림) + 메타 '텐진역 도보 3분 · 3성급 호텔 · 실망 확률 2% 적어요 · 평일 약 14만원'.
        상자·배지·보라 없음 — 등급은 색이 아니라 판정어 글자로(적어요·평균 수준·잦아요·많아요, 리뷰 적음·분석 준비 중)."""
@@ -1297,7 +1297,8 @@ def hotel_row(pid, meta, h, depth=0):
     seg = lambda xs: ' · '.join(f'<span class="seg">{x}</span>' for x in xs if x)
     where = seg([E(station_short(meta) or area_tag(meta)), E(stars_label(meta))])
     what = seg([prob, E(meta.get('price_txt') or '')])
-    return (f'<li class="hrow"><a class="hrow-name" href="{hotel_url(pid, depth)}">{E(card_name(meta["title"]))}</a>'
+    _ga = f' data-ga="{ga}"' if ga else ''
+    return (f'<li class="hrow"><a class="hrow-name" href="{hotel_url(pid, depth)}"{_ga}>{E(card_name(meta["title"]))}</a>'
             f'<span class="hrow-meta">{where + DSEP if where else ""}{what}</span></li>')
 
 # ───────────────────────── index ─────────────────────────
@@ -1411,7 +1412,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
                     {city_row_html()}
-                    <a href="./recommend" class="btn-airec btn-brand btn-block"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
+                    <a href="./recommend" class="btn-airec btn-brand btn-block" data-ga="hero_rec"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
                 </div>
             </article>
             {vs_block}
@@ -3452,6 +3453,26 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <a class="vs-more-link btn-text" href="../compare?ids={pid},{partners[0]}">나란히 비교하기</a>
         </div>'''
 
+    next_block = ''   # UX-2611: 결론 바로 뒤 다음 행동 — 함께 고민하는 호텔(비교 쌍) 우선 + 대안으로 채워 3행(.hrow). 전체 슬라이더는 맨 아래 그대로.
+    #           근거: 상세 평균 스크롤 46%(약 3,700px) — 맨 아래 대안·함께 고민 슬라이더(6,900px~)는 23%만 본다(GA4·Clarity 2026-11-04)
+    if h['scored']:
+        _nx = [q for q in partners if q in hotels_meta and q in H][:3]
+        for _p in sim:
+            if len(_nx) >= 3: break
+            if _p not in _nx: _nx.append(_p)
+        if _nx:
+            if partners: _nx_desc = '한국인이 이 호텔과 함께 고민하는 곳이에요'
+            elif sim_title.endswith(' 불만이 걱정된다면'): _nx_desc = f'가격대·거리가 비슷하고 {E(sim_title[:-11])} 불만이 적은 곳이에요'
+            else: _nx_desc = '가격대·거리가 비슷한 곳을 추천순으로 골랐어요'
+            _nx_rows = ''.join(hotel_row(_p, hotels_meta[_p], H[_p], depth=1, ga='next_row') for _p in _nx)
+            _nx_name = E(card_name(hotels_meta[_nx[0]]['title']))
+            next_block = f'''<div class="sect det-next" id="sec-next">
+            <div class="head"><h2 class="title">비교해 볼 만한 호텔</h2>
+            <div class="desc">{_nx_desc}</div></div>
+            <ul class="hrows">{_nx_rows}</ul>
+            <div class="dn-foot"><a class="btn-text btn-text--sm" href="../compare?ids={pid},{_nx[0]}" data-ga="next_compare">이 호텔과 {_nx_name} 나란히 비교하기</a></div>
+        </div>'''
+
     glance_html = ''
     who_html = ''
     tabs_html = ''
@@ -3600,7 +3621,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _scat = _rl                  # 칩 라벨 = 소분류명 (벌레·곰팡이·동네 분위기·객실 보안)
             _neg.append(('danger', f'<em>{E(SUB_PHRASE[_scat])} 심각 리뷰</em>가 반복돼요',
                          f'<b>{E(SUB_PHRASE[_scat])} 심각 리뷰</b> · {per} {_rn}건', _rc, None,
-                         ('np', f'{SUB_PHRASE[_scat]} 심각 리뷰 {_rn}건')))
+                         ('np', f'{SUB_PHRASE[_scat]} 심각 리뷰 {_rn}건'), _scat))   # 7번째 = 소분류 키(한눈에 보기 항목 → 리뷰 시트, UX-2611)
         _cand = []
         for _c in CATS:
             for _s in SUBS[_c]:
@@ -3613,11 +3634,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             _sp = round(_n1 / h["analyzed"] * 100, 1)
             _neg.append((_bd, f'<em>{E(SUB_PHRASE[_s])}</em> 불만이 반복돼요',
                          f'<b>{E(SUB_PHRASE[_s])} 불만</b>{DSEP}<span class="seg">{per} 리뷰의 {_sp}%{NB}({_n1}건)</span>', _c,
-                         SUB_PHRASE[_s], ('np', f'{SUB_PHRASE[_s]} 불만({per} 리뷰의 {_sp}%)')))
+                         SUB_PHRASE[_s], ('np', f'{SUB_PHRASE[_s]} 불만({per} 리뷰의 {_sp}%)'), _s))
         if not _neg and ratio >= 1.15 and h['cats'][_worst]['band'] in ('warning', 'danger'):
             _neg.append((h['cats'][_worst]['band'], f'<em>{E(cat_ko(_worst))}</em> 불만이 평균보다 많아요',
                          f'<b>{E(cat_ko(_worst))} 불만</b>{DSEP}<span class="seg">{E(ratio_text(_worst_sc))}</span>', _worst, None,
-                         ('cl', f'{cat_ko(_worst)} 불만이 평균보다 많')))
+                         ('cl', f'{cat_ko(_worst)} 불만이 평균보다 많'), None))
         _neg = _neg[:3]
         _negc = {n[3] for n in _neg}    # 걸리는 점과 같은 카테고리는 괜찮은 점에서 제외(모순 문장 방지)
         _safe = sorted((c for c in CATS if h['cats'][c]['band'] == 'safe' and c not in _negc),
@@ -3659,16 +3680,22 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 return f'<li class="is-{_tone}">{_in}</li>'
             _rare_tbl = ('<div class="gl-rare"><div class="gl-h">드물지만 치명적인 리뷰</div><p class="gl-rs">' + per + ' 동안 심각했던 경험만 셌어요</p>'
                          '<ul class="gl-rg">' + ''.join(_rare_cell(_s) for _s in ('벌레', '곰팡이', '동네 분위기', '객실 보안') if _s in RARE_SUBS) + '</ul></div>')
+            def _gl_li(d, t, cat=None, sub=None):   # cat이 있으면 항목 전체가 버튼(.gl-item) → js/detail-page.js가 그 카테고리·소분류 리뷰 시트를 연다(UX-2611: Clarity 상세 데드 클릭 — 결론 줄을 누르던 흔적)
+                if not cat:
+                    return f'<li><span class="gl-dot is-{d}"></span><span>{t}</span></li>'
+                return (f'<li><span class="gl-dot is-{d}"></span><button type="button" class="gl-item" data-cat="{E(cat)}"'
+                        + (f' data-sub="{E(sub)}"' if sub else '') + f' aria-label="{E(cat_ko(cat))} 리뷰 보기">{t}<i class="gl-chev" aria-hidden="true"></i></button></li>')
             _col = lambda tit, items: (f'<div class="gl-col"><div class="gl-h">{tit}</div><ul>'
-                                       + ''.join(f'<li><span class="gl-dot is-{d}"></span><span>{t}</span></li>' for d, t in items)
+                                       + ''.join(_gl_li(*it) for it in items)
                                        + '</ul></div>')
+            _pos_cat = _safe[:2]   # _pos와 같은 순서 — 셋째(역 가까움)는 카테고리 없음
             glance_html = f'''<div class="sect glance" id="sec-sum">
                 <div class="gl-box">
                     <div class="gl-eyebrow">한눈에 보기</div>
                     <p class="gl-lead is-{('warning' if _ok else _neg[0][0]) if _neg else 'safe'}">{_lead}</p>
                     <div class="gl-cols">
-                        {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2]) for n in _neg]) if _neg else ''}
-                        {_col('괜찮은 점', [('safe', t) for t in _pos]) if _pos else ''}
+                        {_col('아쉬운 점' if _ok else '걸리는 점', [(n[0], n[2], n[3], n[6]) for n in _neg]) if _neg else ''}
+                        {_col('괜찮은 점', [('safe', t, (_pos_cat[i] if i < len(_pos_cat) else None), None) for i, t in enumerate(_pos)]) if _pos else ''}
                     </div>
                     {_rare_tbl}
                     <div class="gl-foot"><span>{per} 리뷰 {h['analyzed']:,}건 기준</span><a class="gl-more btn-text btn-text--sm" href="#risk-detail">근거 보기</a></div>
@@ -4179,6 +4206,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {pc_side}
                 {tabs_html}
                 {glance_html}
+                {next_block}
                 {who_html}
                 {map_block}
                 {body_scored}

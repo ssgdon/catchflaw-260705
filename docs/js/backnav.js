@@ -309,7 +309,8 @@ CF.mascotScene = function (pose, cls, imgCls) {
 
   // ───────── 종료 확인 (C 가운데 다이얼로그, {history:false} — popstate에 반응해 열리므로 버퍼를 쌓지 않음) ─────────
   var exitEl = null;
-  function stay() { if (exitEl) close(exitEl); }
+  function ga(name) { if (typeof gtag === 'function') gtag('event', name, {}); }   // 종료 확인 측정(UX-2611): exit_shown · exit_stay · exit_leave
+  function stay() { if (exitEl) close(exitEl); ga('exit_stay'); }
   function showExit() {
     if (!exitEl) {
       exitEl = make({
@@ -324,11 +325,13 @@ CF.mascotScene = function (pose, cls, imgCls) {
       exitEl.querySelector('[data-act="leave"]').addEventListener('click', function () {
         leaving = true;
         exitArmed = false;
+        ga('exit_leave');
         // 버퍼 + 실제 페이지를 건너뛰어 이전 사이트로. 히스토리가 짧으면 back 1회.
         if (history.length > 2) history.go(-2); else history.back();
       });
     }
     open(exitEl, { history: false, focus: '[data-act="stay"]' });
+    ga('exit_shown');
   }
 
   // 외부 유입 페이지에서만 버퍼 1개 push → 첫 뒤로가기를 가로챔
