@@ -9,6 +9,8 @@
 
 - **프론트(배포, git 추적)**: `docs/`(Cloudflare가 서빙하는 산출물) · `css/ js/ img/ assets/hotels/`(원본) · `scripts/generate.py`(빌드 정본, `scripts/scoring.py`를 import) · 루트 `*.html`(퍼블리싱 목업 원본) · `wrangler.toml`.
 - **백엔드(파이프라인, gitignored·VM 미러)**: `pipeline/`(scrape→ingest→images→analyze→score→stats→export_pg→build_index + weekly_sync·monthly_master·backup·master_refresh) · `data-src/`(빌드 입력 JSON) · `.env` · `infra/`.
+- **콘텐츠(롱폼 영상)**: `content/longform/`(git 제외). 영상 요청은 스킬 `longform-video`가 처리하고, 제작 규칙 정본은 `content/longform/PLAYBOOK.md`(썸네일 먼저 컨펌 → 기획안 → Opus 제작 세션 → 검수 → 고정 댓글 형식).
+- **마케팅(미추적·로컬)**: `marketing/`(blog·insta·backlinks). 외부 링크·언급 게시 꾸러미는 `marketing/backlinks/README.md`(사이트별 원고·공개 데이터셋 `04_dataset/build_dataset.py`·티스토리 백링크 가이드), 파생물 링크 규칙 정본은 `content/longform/PLAYBOOK.md` §8.
 - **히스토리(gitignored)**: `archive/`(설계문서·구 스크립트·1회성).
 - 배포: GitHub `ssgdon/catchflaw-260705` → **Cloudflare**가 `docs/`를 정적 서빙(`wrangler.toml [assets] directory=./docs`, `html_handling=none`). push → 자동 배포. 도메인 catchflaw.com.
 
@@ -37,6 +39,7 @@
 - 가격: `hotel_prices` 표본(주간 구글 지도 가격 자동 누적 + `pipeline/price_sample.py` 날짜 지정 2인 1박 수집) → `export_pg` prices.json(최근 8주) → generate.py `price_stats`가 평일 밤 중앙값 "평일 약 13만원"(사용자 실측 17곳과 배율 0.99)을 대표값·가격대(표시 만원 기준)·정렬로, 주말(금·토 밤, 평일의 약 2.6배)은 상세에 따로 표기. 가격대 = 분포 기준 평일 4구간(10만원 미만/10~15/15~20/20만원 이상)·주말 4구간(30만원 미만/30~40/40~50/50만원 이상) — UI-STANDARDS §16. 평일 근거(날짜 지정 1건 또는 표본 2건) 없으면 숫자 비표시. 이상치 검증: `price_sample.py`가 정기 수집 뒤 주말/평일 3.5배 초과·같은 종류 다른 날 2배 초과 표본을 찾아 다른 날짜(3·5주 뒤 목·금·토)를 재수집하고, 여전히 튀면 `hotel_prices.excluded`로 내보내기에서 뺀다(RUNBOOK §5-2). 운영은 RUNBOOK §5-2.
 - 호텔 status: active(운영) · watch(리뷰 적음, 매주 수집·사이트 노출) · new(편입 대기 → 주간 배치 그룹B 초도 수집) · closed(폐업·구글 병합) · **hidden(품질 의심 — 중복 등록·표본 극소, 2026-10-10 신설: 수집·집계·사이트 전부 제외, master_refresh도 재편입 안 함)**. export_pg·score.py 집계는 active·watch만.
 - **네이버 검색량(인지도)**: `pipeline/kw_volume.py`(네이버 검색광고 키워드 도구, 키는 VM .env `NAVER_AD_*`) 매월 2일 cron → DB `hotel_search_volume` + `data-src/search_volume.json`(호텔별 별칭 합산 월간 검색량·미등록 후보). 추천 순위엔 안 쓰고 많이 찾는 호텔 칩·비교 쌍 자동 선정·사이트맵 우선순위에만(UI-STANDARDS §16). 호텔 상태 `pending`(관찰) = 편입 후보지만 한국인 검색이 적어 수집·노출을 미룬 곳(파이프라인 전 단계가 무시) — kw_volume이 매달 조회해 월 300회 이상이면 `new`로 올림(2026-10-10: 월 300회 이상 또는 리뷰 1,000건 이상 20곳 new, 나머지 18곳 pending).
+- **Clarity 행동 지표(2026-11-04)**: `pipeline/clarity_pull.py`가 매일 09:05 KST Clarity Data Export API(1~3일치만·하루 10회 한도, 키는 `.env` `CLARITY_API_TOKEN`)로 앞 24시간치를 URL별로 받아 DB `clarity_daily`에 누적, 월요일 `--report --notify`가 7일 요약(데드 클릭·퀵백 상위 URL·스크롤·활동 시간)을 Discord로. GA4 보조 신호 전용, 사이트 빌드엔 안 쓴다(RUNBOOK §5-4). GA4 조회는 `pipeline/ga4_report.py`(서비스 계정 키 `pipeline/secrets/`).
 - **추천 제외 = 사이트 완전 배제**(`hotels.rec_excluded`): 러브호텔·넷카페·만화/미디어 카페는 상세·검색·자동완성·지도·목록·사이트맵 어디에도 안 나온다(generate.py `load()` 필터). 표시가 빠진 채 편입돼도 구글 장소 부제가 ラブホテル·ネットカフェ·漫画喫茶 등이면 같이 뺀다(`EXCL_RX`, 2026-10-10 사용자 결정).
 
 ## MVP 규칙
