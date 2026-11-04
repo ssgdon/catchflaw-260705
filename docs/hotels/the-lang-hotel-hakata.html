@@ -18,8 +18,21 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-4M1BGXJZYQ');
+  var cfIn = false;
+  try {
+    var cfQ = new URLSearchParams(location.search), cfF = cfQ.get('cf_internal');
+    if (cfF === '1') localStorage.setItem('cf_internal', '1');
+    else if (cfF === '0') localStorage.removeItem('cf_internal');
+    cfIn = localStorage.getItem('cf_internal') === '1';
+    if (cfF !== null) {
+      cfQ.delete('cf_internal'); var cfS = cfQ.toString();
+      history.replaceState(history.state, '', location.pathname + (cfS ? '?' + cfS : '') + location.hash);
+      alert(cfIn ? '이 기기의 방문은 이제 운영자 방문으로 표시돼요(GA에서 제외).' : '이 기기의 운영자 표시를 지웠어요.');
+    }
+  } catch (e) {}
+  gtag('config', 'G-4M1BGXJZYQ', cfIn ? {traffic_type: 'internal'} : {});
   window.clarity = window.clarity || function(){(window.clarity.q = window.clarity.q || []).push(arguments);};
+  if (cfIn) clarity('set', 'traffic', 'internal');
   (function(){
     var done = false;
     function go(){
@@ -33,7 +46,7 @@
   })();
 </script>
     
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Hotel", "name": "더 랑 호텔 하카타", "url": "https://catchflaw.com/hotels/the-lang-hotel-hakata", "address": {"@type": "PostalAddress", "streetAddress": "1 Chome-12-11 Hakataekiminami, Hakata Ward, Fukuoka, 812-0016 일본", "addressLocality": "Fukuoka", "addressCountry": "JP"}, "image": "https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMYqyVbeRQTURdouEhylxFBo/0.webp", "geo": {"@type": "GeoCoordinates", "latitude": 33.5844321, "longitude": 130.4211877}, "priceRange": "평일 약 13만원"}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "Hotel", "name": "더 랑 호텔 하카타", "url": "https://catchflaw.com/hotels/the-lang-hotel-hakata", "address": {"@type": "PostalAddress", "streetAddress": "1 Chome-12-11 Hakataekiminami, Hakata Ward, Fukuoka, 812-0016 일본", "addressLocality": "Fukuoka", "addressCountry": "JP"}, "image": "https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJMYqyVbeRQTURdouEhylxFBo/0.webp", "geo": {"@type": "GeoCoordinates", "latitude": 33.5844321, "longitude": 130.4211877}, "priceRange": "평일 약 14만원"}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "캐치플로", "item": "https://catchflaw.com/"}, {"@type": "ListItem", "position": 2, "name": "후쿠오카 호텔", "item": "https://catchflaw.com/search"}, {"@type": "ListItem", "position": 3, "name": "더 랑 호텔 하카타", "item": "https://catchflaw.com/hotels/the-lang-hotel-hakata"}]}</script>
     <meta name="robots" content="noindex,follow">
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
@@ -41,7 +54,7 @@
     <script>(function(){var u="../css/fonts.css?v=e17eafa9c4",K="cf_fonts",ok=false;try{ok=localStorage.getItem(K)==="1";}catch(e){}function mark(){try{localStorage.setItem(K,"1");}catch(e){}}function add(b){var c=document.createElement("link");c.rel="preconnect";c.href="https://cdn.jsdelivr.net";c.crossOrigin="";document.head.appendChild(c);var l=document.createElement("link");l.rel="stylesheet";l.href=u;if(b)l.setAttribute("blocking","render");if(!b)l.onload=function(){setTimeout(function(){if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mark);else mark();},100);};document.head.appendChild(l);}if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>
     <link rel="stylesheet" href="../css/site.css?v=966aa12ff1">
     <link rel="stylesheet" href="../css/pc.css?v=f53a911252" media="(min-width:770px)">
-    <script>window.CF_BUILD='1792953931';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
+    <script>window.CF_BUILD='1793798928';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
     <script src="../js/backnav.js?v=ad55a0d57b" defer></script>
     <script src="../js/common.js?v=c8b1cf2e25" defer></script>
     <script src="../js/vendor/jquery-3.7.1.min.js?v=c9a1b0aa01" defer></script>
@@ -85,15 +98,15 @@
                         </div>
                         <p class="info-meta">후쿠오카 · 호텔<span class="dsep"> · </span><span class="seg">하카타역 도보 9분</span></p>
                     </div>
-                    <div class="info-price"><button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">1박 가격</span><i class="ip-q" aria-hidden="true"></i><span class="blind">기준 보기</span></button><p class="ip-v"><span class="seg">평일 약 <b>13만원</b></span> · <span class="seg">주말 약 <b>51만원</b></span></p></div>
+                    <div class="info-price"><button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">1박 가격</span><i class="ip-q" aria-hidden="true"></i><span class="blind">기준 보기</span></button><p class="ip-v"><span class="seg">평일 약 <b>14만원</b></span> · <span class="seg">주말 약 <b>51만원</b></span></p></div>
                     <div class="info-sum" role="group" aria-label="요약"><div class="is-cell is-prob"><b class="sv">—</b><span class="sl"><span class="nw">분석 준비 중</span></span></div><i class="is-vr" aria-hidden="true"></i><a class="is-cell is-google" data-out="google" href="https://www.google.com/maps/search/?api=1&amp;query=%EB%8D%94%20%EB%9E%91%20%ED%98%B8%ED%85%94%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJMYqyVbeRQTURdouEhylxFBo" target="_blank" rel="noopener"><b class="sv">★ 3.6</b><span class="sl">구글 148건</span></a><i class="is-vr" aria-hidden="true"></i><div class="is-cell is-an"><b class="sv">23건</b><span class="sl">분석 리뷰</span></div></div>
                     
-                    <p class="info-answer">분석한 리뷰가 <b>23건</b>뿐이라 아직 실망 확률을 내지 않았어요. 30건 이상 쌓이면 공개해요.<span class="ia-meta">2026년 10월 25일 기준</span></p>
+                    <p class="info-answer">분석한 리뷰가 <b>23건</b>뿐이라 아직 실망 확률을 내지 않았어요. 30건 이상 쌓이면 공개해요.<span class="ia-meta">2026년 11월 1일 기준</span></p>
                     
                 </div>
                 <aside class="pc-side" aria-label="요약">
                     <div class="ps-eyebrow">실망 확률</div><div class="ps-collect">분석 준비 중</div><div class="ps-avg">분석 리뷰가 30건 이상 쌓이면 공개해요</div>
-                    <ul class="ps-rows"><li><span>구글 평점</span><span><b>★ 3.6</b> (148건)</span></li><li><span>분석 리뷰</span><span><b>23건</b> · 최근 1년</span></li><li><span>평일</span><span><b>약 13만원</b></span></li><li><span>주말</span><span><b>약 51만원</b></span></li><li class="ps-pnote"><span><button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">2인 1박 · 가격 기준</span><i class="ip-q" aria-hidden="true"></i></button></span></li><li><span>가까운 역</span><span>하카타역 도보 <b>9분</b></span></li></ul>
+                    <ul class="ps-rows"><li><span>구글 평점</span><span><b>★ 3.6</b> (148건)</span></li><li><span>분석 리뷰</span><span><b>23건</b> · 최근 1년</span></li><li><span>평일</span><span><b>약 14만원</b></span></li><li><span>주말</span><span><b>약 51만원</b></span></li><li class="ps-pnote"><span><button type="button" class="ip-h" data-act="price-basis" aria-haspopup="dialog"><span class="ip-l">2인 1박 · 가격 기준</span><i class="ip-q" aria-hidden="true"></i></button></span></li><li><span>가까운 역</span><span>하카타역 도보 <b>9분</b></span></li></ul>
                     <a class="btn-brand btn-block ps-cta" data-out="cta" href="https://www.google.com/maps/search/?api=1&amp;query=%EB%8D%94%20%EB%9E%91%20%ED%98%B8%ED%85%94%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJMYqyVbeRQTURdouEhylxFBo" target="_blank" rel="noopener">실시간 최저가 확인</a>
                     <div class="ps-actions"><a href="javascript:;" class="btn-share ps-share btn-gray btn-block">공유</a></div>
                     <p class="ps-note">공개 리뷰를 분석한 참고용 통계예요 · <a href="../about">산출 방법</a></p>
@@ -182,17 +195,6 @@
             </div>
         </a>
     </li>
-<li class="swiper-slide" data-pid="ChIJCyJ-X7eRQTURG8dLohTfZq0">
-        <a href="../hotels/tokyu-stay-hakata" class="hcard hcard--carousel" data-ga="home_card">
-            <div class="hcard-photo"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJCyJ-X7eRQTURG8dLohTfZq0/0_s.webp" alt="도큐스테이 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 3%</span></div>
-            <div class="hcard-body">
-                <h3 class="hcard-name">도큐스테이 하카타</h3>
-                <div class="hcard-meta">★ 4.3 · 하카타역</div>
-                <div class="hcard-price">평일 약 <b>12만원</b></div>
-                
-            </div>
-        </a>
-    </li>
 <li class="swiper-slide" data-pid="ChIJ2-I6rpmRQTURPoT9pggNqoQ">
         <a href="../hotels/cross-life-hakata-yanagibashi" class="hcard hcard--carousel" data-ga="home_card">
             <div class="hcard-photo"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJ2-I6rpmRQTURPoT9pggNqoQ/0_s.webp" alt="크로스라이프 하카타 야나기바시" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
@@ -203,19 +205,30 @@
                 
             </div>
         </a>
+    </li>
+<li class="swiper-slide" data-pid="ChIJfe7LZRKRQTURMIG2H-Zgrmo">
+        <a href="../hotels/hotel-via-inn-hakataguchi-ekimae" class="hcard hcard--carousel" data-ga="home_card">
+            <div class="hcard-photo"><img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJfe7LZRKRQTURMIG2H-Zgrmo/0_s.webp" alt="비아인 하카타구치에키마에" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 2%</span></div>
+            <div class="hcard-body">
+                <h3 class="hcard-name">비아인 하카타구치에키마에</h3>
+                <div class="hcard-meta">★ 4.3 · 하카타역</div>
+                <div class="hcard-price">평일 약 <b>13만원</b></div>
+                
+            </div>
+        </a>
     </li></ul></div>
         </div>
                 
             </div>
-            <div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">평일 약 13만원</button><span class="bp-sub">2인 1박 기준</span></div><a class="btn-brand bar-cta" data-out="cta" href="https://www.google.com/maps/search/?api=1&amp;query=%EB%8D%94%20%EB%9E%91%20%ED%98%B8%ED%85%94%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJMYqyVbeRQTURdouEhylxFBo" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
+            <div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">평일 약 14만원</button><span class="bp-sub">2인 1박 기준</span></div><a class="btn-brand bar-cta" data-out="cta" href="https://www.google.com/maps/search/?api=1&amp;query=%EB%8D%94%20%EB%9E%91%20%ED%98%B8%ED%85%94%20%ED%95%98%EC%B9%B4%ED%83%80&amp;query_place_id=ChIJMYqyVbeRQTURdouEhylxFBo" target="_blank" rel="noopener">실시간 최저가 확인</a></div>
             <div class="ov" data-ov="bottom" id="ov-price" role="dialog" aria-modal="true" aria-labelledby="ov-price-t" hidden>
             <div class="ov-dim"></div>
             <section class="ov-panel ov-w-md">
                 <header class="ov-head ov-head--info"><button type="button" class="ov-close" aria-label="닫기"></button><h2 class="ov-title" id="ov-price-t">가격 기준</h2></header>
                 <div class="ov-body pb-body">
-                    <ul class="pb-rows"><li><div class="pb-r"><span>평일</span><span>약 <b>13만원</b></span></div><p class="pb-d">10월 12일~12월 2일 숙박 중 7일</p></li><li><div class="pb-r"><span>주말(금⁠·⁠토 밤)</span><span>약 <b>51만원</b></span></div><p class="pb-d">10월 24일(토)⁠·⁠11월 7일(토)⁠·⁠11월 21일(토) 숙박</p></li></ul>
+                    <ul class="pb-rows"><li><div class="pb-r"><span>평일</span><span>약 <b>14만원</b></span></div><p class="pb-d">10월 12일~12월 2일 숙박 중 8일</p></li><li><div class="pb-r"><span>주말(금⁠·⁠토 밤)</span><span>약 <b>51만원</b></span></div><p class="pb-d">10월 24일(토)⁠·⁠11월 7일(토)⁠·⁠11월 21일(토) 숙박</p></li></ul>
                     <p class="pb-p">2인 1박 기준, 위 날짜에 구글에 올라온 요금의 중간값이에요. 평일은 금⁠·⁠토를 뺀 밤, 주말은 금⁠·⁠토 밤이에요.</p>
-                    <p class="pb-sub">10월 26일 확인 · 날짜와 객실에 따라 달라질 수 있어요</p>
+                    <p class="pb-sub">11월 2일 확인 · 날짜와 객실에 따라 달라질 수 있어요</p>
                 </div>
             </section>
         </div>

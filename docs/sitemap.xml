@@ -1,148 +1,160 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://catchflaw.com/</loc><lastmod>2026-10-25</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
+  <url><loc>https://catchflaw.com/</loc><lastmod>2026-11-01</lastmod><changefreq>daily</changefreq><priority>1.0</priority></url>
   <url><loc>https://catchflaw.com/search</loc><changefreq>daily</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/recommend</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/about</loc><changefreq>monthly</changefreq><priority>0.5</priority></url>
-  <url><loc>https://catchflaw.com/area/hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/area/tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/area/nakasu</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/area/gion</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/solo</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/couple</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/group</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/family</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/value</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/luxury</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/capsule</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/best/bath</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-eki-chikushiguchi</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/prince-smart-inn-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-mei-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-resol-trinity-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/band-hotel-hakata</loc><lastmod>2026-10-12</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/area/hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/area/tenjin</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/area/nakasu</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/area/gion</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/solo</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/couple</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/group</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/family</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/value</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/luxury</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/capsule</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/best/bath</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hearts-capsule-hotel-spa-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/vessel-inn-hakata-nakasu</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/s-peria-hotel-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/greenland-nakasu</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-eki-chikushiguchi</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-resol-trinity-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/prince-smart-inn-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/9hotel-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakataeki-chikushiguchi-ii</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-ekimae-3-chome</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/best-western-plus-fukuoka-tenjin-minami</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/band-hotel-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/mk-hotels-nishinakasu</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/best-western-plus-fukuoka-tenjin-minami</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/canal-city-fukuoka-washington-hotel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hakata-green-hotel-1</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/9hotel-hakata</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/nest-hotel-hakata-station</loc><lastmod>2026-10-16</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakataeki-chikushiguchi-ii</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/kkr-hotel-hakata</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hakata-tokyu-rei-hotel</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakata-station-hakata-entrance</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-breakfast-hotel-fukuoka-nakasu</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/candeo-hotels-fukuoka-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hilltop-resort-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-ekimae-3-chome</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/president-hotel-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-active-hakata</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakataeki-chikushiguchi-i</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-trad-hakata</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-b-hakata</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/fukuoka-garden-palace</loc><lastmod>2026-09-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/koko-hotel-hakata-shinkansenguchi</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-monterey-la-soeur-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/apa-hotel-fukuoka-watanabedori-ekimae-excellent</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-blossom-hakata-premier</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-breakfast-hotel-fukuoka-tenjin</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakataguchi-ekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/goom-nakasu</loc><lastmod>2026-10-16</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-vista-fukuoka-nakasu-kawabata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hearts-capsule-hotel-spa-nakasu</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/koko-hotel-hakata-station</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/nishitetsu-inn-fukuoka</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/oriental-hotel-fukuoka-hakata-station</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/reisenkaku-hotel-ekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/plaza-hotel-premier</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-monterey-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/fukuoka-share-hotel</loc><lastmod>2026-10-02</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/solaria-nishitetsu-hotel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-cabinas-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-casvi-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/mizuka-business</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-nikko-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/super-hotel-lohas-hakata-station</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hakata-ekimae-sb-hotel</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/stay-hakata</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/grand-hyatt-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-jal-city-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-new-gaea-kamigofuku</loc><lastmod>2026-10-03</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/tkp-sunlife-hotel-2-3</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/ana-crowne-plaza-fukuoka-by-ihg</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/apa-hotel-resort-hakata-ekihigashi</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hakata-green-hotel-1</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-nikko-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-jal-city-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/canal-city-fukuoka-washington-hotel</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/nest-hotel-hakata-station</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/kkr-hotel-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakata-station-hakata-entrance</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-mei-fukuoka-tenjin</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/candeo-hotels-fukuoka-tenjin</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/zonk-hotel-hakata</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-livemax-hakata-nakasu</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-live-max-fukuoka-tenjin-west</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/residence-hotel-hakata-8</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/a-t-hotel-hakata</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/lamp-light-books-hotel-fukuoka</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/president-hotel-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-breakfast-hotel-fukuoka-nakasu</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-forza-hakataeki-chikushiguchi-i</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hilltop-resort-fukuoka</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/montan-hakata-hostel</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/sutton-hotel-hakata-city</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-trad-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hakata-tokyu-rei-hotel</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-b-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/fukuoka-ubl-hotel</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hakata-nakasu-washington-hotel</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-mystays-fukuoka-tenjin-minami</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hakata-green-hotel-annex</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/quintessa-hotel-fukuoka-tenjin-minami</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/dukes-hotel-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-active-hakata</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/cross-life-hakata-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/rakuten-stay-hakata-station-north</loc><lastmod>2026-09-16</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/one-fukuoka-hotel</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/daiwa-roynet-hotel-hakata-reisen-premier</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-tenjin-place</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-livemax-fukuoka-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/yaoji-hakata-hotel</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-ekimae-gion</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-luigans-spa-resort</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/daiwa-roynet-hotel-hakata-gion</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/tokyu-stay-fukuoka-tenjin</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-reference-tenjiniii</loc><lastmod>2026-10-17</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/the-millennials-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/shizutetsu-hotel-prezio-hakataekimae</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/hakata-green-hotel-tenjin</loc><lastmod>2026-10-20</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/koko-hotel-hakata-shinkansenguchi</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/s-peria-hotel-fukuokanakasu</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyo-hotel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-hokke-club-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-grandolce-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-torifito-hakata-gion</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-basics-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/nishitetsu-hotel-croom-hakata-gion</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/richmond-hotel-fukuoka-tenjin</loc><lastmod>2026-08-19</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyo-hotel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/apa-hotel-fukuoka-watanabedori-ekimae-excellent</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/goom-nakasu</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-vista-fukuoka-nakasu-kawabata</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/nishitetsu-inn-fukuoka</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakataguchi-ekimae</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/reisenkaku-hotel-ekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/plaza-hotel-premier</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hearts-capsule-hotel-spa-nakasu</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-monterey-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/oriental-hotel-fukuoka-hakata-station</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/fukuoka-share-hotel</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-cabinas-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/mizuka-business</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/super-hotel-lohas-hakata-station</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/sun-palace-hotel</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotelinn</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-casvi-tenjin</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-grandolce-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/richmond-hotel-hakata-ekimae</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/koko-hotel-hakata-station</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/mars-garden-hotel-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/richmond-hotel-tenjin-nishidori</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-breakfast-hotel-fukuoka-tenjin</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/fukuoka-garden-palace</loc><lastmod>2026-09-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-nishi-nakasu</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-torifito-hakata-gion</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/nishitetsu-hotel-croom-hakata-gion</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-hokke-club-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/solaria-nishitetsu-hotel</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-basics-fukuoka</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/richmond-hotel-fukuoka-tenjin</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/r-b-hotel-hakata-ekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-royal-park-hotel-fukuoka</loc><lastmod>2026-10-16</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/cross-life-hakata-yanagibashi</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/tokyu-stay-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/nishitetsu-hotel-croom-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-monterey-la-soeur-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-wa-hakata</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-onefive-marine-fukuoka</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hakata-ekimae-sb-hotel</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-royal-park-hotel-fukuoka</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/cross-life-hakata-yanagibashi</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/grand-hyatt-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-new-gaea-kamigofuku</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/tkp-sunlife-hotel-2-3</loc><lastmod>2026-10-26</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/apa-hotel-resort-hakata-ekihigashi</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/tokyu-stay-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/ana-crowne-plaza-fukuoka-by-ihg</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/zonk-hotel-nakasu-deaibashi</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-livemax-hakata-nakasu</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/stay-hakata</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-ekimae-2chome</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/nishitetsu-hotel-croom-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-live-max-fukuoka-tenjin-west</loc><lastmod>2026-10-28</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/a-t-hotel-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/residence-hotel-hakata-8</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-onefive-terrace-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/riverside-inn-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-blossom-hakata-premier</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/lamp-light-books-hotel-fukuoka</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/nine-hours-hakata-station</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/fukuoka-arty-inn</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/nine-hours-hakata-station</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/ark-hotel-royal-fukuoka-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/henna-hotel-fukuoka-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/koko-hotel-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/amistad-hotel-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-eclair-hakata</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/ark-hotel-royal-fukuoka-tenjin</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/amistad-hotel-fukuoka</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/koko-hotel-fukuoka-tenjin</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/henna-hotel-fukuoka-hakata</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-hakata</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-eclair-hakata</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/randor-hotel-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/liberated-hotel-haruyoshi-kaichi</loc><lastmod>2026-10-09</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-oriental-express-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-eki-minami</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/mitsui-garden-hotel-fukuoka-nakasu</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/montan-hakata-hostel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/sutton-hotel-hakata-city</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotelinn</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/fukuoka-ubl-hotel</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hakata-nakasu-washington-hotel</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hakata-green-hotel-annex</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/quintessa-hotel-fukuoka-tenjin-minami</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/jr-kyushu-hotel-blossom-hakata-chuo</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-mystays-fukuoka-tenjin-minami</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/yaoji-hakata-hotel</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/dukes-hotel-hakata</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/you-style-hotel-hakata</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/daiwa-roynet-hotel-hakata-reisen-premier</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-livemax-fukuoka-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/daiwa-roynet-hotel-hakata-gion</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/tokyu-stay-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-ekimae-gion</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-luigans-spa-resort</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/koko-hotel-premier-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/sg-residence-inn-hakata</loc><lastmod>2026-10-08</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/shizutetsu-hotel-prezio-hakataekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-clio-court-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-via-inn-hakataguchi-ekimae</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-oriental-express-fukuoka-tenjin</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/liberated-hotel-haruyoshi-kaichi</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/mitsui-garden-hotel-fukuoka-nakasu</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-eki-minami</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/jr-kyushu-hotel-blossom-hakata-chuo</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/you-style-hotel-hakata</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-origo-hakata-gion</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/koko-hotel-premier-hakata</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/sg-residence-inn-hakata</loc><lastmod>2026-10-08</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/residence-hotel-hakata-19</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/zonk-hotel-nakasu-deaibashi</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-ekimae-2chome</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/dormy-inn-hakata-gion</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/h-hotel-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-clio-court-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-via-inn-hakataguchi-ekimae</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/h-hotel-fukuoka</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/dormy-inn-hakata-gion</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/reisenkaku-hotel-kawabata</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/nishitetsu-grand-hotel</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/riverside-inn-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-onefive-terrace-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/wellbe-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/heiwadai-hotel-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-ninestates-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
@@ -157,39 +169,31 @@
   <url><loc>https://catchflaw.com/hotels/comfort-hotel-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/quintessa-hotel-fukuoka-tenjin-comic-books</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/apa-hotel-hakata-gion-station</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-hakata-place</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/sun-palace-hotel</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/comfort-inn-fukuoka-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/richmond-hotel-tenjin-nishidori</loc><lastmod>2026-10-20</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-nishi-nakasu</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/dormy-inn-premium-hakata-kyanal-city</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/mitsui-garden-hotel-fukuoka-gion</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/richmond-hotel-hakata-ekimae</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/mars-garden-hotel-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-hakata-place</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://catchflaw.com/hotels/dormy-inn-premium-hakata-kyanal-city</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/comfort-inn-fukuoka-tenjin</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/mitsui-garden-hotel-fukuoka-gion</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-residential-suite-fukuoka</loc><lastmod>2026-10-29</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-mystays-fukuoka-tenjin</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/residence-hotel-hakata-20</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-okura-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-mystays-fukuoka-tenjin</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
-  <url><loc>https://catchflaw.com/hotels/residence-hotel-hakata-20</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-residential-suite-fukuoka</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-etwas-tenjin</loc><lastmod>2026-10-14</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-lively-fukuoka-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/the-onefive-marine-fukuoka</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/smile-smart-inn-hakata</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-station-bus-terminal</loc><lastmod>2026-10-18</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-marinoa-resort-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-wa-hakata</loc><lastmod>2026-10-10</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-etwas-tenjin</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/smile-smart-inn-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/the-lively-fukuoka-hakata</loc><lastmod>2026-10-31</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
+  <url><loc>https://catchflaw.com/hotels/toyoko-inn-hakata-station-bus-terminal</loc><lastmod>2026-11-01</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-marinoa-resort-fukuoka</loc><lastmod>2026-10-27</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/en-hotel-hakata</loc><lastmod>2026-10-30</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/nissei-hotel-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/en-hotel-hakata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/toyoko-inn-fukuoka-tenjin</loc><lastmod>2026-10-21</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/plaza-fuyo-hotel</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/four-points-flex-by-sheraton-fukuoka-hakata</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/fukuoka-toei-hotel</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/the-gate-hotel-fukuoka-by-hulic</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
-  <url><loc>https://catchflaw.com/hotels/hotel-il-palazzo</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
+  <url><loc>https://catchflaw.com/hotels/hotel-il-palazzo</loc><lastmod>2026-10-19</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-route-inn-hakata-ekimae</loc><lastmod>2026-10-22</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/lyf-tenjin-fukuoka</loc><lastmod>2026-10-23</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/with-the-style-fukuoka</loc><lastmod>2026-10-24</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/the-onefive-villa-fukuoka</loc><lastmod>2026-10-14</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://catchflaw.com/hotels/grand-base-fukuoka</loc><lastmod>2026-09-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>
   <url><loc>https://catchflaw.com/hotels/green-rich-hotel-nishitetsu-ohashi-ekimae</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.7</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-oriental-express-fukuoka-nakasu-kawabata</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.8</priority></url>
   <url><loc>https://catchflaw.com/hotels/hotel-monte-hermana-fukuoka</loc><lastmod>2026-10-25</lastmod><changefreq>weekly</changefreq><priority>0.9</priority></url>

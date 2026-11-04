@@ -4,10 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0, user-scalable=yes">
     <title>후쿠오카 캡슐호텔 비교 | 캐치플로</title>
-    <meta name="description" content="후쿠오카 캡슐호텔 전부 비교, 총 4곳의 최근 1년 리뷰 1,003건을 분석했어요. 평균 실망 확률은 6%로 후쿠오카 평균과 같고, 가장 많이 지적된 항목은 소음이에요.">
+    <meta name="description" content="후쿠오카 캡슐호텔 전부 비교, 총 5곳의 최근 1년 리뷰 1,113건을 분석했어요. 평균 실망 확률은 11%로 후쿠오카 평균(6%)보다 높고, 가장 많이 지적된 항목은 소음이에요.">
     <link rel="canonical" href="https://catchflaw.com/best/capsule">
     <meta property="og:title" content="후쿠오카 캡슐호텔 비교 | 캐치플로">
-    <meta property="og:description" content="후쿠오카 캡슐호텔 전부 비교, 총 4곳의 최근 1년 리뷰 1,003건을 분석했어요. 평균 실망 확률은 6%로 후쿠오카 평균과 같고, 가장 많이 지적된 항목은 소음이에요.">
+    <meta property="og:description" content="후쿠오카 캡슐호텔 전부 비교, 총 5곳의 최근 1년 리뷰 1,113건을 분석했어요. 평균 실망 확률은 11%로 후쿠오카 평균(6%)보다 높고, 가장 많이 지적된 항목은 소음이에요.">
     <meta property="og:url" content="https://catchflaw.com/best/capsule">
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="캐치플로">
@@ -18,8 +18,21 @@
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'G-4M1BGXJZYQ');
+  var cfIn = false;
+  try {
+    var cfQ = new URLSearchParams(location.search), cfF = cfQ.get('cf_internal');
+    if (cfF === '1') localStorage.setItem('cf_internal', '1');
+    else if (cfF === '0') localStorage.removeItem('cf_internal');
+    cfIn = localStorage.getItem('cf_internal') === '1';
+    if (cfF !== null) {
+      cfQ.delete('cf_internal'); var cfS = cfQ.toString();
+      history.replaceState(history.state, '', location.pathname + (cfS ? '?' + cfS : '') + location.hash);
+      alert(cfIn ? '이 기기의 방문은 이제 운영자 방문으로 표시돼요(GA에서 제외).' : '이 기기의 운영자 표시를 지웠어요.');
+    }
+  } catch (e) {}
+  gtag('config', 'G-4M1BGXJZYQ', cfIn ? {traffic_type: 'internal'} : {});
   window.clarity = window.clarity || function(){(window.clarity.q = window.clarity.q || []).push(arguments);};
+  if (cfIn) clarity('set', 'traffic', 'internal');
   (function(){
     var done = false;
     function go(){
@@ -33,15 +46,15 @@
   })();
 </script>
     
-    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "후쿠오카 캡슐호텔 전부 비교 — 리뷰 위험도 순", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "웰 캐빈 텐진", "url": "https://catchflaw.com/hotels/wellcabin-tenjin"}, {"@type": "ListItem", "position": 2, "name": "퍼스트캐빈 하카타", "url": "https://catchflaw.com/hotels/first-cabin-hakata"}, {"@type": "ListItem", "position": 3, "name": "나인아워스 하카타 스테이션", "url": "https://catchflaw.com/hotels/nine-hours-hakata-station"}]}</script>
-<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "캡슐호텔 호텔은 몇 곳을 분석했나요?", "acceptedAnswer": {"@type": "Answer", "text": "후쿠오카 캡슐호텔 관련 호텔 4곳, 최근 1년 리뷰 1,003건을 분석했어요. 평균 실망 확률은 6%예요."}}, {"@type": "Question", "name": "후쿠오카에 캡슐호텔은 총 몇 곳인가요?", "acceptedAnswer": {"@type": "Answer", "text": "캐치플로가 분석한 후쿠오카 캡슐호텔은 총 4곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요 (최근 1년 리뷰 100건 미만 1곳은 순위 없이 참고용)."}}, {"@type": "Question", "name": "데이터는 언제 기준인가요?", "acceptedAnswer": {"@type": "Answer", "text": "리뷰 데이터는 매주 갱신해요. 이 페이지는 2026년 10월 기준이에요."}}]}</script>
+    <script type="application/ld+json">{"@context": "https://schema.org", "@type": "ItemList", "name": "후쿠오카 캡슐호텔 전부 비교 — 리뷰 위험도 순", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "웰 캐빈 텐진", "url": "https://catchflaw.com/hotels/wellcabin-tenjin"}, {"@type": "ListItem", "position": 2, "name": "퍼스트캐빈 하카타", "url": "https://catchflaw.com/hotels/first-cabin-hakata"}, {"@type": "ListItem", "position": 3, "name": "나인아워스 하카타 스테이션", "url": "https://catchflaw.com/hotels/nine-hours-hakata-station"}, {"@type": "ListItem", "position": 4, "name": "하츠 캡슐호텔&스파", "url": "https://catchflaw.com/hotels/hearts-capsule-hotel-spa-hakata"}]}</script>
+<script type="application/ld+json">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "캡슐호텔 호텔은 몇 곳을 분석했나요?", "acceptedAnswer": {"@type": "Answer", "text": "후쿠오카 캡슐호텔 관련 호텔 5곳, 최근 1년 리뷰 1,113건을 분석했어요. 평균 실망 확률은 11%예요."}}, {"@type": "Question", "name": "후쿠오카에 캡슐호텔은 총 몇 곳인가요?", "acceptedAnswer": {"@type": "Answer", "text": "캐치플로가 분석한 후쿠오카 캡슐호텔은 총 5곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요 (최근 1년 리뷰 100건 미만 1곳은 순위 없이 참고용)."}}, {"@type": "Question", "name": "데이터는 언제 기준인가요?", "acceptedAnswer": {"@type": "Answer", "text": "리뷰 데이터는 매주 갱신해요. 이 페이지는 2026년 11월 기준이에요."}}]}</script>
 <script type="application/ld+json">{"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "캐치플로", "item": "https://catchflaw.com/"}, {"@type": "ListItem", "position": 2, "name": "후쿠오카 호텔", "item": "https://catchflaw.com/search"}, {"@type": "ListItem", "position": 3, "name": "캡슐호텔", "item": "https://catchflaw.com/best/capsule"}]}</script>
     <link rel="icon" type="image/svg+xml" href="../img/favicon.svg">
     <link rel="apple-touch-icon" href="../img/favicon.svg">
     <script>(function(){var u="../css/fonts.css?v=e17eafa9c4",K="cf_fonts",ok=false;try{ok=localStorage.getItem(K)==="1";}catch(e){}function mark(){try{localStorage.setItem(K,"1");}catch(e){}}function add(b){var c=document.createElement("link");c.rel="preconnect";c.href="https://cdn.jsdelivr.net";c.crossOrigin="";document.head.appendChild(c);var l=document.createElement("link");l.rel="stylesheet";l.href=u;if(b)l.setAttribute("blocking","render");if(!b)l.onload=function(){setTimeout(function(){if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mark);else mark();},100);};document.head.appendChild(l);}if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>
     <link rel="stylesheet" href="../css/site.css?v=966aa12ff1">
     <link rel="stylesheet" href="../css/pc.css?v=f53a911252" media="(min-width:770px)">
-    <script>window.CF_BUILD='1792953931';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
+    <script>window.CF_BUILD='1793798928';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
     <script src="../js/backnav.js?v=ad55a0d57b" defer></script>
     <script src="../js/common.js?v=c8b1cf2e25" defer></script>
     <script src="../js/vendor/jquery-3.7.1.min.js?v=c9a1b0aa01" defer></script>
@@ -98,25 +111,25 @@
             <nav class="hub-crumb"><a href="../">캐치플로</a> › <a href="../search">후쿠오카 호텔</a> › <span>캡슐호텔</span></nav>
             <h1 class="hub-h1"><span class="h1-eyebrow">후쿠오카</span> 캡슐호텔 전부 비교</h1>
             <p class="hub-h1-sub">리뷰 위험도 순</p>
-            <p class="hub-summary">평균 실망 확률은 6%로 후쿠오카 평균과 같고, 가장 많이 지적된 항목은 소음이에요.</p>
+            <p class="hub-summary">평균 실망 확률은 11%로 후쿠오카 평균(6%)보다 높고, 가장 많이 지적된 항목은 소음이에요.</p>
             <div class="hub-stat-strip">
-                <span class="hs-item"><b>4곳</b>분석 호텔</span>
-                <span class="hs-item"><b>1,003건</b>분석 리뷰</span>
-                <span class="hs-item"><b>6%</b>평균 실망 확률</span>
+                <span class="hs-item"><b>5곳</b>분석 호텔</span>
+                <span class="hs-item"><b>1,113건</b>분석 리뷰</span>
+                <span class="hs-item"><b>11%</b>평균 실망 확률</span>
             </div>
             <div class="hub-sect hub-risk">
         <div class="hub-h2">항목별로 보면</div>
-        <ul class="hub-devs"><li class="hub-dev"><i class="sdot is-safe"></i><span class="hd-cat">냄새 불만</span><span class="hd-val">평균보다 72% 적어요</span></li><li class="hub-dev"><i class="sdot is-danger"></i><span class="hd-cat">소음 불만</span><span class="hd-val">평균의 2.3배</span></li><li class="hub-dev"><i class="sdot is-safe"></i><span class="hd-cat">위치 불만</span><span class="hd-val">평균보다 60% 적어요</span></li></ul>
+        <ul class="hub-devs"><li class="hub-dev"><i class="sdot is-danger"></i><span class="hd-cat">소음 불만</span><span class="hd-val">평균의 2.5배</span></li><li class="hub-dev"><i class="sdot is-safe"></i><span class="hd-cat">냄새 불만</span><span class="hd-val">평균보다 67% 적어요</span></li><li class="hub-dev"><i class="sdot is-safe"></i><span class="hd-cat">위치 불만</span><span class="hd-val">평균보다 56% 적어요</span></li></ul>
     </div>
             <div class="hub-sect">
-        <div class="hub-h2">추천 TOP 3</div>
+        <div class="hub-h2">추천 TOP 4</div>
         <div class="hub-sub">추천순 · 최근 1년 리뷰 100건 이상은 여기, 미만은 아래 따로</div>
         <ul class="hub-list"><li class="hub-row" data-pid="ChIJQ_JJ6EyRQTURRwVyr3bVSkg">
         <a href="../hotels/wellcabin-tenjin" class="hcard hcard--wide" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJQ_JJ6EyRQTURRwVyr3bVSkg/0_s.webp" alt="웰 캐빈 텐진" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-safe"></i><span class="blind">양호, </span>실망 확률 3%</span><span class="cnt">1</span></div>
             <div class="hcard-body">
                 <div class="hcard-head"><h3 class="hcard-name">웰 캐빈 텐진</h3><span class="hcard-rate">★ 4.2 (567)</span></div>
-                <div class="hcard-meta">텐진미나미역 도보 3분 · 2성급 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 84건 (37%)</span></div>
+                <div class="hcard-meta">텐진미나미역 도보 3분 · 2성급 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 81건 (36%)</span></div>
                 <div class="hcard-price">평일 약 <b>8만원</b> <span class="seg hcard-we">· 주말 약 34만원</span></div>
                 
             </div>
@@ -124,10 +137,10 @@
     </li>
 <li class="hub-row" data-pid="ChIJvabcBJWRQTURyCTpGgWj_gk">
         <a href="../hotels/first-cabin-hakata" class="hcard hcard--wide" data-ga="home_card">
-            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJvabcBJWRQTURyCTpGgWj_gk/0_s.webp" alt="퍼스트캐빈 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 6%</span><span class="cnt">2</span></div>
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJvabcBJWRQTURyCTpGgWj_gk/0_s.webp" alt="퍼스트캐빈 하카타" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 7%</span><span class="cnt">2</span></div>
             <div class="hcard-body">
                 <div class="hcard-head"><h3 class="hcard-name">퍼스트캐빈 하카타</h3><span class="hcard-rate">★ 4.0 (842)</span></div>
-                <div class="hcard-meta">나카스카와바타역 도보 2분 · 1성급 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 51건 (29%)</span></div>
+                <div class="hcard-meta">나카스카와바타역 도보 2분 · 1성급 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 50건 (29%)</span></div>
                 
                 
             </div>
@@ -137,9 +150,20 @@
         <a href="../hotels/nine-hours-hakata-station" class="hcard hcard--wide" data-ga="home_card">
             <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJpVPcr6iRQTUR5p2bNALvWHo/0_s.webp" alt="나인아워스 하카타 스테이션" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-warning"></i><span class="blind">주의, </span>실망 확률 10%</span><span class="cnt">3</span></div>
             <div class="hcard-body">
-                <div class="hcard-head"><h3 class="hcard-name">나인아워스 하카타 스테이션</h3><span class="hcard-rate">★ 3.8 (973)</span></div>
-                <div class="hcard-meta">하카타역 도보 6분 · 캡슐 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 114건 (34%)</span> · <span class="seg">주로 소음 불만</span></div>
+                <div class="hcard-head"><h3 class="hcard-name">나인아워스 하카타 스테이션</h3><span class="hcard-rate">★ 3.8 (975)</span></div>
+                <div class="hcard-meta">하카타역 도보 6분 · 캡슐 호텔</div><div class="hcard-meta hcard-why"><span class="seg">한국인 리뷰 111건 (34%)</span> · <span class="seg">주로 소음 불만</span></div>
                 <div class="hcard-price">평일 약 <b>6만원</b> <span class="seg hcard-we">· 주말 약 29만원</span></div>
+                
+            </div>
+        </a>
+    </li>
+<li class="hub-row" data-pid="ChIJPxPyjEGRQTUR6KjwYCYIWOE">
+        <a href="../hotels/hearts-capsule-hotel-spa-hakata" class="hcard hcard--wide" data-ga="home_card">
+            <div class="hcard-photo"><img src="https://pub-33003031288947c5a134ef8d12819213.r2.dev/hotels/ChIJPxPyjEGRQTUR6KjwYCYIWOE/0_s.webp" alt="하츠 캡슐호텔&amp;스파" width="600" height="450" loading="lazy"><span class="photo-badge"><i class="sdot is-danger"></i><span class="blind">위험, </span>실망 확률 22%</span><span class="cnt">4</span></div>
+            <div class="hcard-body">
+                <div class="hcard-head"><h3 class="hcard-name">하츠 캡슐호텔&amp;스파</h3><span class="hcard-rate">★ 3.3 (869)</span></div>
+                <div class="hcard-meta">하카타역 도보 4분 · 2성급 호텔</div><div class="hcard-meta hcard-why"><span class="seg"><i class="sdot is-danger"></i><b class="hcard-grade">위험</b></span> · <span class="seg">주로 소음 불만</span></div>
+                
                 
             </div>
         </a>
@@ -163,18 +187,18 @@
     </div>
             
             <div class="hub-caution">
-            <div class="hc-tit"><i class="sdot is-danger"></i>이 중 위험 등급 1곳</div>
+            <div class="hc-tit"><i class="sdot is-danger"></i>이 중 위험 등급 2곳</div>
             <div class="hc-txt">공통으로 <b>소음</b> 불만이 많아요.</div>
             <a class="hc-link btn-text btn-text--sm" href="../search">검색에서 확인하기</a>
         </div>
             <div class="hub-sect">
         <div class="hub-h2">자주 묻는 질문</div>
-        <div class="hub-faqs"><div class="hub-faq-item"><div class="hf-q">캡슐호텔 호텔은 몇 곳을 분석했나요?</div><div class="hf-a">후쿠오카 캡슐호텔 관련 호텔 4곳, 최근 1년 리뷰 1,003건을 분석했어요. 평균 실망 확률은 6%예요.</div></div><div class="hub-faq-item"><div class="hf-q">후쿠오카에 캡슐호텔은 총 몇 곳인가요?</div><div class="hf-a">캐치플로가 분석한 후쿠오카 캡슐호텔은 총 4곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요 (최근 1년 리뷰 100건 미만 1곳은 순위 없이 참고용).</div></div><div class="hub-faq-item"><div class="hf-q">데이터는 언제 기준인가요?</div><div class="hf-a">리뷰 데이터는 매주 갱신해요. 이 페이지는 2026년 10월 기준이에요.</div></div></div>
+        <div class="hub-faqs"><div class="hub-faq-item"><div class="hf-q">캡슐호텔 호텔은 몇 곳을 분석했나요?</div><div class="hf-a">후쿠오카 캡슐호텔 관련 호텔 5곳, 최근 1년 리뷰 1,113건을 분석했어요. 평균 실망 확률은 11%예요.</div></div><div class="hub-faq-item"><div class="hf-q">후쿠오카에 캡슐호텔은 총 몇 곳인가요?</div><div class="hf-a">캐치플로가 분석한 후쿠오카 캡슐호텔은 총 5곳이에요. 이 페이지에서 실망 확률 순으로 비교할 수 있어요 (최근 1년 리뷰 100건 미만 1곳은 순위 없이 참고용).</div></div><div class="hub-faq-item"><div class="hf-q">데이터는 언제 기준인가요?</div><div class="hf-a">리뷰 데이터는 매주 갱신해요. 이 페이지는 2026년 11월 기준이에요.</div></div></div>
     </div>
             <div class="hub-sect">
         <div class="hub-h2">다른 동네⁠·⁠동행⁠·⁠테마 보기</div>
         <div class="hub-xlinks"><a class="chip-go hub-xlink" href="../area/hakata">하카타역</a><a class="chip-go hub-xlink" href="../area/tenjin">텐진</a><a class="chip-go hub-xlink" href="../area/nakasu">나카스⁠·⁠캐널시티</a><a class="chip-go hub-xlink" href="../area/gion">기온⁠·⁠오호리</a><a class="chip-go hub-xlink" href="../best/solo">혼자 여행</a><a class="chip-go hub-xlink" href="../best/couple">커플⁠·⁠2인</a><a class="chip-go hub-xlink" href="../best/group">친구⁠·⁠단체</a><a class="chip-go hub-xlink" href="../best/family">가족여행</a><a class="chip-go hub-xlink" href="../best/value">가성비</a><a class="chip-go hub-xlink" href="../best/luxury">4⁠·⁠5성급</a><a class="chip-go hub-xlink" href="../best/bath">대욕장⁠·⁠온천</a></div>
-        <div class="hub-method"><span class="seg">실망 확률 = 심각한 문제⁠·⁠재방문 거부 리뷰 비율(1~2점 리뷰 반영, 최근일수록 크게)</span><span class="dsep"> · </span><span class="seg">글 리뷰 3만 건 AI 분석 · 2026년 10월 기준</span></div>
+        <div class="hub-method"><span class="seg">실망 확률 = 심각한 문제⁠·⁠재방문 거부 리뷰 비율(1~2점 리뷰 반영, 최근일수록 크게)</span><span class="dsep"> · </span><span class="seg">글 리뷰 3만 건 AI 분석 · 2026년 11월 기준</span></div>
     </div>
         </section>
     </main>

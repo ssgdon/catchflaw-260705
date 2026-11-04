@@ -688,12 +688,28 @@ GA4_ID = 'G-4M1BGXJZYQ'
 CLARITY_ID = 'xi5o022ef1'
 # 2026-10-20 속도: gtag.js(176KB)·clarity(30KB)는 첫 화면이 끝난 뒤(load + 1.5초) 또는 첫 터치·키·스크롤 때 싣는다.
 # gtag()·clarity() 호출은 그 전에도 큐(dataLayer·clarity.q)에 쌓여 로드되면 그대로 보내진다(페이지뷰 포함).
+# 2026-11-04 운영자 방문 표시: ?cf_internal=1로 한 번 들어온 기기는 localStorage cf_internal을 남기고, 그 뒤 모든 방문을
+# traffic_type=internal로 보낸다 → GA 데이터 필터 'Internal Traffic'(활성)이 IP 규칙과 같이 걸러 낸다(휴대폰 데이터망 포함).
+# ?cf_internal=0이면 표시를 지운다. 주소의 파라미터는 replaceState로 지워 page_location에 안 남긴다. Clarity는 태그로만 구분.
 GA4 = f'''<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
-  gtag('config', '{GA4_ID}');
+  var cfIn = false;
+  try {{
+    var cfQ = new URLSearchParams(location.search), cfF = cfQ.get('cf_internal');
+    if (cfF === '1') localStorage.setItem('cf_internal', '1');
+    else if (cfF === '0') localStorage.removeItem('cf_internal');
+    cfIn = localStorage.getItem('cf_internal') === '1';
+    if (cfF !== null) {{
+      cfQ.delete('cf_internal'); var cfS = cfQ.toString();
+      history.replaceState(history.state, '', location.pathname + (cfS ? '?' + cfS : '') + location.hash);
+      alert(cfIn ? '이 기기의 방문은 이제 운영자 방문으로 표시돼요(GA에서 제외).' : '이 기기의 운영자 표시를 지웠어요.');
+    }}
+  }} catch (e) {{}}
+  gtag('config', '{GA4_ID}', cfIn ? {{traffic_type: 'internal'}} : {{}});
   window.clarity = window.clarity || function(){{(window.clarity.q = window.clarity.q || []).push(arguments);}};
+  if (cfIn) clarity('set', 'traffic', 'internal');
   (function(){{
     var done = false;
     function go(){{
