@@ -1,0 +1,35 @@
+{
+ "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
+ "changes": [
+  {"date": "2026-11-05", "commit": "bedea222", "title": "상세 섹션 재배치 · 위치→실전정보 · 리뷰 수치 접힘 · 마법사 · 홈 칩 (UX-2611 C·D)",
+   "what": "실망 확률 3,030→1,660px, 위치→실전정보, 리뷰 수치 접힘, 마법사 못 참는 것 먼저, 홈 많이 찾는 호텔 칩",
+   "watch": ["scroll90_rate", "tab_rate", "numfold_clicks", "rec_submit", "home_pop_clicks"],
+   "doc": "UX-DROPOFF-2611-DESIGN.md"},
+  {"date": "2026-11-05", "commit": "30566668", "title": "아고다 제휴 링크 94곳 CTA · 피드백 시트 분리 (UX-2611 B)",
+   "what": "제휴 링크 있는 상세는 '아고다 최저가 보기'(rel=sponsored), 피드백 시트는 CTA를 막지 않고 돌아왔을 때 토스트·상세 끝 '의견 남기기'",
+   "watch": ["cta_rate", "cta_agoda_share", "fb_toast", "fb_submit"],
+   "doc": "UX-DROPOFF-2611-DESIGN.md"},
+  {"date": "2026-11-05", "commit": "53a3653c", "title": "피드백 '보내고 이동' 동기 열기 · 실망 확률 칸 링크 · 공유 측정 (UX-2611 A)",
+   "what": "피드백 시트 새 탭을 클릭 안에서 열기(모바일 팝업 차단 회피), 요약 실망 확률 칸 → #sec-prob, 공유 버튼 GA share",
+   "watch": ["fb_submit", "sum_prob_clicks", "share"],
+   "doc": "UX-DROPOFF-2611-DESIGN.md"},
+  {"date": "2026-11-04", "commit": "4c0c0c59", "title": "한눈에 보기 → 리뷰 시트 · 결론 뒤 비교 3행 · 홈 CTA 인라인 · 종료 확인 측정 (UX-2611 A)",
+   "what": "한눈에 보기 항목을 누르면 그 항목 리뷰 시트, 결론 바로 뒤 '비교해 볼 만한 호텔' 3행, 홈 추천 버튼 인라인, exit_shown·exit_stay·exit_leave",
+   "watch": ["glance_item", "next_row_clicks", "hero_rec_clicks", "exit_stay_rate"],
+   "doc": "UX-DROPOFF-2611-DESIGN.md"}
+ ],
+ "pending": [
+  {"title": "종료 확인 다이얼로그 제거 여부", "from": "UX-DROPOFF-2611-DESIGN.md",
+   "why": "뒤로 가기 때 뜨는 확인 창이 머무는 효과가 없으면 방해만 된다",
+   "needs": "11-18 이후 exit_stay / exit_shown 비율 확인 뒤 사용자 결정"},
+  {"title": "허브 H1 '리뷰 위험도' 용어", "from": "SEO-GOOGLE-DESIGN.md",
+   "why": "화면 용어는 '실망 확률' 하나인데 허브 제목에 '위험도'가 남아 있다",
+   "needs": "서치어드바이저 검색어에서 '위험도'로 들어오는 비중 확인"},
+  {"title": "의도 검색어 라우팅('방음·조용' → 소음 조건)", "from": "SEARCH-2611",
+   "why": "검색창에 조건을 치는 사람을 결과 없음 대신 조건 검색으로 보낸다",
+   "needs": "검색 개편(SEARCH-2611) 배포 뒤 결과 없음 검색어 확인"},
+  {"title": "제휴 링크 없는 조회 상위 4곳", "from": "ADMIN-DESIGN §6",
+   "why": "몬토레 후쿠오카 · 리솔 트리니티 · 마이스테이스 텐진 미나미 · JR 규슈 블라섬 주오는 조회가 많은데 가격 버튼이 구글로 나간다",
+   "needs": "세시간전 대시보드에서 링크 4개 만들어 scripts/affiliate.json에 추가"}
+ ]
+}

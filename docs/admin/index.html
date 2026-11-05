@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+    <title>관리자 | 캐치플로</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
+    <script>(function(){var u="/css/fonts.css?v=e17eafa9c4",K="cf_fonts",ok=false;try{ok=localStorage.getItem(K)==="1";}catch(e){}function mark(){try{localStorage.setItem(K,"1");}catch(e){}}function add(b){var c=document.createElement("link");c.rel="preconnect";c.href="https://cdn.jsdelivr.net";c.crossOrigin="";document.head.appendChild(c);var l=document.createElement("link");l.rel="stylesheet";l.href=u;if(b)l.setAttribute("blocking","render");if(!b)l.onload=function(){setTimeout(function(){if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mark);else mark();},100);};document.head.appendChild(l);}if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>
+    <link rel="stylesheet" href="/css/site.css?v=b0d893391f">
+    <link rel="stylesheet" href="/css/pc.css?v=14789643e7" media="(min-width:770px)">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="/js/admin.js?v=c394b4c9f7"></script>
+</head>
+<body>
+<div id="wrapper">
+    <div class="det-header det-header--detail">
+                <a class="dh-back" href="../" aria-label="뒤로가기"><img src="../img/back_b.svg" alt="뒤로가기"></a>
+                <a class="dh-logo" href="../" aria-label="CATCHFLAW 홈"><img src="../img/logo.svg" alt="CATCHFLAW"></a>
+                
+                <nav class="dh-nav" aria-label="주요 메뉴">
+                    <a href="../">홈</a>
+                    <a href="../recommend">맞춤형 추천</a>
+                    <a href="../search">호텔 검색</a>
+                    <a href="../compare">호텔 비교</a>
+                    <a href="../recent">최근 본 호텔</a>
+                    <a href="../about">산출 방법</a>
+                </nav>
+                <div class="dh-acts"></div>
+            </div>
+    <main id="container"><div id="admin">
+        <h1 class="page-title">관리자</h1>
+        <p class="ad-made" id="ad-made">불러오는 중이에요</p>
+        <div class="tabs-u ad-tabs" role="tablist" aria-label="관리자 화면"><button type="button" role="tab" id="ad-t-home" aria-controls="ad-home" aria-selected="true" class="is-on" data-tab="home">현황</button><button type="button" role="tab" id="ad-t-ux" aria-controls="ad-ux" aria-selected="false" data-tab="ux">UX 지표</button><button type="button" role="tab" id="ad-t-chg" aria-controls="ad-chg" aria-selected="false" data-tab="chg">변경 전후</button><button type="button" role="tab" id="ad-t-ops" aria-controls="ad-ops" aria-selected="false" data-tab="ops">운영</button></div>
+        <section class="ad-pane" id="ad-home" role="tabpanel" aria-labelledby="ad-t-home"></section><section class="ad-pane" id="ad-ux" role="tabpanel" aria-labelledby="ad-t-ux" hidden></section><section class="ad-pane" id="ad-chg" role="tabpanel" aria-labelledby="ad-t-chg" hidden></section><section class="ad-pane" id="ad-ops" role="tabpanel" aria-labelledby="ad-t-ops" hidden></section>
+        <noscript><p class="ad-note">이 화면은 자바스크립트가 필요해요.</p></noscript>
+    </div></main>
+</div>
+</body>
+</html>

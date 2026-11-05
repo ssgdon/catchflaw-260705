@@ -32,3 +32,6 @@ scripts/deploy.ps1
 
 # OAuth 비밀(유튜브 업로더)
 content/longform/secrets/
+
+# 관리자 페이지 로컬 프리뷰용 실제 집계(사용자 데이터 — 커밋 금지, scripts/check_admin.py --to-docs가 만든다)
+docs/admin/sample.json

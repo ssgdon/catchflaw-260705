@@ -288,4 +288,18 @@
     /* 한 줄 호텔 행 .hrow(SEO-CRAWL §3-1): 이름 왼쪽 · 메타 오른쪽 한 줄 — 메타가 안 들어가면 줄을 바꿔 2줄 유지 */
     .hrow{flex-direction:row;flex-wrap:wrap;align-items:baseline;align-content:center;justify-content:space-between;column-gap:var(--sp-6);}
     .hrow-meta{white-space:nowrap;}
+
+    /* 관리자 /admin/ (ADMIN-DESIGN §1, 2026-11-05) — PC 틀 1120 · 상태 4열 · 숫자 3열 · 그래프 280 · 이름-값 2열 */
+    #admin{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
+    #admin .page-title{margin-top:0;margin-left:0;margin-right:0;}
+    #admin .ad-made{margin-left:0;margin-right:0;}
+    #admin .ad-tabs{top:64px;padding-left:0;padding-right:0;}
+    #admin .ad-pane{padding:0;}
+    #admin .ad-tw{margin:0;padding:0;}
+    #admin .ad-cells{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--sp-6);}
+    #admin .ad-nums{grid-template-columns:repeat(3,minmax(0,1fr));}
+    #admin .ad-chart{height:280px;}
+    #admin .ad-kv{grid-template-columns:240px minmax(0,1fr);}
+    #admin .ad-kv dt{padding:var(--sp-3) var(--sp-4) var(--sp-3) 0;border-bottom:1px solid var(--line);}
+    #admin .ad-kv dd{padding:var(--sp-3) 0;}
 }

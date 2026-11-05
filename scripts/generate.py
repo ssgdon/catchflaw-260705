@@ -5005,9 +5005,86 @@ REDIRECTS = [('/best/pool', '/best/luxury'), ('/best/pool.html', '/best/luxury')
 
 ROBOTS_TXT = f'''User-agent: *
 Allow: /
+Disallow: /admin/
 
 Sitemap: {BASE}/sitemap.xml
 '''
+
+# ───────────────────────── 관리자 페이지 /admin/ (ADMIN-DESIGN, 2026-11-05) ─────────────────────────
+# 로그인은 Cloudflare Access(코드 없음). 빌드가 정적 껍데기 + site.json(빌드 시점 사실)을 쓰고, VM 집계(admin.json)는
+# Pages Function /admin/api/data(functions/admin/api/data.js)가 R2 비공개 버킷에서 내준다. 화면은 js/admin.js가 그린다.
+# GA4·Clarity 태그를 싣지 않는다(운영자 방문이 지표에 섞이지 않게). noindex·robots Disallow·사이트맵 제외.
+CHANGES_FILE = os.path.join(ROOT, 'scripts', 'changes.json')   # 배포 기록 정본(배포하는 세션이 1건씩 추가, §4-2)
+
+def _git(*args):
+    import subprocess
+    try:
+        return subprocess.run(['git', *args], cwd=ROOT, capture_output=True, text=True, encoding='utf-8', timeout=15).stdout.strip()
+    except Exception:
+        return ''
+
+def admin_site_json(hotels_meta, H, written):
+    """docs/admin/site.json — 호텔 수·상세 수·제휴 링크 수·asof·빌드 시각·커밋·최근 커밋 5건·changes.json 사본 + pid→[이름, 슬러그, 제휴, 점수 노출, 상태]."""
+    from datetime import datetime as _dt, timezone as _tz
+    try:
+        ch = json.load(open(CHANGES_FILE, encoding='utf-8'))
+    except FileNotFoundError:
+        ch = {}
+    st = Counter(m.get('status') or 'active' for m in hotels_meta.values())
+    deploys = []
+    for line in _git('log', '-5', '--format=%h%x1f%cI%x1f%s').splitlines():
+        h, d, s = (line.split('\x1f') + ['', ''])[:3]
+        deploys.append({'commit': h, 'date': d, 'subject': s[:120]})
+    ws = set(written)
+    return {
+        'built_at': _dt.now(_tz(timedelta(hours=9))).isoformat(timespec='seconds'),
+        'build': BUILD, 'commit': _git('rev-parse', '--short=8', 'HEAD'), 'asof': CITY['asof'],
+        'city_crit': round(CITY['crit'], 4),
+        'counts': {'site_hotels': len(hotels_meta), 'active': st.get('active', 0), 'watch': st.get('watch', 0),
+                   'detail': len(written), 'scored': sum(1 for p in written if H[p]['scored']),
+                   'affiliate': len(AFFIL), 'affiliate_detail': sum(1 for p in AFFIL if p in ws)},
+        'hotels': {p: [card_name(hotels_meta[p]['title']), SLUG[p], 1 if p in AFFIL else 0, 1 if H[p]['scored'] else 0,
+                       hotels_meta[p].get('status') or 'active'] for p in written},
+        'deploys': deploys,
+        'changes': ch.get('changes', []), 'pending': ch.get('pending', []),
+    }
+
+def build_admin():
+    """/admin/ 정적 껍데기 — 탭 4개(현황·UX 지표·변경 전후·운영), 내용은 js/admin.js가 site.json + /admin/api/data로 그린다.
+       head()를 쓰지 않는다: GA4·Clarity·jQuery 없이 site.css + chart.js(상세와 같은 CDN 버전) + admin.js만."""
+    tabs = [('home', '현황'), ('ux', 'UX 지표'), ('chg', '변경 전후'), ('ops', '운영')]
+    tab_btns = ''.join(
+        f'<button type="button" role="tab" id="ad-t-{k}" aria-controls="ad-{k}" aria-selected="{"true" if i == 0 else "false"}"'
+        f'{" class=\"is-on\"" if i == 0 else ""} data-tab="{k}">{t}</button>' for i, (k, t) in enumerate(tabs))
+    panes = ''.join(f'<section class="ad-pane" id="ad-{k}" role="tabpanel" aria-labelledby="ad-t-{k}"{"" if i == 0 else " hidden"}></section>'
+                    for i, (k, _) in enumerate(tabs))
+    return f'''<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,minimum-scale=1.0">
+    <title>관리자 | 캐치플로</title>
+    <meta name="robots" content="noindex,nofollow">
+    <link rel="icon" type="image/svg+xml" href="/img/favicon.svg">
+    {font_loader('/')}
+    <link rel="stylesheet" href="/css/site.css?v={V("css/site.css")}">
+    <link rel="stylesheet" href="/css/pc.css?v={V("css/pc.css")}" media="(min-width:770px)">
+    <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script defer src="/js/admin.js?v={V("js/admin.js")}"></script>
+</head>
+<body>
+<div id="wrapper">
+    {site_header(1, back='../', search=False, menu=False)}
+    <main id="container"><div id="admin">
+        <h1 class="page-title">관리자</h1>
+        <p class="ad-made" id="ad-made">불러오는 중이에요</p>
+        <div class="tabs-u ad-tabs" role="tablist" aria-label="관리자 화면">{tab_btns}</div>
+        {panes}
+        <noscript><p class="ad-note">이 화면은 자바스크립트가 필요해요.</p></noscript>
+    </div></main>
+</div>
+</body>
+</html>'''
 
 # ── 속도 최적화(2026-10-20): CSS 번들 · 캐시 헤더 ──
 CSS_ORDER = ['tokens.css', 'common.css', 'layout.css', 'swiper.css', 'uplift.css', 'mvp.css', 'ds.css']   # = CLAUDE.md 로드 순서. pc.css는 head()가 media=(min-width:770px) 링크로 따로(모바일에서 비차단, 2026-10-20). 글꼴(vendor/pretendard.css)은 docs/css/fonts.css로 따로 — font_loader() 참고(2026-10-21)
@@ -5039,6 +5116,7 @@ def headers_txt():
     out += f'/\n  Link: {pre}\n'   # 히어로 이미지는 Link preload에서 뺐다 — Link 경로는 우선순위 Low로 시작해 오히려 늦어짐(2026-10-20 Lighthouse). <img fetchpriority=high>가 맡는다
     for r in ('/hotels/*', '/area/*', '/best/*', '/search', '/recommend', '/about', '/privacy', '/compare', '/recent', '/hotels'):
         out += f'{r}\n  Link: {pre}\n'
+    out += '/admin/*\n  Cache-Control: private, no-store\n  X-Robots-Tag: noindex, nofollow\n'   # 관리자(Access 뒤) — 캐시·색인 금지
     return out
 
 def sv_priority(pid):
@@ -5230,6 +5308,10 @@ def main():
     for _path, _body in SIDE_FILES.items():   # 상세 팝업·FAQ 폴백 데이터(HTML에서 분리)
         W(_path, _body)
     W('hotels.html', build_hotels_list(hotels_meta, H))   # 전체 호텔 목록 /hotels (SEO-CRAWL §3-3) — docs/hotels/ 폴더와 나란히
+    # 관리자 페이지(ADMIN-DESIGN): 껍데기 + 빌드 사실 + 공개 슬러그 표(VM admin_export가 /hotels/{slug} → pid 매핑에 받아 쓴다 — pid는 이미 공개 데이터)
+    W('admin/index.html', build_admin())
+    W('admin/site.json', json.dumps(admin_site_json(hotels_meta, H, written), ensure_ascii=False, separators=(',', ':')))
+    W('data/slugs.json', json.dumps({p: SLUG[p] for p in written}, ensure_ascii=False, separators=(',', ':')))
 
     # ── 컬렉션 허브 페이지 생성 ──
     for col, pids in built_cols:
