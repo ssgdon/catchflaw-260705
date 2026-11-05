@@ -1,6 +1,10 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-06", "commit": "7258710a", "title": "카톡 공유 미리보기 카드(사진 + 실망 확률) · '같이 갈 사람에게 보내기' 버튼",
+   "what": "og:image = 호텔별 1200×630 카드(사진·실망 확률·판정·평균), og:title '호텔 · 실망 확률 N%', 누구와 가세요 끝 공유 버튼, 공유 주소 utm_source=share",
+   "watch": ["share"],
+   "doc": ""},
   {"date": "2026-11-05", "commit": "00000cb7", "title": "관리자 '구글 검색' 탭(서치 콘솔) · Organization sameAs 인스타·스레드",
    "what": "관리자 전용: 검색 실적·검색어·사이트맵 전수 URL 검사 색인 상태·오늘 색인 요청할 곳. 사이트는 JSON-LD sameAs 2줄만 — 사용자 화면 지표 없음",
    "watch": [],
