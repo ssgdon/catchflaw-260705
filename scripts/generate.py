@@ -100,7 +100,8 @@ def rank_text(pctl_worse):
     return f'{CITY["ko"]}에서 가장 많은 편'
 CONTACT_EMAIL = 'fibinc8967@gmail.com'   # 정정·이의제기 창구 (LEGAL-SOFTEN §2-a)
 # ── 구조화 데이터 공용 (SEO-GOOGLE-DESIGN §3-4): 운영 주체·사이트 @id, 호텔별 갱신일 ──
-SOCIAL_LINKS = ['https://www.youtube.com/channel/UCoySmjKYzKxd_CjExL_asYw']   # 인스타·스레드는 주소 확정 뒤 추가(§6-3)
+SOCIAL_LINKS = ['https://www.youtube.com/channel/UCoySmjKYzKxd_CjExL_asYw', 'https://www.instagram.com/catchflaw.ai/',
+                'https://www.threads.com/@catchflaw.ai']   # 공식 채널(2026-11-05 사용자 확정) — Organization.sameAs
 LASTMOD = {}   # pid → 사이트맵 lastmod(가장 최근 리뷰일) — main()이 hotel_lastmod()로 채움, 상세 WebPage.dateModified와 같은 값
 
 def mask_name(s):
@@ -5054,9 +5055,9 @@ def admin_site_json(hotels_meta, H, written):
     }
 
 def build_admin():
-    """/admin/ 정적 껍데기 — 탭 4개(현황·UX 지표·변경 전후·운영), 내용은 js/admin.js가 site.json + /admin/api/data로 그린다.
+    """/admin/ 정적 껍데기 — 탭 5개(현황·UX 지표·구글 검색·변경 전후·운영), 내용은 js/admin.js가 site.json + /admin/api/data로 그린다.
        head()를 쓰지 않는다: GA4·Clarity·jQuery 없이 site.css + chart.js(상세와 같은 CDN 버전) + admin.js만."""
-    tabs = [('home', '현황'), ('ux', 'UX 지표'), ('chg', '변경 전후'), ('ops', '운영')]
+    tabs = [('home', '현황'), ('ux', 'UX 지표'), ('gsc', '구글 검색'), ('chg', '변경 전후'), ('ops', '운영')]   # 구글 검색 = 서치 콘솔(2026-11-05)
     tab_btns = ''.join(
         f'<button type="button" role="tab" id="ad-t-{k}" aria-controls="ad-{k}" aria-selected="{"true" if i == 0 else "false"}"'
         f'{" class=\"is-on\"" if i == 0 else ""} data-tab="{k}">{t}</button>' for i, (k, t) in enumerate(tabs))

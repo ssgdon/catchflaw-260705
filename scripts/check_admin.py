@@ -14,6 +14,7 @@
 JSON 쪽 검사(파일을 줬을 때)
   5. 최상위 키 · ga.days 창 3개(7·28·90) 각 필수 키 · hotels 행 수 = 상세 수 · daily 90일
   6. clarity·ops(sync_jobs ≤ 10·health·backup·price_sample·crontab)·db(hotels·reviews_site) — dry-run이면 null 허용(경고)
+  6b. gsc(서치 콘솔): days 7·28·90 · daily 90일 · index(사이트맵 전수 URL 검사) — 없으면 경고(API 꺼짐·권한 없음은 errors에 이유)
   7. changes.before_after가 changes.json 커밋을 덮는지 · watch 지표 이름이 METRICS에 있는지 · 크기 300KB 이하
 """
 import json, os, re, shutil, sys
@@ -55,7 +56,7 @@ else:
     if len(re.findall(r'<h1\b', h)) != 1: E('admin/index.html: h1이 1개가 아님')
     if 'googletagmanager' in h or 'clarity.ms' in h: E('admin/index.html: GA4·Clarity 태그가 실림(운영자 방문이 지표에 섞임)')
     if '/js/admin.js' not in h or 'chart.js@4.4.1' not in h: E('admin/index.html: admin.js 또는 chart.js 4.4.1 로드 없음')
-    for k in ('home', 'ux', 'chg', 'ops'):
+    for k in ('home', 'ux', 'gsc', 'chg', 'ops'):
         if f'id="ad-{k}"' not in h: E(f'admin/index.html: 탭 영역 ad-{k} 없음')
 mw = os.path.join(ROOT, 'functions', 'admin', '_middleware.js')   # pages.dev·미리보기 주소는 Access 밖 → 호스트 문지기 필수
 if not os.path.exists(mw) or "'catchflaw.com'" not in read(mw): E('functions/admin/_middleware.js: catchflaw.com 호스트 제한 없음')
@@ -121,7 +122,22 @@ if data_path:
     if kb > 300: E(f'{data_path}: {kb:.0f}KB — 목표 300KB 이하(§3)')
     d = json.loads(raw.decode('utf-8'))
     dry = d.get('mode') == 'dry-run'
-    need(d, ['made_at', 'asof_db', 'ga', 'clarity', 'ops', 'db', 'changes', 'errors'], 'admin.json')
+    need(d, ['made_at', 'asof_db', 'ga', 'gsc', 'clarity', 'ops', 'db', 'changes', 'errors'], 'admin.json')
+    gs = d.get('gsc')
+    if not gs:
+        W('gsc 없음 — ' + ('; '.join(e for e in d.get('errors', []) if e.startswith('GSC')) or '이유 기록 없음'))
+    elif need(gs, ['site', 'end', 'days', 'daily', 'sitemaps', 'index', 'index_hist', 'index_changes', 'inspect_used'], 'gsc'):
+        if sorted(gs['days']) != ['28', '7', '90']: E(f'gsc.days 창이 7·28·90이 아님: {sorted(gs["days"])}')
+        for w, x in gs['days'].items():
+            need(x, ['clicks', 'impressions', 'ctr', 'position', 'prev', 'queries', 'pages', 'device', 'n_queries', 'n_pages'], f'gsc.days[{w}]')
+        if len(gs['daily'] or []) != 90: E(f'gsc.daily {len(gs["daily"] or [])}일 ≠ 90일')
+        ix = gs['index']
+        if ix is None: W('gsc.index 없음(--no-inspect 또는 URL 검사 실패)')
+        elif need(ix, ['day', 'n', 'complete', 'indexed', 'crawled', 'urls'], 'gsc.index'):
+            if ix['n'] != len(ix['urls']): E('gsc.index n ≠ urls 수')
+            if ix['indexed'] > ix['n']: E('gsc.index indexed > n')
+            if ix['urls']: need(ix['urls'][0], ['u', 'v', 'c', 'lc', 'pr'], 'gsc.index.urls[]')
+            if not ix['complete']: W('gsc.index 일부만 검사됨(할당량?) — 추이에 저장 안 함')
     if d.get('errors'): W(f'admin.json errors {len(d["errors"])}건: {d["errors"][:3]}')
     g = d.get('ga')
     n_detail = site['counts']['detail'] if site else None
