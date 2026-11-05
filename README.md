@@ -7,6 +7,7 @@ CatchFlaw reads 66k public reviews for 203 hotels in Fukuoka, Japan, and gives e
 - 전체 목록 203곳: https://catchflaw.com/hotels
 - 계산 방법: https://catchflaw.com/about
 - 상세 예시: https://catchflaw.com/hotels/the-blossom-hakata-premier
+- 공개 데이터셋(CC BY 4.0): https://huggingface.co/datasets/catchflaw/fukuoka-hotels
 
 ## 실망 확률
 
