@@ -57,6 +57,8 @@ else:
     if '/js/admin.js' not in h or 'chart.js@4.4.1' not in h: E('admin/index.html: admin.js 또는 chart.js 4.4.1 로드 없음')
     for k in ('home', 'ux', 'chg', 'ops'):
         if f'id="ad-{k}"' not in h: E(f'admin/index.html: 탭 영역 ad-{k} 없음')
+mw = os.path.join(ROOT, 'functions', 'admin', '_middleware.js')   # pages.dev·미리보기 주소는 Access 밖 → 호스트 문지기 필수
+if not os.path.exists(mw) or "'catchflaw.com'" not in read(mw): E('functions/admin/_middleware.js: catchflaw.com 호스트 제한 없음')
 rb = os.path.join(DOCS, 'robots.txt')
 if not os.path.exists(rb) or 'Disallow: /admin/' not in read(rb): E('robots.txt: Disallow: /admin/ 없음')
 sm = os.path.join(DOCS, 'sitemap.xml')
