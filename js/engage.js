@@ -50,12 +50,19 @@
       });
       return m;
     }
-    function copyLink() {
-      if (navigator.clipboard) navigator.clipboard.writeText(location.href).then(showToast, fallbackCopy);
-      else fallbackCopy();
+    // 공유 주소 = canonical + utm(source=share, medium=os|copy) — 받은 사람이 들어오면 GA4에 'share' 유입으로 잡힌다(2026-11-05).
+    // #rv=·?q= 같은 화면 상태는 빼고 보낸다. canonical 태그가 있어 검색엔진엔 중복 주소가 아니다.
+    function shareUrl(medium) {
+      var u = H.url || location.href.split('#')[0].split('?')[0];
+      return u + (u.indexOf('?') < 0 ? '?' : '&') + 'utm_source=share&utm_medium=' + medium + '&utm_campaign=hotel';
     }
-    function fallbackCopy() {
-      var t = document.createElement('textarea'); t.value = location.href;
+    function copyLink() {
+      var u = shareUrl('copy');
+      if (navigator.clipboard) navigator.clipboard.writeText(u).then(showToast, function () { fallbackCopy(u); });
+      else fallbackCopy(u);
+    }
+    function fallbackCopy(u) {
+      var t = document.createElement('textarea'); t.value = u;
       document.body.appendChild(t); t.select();
       try { document.execCommand('copy'); showToast(); } catch (e) {}
       document.body.removeChild(t);
@@ -68,9 +75,11 @@
 
     $('.btn-share').off('click').on('click', function (e) {
       e.preventDefault();
-      var data = { title: document.title, text: H.name + ' — 캐치플로 분석', url: location.href };
+      // 문구에 실망 확률·도시 평균·판정을 넣는다(H.share, generate.py) — 미리보기 카드가 안 뜨는 앱에서도 숫자가 보이게
+      var data = { title: H.name, text: H.share || (H.name + ' — 캐치플로 리뷰 분석'), url: shareUrl('os') };
       // OS 네이티브 공유(카카오톡 등 앱 목록) 우선
-      if (typeof gtag === 'function') gtag('event', 'share', { method: navigator.share ? 'os' : 'sheet', hotel_id: H.pid || '' });   // UX-2611 A: 공유 측정
+      if (typeof gtag === 'function') gtag('event', 'share', { method: navigator.share ? 'os' : 'sheet', hotel_id: H.pid || '',
+        placement: this.getAttribute('data-share-at') || 'header' });   // UX-2611 A: 공유 측정 · 어느 버튼인지(header|who|pc_side)
       if (navigator.share) { navigator.share(data).catch(function () {}); }
       else { openShare(this); }  // 미지원(카카오 인앱 등) → 자체 공유 시트
     });

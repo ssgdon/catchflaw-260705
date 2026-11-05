@@ -33,6 +33,7 @@ def thumb(url):
     return url
 
 sys.path.insert(0, os.path.dirname(__file__))
+import og_card   # 공유 미리보기 카드(og:image) — scripts/og_card.py
 from scoring import compute, CATS as ALL_CATS, SCORED_CATS, CHIP_ONLY_CATS, SUBS, SUB_KEYWORDS, RARE_SUBS, MIN_REVIEWS, RANK_MIN, rec_scores, bayes_rating, SAFE_MULT, DANGER_MULT
 # 분류 v5: 점수로 보여주는 대분류(6)만 CATS로 쓴다. 칩 전용 대분류(안전)는 위험 칩·별도 펼침 항목으로만 표시
 CATS = SCORED_CATS
@@ -130,6 +131,9 @@ REC_SORT_DESC = '실망 확률이 낮고, 한국인 리뷰가 많고, 구글 평
 # ── SEO 기반 상수 ──
 BASE = 'https://catchflaw.com'   # canonical 기준 도메인 (apex). www/pages.dev 금지.
 DEFAULT_OG = f'{BASE}/img/home_bg_pc.jpg'   # 대표 이미지 없는 페이지용 기본 OG (1600×900 — SEO-GOOGLE §3-5)
+# 공유 아이콘(상세 헤더 원 버튼·'누구와 가세요' 끝 '같이 갈 사람에게 보내기' 공용)
+SHARE_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15V4m0 0L8.5 7.5M12 4l3.5 3.5M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1" '
+             'stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>')
 # 검색엔진 소유확인 메타 (전 페이지 head 공통 삽입). 구글은 Cloudflare DNS로 자동확인됨 → 태그 불요.
 VERIFY_META = '<meta name="naver-site-verification" content="9b59c2e0175c1673a6091cbb5627e67a25b136e5" />'
 
@@ -745,9 +749,10 @@ def font_loader(p):
             'document.head.appendChild(l);}'
             'if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>')
 
-def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head='', sync_js=False):
+def head(title, depth=0, description=None, canonical=None, og_image=None, extra_head='', sync_js=False, og_title=None, og_card_alt=None):
     """sync_js=True(검색 페이지만): 인라인이 파싱 시점에 $·CF·CFRec을 쓰므로 backnav·jQuery·recommend를 동기로. 그 외 페이지는 전부 defer —
-       인라인의 $(function…)은 shim이 모아 두었다가 js/vendor/jq-flush.js가 jQuery.ready로 넘긴다(2026-10-20 속도)."""
+       인라인의 $(function…)은 shim이 모아 두었다가 js/vendor/jq-flush.js가 jQuery.ready로 넘긴다(2026-10-20 속도).
+       og_title = 공유 미리보기 제목(없으면 <title>), og_card_alt = og_image가 1200×630 공유 카드(scripts/og_card.py)일 때 그림 설명(2026-11-05)."""
     p = '../' * depth
     D = '' if sync_js else ' defer'
     seo = ['<meta name="robots" content="max-image-preview:large">']   # 큰 미리보기 허용(SEO-GOOGLE §3-5) — noindex 메타와 공존
@@ -757,7 +762,7 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
         seo.append(f'<meta name="description" content="{E(d)}">')
     if canonical:
         seo.append(f'<link rel="canonical" href="{canonical}">')
-        seo.append(f'<meta property="og:title" content="{E(title)}">')
+        seo.append(f'<meta property="og:title" content="{E(og_title or title)}">')
         if d:
             seo.append(f'<meta property="og:description" content="{E(d)}">')
         seo.append(f'<meta property="og:url" content="{canonical}">')
@@ -765,6 +770,11 @@ def head(title, depth=0, description=None, canonical=None, og_image=None, extra_
         seo.append('<meta property="og:site_name" content="캐치플로">')
         seo.append('<meta property="og:locale" content="ko_KR">')
         seo.append(f'<meta property="og:image" content="{og_image or DEFAULT_OG}">')
+        if og_card_alt:   # 공유 카드(JPEG 1200×630) — 크기를 밝혀 두면 카톡·페이스북이 큰 미리보기로 바로 그린다
+            seo.append('<meta property="og:image:type" content="image/jpeg">')
+            seo.append('<meta property="og:image:width" content="1200">')
+            seo.append('<meta property="og:image:height" content="630">')
+            seo.append(f'<meta property="og:image:alt" content="{E(og_card_alt)}">')
         seo.append('<meta name="twitter:card" content="summary_large_image">')
     seo_block = '\n    '.join(seo)
     return f'''<!doctype html>
@@ -3681,7 +3691,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             <div class="desc">일행에 맞는 리뷰와 실전 정보만 모았어요</div></div>
             <div class="who-chips">{''.join(_chips)}</div>
             {''.join(_panels)}
-        </div>''' + WHO_JS
+            <button type="button" class="btn-share btn-line btn-block who-share" data-share-at="who">{SHARE_SVG}같이 갈 사람에게 보내기</button>
+        </div>''' + WHO_JS   # 호텔은 일행과 같이 고른다 — 후보를 보내는 순간(카톡 미리보기 = 사진 + 실망 확률 카드, og_card.py)
 
         # F41: 히어로 줄 = %+판정 같은 줄·같은 케이스색(verdict 별도 줄 흡수). 근거(why)는 게이지 아래 유지
         verdict_why_html = f'<div class="ev">{v_why}</div>'
@@ -4142,9 +4153,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                if h['scored'] else '')
 
     # ── 4A 상단 헤더 원 버튼(v3 §6-7): 뒤로(site_header) · 공유 · 비교 담기. 사진 위에서는 흰 원 + 그림자, 사진을 지나면 회색 원 ──
-    _SHARE_SVG = ('<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M12 15V4m0 0L8.5 7.5M12 4l3.5 3.5M7 11H6a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-6a2 2 0 0 0-2-2h-1" '
-                  'stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg>')
-    hdr_actions = (f'<button type="button" class="btn-share btn-icon btn-icon--photo dh-act" aria-label="공유">{_SHARE_SVG}</button>'
+    hdr_actions = (f'<button type="button" class="btn-share btn-icon btn-icon--photo dh-act" data-share-at="header" aria-label="공유">{SHARE_SVG}</button>'
                    + (f'<button type="button" class="cmp-btn btn-icon btn-icon--photo dh-act cmp-saved" data-cmp-id="{pid}" data-cmp-name="{E(name)}" '
                       f'data-cmp-img="{E(abs_img(pid, meta))}" data-on="비교함에 담김" data-off="비교 담기" aria-label="비교 담기" aria-pressed="false"><span class="cmp-ico"></span></button>'
                       if h['scored'] else ''))
@@ -4241,7 +4250,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                     {_top_html}
                     <ul class="ps-rows">{_rows_html}</ul>
                     <a class="btn-brand btn-block ps-cta" {cta_attr}>{cta_lab}</a>
-                    <div class="ps-actions">{cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn ps-cmp btn-gray btn-block"') if cmp_btn else ''}<a href="javascript:;" class="btn-share ps-share btn-gray btn-block">공유</a></div>
+                    <div class="ps-actions">{cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn ps-cmp btn-gray btn-block"') if cmp_btn else ''}<a href="javascript:;" class="btn-share ps-share btn-gray btn-block" data-share-at="pc_side">공유</a></div>
                     <p class="ps-note">공개 리뷰를 분석한 참고용 통계예요 · <a href="../about">산출 방법</a></p>
                 </aside>'''
     end_block = ('<div class="det-end">'
@@ -4251,6 +4260,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         SIDE_FILES[f'data/q/{pid}.json'] = json.dumps(sheet_data, ensure_ascii=False, separators=(',', ':'))
     canonical = hotel_abs(pid)   # og:url도 이것(head())
     og_img = meta.get('r2_img') or (f'{BASE}/img/hotels/{pid}.jpg' if meta.get('local_img') else None)
+    # 공유 미리보기(2026-11-05): 채점 호텔은 사진 + 실망 확률 카드(docs/og/{slug}.jpg), 실패·미채점은 원본 사진 그대로
+    og_title = og_alt = None
+    share_txt = f'{name} — 캐치플로 리뷰 분석'
+    if h['scored']:
+        _v, _avg = pct(h['p_crit']), pct(city['crit'])
+        _local = os.path.join(ROOT, 'assets', 'hotels', f'{pid}.jpg') if (meta.get('local_img') and not meta.get('r2_img')) else None
+        _ch = og_card.card(OUT, SLUG[pid], meta.get('r2_img'), _local, name, _v, v_head, v_tone, CITY['ko'], _avg)
+        og_title = f'{name} · 실망 확률 {_v}%'
+        share_txt = f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%) — {v_head}'
+        if _ch:
+            og_img = f'{BASE}/og/{SLUG[pid]}.jpg?v={_ch}'
+            og_alt = f'{name} 실망 확률 {_v}%, {v_head} ({CITY["ko"]} 평균 {_avg}%)'
     # 답 문단 + description(SEO-CRAWL §4): 같은 문장 — description은 첫 문장 + 걸리는 점(150자 안)
     answer_html, seo_desc = answer_paragraph(name, h, city, per, v_ans, tier_txt, _neg, _pos_txt, has_price=bool(_pt))
     if h['scored']:
@@ -4262,8 +4283,8 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     if not h['scored']:   # 분석 준비 중 = 내용이 얇아 사이트 품질 평가를 깎음 → 색인 제외·사이트맵 제외(점수 나오면 자동 해제, 2026-10-10)
         _extra_head += '\n    <meta name="robots" content="noindex,follow">'
     return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
-                og_image=og_img, extra_head=_extra_head) + f'''
-    <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)},cta:{json.dumps(cta_url)}}};</script>
+                og_image=og_img, extra_head=_extra_head, og_title=og_title, og_card_alt=og_alt) + f'''
+    <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)},cta:{json.dumps(cta_url)},url:{json.dumps(canonical)},share:{json.dumps(share_txt, ensure_ascii=False)}}};</script>
     <script src="../js/report.js?v={V("js/report.js")}" defer></script>
     <script>window.CF_IMGS={json.dumps(meta.get('r2_imgs') or [], ensure_ascii=False)};</script>
     <script src="../js/lightbox.js?v={V("js/lightbox.js")}" defer></script>
@@ -5309,6 +5330,7 @@ def main():
             hotel_cols=detail_col_map.get(pid, [])[:3], kr_dist=kr_dist, faq=faq_data.get(pid),
             social=social_data.get(pid)))
         written.append(pid)
+    og_card.save_manifest()   # 공유 카드 입력 기록(.cache/og) — 다음 빌드는 바뀐 호텔만 다시 굽는다
     n = len(written)
     for _path, _body in SIDE_FILES.items():   # 상세 팝업·FAQ 폴백 데이터(HTML에서 분리)
         W(_path, _body)

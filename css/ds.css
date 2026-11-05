@@ -1142,6 +1142,11 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .information .info-answer b{font-weight:var(--fw-bold);}
 #detail .information .info-answer .ia-meta{display:block;margin-top:var(--sp-1);font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);}   /* 근거 한 줄: '최근 1년 리뷰 640건 분석 · 2026년 10월 18일 기준' */
 
+/* ════════ §v3 상세 '같이 갈 사람에게 보내기' (2026-11-05) ════════
+   '누구와 가세요?' 끝 전폭 외곽선 버튼(UI-STANDARDS §18-1 상세 '공유하기' = .btn-line). 보라 아님 — 최종 행동은 아고다 버튼 하나.
+   버튼으로 끝나는 섹션 = 아래 12(§4) */
+#detail .who .who-share{margin:var(--sp-6) 0 var(--sp-3);}
+
 /* PC 전용 요소는 기본 숨김(≥1100 pc.css가 다시 보인다). 2026-10-20 pc.css를 media 링크로 분리하면서 pc.css 맨 위에서 옮겨 옴 */
 .det-header .dh-nav,.det-header .dh-search,#detail .pc-gallery,#detail .pc-side,#detail .pc-crumb{display:none;}
 
