@@ -1,6 +1,10 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-05", "commit": "6b176897", "title": "상세 CTA 문구 '내 일정 최저가 보기' (CTR)",
+   "what": "아고다 최저가 보기 → 아고다에서 내 일정 최저가 보기(모바일 가격 옆은 내 일정 최저가 보기), 구글은 구글에서 내 일정 가격 보기",
+   "watch": ["cta_rate", "cta_agoda_share"],
+   "doc": "UX-DROPOFF-2611-DESIGN.md"},
   {"date": "2026-11-05", "commit": "846d72fb", "title": "비교 화면 크롤 차단 · 리뷰 시트 링크 #rv= (SEO-GOOGLE 후속)",
    "what": "robots.txt Disallow /compare, 비교 화면 → 상세 리뷰 시트 링크를 ?rv= 에서 #rv= 로(옛 링크도 열림) — 구글이 noindex·중복 주소를 긁지 않게",
    "watch": ["next_row_clicks"],
