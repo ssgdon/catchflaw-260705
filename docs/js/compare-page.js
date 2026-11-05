@@ -103,9 +103,9 @@
       return '<tr><th scope="row">' + glue(esc(r[1])) + '</th>' + H.map(function (h) {
         var v = h.rr && h.rr[r[0]];
         if (!v) return '<td class="is-none">–</td>';
-        // 2026-10-10: 심각 판정만 한 줄로(주의 포함 건수·'심각 N' 둘째 줄 삭제). 1건 이상 = 그 호텔 상세의 이 소분류 리뷰 시트(?rv=)
+        // 2026-10-10: 심각 판정만 한 줄로(주의 포함 건수·'심각 N' 둘째 줄 삭제). 1건 이상 = 그 호텔 상세의 이 소분류 리뷰 시트(#rv= — 2026-11-05 ?rv= 에서 바꿈: 쿼리는 구글이 중복 주소로 긁는다)
         var n = v[1], tone = n >= 3 ? 'danger' : n > 0 ? 'warning' : 'zero', inner = '<b>' + n + '건</b>';
-        return '<td class="is-' + tone + '">' + (n ? '<a class="cv-go" href="./hotels/' + (h.u || h.id) + '?rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 심각 리뷰 ' + n + '건 보기">' + inner + '</a>' : inner) + '</td>';
+        return '<td class="is-' + tone + '">' + (n ? '<a class="cv-go" href="./hotels/' + (h.u || h.id) + '#rv=' + encodeURIComponent(r[0]) + '" aria-label="' + esc(sname(h)) + ' ' + esc(r[1]) + ' 심각 리뷰 ' + n + '건 보기">' + inner + '</a>' : inner) + '</td>';
       }).join('') + '</tr>';
     }).join('');
     return '<section class="cv-blk cv-rare"><h3 class="cv-t">드물지만 치명적인 리뷰</h3><p class="cv-s">최근 1년 동안 심각했던 경험만 셌어요</p>'

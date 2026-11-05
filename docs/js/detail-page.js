@@ -297,9 +297,11 @@ $(function(){
         show(opener);
     }
     $(document).on('click', '[data-act="faq-more"]', function(){ faqOpen($(this).data('topic'), $(this).data('q'), this); });
-    // 비교 화면 '드물지만 치명적인 리뷰' 건수 → hotels/{id}?rv=벌레 : 들어오자마자 그 소분류 리뷰 시트(2026-10-10)
+    // 비교 화면 '드물지만 치명적인 리뷰' 건수 → hotels/{slug}#rv=벌레 : 들어오자마자 그 소분류 리뷰 시트(2026-10-10)
     (function(){
-        var rv = new URLSearchParams(location.search).get('rv'), cat = rv && window.QSUBCAT && window.QSUBCAT[rv];
+        var m = /^#rv=(.+)$/.exec(location.hash), rv = new URLSearchParams(location.search).get('rv');   // 옛 ?rv= 링크도 계속 연다
+        if (!rv && m) { try { rv = decodeURIComponent(m[1]); } catch (e) { rv = null; } }
+        var cat = rv && window.QSUBCAT && window.QSUBCAT[rv];
         if (cat) setTimeout(function(){ open(cat, rv); }, 0);
     })();
     function open(cat, sub, opener){
