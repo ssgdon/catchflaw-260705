@@ -5006,6 +5006,7 @@ REDIRECTS = [('/best/pool', '/best/luxury'), ('/best/pool.html', '/best/luxury')
 ROBOTS_TXT = f'''User-agent: *
 Allow: /
 Disallow: /admin/
+Disallow: /compare
 
 Sitemap: {BASE}/sitemap.xml
 '''
