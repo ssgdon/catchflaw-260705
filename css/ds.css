@@ -220,16 +220,11 @@ h1,h2,h3,.title,.tit,.hub-h1,.hub-h2{letter-spacing:var(--ls-text);}
 #main .search-box .title .txt{margin-top:var(--sp-2);line-height:var(--lh-ui);font-size:var(--fs-meta);color:var(--ink-3);}
 /* 추천받기 = 히어로 안 전폭 보라 버튼(도시 줄 아래) — 2026-11-04 UX-2611: 떠 있는 알약(0c18fe29)은 비교 카드 숫자·안내 카드를 가렸고 60일 recommend 조회 7건이라 PC와 같이 히어로 안으로 */
 #main .search-box .btn-airec{margin-top:var(--sp-4);}
-/* 도시 선택 줄(2026-10-10): 검색창 아래 가로 스크롤. 열린 도시 = 잉크 칩, 준비 중 = 흐린 칩 + 꼬리표 */
-#main .search-box .city-row{display:flex;gap:var(--sp-2);margin:var(--sp-4) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x) var(--sp-2);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
-#main .search-box .city-row::-webkit-scrollbar{display:none;}
-.city-tile{position:relative;flex:none;display:flex;flex-direction:column;justify-content:flex-end;width:100px;height:76px;padding:var(--sp-2);border-radius:var(--radius-box);overflow:hidden;background-color:var(--surface);background-position:center;background-size:cover;background-repeat:no-repeat;color:var(--ink-inverse);}   /* 도시 사진 타일 — 사진(background-image)은 HTML에서, img/city(CC0·퍼블릭 도메인) */
-.city-tile::before{content:"";position:absolute;inset:0;background:linear-gradient(to top, var(--scrim-photo) 0%, transparent 65%);}   /* 아래 그늘 = 흰 글자가 읽히게 + 사진 톤 통일 */
-.city-tile > *{position:relative;}
-.ct-n{display:inline-flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-meta);line-height:1;font-weight:var(--fw-bold);white-space:nowrap;}
-.city-tile.is-on{box-shadow:0 0 0 2px var(--surface-card), 0 0 0 4px var(--ink);}   /* 선택 = 잉크 테두리(흰 틈 2) */
-.city-tile.is-off{cursor:default;filter:grayscale(.7);opacity:.75;}
-.soon-tag{position:absolute;top:var(--sp-2);left:var(--sp-2);padding:2px var(--sp-2);border-radius:var(--radius-pill);background:var(--surface-card);font-size:var(--fs-micro);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink-3);}
+/* 많이 찾는 호텔 칩 줄(UX-2611 D, 2026-11-05 — 예전 도시 줄 자리): 검색창 아래 가로 스크롤, 네이버 검색량 상위 8곳 → 상세 */
+#main .search-box .pop-row{display:flex;gap:var(--sp-2);margin:var(--sp-4) calc(var(--page-x) * -1) 0;padding:var(--sp-1) var(--page-x) var(--sp-2);overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+#main .search-box .pop-row::-webkit-scrollbar{display:none;}
+.pop-lab{flex:none;font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;}
+.pop-chip{flex:none;display:inline-flex;align-items:center;height:var(--h-chip);padding:0 var(--sp-4);border-radius:var(--radius-pill);background:var(--surface-card);box-shadow:var(--shadow-badge);font-size:var(--fs-meta);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);white-space:nowrap;text-decoration:none;}
 
 /* 비교 카드: 흰 바탕, 카드는 선 하나(r16·패딩 16). 결론은 상자 없이 1px 선 아래 16/600 + 14 --ink-3 (상자 안 상자 없음) */
 #main .home-vs{padding:var(--browse-gap) var(--page-x) var(--sp-2);}
@@ -1215,6 +1210,11 @@ body[data-page=compare] .det-header{position:static;}   /* 고정 머리 하나�
 #detail .det-end p{margin:0;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink-3);word-break:keep-all;}
 #detail .det-end .de-disc + .de-fb{margin-top:var(--sp-2);}
 #detail .det-end .btn-text{vertical-align:baseline;}
+/* UX-2611 C: 실전정보 안 '위치' 블록(주소·역·지도) + '리뷰 수치' 접힘 */
+#detail .faq-loc{margin-top:var(--sp-6);}
+#detail .faq-loc .faq-loc-h{margin:0 0 var(--sp-2);font-size:var(--fs-h3);line-height:var(--lh-title);font-weight:var(--fw-bold);color:var(--ink);}
+#detail .numfold .numfold-body{margin-top:var(--sp-5);}
+#detail .numfold .numfold-body > .sect{margin-top:var(--sp-6);padding-top:0;border-top:0;}
 
 /* 전체 목록 동네 제목 + 허브 링크 한 줄 (SEO-GOOGLE §3-3 — 목록 → 허브 내부 링크) */
 #hlist .hl-head{display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);margin:0 0 var(--head-gap);}

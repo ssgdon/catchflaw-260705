@@ -805,7 +805,7 @@ def build_footer(depth=0, root=None):
     p = root if root is not None else (('../' * depth) or './')
     return f'''
     <footer id="site-foot">
-        <div class="foot-note">캐치플로의 실망 확률·위험도는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
+        <div class="foot-note">캐치플로의 실망 확률·항목 점수는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
         <div class="foot-links"><a href="{p}about">캐치플로 소개·산출 방법</a> · <a href="{p}hotels">전체 호텔 목록</a> · <a href="{p}privacy">개인정보 처리방침</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
@@ -1081,18 +1081,17 @@ def vs_topic(pa, pb, hotels_meta):
 #   tokyo.jpg ← https://commons.wikimedia.org/wiki/File:Tokyo_Tower_and_Roppongi_Hills_Mori_Tower_seen_from_Hamamatsucho.jpg (CC0, Syced)
 HOME_CITIES = [('후쿠오카', 'fukuoka', True), ('도쿄', 'tokyo', False), ('오사카', 'osaka', False), ('교토', 'kyoto', False), ('삿포로', 'sapporo', False), ('오키나와', 'okinawa', False)]   # 홈 도시 줄 — 열린 도시는 True. 사진 = img/city/{slug}.jpg(위키미디어 공용 CC0·퍼블릭 도메인, 2026-10-11 톤 보정)
 
-def city_row_html():
-    """홈 히어로 도시 줄(사진 타일): 열린 도시 = 잉크 테두리(선택) → 검색, 준비 중 도시 = 흐린 사진 + '준비 중' 꼬리표(누를 수 없음)."""
-    pin = ('<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M7 12.5s4-3.6 4-6.9a4 4 0 1 0-8 0c0 3.3 4 6.9 4 6.9Z" '
-           'stroke="currentColor" stroke-width="1.5"/><circle cx="7" cy="5.6" r="1.4" fill="currentColor"/></svg>')
-    items = []
-    for name, slug, live in HOME_CITIES:
-        img = f'style="background-image:url(./img/city/{slug}.webp?v={V(f"img/city/{slug}.webp")})"'   # 페이지 기준 경로(CSS 변수로 넘기면 css/ 기준으로 풀림)
-        if live:
-            items.append(f'<a class="city-tile is-on" href="./search" aria-current="true" data-ga="home_city" {img}><span class="ct-n">{pin}{name}</span></a>')
-        else:
-            items.append(f'<span class="city-tile is-off" aria-disabled="true" {img}><span class="soon-tag">준비 중</span><span class="ct-n">{pin}{name}</span></span>')
-    return f'<div class="city-row" role="group" aria-label="도시">{"".join(items)}</div>'
+def pop_row_html(hotels_meta, H, n=8):
+    """홈 히어로 '많이 찾는 호텔' 칩 줄(UX-2611 D, 2026-11-05): 네이버 월간 검색량(SV, kw_volume.py) 상위 n곳 → 상세.
+       예전 도시 줄(후쿠오카 + 준비 중 5칸 사진 타일, city_row_html)은 누를 데가 하나뿐이라 뺐다 — 사진 img/city/는 그대로 둔다."""
+    pool = [p for p in hotels_meta if p in H and H[p]['scored'] and SV.get(p)]
+    pool.sort(key=lambda p: -SV[p])
+    chips = []
+    for p in pool[:n]:
+        nm = re.sub(r'\s*\(.*?\)', '', hotels_meta[p]['title']).strip()   # '더 로얄 파크 호텔 후쿠오카 (The Royal Park Hotel Fukuoka)' → 괄호 제거
+        chips.append(f'<a class="pop-chip" href="{hotel_url(p)}" data-ga="home_pop">{E(nm)}</a>')
+    if not chips: return ''
+    return f'<div class="pop-row" role="group" aria-label="많이 찾는 호텔"><span class="pop-lab">많이 찾는</span>{"".join(chips)}</div>'
 
 def vs_card(pa, pb, hotels_meta, H, depth=0):
     """홈 비교 카드 1장 (v3 §7-1): 주제(메타 글자) · 사진 2장 + VS · 이름·평점 2열 · 실망 확률 / 한국인 리뷰 / 1박 평일 행
@@ -1430,7 +1429,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                         <button type="submit"><img src="./img/search.svg" alt="검색"></button>
                         <div class="ac-box" id="ac-box" hidden></div>
                     </form>
-                    {city_row_html()}
+                    {pop_row_html(hotels_meta, H)}
                     <a href="./recommend" class="btn-airec btn-brand btn-block" data-ga="hero_rec"><span>내 성향에 딱 맞는 호텔 추천받기</span></a>
                 </div>
             </article>
@@ -1449,7 +1448,7 @@ def build_index(hotels_meta, H, quotes, col_index=()):
                     </div>
                     <div class="intro-item" data-intro="rec">
                         <a class="intro-card" href="./recommend" data-ga="intro_rec">
-                            <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">네 가지만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
+                            <span class="ic-txt"><b class="ic-tit">나에게 맞는 호텔을 찾고 있나요?</b><span class="ic-sub">못 참는 것만 고르면 리뷰로 골라 드려요</span><span class="ic-link">맞춤형 추천 받기</span></span>
                             <span class="ic-art">{mascot_scene('look', './', 'ic-mascot', 'ic-scene', lazy=True, small=True)}</span>
                         </a>
                         <button type="button" class="btn-icon btn-icon--photo ic-close" aria-label="안내 닫기"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
@@ -1755,8 +1754,8 @@ def build_compare_data(hotels_meta, H, faq_data, monthly=None, quotes=None):
 
 def build_recommend(hotels_meta, H):
     """맞춤 추천 페이지 (2026-10-10, 바텀시트 마법사 → 페이지 · UI-STANDARDS §8).
-       Airbnb 숙소 검색처럼 단계 카드가 쌓이고 지금 단계만 펼쳐진다: 1 도시(후쿠오카만, 나머지 준비 중) → 2 동네
-       → 3 못 참는 것(+1년 안 0건) → 4 1박 예산. 카드는 js/recommend.js가 #rw-steps에 그린다.
+       Airbnb 숙소 검색처럼 단계 카드가 쌓이고 지금 단계만 펼쳐진다: 1 도시(후쿠오카로 고른 채 접힘, UX-2611 D) → 2 못 참는 것(+1년 안 0건, 처음 펼침)
+       → 3 동네 → 4 1박 예산. 카드는 js/recommend.js가 #rw-steps에 그린다.
        결과 = search.html?rec=1&pr=..(검색 rec 모드, URL 파라미터 불변). 아래 막대: 처음부터 · 추천 호텔 보기."""
     n_live = sum(1 for p in hotels_meta if p in H)
     desc = (f'못 참는 것과 동네·예산만 고르면 {CITY["ko"]} 호텔 {n_live}곳의 리뷰 분석으로 '
@@ -1770,7 +1769,7 @@ def build_recommend(hotels_meta, H):
         <section id="recp">
             <div class="rw-head">
                 <h1 class="page-title">맞춤형 추천</h1>
-                <p class="rw-desc">네 가지만 고르면 리뷰 분석으로 <span class="nw">나에게 맞는 호텔을</span> 골라 드려요</p>
+                <p class="rw-desc">못 참는 것만 골라도 돼요{DSEP}<span class="seg">동네·예산까지 고르면 더 정확해요</span></p>
             </div>
             <ol class="rw-steps" id="rw-steps"></ol>
             <p class="rw-how">고른 항목의 불만이 {CITY["ko"]} 평균보다 <span class="nw">적은 호텔부터</span> 보여 드려요</p>
@@ -3181,7 +3180,7 @@ def _faq_ev_preview(ev, topic=''):
     return (f'<li class="fe-item"><div class="fe-meta">{meta}</div>'
             f'<div class="fe-q">"{faq_hl(ev.get("q") or "", topic)}"</div>{link}</li>')
 
-def faq_section(faq, price_html='', pid=None):
+def faq_section(faq, price_html='', pid=None, loc_html=''):
     """F12+F18: 필터 탭 + 컴팩트 리스트(접힘=Q+칩 / 펼침=답변→근거 3개→더보기 시트). e 최대 8.
     price_html(4A): 맨 위 '가격' 행(접지 않음) — 평일·주말 가격을 시트 안에만 숨기지 않는다(v3 §6-8).
     pid: 폴백 근거를 data/fe/{pid}.json으로 따로 내보낼 때 쓴다(상세 경량화)."""
@@ -3190,6 +3189,7 @@ def faq_section(faq, price_html='', pid=None):
     for item in faq:
         by_g[item.get('g') or '기타'].append(item)
     present = [g for g in FAQ_GROUP_ORDER if by_g.get(g)]
+    if loc_html and '위치' not in present: present.append('위치')   # UX-2611 C: 주소·지도가 '위치' 탭을 채운다(리뷰 유래 카드가 없어도)
     if not present: return ''
     tabs = ['<button type="button" class="faq-tab is-on" data-g="">전체</button>']
     tabs += [f'<button type="button" class="faq-tab" data-g="{E(g)}">{E(FAQ_GROUP_LABEL.get(g, g))}</button>' for g in present]
@@ -3240,6 +3240,7 @@ def faq_section(faq, price_html='', pid=None):
             {price_html}
             <div class="faq-tabs tabs-u">{''.join(tabs)}</div>
             <div class="faq-cards">{''.join(cards)}</div>
+            {f'<div class="faq-loc location" data-group="위치"><div class="faq-loc-h">위치</div>{loc_html}</div>' if loc_html else ''}
         </div>{evid_script}'''
 
 def social_section(soc, name):
@@ -3422,13 +3423,18 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             loc_chips += f'<p class="loc-go"><b>{E(_si["line"])}</b>{DSEP}<span class="seg">{E(_si["go"])}</span></p>'
         addr_html = (f'<div class="loc-addr">{E(meta.get("address") or "")}</div>'
                      if meta.get('address') else '')
-        map_block = f'''<div class="sect location">
-            <div class="head"><h2 class="title">위치</h2></div>
-            {addr_html}
+        loc_html = f'''{addr_html}
             {loc_chips}
             <div class="map"><iframe src="https://maps.google.com/maps?q={lat},{lng}&z=16&hl=ko&output=embed"
-                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{E(name)} 지도"></iframe></div>
+                loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="{E(name)} 지도"></iframe></div>'''
+        map_block = f'''<div class="sect location">
+            <div class="head"><h2 class="title">위치</h2></div>
+            {loc_html}
         </div>'''
+    # UX-2611 C(2026-11-05): 지도 505px이 실망 확률(3,030px) 앞에 있어 본체를 밀어냈다 — 실전정보가 있으면 그 '위치' 탭 안으로 넣고 독립 섹션은 뺀다
+    loc_html = loc_html if (lat and lng) else ''
+    if h['scored'] and faq and loc_html:
+        map_block = ''
 
     # 이 호텔 수치의 실제 기간 — 수집이 1년을 못 채운 호텔은 '최근 N개월' (2026-10 검토 case 1)
     per = period_label(h, (monthly or {}).get(pid))
@@ -3538,6 +3544,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     glance_html = ''
     who_html = ''
     tabs_html = ''
+    body_rest = ''   # UX-2611 C: 실전정보·후기·리뷰 수치(채점 호텔) — 비교해 볼 만한 호텔·누구와 뒤에 놓는다
     v_head, v_tone = '', 'safe'
     v_ans, tier_txt, _neg, _pos_txt = '', '', [], []   # 답 문단 재료(채점 호텔만 채움)
     if not h['scored']:
@@ -4056,11 +4063,20 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고는 드물지만 치명적이라 리뷰 건수로 보여드려요</span>
             </div>
         </div>
-        {faq_section(faq, '', pid)}
-        {'<div id="sec-rev" class="sec-anchor"></div>' if (social or stars_block) else ''}
+'''
+        # UX-2611 C: 구글 별점 분포 + 한국인 리뷰 현황(합쳐 930px)은 결정에 거의 안 쓰여 '리뷰 수치' 한 섹션으로 접는다(펼침은 detail-page.js, GA numfold)
+        _kr_html = korean_card(kr_1y, h, kr_rank_pct, kr_dist, per)
+        numfold_html = ''
+        if stars_block or _kr_html:
+            numfold_html = (f'<div class="sect numfold" id="sec-num"><div class="head"><h2 class="title">리뷰 수치</h2>'
+                            f'<div class="desc">구글 별점 분포와 한국인 리뷰 비율이에요{DSEP}<span class="seg">숫자를 직접 보고 싶을 때 펼쳐요</span></div></div>'
+                            f'<button type="button" class="btn-gray btn-block" data-act="numfold" data-ga="numfold" aria-expanded="false" aria-controls="numfold-body">수치 펼쳐 보기</button>'
+                            f'<div class="numfold-body" id="numfold-body" hidden>{stars_block}{_kr_html}</div></div>')
+        body_rest = f'''
+        {faq_section(faq, '', pid, loc_html)}
+        {'<div id="sec-rev" class="sec-anchor"></div>' if (social or numfold_html) else ''}
         {social_section(social, name)}
-        {stars_block}
-        {korean_card(kr_1y, h, kr_rank_pct, kr_dist, per)}
+        {numfold_html}
         <div class="ov rs is-cat" data-ov="sheet" id="ov-review" role="dialog" aria-modal="true" aria-labelledby="rs-t" hidden>
             <div class="ov-dim"></div>
             <section class="ov-panel ov-w-xl">
@@ -4108,7 +4124,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
 
     # P2 고정 섹션 탭 (채점 호텔만) — DOM 순서 = 탭 순서. 없는 섹션은 탭도 생략.
     if h['scored']:
-        _tabs = ([('sec-sum', '요약')] if glance_html else []) + [('sec-prob', '위험도')]
+        _tabs = ([('sec-sum', '요약')] if glance_html else []) + [('sec-prob', '근거')]   # 2026-11-05 '위험도' → '근거'(화면 용어는 실망 확률 하나로)
         if faq: _tabs.append(('hotel-faq', '실전정보'))
         if social or stars_block: _tabs.append(('sec-rev', '후기'))
         if similar_block: _tabs.append(('sec-alt', '대안'))   # 2026-10-12: 대안은 맨 아래(이 호텔 이야기를 다 본 뒤)
@@ -4271,10 +4287,11 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {pc_side}
                 {tabs_html}
                 {glance_html}
+                {body_scored}
                 {next_block}
                 {who_html}
                 {map_block}
-                {body_scored}
+                {body_rest}
                 {col_chip_block}
                 {similar_block}
                 {pairs_block}

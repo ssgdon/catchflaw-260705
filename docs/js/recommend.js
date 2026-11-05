@@ -90,7 +90,8 @@
   var AREAS = window.CF_AREAS || [];
   var CITY = { code: 'fukuoka', ko: '후쿠오카', n: 0 };   // mount 때 window.CF_REC_CITY(페이지 본문 스크립트)로 채운다
   /* 상태: city ''=아직 · area null=아직 / ''=어디든 · sel 고른 순서 = 중요도 · bud null=아직 / ''=상관없어요 · open 펼친 단계(0 = 모두 접힘) */
-  var S = { city: '', area: null, sel: [], no: [], bud: null, bw: false, open: 1 };
+  // UX-2611 D(2026-11-05): 도시는 후쿠오카 하나뿐이라 고른 상태로 접고(1단계 한 줄), 꼭 골라야 하는 '못 참는 것'(2)을 먼저 펼친다. 동네(3)·예산(4)은 선택
+  var S = { city: CITY.code, area: null, sel: [], no: [], bud: null, bw: false, open: 2 };
   var listEl = null;
 
   var CHECK = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true"><path d="M3 7.2 5.8 10 11 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
@@ -102,19 +103,19 @@
     return b ? b.label : '';
   }
   function isDone(n) {
-    return n === 1 ? !!S.city : n === 2 ? S.area !== null : n === 3 ? S.sel.length > 0 : S.bud !== null;
+    return n === 1 ? !!S.city : n === 2 ? S.sel.length > 0 : n === 3 ? S.area !== null : S.bud !== null;
   }
   // 접힌 카드 오른쪽 값 [본 줄, 둘째 줄]
   function summary(n) {
     if (!isDone(n)) return ['골라 주세요', ''];
-    if (n === 1) return [CITY.ko, ''];
-    if (n === 2) return [S.area ? areaKo(S.area) : '어디든 좋아요', ''];
-    if (n === 3) return [S.sel.map(function (c) { return catName(byCode[c]); }).join('·'),
+    if (n === 1) return [CITY.ko, '다른 도시는 준비 중'];
+    if (n === 3) return [S.area ? areaKo(S.area) : '어디든 좋아요', ''];
+    if (n === 2) return [S.sel.map(function (c) { return catName(byCode[c]); }).join('·'),
                          S.no.length ? S.no.map(function (k) { return NO_SHORT[k]; }).join(', ') + ' 없는 곳만' : ''];
     return [S.bud ? (S.bw ? '주말 ' : '평일 ') + budLabel() : '상관없어요', ''];
   }
 
-  var LABELS = { 1: '도시', 2: '동네', 3: '못 참는 것', 4: '1박 예산' };
+  var LABELS = { 1: '도시', 2: '못 참는 것', 3: '동네', 4: '1박 예산' };
 
   function numHtml(n, on) {
     return '<span class="rw-num' + (on ? ' is-on' : isDone(n) ? ' is-done' : '') + '" aria-hidden="true">' + (!on && isDone(n) ? CHECK : n) + '</span>';
@@ -151,7 +152,7 @@
             radio(on) + '</button>';
         }).join('') + '</div>';
     }
-    if (n === 2) {
+    if (n === 3) {
       var opts = [{ code: '', ko: '어디든 좋아요', desc: CITY.ko + ' 전체에서 찾아요' }].concat(AREAS.map(function (a) {
         return { code: a.code, ko: a.ko, desc: AREA_DESC[a.code] || '' };
       }));
@@ -165,7 +166,7 @@
             radio(on) + '</button>';
         }).join('') + '</div>';
     }
-    if (n === 3) {
+    if (n === 2) {
       return '<h2 class="rw-q">여행할 때 이것만은 못 참아요</h2>' +
         '<p class="rw-sub">중요한 순서대로 최대 3개 골라 주세요</p>' +
         '<div class="rw-opts" role="group" aria-label="못 참는 것">' + CATS.map(function (c) {
@@ -182,7 +183,7 @@
             return '<button type="button" class="rw-must-chip' + (on ? ' is-on' : '') + '" aria-pressed="' + on + '" data-must="' + m.code + '">' + m.label + '</button>';
           }).join('') + '</div>' +
         '</div>' +
-        '<button type="button" class="rw-next-btn" data-next="3"' + (S.sel.length ? '' : ' aria-disabled="true"') + '>' + (isDone(4) ? '확인' : '다음') + '</button>';
+        '<button type="button" class="rw-next-btn" data-next="2"' + (S.sel.length ? '' : ' aria-disabled="true"') + '>' + (isDone(4) ? '확인' : '다음') + '</button>';
     }
     var list = (S.bw ? BUDGETS_W : BUDGETS);
     return '<h2 class="rw-q">1박 예산은 어느 정도예요?</h2>' +
@@ -237,7 +238,7 @@
 
   function submit() {
     if (!S.city) { S.open = 1; render(true); toast('먼저 도시를 골라 주세요'); return; }
-    if (!S.sel.length) { S.open = 3; render(true); toast('못 참는 것을 1개 이상 골라 주세요'); return; }
+    if (!S.sel.length) { S.open = 2; render(true); toast('못 참는 것을 1개 이상 골라 주세요'); return; }
     saveUrl();
     var qs = qsOf({ pr: S.sel, bud: S.bud, bw: S.bw, area: S.area, no: S.no });
     ev('rec_submit', { pr: S.sel.join(','), area: S.area || 'any', bud: S.bud || 'any', bw: S.bw ? 1 : 0, no: S.no.join(',') });
@@ -260,7 +261,7 @@
     }
     if (d.open) { var n = +d.open; S.open = S.open === n ? 0 : n; ev('rec_step', { step: n }); render(true); return; }
     if (d.city) { S.city = d.city; advance(1); render(true); return; }
-    if (d.area !== undefined) { S.area = d.area; advance(2); render(true); saveUrl(); return; }
+    if (d.area !== undefined) { S.area = d.area; advance(3); render(true); saveUrl(); return; }
     if (d.cat) {
       var i = S.sel.indexOf(d.cat);
       if (i >= 0) S.sel.splice(i, 1);
@@ -273,7 +274,7 @@
       if (j >= 0) S.no.splice(j, 1); else S.no.push(d.must);
       S.no = normNo(S.no); render(false); saveUrl(); return;
     }
-    if (d.next) { if (S.sel.length) { advance(3); render(true); } return; }
+    if (d.next) { if (S.sel.length) { advance(2); render(true); } return; }
     if (d.bw !== undefined) {
       var nbw = d.bw === '1';
       if (nbw !== S.bw) S.bud = null;   // 평일·주말 구간이 달라 고른 예산은 다시 고른다
@@ -284,7 +285,7 @@
 
   function mount(el) {
     listEl = el;
-    if (window.CF_REC_CITY) CITY = window.CF_REC_CITY;
+    if (window.CF_REC_CITY) { CITY = window.CF_REC_CITY; if (!S.sel.length) S.city = CITY.code; }
     // 미리 채우기: ?pr=..&bud=..&bw=1&area=..&no=.. (검색 '조건 수정'·뒤로 가기·공유 링크) → 모든 단계를 고른 상태로 접어서 보여 준다
     var sp = new URLSearchParams(location.search);
     var pr = (sp.get('pr') || '').split(',').filter(function (c) { return byCode[c]; });
@@ -302,7 +303,7 @@
     var go = document.querySelector('#recp .rw-go-btn'), rs = document.querySelector('#recp .rw-reset-btn');
     if (go) go.addEventListener('click', submit);
     if (rs) rs.addEventListener('click', function () {
-      S = { city: '', area: null, sel: [], no: [], bud: null, bw: false, open: 1 };
+      S = { city: CITY.code, area: null, sel: [], no: [], bud: null, bw: false, open: 2 };
       saveUrl(); render(false); window.scrollTo({ top: 0, behavior: 'smooth' });
     });
     // 결과에서 뒤로 왔을 때(bfcache) 처리 화면이 남아 있지 않게

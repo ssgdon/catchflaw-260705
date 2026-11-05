@@ -450,9 +450,16 @@ $(function(){
         var g = String($(this).data('g') || '');
         $('#hotel-faq .faq-tab').removeClass('is-on');
         $(this).addClass('is-on');
-        $('#hotel-faq .faq-card').each(function(){
+        $('#hotel-faq .faq-card, #hotel-faq .faq-loc').each(function(){
             $(this).toggle(!g || $(this).data('group') === g);
         });
+    });
+    // UX-2611 C: '리뷰 수치'(별점 분포·한국인 리뷰) 접힘 → 펼침. 클릭은 [data-ga] 공통 핸들러가 detail_click(numfold)로 센다
+    $('#detail').on('click', '[data-act="numfold"]', function(){
+        var b = document.getElementById('numfold-body'), open = b.hidden;
+        b.hidden = !open;
+        $(this).attr('aria-expanded', open ? 'true' : 'false').text(open ? '수치 접기' : '수치 펼쳐 보기');
+        if (open && window.CF_qmore) window.CF_qmore(b);
     });
     // F18 FAQ 카드 접힘/펼침 — Q줄 클릭은 토글(펼침 상태에서 접기 가능)
     $('#hotel-faq').on('click', '.faq-q', function(e){
