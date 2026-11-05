@@ -3,6 +3,7 @@
      /admin/site.json  — 빌드 시점 사실(generate.admin_site_json): 호텔 표(pid → [이름, 슬러그, 제휴, 점수 노출, 상태])·상세 수·제휴 링크 수·
                          asof·빌드 시각·커밋·최근 커밋 5건·changes.json 사본(changes·pending)
      /admin/api/data   — VM 집계(pipeline/admin_export.py → R2 → functions/admin/api/data.js). 없으면(503) site.json만으로 일부를 그린다.
+                         A.gsc = 구글 서치 콘솔(검색 실적·검색어·페이지 + 사이트맵 전수 URL 검사 색인 상태·추이, 2026-11-05 '구글 검색' 탭)
                          로컬 프리뷰(localhost)는 /admin/sample.json(scripts/check_admin.py가 만든 실제 값, 커밋 안 함)으로 대신한다.
    화면 원칙: 표보다 결론 먼저 — ① 인사이트 카드(판정 + 결론 한 줄 + 근거 + 할 일) ② 핵심 지표 카드(숫자 + 앞 기간 대비 ▲▼ + 스파크라인)
      ③ 그림(여정 막대·채널 쌓은 막대·막대 목록) ④ 원본 표는 '표로 보기'로 접는다. 인사이트·개선 후보 규칙은 두 데이터를 다 봐야 해서 여기서 계산한다.
@@ -58,7 +59,11 @@
   function urlLabel(u) {
     var mm = /^\/hotels\/([^/?#]+)/.exec(u || '');
     if (mm) { var p = slugMap()[mm[1]] || (mm[1].indexOf('ChIJ') === 0 ? mm[1] : null), h = p && hotelOf(p); if (h) return h[0]; }
-    return { '/': '홈', '/search': '검색', '/compare': '비교', '/recommend': '맞춤 추천', '/recent': '최근 본 호텔', '/hotels': '전체 호텔 목록' }[u] || u;
+    return { '/': '홈', '/search': '검색', '/compare': '비교', '/recommend': '맞춤 추천', '/recent': '최근 본 호텔', '/hotels': '전체 호텔 목록',
+      '/about': '소개·산출 방법', '/privacy': '개인정보 처리방침', '/area/hakata': '하카타역 허브', '/area/tenjin': '텐진 허브',
+      '/area/nakasu': '나카스·캐널시티 허브', '/area/gion': '기온·오호리 허브', '/best/solo': '혼자 여행 허브', '/best/couple': '커플·2인 허브',
+      '/best/group': '친구·단체 허브', '/best/family': '가족여행 허브', '/best/value': '가성비 허브', '/best/luxury': '4·5성급 허브',
+      '/best/capsule': '캡슐호텔 허브', '/best/bath': '대욕장·온천 허브' }[u] || u;
   }
   function gaWin(w) { return (A && A.ga && A.ga.days && A.ga.days[w]) || null; }
   function ev(g, name) { var r = null; (g.events || []).forEach(function (e) { if (e.name === name) r = e; }); return r; }
@@ -241,7 +246,7 @@
       (x.todo ? '<p class="ad-ins-a"><b>할 일</b>' + esc(x.todo) + '</p>' : '') + '</div>';
   }
 
-  // ───────────── 개선 후보 규칙 7개 (§4-4) — 점수 = 영향(세션 수) × 확신 ─────────────
+  // ───────────── 개선 후보 규칙 8개 (§4-4 7개 + 구글 색인) — 점수 = 영향(세션 수) × 확신 ─────────────
   function candidates() {
     var out = [];
     function add(score, title, basis, tab) { out.push({ score: score, title: title, basis: basis, tab: tab }); }
@@ -282,6 +287,14 @@
     baList().forEach(function (x) {
       if (x.ba && x.ba.verdict === 'down') add(1e4, '변경 뒤 나빠진 지표가 있어요 — 되돌리기 검토', x.c.date + ' ' + x.c.commit + ' ' + x.c.title, 'chg');
     });
+    var gi = A && A.gsc && A.gsc.index;   // 8. 구글 색인 — 트래픽 병목이 색인이라 '안 된 곳 수 × 2'로 높게(운영 경보 1e6보다는 아래)
+    if (gi && gi.n > gi.indexed) {
+      var rq = reqList(3);
+      add((gi.n - gi.indexed) * 2, '구글 색인 안 된 페이지 ' + num(gi.n - gi.indexed) + '곳 — 오늘 색인 요청하기',
+        '색인 ' + num(gi.indexed) + ' / 사이트맵 ' + num(gi.n) + (rq.length ? ' · 먼저: ' + rq.map(function (x) { return urlLabel(x.r.u); }).join(' · ') : ''), 'gsc');
+    }
+    if (A && A.gsc && A.gsc.index_changes && A.gsc.index_changes.lost.length)
+      add(1e4, '구글 색인에서 빠진 페이지가 있어요 (' + A.gsc.index_changes.lost.length + '곳)', A.gsc.index_changes.lost.slice(0, 4).map(urlLabel).join(' · '), 'gsc');
     return out.sort(function (a, b) { return b.score - a.score; });
   }
 
@@ -332,8 +345,8 @@
     var cs = candidates().slice(0, 5);
     html += sec('지금 고칠 것', cs.length ? '<ol class="ad-todo">' + cs.map(function (x) {
       return '<li><b class="ad-todo-t">' + esc(x.title) + '</b><span class="ad-todo-b">' + esc(x.basis) + '</span>' +
-        '<button type="button" class="btn-text btn-text--sm" data-go="' + x.tab + '">' + { ux: 'UX 지표에서 보기', ops: '운영 탭에서 보기', chg: '변경 전후에서 보기' }[x.tab] + '</button></li>';
-    }).join('') + '</ol>' : '<p class="ad-note">' + (A ? '규칙에 걸린 후보가 없어요' : 'VM 집계가 들어오면 후보를 뽑아요') + '</p>', '운영·데이터 규칙 7개로 뽑은 할 일, 영향 큰 순 5개');
+        '<button type="button" class="btn-text btn-text--sm" data-go="' + x.tab + '">' + { ux: 'UX 지표에서 보기', gsc: '구글 검색에서 보기', ops: '운영 탭에서 보기', chg: '변경 전후에서 보기' }[x.tab] + '</button></li>';
+    }).join('') + '</ol>' : '<p class="ad-note">' + (A ? '규칙에 걸린 후보가 없어요' : 'VM 집계가 들어오면 후보를 뽑아요') + '</p>', '운영·데이터 규칙 8개로 뽑은 할 일, 영향 큰 순 5개');
     var hs = db && db.hotels, showN = hs ? (hs.active || 0) + (hs.watch || 0) : (cnt.active || 0) + (cnt.watch || 0);
     var affR = ratio(cnt.affiliate_detail, cnt.detail);
     html += sec('사이트 현황', '<div class="ad-grid">' +
@@ -341,6 +354,9 @@
       kpi({ label: '상세 페이지', value: num(cnt.detail), sub: '실망 확률 노출 ' + num(cnt.scored) + '곳' }) +
       kpi({ label: '제휴 링크', value: num(cnt.affiliate_detail) + '곳', sub: '상세의 ' + pct(affR), spark: '<div class="ad-kpi-bar">' + bar(affR) + '</div>' }) +
       kpi({ label: '사이트 평가 리뷰', value: db ? num(db.reviews_site) : '—', sub: db && db.analyzed_v5 != null ? 'v5 분석 ' + num(db.analyzed_v5) + '건' : 'VM 집계 없음' }) +
+      (A && A.gsc && A.gsc.index ? kpi({ label: '구글 색인', value: num(A.gsc.index.indexed) + '곳', sub: '사이트맵 ' + num(A.gsc.index.n) + '곳의 ' +
+        pct(ratio(A.gsc.index.indexed, A.gsc.index.n)) + ' · ' + esc(A.gsc.index.day.slice(5)) + ' 점검',
+        spark: '<div class="ad-kpi-bar">' + bar(ratio(A.gsc.index.indexed, A.gsc.index.n)) + '</div>' }) : '') +
       '</div>', '', { raw: 1 });
     $('ad-home').innerHTML = html;
     drawChart();
@@ -633,15 +649,264 @@
     var q = (A && A.ga && A.ga.quota) || {};
     html += sec('외부 쿼터', '<dl class="ad-kv">' +
       '<dt>Clarity Data Export</dt><dd>오늘 ' + num(A && A.clarity && A.clarity.pulls_today) + ' / 10회<span class="ad-n ad-n-block">1~3일치만, 프로젝트당 하루 10회</span></dd>' +
+      '<dt>Search Console API</dt><dd>' + (A && A.gsc ? 'URL 검사 오늘 ' + num(A.gsc.inspect_used) + ' / 2,000회' : esc(gscErr() || '이번 집계에 없음')) +
+        '<span class="ad-n ad-n-block">URL 검사는 속성당 하루 2,000회·분당 600회, 검색 실적은 여유</span></dd>' +
       '<dt>GA4 Data API</dt><dd>' + (q.tokens_day_remaining != null ? '이번 집계 ' + num(q.tokens_day_consumed) + '토큰 · 오늘 남음 ' + num(q.tokens_day_remaining) : '—') + '</dd>' +
       '<dt>Apify · Gemini</dt><dd><a href="https://console.apify.com/billing" target="_blank" rel="noopener">Apify 결제</a> · <a href="https://aistudio.google.com/" target="_blank" rel="noopener">Google AI Studio</a><span class="ad-n ad-n-block">사용량 API가 없어 링크만</span></dd></dl>');
     $('ad-ops').innerHTML = html;
   }
 
+  // ───────────── 구글 검색(서치 콘솔, 2026-11-05) ─────────────
+  // A.gsc = admin_export.gsc_part(): days{7,28,90}(클릭·노출·CTR·순위·검색어·페이지·기기) · daily(90일) · sitemaps
+  //         index(사이트맵 전수 URL 검사: urls[{u,v,c,lc,pr,gc?,fs?}]) · index_hist(DB gsc_inspect 일별) · index_changes(직전 점검 대비)
+  var GWIN = '28', GSC_PROP = 'sc-domain:catchflaw.com';
+  var COV = [   // coverageState(영문 고정, languageCode en-US) → [규칙, 묶음, 화면 이름, 판정색]. 마지막 줄 = 나머지 전부
+    [/^(Submitted and indexed|Indexed, not submitted)/i, 'ok', '색인됨', 'safe'],
+    [/^Crawled - currently not indexed/i, 'crawled', '크롤됨 · 색인 안 됨', 'warning'],
+    [/^Discovered - currently not indexed/i, 'disc', '발견됨 · 아직 크롤 전', 'warning'],
+    [/unknown to Google/i, 'unknown', '구글이 아직 모름', 'danger'],
+    [null, 'other', '기타 제외', '']];
+  var COV_KO = { 'Alternate page with proper canonical tag': '다른 주소가 표준(canonical)', 'Page with redirect': '리디렉션',
+    'Blocked by robots.txt': 'robots.txt 차단', 'Not found (404)': '없는 주소(404)', 'Soft 404': '내용 없음(soft 404)',
+    'Server error (5xx)': '서버 오류(5xx)', 'Redirect error': '리디렉션 오류',
+    'Duplicate, Google chose different canonical than user': '중복 — 구글이 다른 표준 선택', 'Duplicate without user-selected canonical': '중복 — 표준 미지정' };
+  var COV_CLS = { ok: 'ad-s1-chart', crawled: 'ad-s2-chart', disc: 'ad-s3-chart', unknown: 'ad-s4-chart', other: 'ad-s5-chart' };
+  var COV_ORD = ['ok', 'crawled', 'disc', 'unknown', 'other'];
+  function covOf(c) { for (var i = 0; i < COV.length - 1; i++) if (COV[i][0].test(c || '')) return COV[i]; return COV[COV.length - 1]; }
+  function covName(c) {
+    var k = covOf(c);
+    if (k[1] !== 'other') return k[2];
+    return /noindex/i.test(c || '') ? 'noindex로 제외' : (COV_KO[c] || c || '알 수 없음');
+  }
+  function gWin(w) { return (A && A.gsc && A.gsc.days && A.gsc.days[w]) || null; }
+  function pageType(u) { return /^\/hotels\/./.test(u) ? '상세' : /^\/(area|best)\//.test(u) ? '허브' : '목록·소개'; }
+  function inspectUrl(u) { return 'https://search.google.com/search-console/inspect?resource_id=' + encodeURIComponent(GSC_PROP) + '&id=' + encodeURIComponent('https://catchflaw.com' + u); }
+  function gscErr() { return ((A && A.errors) || []).filter(function (e) { return /^GSC/.test(e); }).join(' · '); }
+  function idxCounts(idx) {
+    var by = { ok: 0, crawled: 0, disc: 0, unknown: 0, other: 0 }, type = {};
+    (idx.urls || []).forEach(function (r) {
+      var t = pageType(r.u); by[covOf(r.c)[1]]++;
+      type[t] = type[t] || { ok: 0, n: 0 }; type[t].n++; if (r.v === 'PASS') type[t].ok++;
+    });
+    return { by: by, type: type };
+  }
+  function idxAgo(days) {   // 색인 점검 기록 중 days일 전(이하)에서 가장 가까운 날
+    var h = (A && A.gsc && A.gsc.index_hist) || [], idx = A && A.gsc && A.gsc.index, best = null;
+    if (!idx) return null;
+    var cut = addDays(idx.day, -days);
+    h.forEach(function (x) { if (x.day <= cut && x.total) best = x; });
+    return best;
+  }
+  function viewsByPath() {   // GA 90일 상세 조회 → 경로별 (색인 요청 순서에 씀)
+    var m = {}, g = gaWin('90');
+    ((g && g.hotels) || []).forEach(function (h) { var x = hotelOf(h.pid); if (x) m['/hotels/' + x[1]] = h.views; });
+    return m;
+  }
+  function reqList(n) {   // 색인 안 된 사이트맵 주소: 전체 목록·홈 → 허브 → 상세(아직 크롤 전 먼저, 사이트맵 우선순위=검색량·GA 조회 순). 검색·맞춤 추천은 맨 뒤
+    var idx = A && A.gsc && A.gsc.index; if (!idx) return [];
+    var vw = viewsByPath(), TW = { '/hotels': 5, '/': 5, '/about': 1.5, '/search': 0.5, '/recommend': 0.5 };
+    function w(u) { return TW[u] != null ? TW[u] : pageType(u) === '허브' ? 3 : 1; }
+    return (idx.urls || []).filter(function (r) { return r.v !== 'PASS' && (covOf(r.c)[1] !== 'other' || staleNoindex(r)); }).map(function (r) {
+      return { r: r, views: vw[r.u] || 0, s: w(r.u) * 10 + (staleNoindex(r) ? 8 : covOf(r.c)[1] === 'crawled' ? 0 : 3) + (r.pr || 0.5) * 5 + Math.log(1 + (vw[r.u] || 0)) };
+    }).sort(function (a, b) { return b.s - a.s; }).slice(0, n || 10);
+  }
+  function staleNoindex(r) { return r.v !== 'PASS' && /noindex/i.test(r.c || ''); }   // 사이트맵 주소인데 noindex = 옛 판정(분석 준비 중일 때 크롤)
+  function striking(g) { return (g.queries || []).filter(function (q) { return q.position >= 4 && q.position <= 15 && q.impressions >= 10; }); }
+  function lowCtr(g) { return (g.pages || []).filter(function (p) { return p.impressions >= 50 && p.position <= 10 && ratio(p.clicks, p.impressions) < 0.02; }); }
+  function posDelta(cur, prev) {   // 순위는 숫자가 작아질수록 좋다 → ▲ = 올라감
+    if (cur == null || prev == null) return '';
+    var d = prev - cur;
+    if (Math.abs(d) < 0.5) return '<span class="tag">– ' + Math.abs(d).toFixed(1) + '위</span>';
+    return '<span class="tag">' + dot(d > 0 ? 'safe' : 'danger') + (d > 0 ? '▲ ' : '▼ ') + Math.abs(d).toFixed(1) + '위</span>';
+  }
+  function gscInsights(g) {
+    var out = [], idx = A.gsc.index, ch = A.gsc.index_changes;
+    function add(tone, area, title, why, todo, meter) { out.push({ tone: tone, area: area, title: title, why: why, todo: todo, meter: meter }); }
+    if (idx && idx.n) {
+      var r = ratio(idx.indexed, idx.n), ago = idxAgo(7), c = idxCounts(idx), never = c.by.disc + c.by.unknown;
+      add(r < 0.3 ? 'danger' : r < 0.7 ? 'warning' : 'safe', '색인', '구글 색인 ' + num(idx.indexed) + '곳 / 사이트맵 ' + num(idx.n) + '곳 (' + pct(r) + ')',
+        (ago ? ago.day.slice(5) + ' ' + num(ago.indexed) + '곳 → 지금 ' + num(idx.indexed) + '곳' : idx.day.slice(5) + ' 점검 · 추이는 매일 쌓여요') +
+        (ch && (ch.new.length || ch.lost.length) ? ' · ' + ch.since.slice(5) + ' 점검 뒤 새로 ' + ch.new.length + '곳 · 빠짐 ' + ch.lost.length + '곳' : ''),
+        r < 0.9 ? '아래 \'오늘 색인 요청할 곳\'을 URL 검사에서 하루 10개 안팎 요청' : '', r);
+      var hub = c.type['허브'];
+      if (hub && hub.ok < hub.n) add(hub.ok ? 'warning' : 'danger', '허브', '동네·동행·테마 허브 ' + num(hub.n) + '곳 중 ' + num(hub.ok) + '곳만 색인됐어요',
+        '허브는 호텔 수십 곳으로 가는 링크 묶음이라 색인되면 상세 크롤이 빨라져요 · 상세는 ' + num((c.type['상세'] || {}).ok) + ' / ' + num((c.type['상세'] || {}).n) + ' 색인',
+        '아래 요청 목록 맨 위의 허브부터 URL 검사 → 색인 생성 요청', ratio(hub.ok, hub.n));
+      var stale = (idx.urls || []).filter(staleNoindex);
+      if (stale.length) add('warning', '색인', 'noindex 시절에 크롤된 페이지 ' + stale.length + '곳 — 지금은 색인 가능',
+        stale.slice(0, 4).map(function (r) { return urlLabel(r.u); }).join(' · ') + ' · 분석 준비 중일 때 가져가서 옛 판정이 남았어요', 'URL 검사에서 다시 색인 생성 요청(요청 목록에 들어 있어요)');
+      if (never) add('warning', '크롤', '구글이 아직 가져가지 않은 페이지 ' + num(never) + '곳',
+        '발견만 됨 ' + num(c.by.disc) + ' · 모름 ' + num(c.by.unknown) + ' · 가져갔지만 색인 안 함 ' + num(c.by.crawled),
+        '외부 링크가 늘수록 크롤이 빨라져요 — marketing/backlinks 다음 사이트에 올리기', ratio(never, idx.n));
+    }
+    if (ch && ch.lost.length) add('danger', '색인', '색인에서 빠진 페이지 ' + ch.lost.length + '곳 (' + ch.since.slice(5) + ' 대비)',
+      ch.lost.slice(0, 4).map(urlLabel).join(' · '), 'URL 검사로 이유 확인(중복·noindex·크롤 오류)');
+    if (g) {
+      var pv = g.prev || {};
+      add(pv.clicks >= 5 && g.clicks >= pv.clicks * 1.1 ? 'safe' : pv.clicks >= 5 && g.clicks <= pv.clicks * 0.9 ? 'danger' : '', '실적',
+        '구글 검색 클릭 ' + num(g.clicks) + '회 · 노출 ' + num(g.impressions) + '회',
+        '앞 ' + GWIN + '일 클릭 ' + num(pv.clicks) + ' · 노출 ' + num(pv.impressions) + ' · 평균 ' + (g.position != null ? g.position + '위' : '—') + ' · 검색어 ' + num(g.n_queries) + '개', '');
+      var st = striking(g);
+      if (st.length) add('warning', '검색어', '조금만 올리면 클릭이 늘 검색어 ' + st.length + '개',
+        st.slice(0, 3).map(function (q) { return '\'' + q.q + '\' ' + q.position + '위·노출 ' + num(q.impressions); }).join(' · '),
+        '그 검색어로 들어오는 페이지의 제목·답 문단에 그 말을 그대로 넣기');
+      var lc = lowCtr(g);
+      if (lc.length) add('warning', '제목', '노출은 많은데 클릭이 적은 페이지 ' + lc.length + '곳',
+        lc.slice(0, 3).map(function (p) { return urlLabel(p.u) + ' 노출 ' + num(p.impressions) + '·클릭 ' + num(p.clicks); }).join(' · '),
+        '검색 결과에 보이는 제목(title)·설명 문구를 검색어에 맞게 손질');
+    }
+    return out.sort(function (a, b) { return TONE_ORD[a.tone] - TONE_ORD[b.tone]; });
+  }
+  function gscKpis(g) {
+    var idx = A.gsc.index, pv = g.prev || {}, wl = '앞 ' + GWIN + '일 ', out = [], d = (A.gsc.daily || []).slice(-Number(GWIN));
+    if (idx) {
+      var ago = idxAgo(7);
+      out.push(kpi({ label: '구글 색인 페이지', value: num(idx.indexed) + '<span class="ad-n"> / ' + num(idx.n) + '</span>',
+        delta: ago ? delta(idx.indexed, ago.indexed, 'rel', true) : '', prev: ago ? ago.day.slice(5) + ' 점검 ' + num(ago.indexed) : idx.day.slice(5) + ' 점검',
+        spark: spark((A.gsc.index_hist || []).map(function (x) { return x.indexed; }), '색인 페이지 추이') }));
+    }
+    out.push(kpi({ label: '구글 검색 클릭', value: num(g.clicks), delta: delta(g.clicks, pv.clicks, 'rel', true), prev: wl + num(pv.clicks),
+      spark: spark(d.map(function (x) { return x.clicks; }), '일별 클릭') }));
+    out.push(kpi({ label: '노출', value: num(g.impressions), delta: delta(g.impressions, pv.impressions, 'rel', true), prev: wl + num(pv.impressions),
+      spark: spark(d.map(function (x) { return x.impressions; }), '일별 노출') }));
+    out.push(kpi({ label: '클릭률(CTR)', value: pct(g.ctr, 1), delta: delta(g.ctr, pv.ctr, 'pp', true, Math.min(g.impressions || 0, pv.impressions || 0)), prev: wl + pct(pv.ctr, 1) }));
+    out.push(kpi({ label: '평균 순위', value: g.position != null ? g.position + '위' : '—', delta: posDelta(g.position, pv.position),
+      prev: wl + (pv.position != null ? pv.position + '위' : '—'), sub: '노출로 가중한 평균 · 작을수록 위' }));
+    return out.join('');
+  }
+  function renderIndex(idx) {
+    var c = idxCounts(idx), n = idx.n || 1, ks = COV_ORD.filter(function (k) { return c.by[k]; });
+    var names = { ok: '색인됨', crawled: '크롤됨 · 색인 안 됨', disc: '발견됨 · 아직 크롤 전', unknown: '구글이 아직 모름', other: '기타 제외' };
+    var h = A.gsc.index_hist || [], ch = A.gsc.index_changes;
+    var lead = '사이트맵 ' + num(idx.n) + '곳 중 <b>' + num(idx.indexed) + '곳</b>이 구글에 색인돼 있고, <b>' + num(idx.crawled) + '곳</b>을 구글이 한 번이라도 가져갔어요.';
+    var stack = '<div class="ad-stack" role="img" aria-label="사이트맵 주소의 색인 상태 비중">' + ks.map(function (k) {
+      return '<i class="' + COV_CLS[k] + '" style="flex:' + c.by[k] + ' 0 0"></i>'; }).join('') + '</div>' +
+      '<ul class="ad-leg">' + ks.map(function (k) {
+        return '<li><span class="ad-leg-dot ' + COV_CLS[k] + '"></span><span class="ad-leg-n">' + names[k] + '</span><span class="ad-leg-v">' + pct(c.by[k] / n) +
+          '</span><span class="ad-leg-s">' + num(c.by[k]) + '</span></li>'; }).join('') + '</ul>';
+    var types = ['목록·소개', '허브', '상세'].filter(function (t) { return c.type[t]; }).map(function (t) {
+      var x = c.type[t], r = ratio(x.ok, x.n);
+      return hrow(esc(t), num(x.ok) + ' / ' + num(x.n), r, '<span>' + pct(r) + ' 색인</span>', 'ad-fill-chart');
+    }).join('');
+    function names5(a) { return a.slice(0, 5).map(function (u) { return esc(urlLabel(u)); }).join(' · ') + (a.length > 5 ? ' 외' : ''); }
+    var chg = ch ? '<p class="ad-foot">' + esc(ch.since.slice(5)) + ' 점검 뒤 새로 색인 <b>' + ch.new.length + '곳</b>' + (ch.new.length ? ' (' + names5(ch.new) + ')' : '') +
+      ' · 빠짐 <b>' + ch.lost.length + '곳</b>' + (ch.lost.length ? ' (' + names5(ch.lost) + ')' : '') + '</p>' : '';
+    var chart = h.length >= 2 ? '<div class="ad-legend"><span><i class="ad-leg-line ad-s1-chart"></i>색인됨</span><span><i class="ad-leg-line is-dash"></i>구글이 가져간 적 있음</span></div>' +
+      '<div class="ad-chart"><canvas id="ad-chart-idx" role="img" aria-label="일별 색인 페이지 수 선 그래프"></canvas></div>'
+      : '<p class="ad-note">색인 추이 그래프는 매일 점검이 2일 이상 쌓이면 나와요(지금 ' + h.length + '일치)</p>';
+    return sec('색인 상태', '<p class="ad-lead">' + lead + '</p>' + stack + '<ul class="ad-hb">' + types + '</ul>' + chg + chart,
+      '사이트맵 주소 전수 URL 검사 ' + esc(idx.day.slice(5)) + (idx.complete ? '' : ' · 일부만 검사됨') + ' · 막대 = 페이지 종류별 색인 비율');
+  }
+  function renderReq() {
+    var L = reqList(10);
+    if (!L.length) return sec('오늘 색인 요청할 곳', '<p class="ad-note">사이트맵 주소가 전부 색인돼 있어요</p>');
+    return sec('오늘 색인 요청할 ' + L.length + '곳', '<ol class="ad-todo">' + L.map(function (x) {
+      var r = x.r;
+      return '<li><b class="ad-todo-t">' + esc(urlLabel(r.u)) + '</b><span class="ad-todo-b">' + esc(covName(r.c)) + ' · ' +
+        (r.lc ? '마지막 크롤 ' + md(r.lc, false) : '크롤 기록 없음') + (x.views ? ' · 90일 조회 ' + num(x.views) : '') + ' · ' + esc(r.u) + '</span>' +
+        '<a class="btn-text btn-text--sm" href="' + inspectUrl(r.u) + '" target="_blank" rel="noopener">URL 검사 열기</a></li>';
+    }).join('') + '</ol>', '링크를 많이 품은 전체 목록·허브 → 아직 크롤 전 상세 → 검색량·조회 많은 순 · 열린 화면에서 \'색인 생성 요청\'을 누르면 돼요');
+  }
+  function gTable(key, title, rows, all, head, desc) {
+    return sec(title, table(head, rows) + (all > 10 ? moreBtn(key, title + ' ' + all + '개 모두 보기', more[key]) : ''), desc);
+  }
+  function renderQueries(g) {
+    var all = g.queries || [], rows = (more.gq ? all : all.slice(0, 10)).map(function (q) {
+      var sd = q.position >= 4 && q.position <= 15 && q.impressions >= 10;
+      return '<tr>' + td(esc(q.q) + (sd ? ' <span class="tag">' + dot('warning') + '4~15위</span>' : '')) + td(num(q.clicks), 1) + td(num(q.impressions), 1) +
+        td(pct(ratio(q.clicks, q.impressions), 1), 1) + td(q.position.toFixed(1), 1) + '</tr>';
+    });
+    return gTable('gq', '검색어', rows, all.length, [{ t: '검색어' }, { t: '클릭', num: 1 }, { t: '노출', num: 1 }, { t: 'CTR', num: 1 }, { t: '순위', num: 1 }],
+      '노출 많은 순 · 전체 ' + num(g.n_queries) + '개 중 ' + all.length + '개 · 점 = 4~15위(조금만 올리면 첫 화면)');
+  }
+  function renderPages(g) {
+    var all = g.pages || [], rows = (more.gp ? all : all.slice(0, 10)).map(function (p) {
+      var lb = urlLabel(p.u);
+      return '<tr>' + td(esc(lb) + (lb !== p.u ? '<span class="ad-n ad-n-block">' + esc(p.u) + '</span>' : '')) + td(num(p.clicks), 1) +
+        td(num(p.impressions), 1) + td(pct(ratio(p.clicks, p.impressions), 1), 1) + td(p.position.toFixed(1), 1) + '</tr>';
+    });
+    return gTable('gp', '페이지', rows, all.length, [{ t: '페이지' }, { t: '클릭', num: 1 }, { t: '노출', num: 1 }, { t: 'CTR', num: 1 }, { t: '순위', num: 1 }],
+      '노출 많은 순 · 전체 ' + num(g.n_pages) + '쪽 중 ' + all.length + '쪽');
+  }
+  function renderSitemaps(G, g) {
+    var sm = G.sitemaps || [], dv = (g && g.device) || [], dt = dv.reduce(function (s, x) { return s + x.clicks; }, 0);
+    var DV = { mobile: '모바일', desktop: 'PC', tablet: '태블릿' };
+    if (!sm.length && !dv.length) return '';
+    return sec('사이트맵 · 기기', '<dl class="ad-kv">' + sm.map(function (m) {
+      return '<dt>' + esc((m.path || '').replace('https://catchflaw.com', '')) + '</dt><dd>' + dot(m.errors ? 'danger' : m.warnings ? 'warning' : 'safe') +
+        ' 제출 ' + num(m.submitted) + '개 · 오류 ' + num(m.errors) + ' · 경고 ' + num(m.warnings) +
+        '<span class="ad-n ad-n-block">구글이 마지막으로 읽음 ' + md(m.last_downloaded) + (m.pending ? ' · 처리 중' : '') + '</span></dd>';
+    }).join('') + (dv.length ? '<dt>기기별 클릭</dt><dd>' + dv.map(function (x) { return (DV[x.name] || x.name) + ' ' + num(x.clicks) + (dt ? ' (' + pct(x.clicks / dt) + ')' : ''); }).join(' · ') +
+      '<span class="ad-n ad-n-block">노출 ' + dv.map(function (x) { return (DV[x.name] || x.name) + ' ' + num(x.impressions); }).join(' · ') + '</span></dd>' : '') + '</dl>');
+  }
+  function renderUrls(idx) {
+    var rank = { unknown: 0, disc: 1, crawled: 2, other: 3, ok: 4 };
+    var rows = (idx.urls || []).slice().sort(function (a, b) { return rank[covOf(a.c)[1]] - rank[covOf(b.c)[1]] || (b.pr || 0) - (a.pr || 0); });
+    var body = more.gu ? table([{ t: '페이지' }, { t: '상태' }, { t: '마지막 크롤' }], rows.map(function (r) {
+      return '<tr>' + td(esc(urlLabel(r.u)) + '<span class="ad-n ad-n-block">' + esc(r.u) + '</span>') +
+        td(dot(covOf(r.c)[3]) + ' ' + esc(covName(r.c)) + (r.gc ? '<span class="ad-n ad-n-block">구글이 고른 표준: ' + esc(r.gc) + '</span>' : '') +
+          (r.fs ? '<span class="ad-n ad-n-block">가져오기: ' + esc(r.fs) + '</span>' : '')) + td(r.lc ? md(r.lc, false) : '—') + '</tr>';
+    }), 'ad-t-wide') : '';
+    return sec('주소별 색인 상태', body + moreBtn('gu', '사이트맵 ' + num(rows.length) + '곳 표로 보기', more.gu), '색인 안 된 곳 먼저 · 표는 접어 둠');
+  }
+  function renderGsc() {
+    var G = A && A.gsc, html = '';
+    if (!G) {
+      var e = gscErr();
+      $('ad-gsc').innerHTML = sec('구글 서치 콘솔', '<p class="ad-note">' + (A ? '이번 집계에 서치 콘솔 데이터가 없어요. ' + esc(e || '다음 집계(매일 09:20)에 들어와요') : esc(A_ERR || 'VM 집계 없음')) + '</p>' +
+        (/API가 꺼져/.test(e) ? '<p class="ad-foot"><a href="https://console.cloud.google.com/apis/library/searchconsole.googleapis.com?project=gen-lang-client-0314940419" target="_blank" rel="noopener">GCP에서 Search Console API 사용 설정 열기</a></p>' : ''));
+      return;
+    }
+    var g = gWin(GWIN), idx = G.index;
+    html += '<div class="ad-chips" role="group" aria-label="기간">' + ['7', '28', '90'].map(function (w) {
+      return '<button type="button" class="chip-view' + (w === GWIN ? ' is-on' : '') + '" data-gwin="' + w + '" aria-pressed="' + (w === GWIN) + '">최근 ' + w + '일</button>';
+    }).join('') + '</div>';
+    html += sec('인사이트', '<div class="ad-grid ad-grid-1 ad-g2">' + gscInsights(g).map(insCard).join('') + '</div>',
+      '검색 실적 ' + esc(g ? g.start.slice(5) : '') + '~' + esc(G.end.slice(5)) + '(서치 콘솔은 2~3일 늦게 확정) · 색인 ' + (idx ? esc(idx.day.slice(5)) + ' 점검' : '점검 없음') +
+      ' · 문제 → 살펴보기 → 좋아요 순', { raw: 1 });
+    if (g) html += sec('핵심 지표', '<div class="ad-grid ad-g3">' + gscKpis(g) + '</div>', '앞 ' + GWIN + '일과 비교 · 색인은 7일 전 점검과 비교', { raw: 1 });
+    if (idx) html += renderIndex(idx) + renderReq();
+    html += sec('검색 추이', '<div class="ad-legend"><span><i class="ad-leg-line ad-s1-chart"></i>노출</span><span><i class="ad-leg-line is-dash"></i>클릭</span></div>' +
+      '<div class="ad-chart"><canvas id="ad-chart-gsc" role="img" aria-label="일별 구글 노출·클릭 선 그래프"></canvas></div>', '최근 ' + GWIN + '일 일별 · 노출은 왼쪽 축, 클릭은 오른쪽 축');
+    if (g) html += '<div class="ad-cols">' + renderQueries(g) + renderPages(g) + '</div>';
+    html += renderSitemaps(G, g);
+    if (idx) html += renderUrls(idx);
+    $('ad-gsc').innerHTML = html;
+    drawGscCharts();
+  }
+  function drawGscCharts() {
+    if (!window.Chart || !A || !A.gsc) return;
+    var pri = tok('--primary'), ink3 = tok('--ink-3'), line = tok('--line');
+    function axis(pos, grid) { return { position: pos, beginAtZero: true, grid: { color: grid ? line : 'transparent' }, border: { display: false }, ticks: { color: ink3, precision: 0, maxTicksLimit: 5, font: { size: 13 } } }; }
+    function opts(y) {
+      return { responsive: true, maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, plugins: { legend: { display: false } },
+        scales: Object.assign({ x: { grid: { display: false }, ticks: { color: ink3, maxTicksLimit: 7, font: { size: 13 } } } }, y) };
+    }
+    function ds(label, data, main, axisId) {
+      return { label: label, data: data, borderColor: main ? pri : ink3, backgroundColor: main ? pri : ink3, borderWidth: main ? 2.5 : 1.5,
+        borderDash: main ? [] : [4, 3], pointRadius: 0, pointHoverRadius: main ? 4 : 3, tension: .3, yAxisID: axisId || 'y' };
+    }
+    var el = $('ad-chart-gsc'), d = (A.gsc.daily || []).slice(-Number(GWIN));
+    if (el && d.length) {
+      if (drawn.gsc) drawn.gsc.destroy();
+      drawn.gsc = new Chart(el, { type: 'line', data: { labels: d.map(function (x) { return x.day.slice(5); }), datasets: [
+        ds('노출', d.map(function (x) { return x.impressions; }), true), ds('클릭', d.map(function (x) { return x.clicks; }), false, 'y1')] },
+        options: opts({ y: axis('left', true), y1: axis('right', false) }) });
+    }
+    var ei = $('ad-chart-idx'), h = A.gsc.index_hist || [];
+    if (ei && h.length >= 2) {
+      if (drawn.idx) drawn.idx.destroy();
+      drawn.idx = new Chart(ei, { type: 'line', data: { labels: h.map(function (x) { return x.day.slice(5); }), datasets: [
+        ds('색인됨', h.map(function (x) { return x.indexed; }), true), ds('가져간 적 있음', h.map(function (x) { return x.crawled; }), false)] },
+        options: opts({ y: axis('left', true) }) });
+    }
+  }
+
   // ───────────── 탭·이벤트 ─────────────
-  var RENDER = { home: renderHome, ux: renderUx, chg: renderChg, ops: renderOps };
+  var RENDER = { home: renderHome, ux: renderUx, gsc: renderGsc, chg: renderChg, ops: renderOps }, CUR = 'home';
   function show(k, push) {
     if (!RENDER[k]) k = 'home';
+    CUR = k;
     document.querySelectorAll('.ad-tabs [data-tab]').forEach(function (b) {
       var on = b.getAttribute('data-tab') === k; b.classList.toggle('is-on', on); b.setAttribute('aria-selected', on);
     });
@@ -650,7 +915,7 @@
     if (push) try { history.replaceState(null, '', '#' + k); } catch (e) {}
   }
   document.addEventListener('click', function (e) {
-    var t = e.target.closest('[data-tab],[data-go],[data-win],[data-sort],[data-ev],[data-nolink],[data-more]');
+    var t = e.target.closest('[data-tab],[data-go],[data-win],[data-gwin],[data-sort],[data-ev],[data-nolink],[data-more]');
     if (!t) return;
     if (t.hasAttribute('data-tab') || t.hasAttribute('data-go')) {   // 탭을 바꾸면 새 탭 맨 위(탭 줄 바로 아래)부터
       var tabs = document.querySelector('.ad-tabs'), y0 = window.scrollY;
@@ -660,7 +925,8 @@
       return;
     }
     if (t.hasAttribute('data-win')) { WIN = t.getAttribute('data-win'); return renderUx(); }
-    if (t.hasAttribute('data-more')) { var m = t.getAttribute('data-more'); more[m] = !more[m]; return renderUx(); }
+    if (t.hasAttribute('data-gwin')) { GWIN = t.getAttribute('data-gwin'); return renderGsc(); }
+    if (t.hasAttribute('data-more')) { var m = t.getAttribute('data-more'); more[m] = !more[m]; return RENDER[CUR](); }
     if (t.hasAttribute('data-ev')) { var n = t.getAttribute('data-ev'); openEv[n] = !openEv[n]; return renderUx(); }
     if (t.hasAttribute('data-nolink')) { hotelOnlyNoLink = !hotelOnlyNoLink; return renderUx(); }
     var s = t.getAttribute('data-sort').split(':'), st = s[0] === 'c' ? claritySort : hotelSort;
