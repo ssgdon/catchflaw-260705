@@ -3399,7 +3399,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # 최종 행동 CTA(UX-2611 B / 어필리에이트 1단계): 제휴 링크가 있으면 아고다, 없으면 구글 지도 — 라벨은 도착지와 같게(약속≠도착이면 퀵백)
     _aff = (AFFIL.get(pid) or {}).get('agoda')
     cta_url = _aff or gmap
-    cta_lab = '아고다 최저가 보기' if _aff else '구글에서 가격 보기'
+    # 문구(2026-11-05 CTR): 화면의 '평일 약 N만원'은 표본 중간값이라, 다음 궁금증 = '내 일정엔 얼마?' — 그 답을 약속한다.
+    # 긴 판(PC 결정 카드·가격 없는 모바일 전체폭)은 도착지 이름까지, 가격 옆 모바일 바(360px 남는 폭 ~178px)는 짧은 판.
+    cta_lab = '아고다에서 내 일정 최저가 보기' if _aff else '구글에서 내 일정 가격 보기'
+    cta_lab_s = '내 일정 최저가 보기' if _aff else '내 일정 가격 보기'
     cta_attr = (f'data-out="cta" data-out-to="{"agoda" if _aff else "google"}" href="{E(cta_url)}" target="_blank" '
                 f'rel="{"sponsored noopener" if _aff else "noopener"}"')
     hstars = E(meta.get('hotel_stars') or '')
@@ -4204,7 +4207,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                       f'<p class="ip-v"><span class="seg">{_bold(_pt)}</span>' + (f' · <span class="seg">주말 {_bold(_pwe)}</span>' if _pwe else '') + '</p></div>')
         bar_html = (f'<div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">{E(_pt)}</button>'
                     f'<span class="bp-sub">2인 1박 기준</span></div>'
-                    f'<a class="btn-brand bar-cta" {cta_attr}>{cta_lab}</a></div>')
+                    f'<a class="btn-brand bar-cta" {cta_attr} aria-label="{cta_lab}">{cta_lab_s}</a></div>')
     else:
         bar_html = f'<div class="button"><a class="btn-brand btn-block" {cta_attr}>{cta_lab}</a></div>'
 
