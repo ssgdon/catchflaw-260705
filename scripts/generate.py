@@ -5072,7 +5072,7 @@ def build_admin():
     <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script defer src="/js/admin.js?v={V("js/admin.js")}"></script>
 </head>
-<body>
+<body class="is-admin">
 <div id="wrapper">
     {site_header(1, back='../', search=False, menu=False)}
     <main id="container"><div id="admin">

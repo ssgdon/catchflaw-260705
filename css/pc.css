@@ -289,17 +289,25 @@
     .hrow{flex-direction:row;flex-wrap:wrap;align-items:baseline;align-content:center;justify-content:space-between;column-gap:var(--sp-6);}
     .hrow-meta{white-space:nowrap;}
 
-    /* 관리자 /admin/ (ADMIN-DESIGN §1, 2026-11-05) — PC 틀 1120 · 상태 4열 · 숫자 3열 · 그래프 280 · 이름-값 2열 */
+    /* 관리자 /admin/ (ADMIN-DESIGN §1, 2026-11-05 카드형) — PC 틀 1120 · 카드 4열(지표 6개는 3열) · 인사이트 2열(현황 3열) · 섹션 2개 나란히(.ad-cols) · 그래프 280 · 이름-값 2열 */
     #admin{max-width:var(--pc-max);margin:0 auto;padding:var(--sp-8) var(--pc-x) var(--sp-12);}
     #admin .page-title{margin-top:0;margin-left:0;margin-right:0;}
     #admin .ad-made{margin-left:0;margin-right:0;}
     #admin .ad-tabs{top:64px;padding-left:0;padding-right:0;}
     #admin .ad-pane{padding:0;}
-    #admin .ad-tw{margin:0;padding:0;}
-    #admin .ad-cells{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:var(--sp-6);}
-    #admin .ad-nums{grid-template-columns:repeat(3,minmax(0,1fr));}
+    #admin .ad-sec{padding-top:var(--sp-10);}
+    #admin .ad-card{padding:var(--sp-6);}
+    #admin .ad-kpi{padding:var(--sp-5);}
+    #admin .ad-tw{margin:0 calc(var(--sp-6) * -1);padding:0 var(--sp-6);}
+    #admin .ad-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--sp-4);}
+    #admin .ad-grid.ad-g3{grid-template-columns:repeat(3,minmax(0,1fr));}
+    #admin .ad-grid.ad-g2{grid-template-columns:repeat(2,minmax(0,1fr));}
+    #admin .ad-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--sp-6);align-items:start;}
+    #admin .ad-chg > li{padding:var(--sp-6);}
     #admin .ad-chart{height:280px;}
     #admin .ad-kv{grid-template-columns:240px minmax(0,1fr);}
     #admin .ad-kv dt{padding:var(--sp-3) var(--sp-4) var(--sp-3) 0;border-bottom:1px solid var(--line);}
+    #admin .ad-kv dt:first-child{padding-top:var(--sp-3);}
     #admin .ad-kv dd{padding:var(--sp-3) 0;}
+    #admin .ad-kv dt:nth-last-of-type(1){border-bottom:0;}
 }
