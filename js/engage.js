@@ -1,5 +1,5 @@
 /* 캐치플로 공유 + 이탈 전 피드백 (engage.js)
-   window.CF_HOTEL = {pid, name, gmap} 가 있을 때만 동작 (상세 페이지)
+   window.CF_HOTEL = {pid, name, gmap, cta} 가 있을 때만 동작 (상세 페이지)
    window.CF_SB = {url, key} 로 Supabase(mvp_feedbacks, INSERT 전용) 저장
    의존: jQuery, backnav.js(CF.sheet·CF.toast) */
 (function () {
@@ -75,16 +75,18 @@
       else { openShare(this); }  // 미지원(카카오 인앱 등) → 자체 공유 시트
     });
 
-    // ───────── 이탈 전 피드백 ─────────
-    var fbModal = null, pendingUrl = null;
-    var FB_KEY = 'cf_fb_shown';
+    // ───────── 피드백 시트 (UX-2611 B: CTA를 가로채지 않는다) ─────────
+    // 예전엔 세션 첫 a[data-out] 클릭을 preventDefault로 막고 '이동 전에 잠깐만요'를 띄웠다 — 유일한 전환 클릭(세션 3.6%)에 질문지가 먼저 끼고,
+    // X·뒤로가기면 이동도 안 됐다. 지금은 ① 아고다·구글에서 탭이 돌아왔을 때 토스트 한 번 ② 상세 맨 아래 '의견 남기기'에서만 연다.
+    var fbModal = null;
+    var FB_KEY = 'cf_fb_shown', OUT_KEY = 'cf_out_ts';
     function alreadyShown() { try { return sessionStorage.getItem(FB_KEY) === '1'; } catch (e) { return false; } }
     function markShown() { try { sessionStorage.setItem(FB_KEY, '1'); } catch (e) {} }
 
     // B 바텀 시트 · H2 큰 제목 · F1('그냥 이동할게요' 링크 + 잉크 '보내고 이동')
     function buildFbModal() {
       var m = CF.sheet.make({
-        id: 'cf-feedback-modal', type: 'bottom', w: 'md', head: 'large', title: '이동 전에 잠깐만요',
+        id: 'cf-feedback-modal', type: 'bottom', w: 'md', head: 'large', title: '의견을 남겨 주세요',
         sub: '<span class="seg">어떤 기능이 있으면 좋을까요?</span> <span class="seg">불편한 점도 좋아요.</span>', footType: 'f1',
         body: '<div class="fb-body">'
           + '<textarea id="fb-text" class="ov-input" placeholder="예) 객실 사진이 더 많았으면 좋겠어요" aria-label="의견"></textarea>'
@@ -92,20 +94,18 @@
           + '<p class="ov-note"><span class="seg">새 기능이 나오면 먼저 알려드릴게요 ·</span> <span class="seg">번호는 안내 용도로만 써요</span></p>'
           + '</div>'
           + '<div class="fb-done" hidden>' + (CF.mascot ? CF.mascot('jump') : '') + '<p class="fb-done-msg">소중한 의견 고마워요</p></div>',
-        foot: '<button type="button" class="btn-text" data-act="skip">그냥 이동할게요</button>'
-          + '<button type="button" class="btn-ink" data-act="send">보내고 이동</button>'
+        foot: '<button type="button" class="btn-text" data-act="skip">다음에 할게요</button>'
+          + '<button type="button" class="btn-ink" data-act="send">보내기</button>'
       });
       m.querySelector('.ov-sub').classList.add('is-text');
-      m.querySelector('[data-act="skip"]').addEventListener('click', function () { fbEnd('fb_skip', { empty: 0 }); go(); });
+      m.querySelector('[data-act="skip"]').addEventListener('click', function () { fbEnd('fb_skip', { empty: 0 }); CF.sheet.close(m); });
       m.querySelector('[data-act="send"]').addEventListener('click', function () {
         var text = (m.querySelector('#fb-text').value || '').trim();
         var phone = (m.querySelector('#fb-phone').value || '').trim();
-        if (!text && !phone) { fbEnd('fb_skip', { empty: 1 }); go(); return; }  // 빈 값이면 그냥 이동
+        if (!text && !phone) { fbEnd('fb_skip', { empty: 1 }); CF.sheet.close(m); return; }  // 빈 값이면 그냥 닫기
         fbEnd('fb_submit', { has_text: text ? 1 : 0, has_phone: phone ? 1 : 0, text_len: text.length });  // 내용·번호는 GA로 보내지 않는다
         submit(text, phone);
-        // 저장 성공 여부와 무관하게 UX는 즉시 진행. 새 탭은 지금(사용자 클릭 안)에서 열어야 모바일 팝업 차단에 안 걸린다(UX-2611 A) —
-        // 예전엔 완료 화면 1.2초 뒤 setTimeout에서 열어 사파리·크롬 모바일이 막을 수 있었다
-        go(true);
+        // 저장 성공 여부와 무관하게 완료 화면 1.2초 → 닫기
         m.querySelector('.fb-body').setAttribute('hidden', '');
         m.querySelector('.ov-hero').setAttribute('hidden', '');
         m.querySelector('.ov-foot').setAttribute('hidden', '');
@@ -125,18 +125,12 @@
             'Content-Type': 'application/json',
             'Prefer': 'return=minimal'
           },
-          body: JSON.stringify({ place_id: H.pid, hotel_name: H.name, feedback: text || null, phone: phone || null, source: 'detail_exit' })
+          body: JSON.stringify({ place_id: H.pid, hotel_name: H.name, feedback: text || null, phone: phone || null, source: 'detail_' + (fbCtx.placement || 'link') })
         }).catch(function () {});
       } catch (e) {}
     }
-    function go(keepOpen) {   // keepOpen = 완료 화면을 잠시 보여 주는 쪽이 시트를 닫는다
-      markShown();
-      var url = pendingUrl || H.gmap;
-      if (fbModal && !keepOpen) CF.sheet.close(fbModal);
-      window.open(url, '_blank', 'noopener');
-    }
-    // 2026-11-04 피드백 창 GA 기록: fb_shown(뜸) → fb_submit(보냄)·fb_skip(그냥 이동, empty=1은 빈 채로 '보내고 이동')
-    // ·fb_dismiss(X·뒤로가기로 닫고 이동 안 함). 응답 0건이 '저장 실패'인지 '아무도 안 씀'인지 가르기 위함.
+    // 2026-11-04 피드백 창 GA 기록: fb_shown(뜸) → fb_submit(보냄)·fb_skip('다음에 할게요', empty=1은 빈 채로 '보내기')
+    // ·fb_dismiss(X·뒤로가기로 닫음). placement = return_toast(돌아왔을 때 토스트) | footer_link(상세 맨 아래) — 응답 0건이 '저장 실패'인지 '아무도 안 씀'인지 가르기 위함.
     var fbCtx = {}, fbDone = false;
     function fbEv(name, p) {
       if (typeof gtag !== 'function') return;
@@ -145,9 +139,8 @@
       gtag('event', name, o);
     }
     function fbEnd(name, p) { if (fbDone) return; fbDone = true; fbEv(name, p || {}); }
-    function openFb(url, opener, kind) {
-      pendingUrl = url;
-      fbCtx = { placement: OUT_PLACEMENT[kind] || 'map_link' }; fbDone = false;
+    function openFb(opener, placement) {
+      fbCtx = { placement: placement }; fbDone = false;
       if (!fbModal) fbModal = buildFbModal();
       ['.fb-body', '.ov-hero', '.ov-foot'].forEach(function (q) { fbModal.querySelector(q).removeAttribute('hidden'); });
       fbModal.querySelector('.fb-done').setAttribute('hidden', '');
@@ -155,25 +148,40 @@
       fbEv('fb_shown', {});
     }
 
-    // 구글맵으로 나가는 링크 가로채기 (세션당 1회만 피드백)
-    // 훅은 클래스가 아니라 속성에 건다(DESIGN-SYSTEM-V3 §6-1): data-out="cta|google|map" — 버튼 클래스가 바뀌어도 GA4가 끊기지 않게
+    // 상세 맨 아래 '의견 남기기'(generate.py .det-end) — 언제든 연다
+    $(document).on('click', '[data-act="feedback"]', function () { openFb(this, 'footer_link'); });
+
+    // 나가는 링크: 측정만 하고 막지 않는다(새 탭은 브라우저 기본 동작 = 팝업 차단 없음)
+    // 훅은 클래스가 아니라 속성에 건다(DESIGN-SYSTEM-V3 §6-1): data-out="cta|google|map" + data-out-to="agoda|google"(도착지) — 버튼 클래스가 바뀌어도 GA4가 끊기지 않게
     var OUT_PLACEMENT = { cta: 'floating_cta', google: 'google_rating', map: 'map_link' };
-    $(document).on('click', 'a[data-out]', function (e) {
+    $(document).on('click', 'a[data-out]', function () {
       var url = this.getAttribute('href');
       var kind = this.getAttribute('data-out');
-      // GA4 전환 측정 — 피드백 모달 노출 여부와 무관하게 매 클릭 카운트
       if (typeof gtag === 'function') {
         var h = window.CF_HOTEL || {};
         gtag('event', kind === 'cta' ? 'check_price_click' : 'outbound_google', {
           hotel_name: h.name || '',
           hotel_id: h.pid || '',
           link_url: url || '',
+          partner: this.getAttribute('data-out-to') || 'google',
           placement: OUT_PLACEMENT[kind] || 'map_link'
         });
       }
-      if (alreadyShown()) return;  // 이미 봤으면 정상 이동
-      e.preventDefault();
-      openFb(url, this, kind);
+      try { sessionStorage.setItem(OUT_KEY, String(Date.now())); } catch (e) {}
     });
+
+    // 아고다·구글 탭에서 돌아왔을 때(세션 1회): 작은 토스트 → 누르면 피드백 시트. 3초 안에 돌아온 건 '보기 전 복귀'라 안 띄운다
+    function onReturn() {
+      if (document.visibilityState !== 'visible' || alreadyShown()) return;
+      var ts = 0;
+      try { ts = +sessionStorage.getItem(OUT_KEY) || 0; } catch (e) {}
+      if (!ts || Date.now() - ts < 3000) return;
+      markShown();
+      fbCtx = { placement: 'return_toast' };
+      fbEv('fb_toast', {});
+      CF.toast('찾던 정보가 있었나요?', { ms: 6000, action: { label: '의견 남기기', fn: function () { openFb(null, 'return_toast'); } } });
+    }
+    document.addEventListener('visibilitychange', onReturn);
+    window.addEventListener('pageshow', onReturn);
   });
 })();

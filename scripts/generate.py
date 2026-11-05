@@ -1231,6 +1231,15 @@ def hotel_card(pid, meta, h, depth=0, extra='', kind='carousel', rank=None, li_c
 #    바뀌는 건 '페이지 주소'뿐 — data/q·data/fe 파일명, CF_PID, data-cmp-id·cf_recent·compare?ids=, GA4 hotel_id는 pid 그대로
 SLUG = {}          # pid → 슬러그. ensure_slugs()가 빌드 시작 때 scripts/slugs.json에서 채운다
 SLUGS_FILE = os.path.join(ROOT, 'scripts', 'slugs.json')
+AFFIL_FILE = os.path.join(ROOT, 'scripts', 'affiliate.json')   # 제휴 링크 정본(pid → {agoda: 세시간전 3ha.in 링크, name}, git 추적)
+def load_affiliate():
+    """2026-11-05 아고다 제휴(세시간전) — 사용자가 수기로 만든 호텔별 링크 94곳. 있으면 상세 CTA가 아고다로(rel=sponsored), 없으면 구글 지도 검색.
+       링크를 더 만들면 이 파일에 pid 키로 추가하고 다시 빌드. 같은 호텔 링크가 둘이면 하나만 쓴다(수수료 추적 tag는 링크마다 다름)."""
+    try:
+        return json.load(open(AFFIL_FILE, encoding='utf-8'))
+    except FileNotFoundError:
+        return {}
+AFFIL = load_affiliate()
 SLUG_MIN = 8       # 자동 슬러그 최소 길이 — 이보다 짧으면(일본어 이름 → 'mk' 등) 빌드를 멈추고 사람이 정한다
 
 def slugify(s):
@@ -3386,6 +3395,12 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     img = img_path(pid, meta, depth=1)
     gmap = ('https://www.google.com/maps/search/?api=1'
             f'&query={urlquote(name, safe="")}&query_place_id={pid}')
+    # 최종 행동 CTA(UX-2611 B / 어필리에이트 1단계): 제휴 링크가 있으면 아고다, 없으면 구글 지도 — 라벨은 도착지와 같게(약속≠도착이면 퀵백)
+    _aff = (AFFIL.get(pid) or {}).get('agoda')
+    cta_url = _aff or gmap
+    cta_lab = '아고다 최저가 보기' if _aff else '구글에서 가격 보기'
+    cta_attr = (f'data-out="cta" data-out-to="{"agoda" if _aff else "google"}" href="{E(cta_url)}" target="_blank" '
+                f'rel="{"sponsored noopener" if _aff else "noopener"}"')
     hstars = E(meta.get('hotel_stars') or '')
 
     lat, lng = meta.get('latitude'), meta.get('longitude')
@@ -4173,9 +4188,9 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                       f'<p class="ip-v"><span class="seg">{_bold(_pt)}</span>' + (f' · <span class="seg">주말 {_bold(_pwe)}</span>' if _pwe else '') + '</p></div>')
         bar_html = (f'<div class="button has-price"><div class="bar-price"><button type="button" class="bp-main" data-act="price-basis" aria-haspopup="dialog">{E(_pt)}</button>'
                     f'<span class="bp-sub">2인 1박 기준</span></div>'
-                    f'<a class="btn-brand bar-cta" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>')
+                    f'<a class="btn-brand bar-cta" {cta_attr}>{cta_lab}</a></div>')
     else:
-        bar_html = f'<div class="button"><a class="btn-brand btn-block" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a></div>'
+        bar_html = f'<div class="button"><a class="btn-brand btn-block" {cta_attr}>{cta_lab}</a></div>'
 
 
     # ── PC 전용: 브레드크럼(JSON-LD BreadcrumbList와 동일 경로) + 오른쪽 결정 카드(실망 확률·핵심 수치·CTA) ──
@@ -4205,10 +4220,13 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     pc_side = f'''<aside class="pc-side" aria-label="요약">
                     {_top_html}
                     <ul class="ps-rows">{_rows_html}</ul>
-                    <a class="btn-brand btn-block ps-cta" data-out="cta" href="{E(gmap)}" target="_blank" rel="noopener">실시간 최저가 확인</a>
+                    <a class="btn-brand btn-block ps-cta" {cta_attr}>{cta_lab}</a>
                     <div class="ps-actions">{cmp_btn.replace('class="cmp-btn"', 'class="cmp-btn ps-cmp btn-gray btn-block"') if cmp_btn else ''}<a href="javascript:;" class="btn-share ps-share btn-gray btn-block">공유</a></div>
                     <p class="ps-note">공개 리뷰를 분석한 참고용 통계예요 · <a href="../about">산출 방법</a></p>
                 </aside>'''
+    end_block = ('<div class="det-end">'
+                 + ('<p class="de-disc">아고다 링크는 제휴 링크예요. 예약해도 가격은 같고, 캐치플로에 수수료가 생길 수 있어요.</p>' if _aff else '')
+                 + '<p class="de-fb">찾던 정보가 없었나요? <button type="button" class="btn-text btn-text--sm" data-act="feedback">의견 남기기</button></p></div>')
     if h['scored']:   # 리뷰 팝업(점수 나온 호텔에만 있음)의 임베드 인용문
         SIDE_FILES[f'data/q/{pid}.json'] = json.dumps(sheet_data, ensure_ascii=False, separators=(',', ':'))
     canonical = hotel_abs(pid)   # og:url도 이것(head())
@@ -4225,7 +4243,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         _extra_head += '\n    <meta name="robots" content="noindex,follow">'
     return head(seo_title, depth=1, description=seo_desc, canonical=canonical,
                 og_image=og_img, extra_head=_extra_head) + f'''
-    <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)}}};</script>
+    <script>window.CF_HOTEL={{pid:{json.dumps(pid)},name:{json.dumps(name)},gmap:{json.dumps(gmap)},cta:{json.dumps(cta_url)}}};</script>
     <script src="../js/report.js?v={V("js/report.js")}" defer></script>
     <script>window.CF_IMGS={json.dumps(meta.get('r2_imgs') or [], ensure_ascii=False)};</script>
     <script src="../js/lightbox.js?v={V("js/lightbox.js")}" defer></script>
@@ -4260,6 +4278,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
                 {col_chip_block}
                 {similar_block}
                 {pairs_block}
+                {end_block}
             </div>
             {bar_html}
             {price_sheet}
