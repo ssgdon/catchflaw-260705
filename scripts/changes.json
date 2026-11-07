@@ -1,6 +1,10 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-07", "commit": "b0496823", "title": "조건 검색어 → 필터 · 미지원 도시 오타 · 옛 /hotel/* 301 · 관리자 인사이트 보정",
+   "what": "'방음 좋은 숙소' 같은 조건 검색어를 불만 적은 항목·한 번도 없어야·지역·정렬로, 벳퓨 같은 도시 오타도 미지원 안내, 옛 /hotel/{uuid} → /hotels, 관리자는 이어 본 세션 분리·검색은 마지막 변경 뒤부터",
+   "watch": ["search_noresult_rate"],
+   "doc": "admin 인사이트 2026-11-07"},
   {"date": "2026-11-06", "commit": "7258710a", "title": "카톡 공유 미리보기 카드(사진 + 실망 확률) · '같이 갈 사람에게 보내기' 버튼",
    "what": "og:image = 호텔별 1200×630 카드(사진·실망 확률·판정·평균), og:title '호텔 · 실망 확률 N%', 누구와 가세요 끝 공유 버튼, 공유 주소 utm_source=share",
    "watch": ["share"],
@@ -29,6 +33,10 @@
    "what": "피드백 시트 새 탭을 클릭 안에서 열기(모바일 팝업 차단 회피), 요약 실망 확률 칸 → #sec-prob, 공유 버튼 GA share",
    "watch": ["fb_submit", "sum_prob_clicks", "share"],
    "doc": "UX-DROPOFF-2611-DESIGN.md"},
+  {"date": "2026-11-04", "commit": "c59fda6a", "title": "검색 개편 SEARCH-2611 — 소리 키 퍼지 매칭 · 구글 지도 링크 · 구글 장소 폴백 (기록은 11-07에 보충)",
+   "what": "표기 조합 사전 대신 소리 키로 이름 비교(리졸↔리솔·치구시↔치쿠시), 지도 링크(짧은 링크 포함)를 호텔로, 못 찾으면 구글 장소 검색으로 미등록 호텔 안내",
+   "watch": ["search_noresult_rate"],
+   "doc": "SEARCH-2611"},
   {"date": "2026-11-04", "commit": "4c0c0c59", "title": "한눈에 보기 → 리뷰 시트 · 결론 뒤 비교 3행 · 홈 CTA 인라인 · 종료 확인 측정 (UX-2611 A)",
    "what": "한눈에 보기 항목을 누르면 그 항목 리뷰 시트, 결론 바로 뒤 '비교해 볼 만한 호텔' 3행, 홈 추천 버튼 인라인, exit_shown·exit_stay·exit_leave",
    "watch": ["glance_item", "next_row_clicks", "hero_rec_clicks", "exit_stay_rate"],
@@ -41,11 +49,11 @@
   {"title": "허브 H1 '리뷰 위험도' 용어", "from": "SEO-GOOGLE-DESIGN.md",
    "why": "화면 용어는 '실망 확률' 하나인데 허브 제목에 '위험도'가 남아 있다",
    "needs": "서치어드바이저 검색어에서 '위험도'로 들어오는 비중 확인"},
-  {"title": "의도 검색어 라우팅('방음·조용' → 소음 조건)", "from": "SEARCH-2611",
-   "why": "검색창에 조건을 치는 사람을 결과 없음 대신 조건 검색으로 보낸다",
-   "needs": "검색 개편(SEARCH-2611) 배포 뒤 결과 없음 검색어 확인"},
   {"title": "제휴 링크 없는 조회 상위 4곳", "from": "ADMIN-DESIGN §6",
    "why": "몬토레 후쿠오카 · 리솔 트리니티 · 마이스테이스 텐진 미나미 · JR 규슈 블라섬 주오는 조회가 많은데 가격 버튼이 구글로 나간다",
-   "needs": "세시간전 대시보드에서 링크 4개 만들어 scripts/affiliate.json에 추가"}
+   "needs": "세시간전 대시보드에서 링크 4개 만들어 scripts/affiliate.json에 추가"},
+  {"title": "미등록 호텔 2곳 편입 확인", "from": "admin 인사이트 2026-11-07",
+   "why": "호텔 리브맥스 하카타 에키마에(10-19 한 사람이 4번 검색, 구글 리뷰 423·★3.3)는 11-07 status new로 넣음. Giraffe Nakasu(리뷰 27건)는 편입 기준 미달이라 pending(관찰)",
+   "needs": "다음 주간 배치 초도 수집 뒤 리브맥스 상세 생성 확인 → search_cases.json 'Hotel LiveMax Hakata-Ekimae' none 사례를 top으로 바꾼다"}
  ]
 }

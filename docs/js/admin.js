@@ -67,6 +67,18 @@
   }
   function gaWin(w) { return (A && A.ga && A.ga.days && A.ga.days[w]) || null; }
   function ev(g, name) { var r = null; (g.events || []).forEach(function (e) { if (e.name === name) r = e; }); return r; }
+  var RESUMED = '이어 본 세션';
+  // 검색 지표: 마지막 검색 변경 다음 날부터(admin_export search_since) — 없으면 창 전체
+  function searchStat(g) {
+    var s = g.search_since;
+    if (s) return { se: s.search, nr: s.no_result, terms: s.terms || [], since: s.since, label: s.since.slice(5) + '부터 ' };
+    var se = ev(g, 'search'), nr = ev(g, 'search_no_result');
+    return { se: se ? se.sessions : 0, nr: nr ? nr.sessions : 0, terms: g.search_noresult || [], since: null, label: '' };
+  }
+  function otherPaths(g) {
+    var o = (g.landing_other || []).slice(0, 4);
+    return o.length ? o.map(function (x) { return x.path + ' ' + num(x.sessions); }).join(' · ') : "'기타' = 비교·추천·소개·404";
+  }
 
   // ───────────── 그림 부품: 변화 태그 · 스파크라인 · 막대 ─────────────
   // kind 'rel' = 배수·% 변화, 'pp' = %p 변화. 표본이 작거나 변화가 작으면 점 없이(판정하지 않음).
@@ -214,17 +226,18 @@
     var minS = w === '7' ? 10 : 20, det = null, weak = null;
     (g.landing || []).forEach(function (l) {
       if (l.group === '상세') det = l;
-      if (l.sessions >= minS && (!weak || l.engaged_rate < weak.engaged_rate)) weak = l;
+      // '이어 본 세션' = 첫 페이지 기록 없이 다시 시작한 세션(탭을 오래 두었다 돌아옴) — 착지 페이지 판정에서 뺀다
+      if (l.group !== RESUMED && l.sessions >= minS && (!weak || l.engaged_rate < weak.engaged_rate)) weak = l;
     });
     if (weak && weak.engaged_rate < 0.4) add('danger', '첫 페이지', "'" + weak.group + "'로 들어온 " + num(weak.sessions) + '세션은 ' + pct(weak.engaged_rate) + '만 머물러요',
       '평균 ' + num(weak.avg_sec) + '초' + (det && det !== weak ? ' · 상세로 들어오면 ' + pct(det.engaged_rate) + ' 머묾' : ''),
-      weak.group === '기타' ? "'기타' = 비교·추천·최근 본·소개·404 — 불편 신호(Clarity)에서 어느 페이지인지 확인" : '', weak.engaged_rate);
-    var se = ev(g, 'search'), nr = ev(g, 'search_no_result');
-    if (se && nr && nr.sessions >= 3) {
-      var rr = clamp01(ratio(nr.sessions, se.sessions)), links = (g.search_noresult || []).filter(function (t) { return /^https?:/.test(t.term); }).length;
+      weak.group === '기타' ? otherPaths(g) + ' — 많은 페이지부터 확인' : '', weak.engaged_rate);
+    var st = searchStat(g);
+    if (st.nr >= 3) {
+      var rr = clamp01(ratio(st.nr, st.se)), links = st.terms.filter(function (t) { return /^https?:/.test(t.term); }).length;
       add(rr >= 0.3 ? 'danger' : 'warning', '검색', '검색한 세션의 ' + pct(rr) + '가 결과 없음을 봤어요',
-        '검색 ' + num(se.sessions) + '세션 중 ' + num(nr.sessions) + '세션' + (links ? ' · 구글 지도 링크를 붙여넣은 경우 ' + links + '건' : ''),
-        links ? '지도 링크에서 호텔을 찾아 주고, 아래 검색어 중 있는 호텔은 token_dict 별칭에 추가' : '아래 검색어 중 있는 호텔은 token_dict 별칭에 추가', rr);
+        st.label + '검색 ' + num(st.se) + '세션 중 ' + num(st.nr) + '세션' + (links ? ' · 구글 지도 링크를 붙여넣은 경우 ' + links + '건' : ''),
+        '아래 검색어 중 있는 호텔은 token_dict 별칭에, 조건을 찾는 말이면 search-ac.js INTENTS에 추가', rr);
     }
     if (S) {
       var top = (g.hotels || []).filter(function (h) { return hotelOf(h.pid) && h.views > 0; }).sort(function (a, b) { return b.views - a.views; }).slice(0, 10);
@@ -314,10 +327,11 @@
       kpi({ label: '끝까지 읽음', value: pct(sr, 1), delta: delta(sr, psr, 'pp', true, nmin), prev: wl + pct(psr, 1),
         spark: spark(rollRate('d:scroll', 'd:page_view', w), '7일 이동 90% 스크롤 비율') })];
     if (extra) {
-      var se = ev(g, 'search'), nr = ev(g, 'search_no_result');
+      var st = searchStat(g);
       out.push(kpi({ label: '참여율', value: pct(engaged(g)), sub: '10초 넘게 머물렀거나 2쪽 이상 본 세션' }));
-      out.push(kpi({ label: '검색 실패율', value: se ? pct(clamp01(ratio(nr ? nr.sessions : 0, se.sessions))) : '—',
-        sub: se ? '검색 ' + num(se.sessions) + '세션 중 결과 없음 ' + num(nr ? nr.sessions : 0) : '검색 기록 없음' }));
+      out.push(kpi({ label: '검색 실패율', value: st.se ? pct(clamp01(ratio(st.nr, st.se))) : '—',
+        sub: st.se ? st.label + '검색 ' + num(st.se) + '세션 중 결과 없음 ' + num(st.nr)
+          : (st.since ? st.since.slice(5) + '(마지막 검색 변경 다음 날)부터 기록 없음' : '검색 기록 없음') }));
     }
     return out.join('');
   }
@@ -429,8 +443,11 @@
     var tot = g.sessions || 0;
     return sec('첫 페이지별 반응', '<ul class="ad-hb">' + (g.landing || []).map(function (l) {
       var tone = l.engaged_rate >= 0.6 ? 'safe' : l.engaged_rate >= 0.4 ? 'warning' : 'danger';
+      if (l.group === RESUMED) tone = '';
+      var note = l.group === RESUMED ? ' · 탭을 오래 두었다 돌아온 세션(첫 페이지 기록 없음, 판정 제외)'
+        : l.group === '기타' ? ' · ' + esc(otherPaths(g)) : '';
       return hrow(esc(l.group), '머묾 ' + pct(l.engaged_rate), l.engaged_rate,
-        dot(tone) + '<span>' + num(l.sessions) + '세션 (' + pct(ratio(l.sessions, tot)) + ') · 평균 ' + num(l.avg_sec) + '초</span>', 'is-' + tone);
+        (tone ? dot(tone) : '') + '<span>' + num(l.sessions) + '세션 (' + pct(ratio(l.sessions, tot)) + ') · 평균 ' + num(l.avg_sec) + '초' + note + '</span>', tone ? 'is-' + tone : '');
     }).join('') + '</ul>', '처음 들어온 페이지별 머문 세션 비율(참여율) · 60% 이상 양호, 40% 미만 문제');
   }
   function renderFeatures(g) {
@@ -456,15 +473,16 @@
     return sec('무엇을 쓰나', body, '기능별 사용 세션 비율(전체 세션 대비) · 막대는 가장 많이 쓴 기능 기준');
   }
   function renderSearch(g) {
-    var se = ev(g, 'search'), nr = ev(g, 'search_no_result'), terms = g.search_noresult || [];
-    var rr = se ? clamp01(ratio(nr ? nr.sessions : 0, se.sessions)) : null;
+    var st = searchStat(g), terms = st.terms;
+    var rr = st.se ? clamp01(ratio(st.nr, st.se)) : null;
     var links = terms.filter(function (t) { return /^https?:/.test(t.term); }), names = terms.filter(function (t) { return !/^https?:/.test(t.term); });
-    var body = se ? '<div class="ad-hb-r"><span class="ad-hb-l">결과 없음을 본 검색 세션</span><span class="ad-hb-v">' + pct(rr) + '</span></div>' +
-      bar(rr, rr >= 0.3 ? 'is-danger' : 'is-warning') + '<div class="ad-hb-s"><span>검색 ' + num(se.sessions) + '세션 중 ' + num(nr ? nr.sessions : 0) + '세션</span></div>' : '<p class="ad-note">검색 기록이 없어요</p>';
+    var body = st.se ? '<div class="ad-hb-r"><span class="ad-hb-l">결과 없음을 본 검색 세션</span><span class="ad-hb-v">' + pct(rr) + '</span></div>' +
+      bar(rr, rr >= 0.3 ? 'is-danger' : 'is-warning') + '<div class="ad-hb-s"><span>' + st.label + '검색 ' + num(st.se) + '세션 중 ' + num(st.nr) + '세션</span></div>'
+      : '<p class="ad-note">' + (st.since ? st.since.slice(5) + '(마지막 검색 변경 다음 날)부터 검색 기록이 아직 없어요' : '검색 기록이 없어요') + '</p>';
     if (names.length) body += '<h3 class="ad-h3">찾던 이름 ' + names.length + '개</h3><ul class="ad-terms">' + names.map(function (t) {
       return '<li>' + esc(t.term) + (t.n > 1 ? ' <b>' + num(t.n) + '회</b>' : '') + '</li>'; }).join('') + '</ul>';
     if (links.length) body += '<h3 class="ad-h3">붙여넣은 구글 지도 링크 ' + links.length + '개</h3><p class="ad-note">이름 대신 지도 링크를 넣는 사람이 있어요 — 링크에서 장소 이름을 읽으면 찾을 수 있어요.</p>';
-    return sec('찾다 실패한 검색', body, '최근 ' + WIN + '일 결과 없음 검색어 상위 20 · 있는 호텔이면 token_dict.py 별칭 추가');
+    return sec('찾다 실패한 검색', body, (st.since ? st.since.slice(5) + '부터(마지막 검색 변경 뒤)' : '최근 ' + WIN + '일') + ' 결과 없음 검색어 상위 20 · 있는 호텔이면 token_dict.py 별칭, 조건이면 search-ac.js INTENTS');
   }
   function renderHotels(g) {
     if (!S) return '';
