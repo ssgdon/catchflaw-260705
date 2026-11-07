@@ -1,5 +1,5 @@
 {
- "note": "검색 회귀 검사 사례 — node scripts/check_search.js. top = 찾음 1위, has = 찾음 3위 안, sug = 찾음 또는 혹시 3위 안, none = 찾음 없음. 이름(name)은 사람이 읽기용. 실검색 실패어(GA4 search_no_result)를 고치면 여기에 더한다.",
+ "note": "검색 회귀 검사 사례 — node scripts/check_search.js. top = 찾음 1위, has = 찾음 3위 안, sug = 찾음 또는 혹시 3위 안, none = 찾음 없음. 이름(name)은 사람이 읽기용. 실검색 실패어(GA4 search_no_result)를 고치면 여기에 더한다. intent = 조건 검색어 해석 결과(cats·no·area·sort, null = 조건 아님, search-ac.js intent), city = 미지원 도시로 보는지(글자 포함 또는 소리 비슷 soundLike, 목록은 docs/search.html OTHER).",
  "cases": [
   {
    "q": "리졸 트리니티 하카타",
@@ -194,6 +194,107 @@
   {
    "q": "서울",
    "none": true
+  },
+  {
+   "q": "방음 좋은 숙소",
+   "intent": {
+    "cats": [
+     "소음"
+    ],
+    "no": [],
+    "area": "",
+    "sort": ""
+   }
+  },
+  {
+   "q": "조용한 호텔",
+   "intent": {
+    "cats": [
+     "소음"
+    ],
+    "no": [],
+    "area": "",
+    "sort": ""
+   }
+  },
+  {
+   "q": "벌레 없는 호텔",
+   "intent": {
+    "cats": [],
+    "no": [
+     "roach"
+    ],
+    "area": "",
+    "sort": ""
+   }
+  },
+  {
+   "q": "텐진 가성비",
+   "intent": {
+    "cats": [],
+    "no": [],
+    "area": "tenjin",
+    "sort": "price"
+   }
+  },
+  {
+   "q": "하카타역 근처 깨끗한 숙소",
+   "intent": {
+    "cats": [
+     "청결"
+    ],
+    "no": [],
+    "area": "hakata",
+    "sort": ""
+   }
+  },
+  {
+   "q": "깨끗하고 조용한 곳",
+   "intent": {
+    "cats": [
+     "청결",
+     "소음"
+    ],
+    "no": [],
+    "area": "",
+    "sort": ""
+   }
+  },
+  {
+   "q": "하카타역",
+   "intent": null
+  },
+  {
+   "q": "방음 좋은 호텔 하카타 그린",
+   "intent": null
+  },
+  {
+   "q": "온천 있는 호텔",
+   "intent": null
+  },
+  {
+   "q": "벳퓨",
+   "city": true
+  },
+  {
+   "q": "벳푸",
+   "city": true
+  },
+  {
+   "q": "오사까",
+   "city": true
+  },
+  {
+   "q": "하카타",
+   "city": false
+  },
+  {
+   "q": "크로스라이프",
+   "city": false
+  },
+  {
+   "q": "텐진",
+   "city": false
   }
  ]
 }

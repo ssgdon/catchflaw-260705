@@ -2124,7 +2124,29 @@ SEARCH_JS = r"""(function(){
         var pool = HOTELS.filter(function(h){ return passFilters(h, f); }), q = $q.val().trim();
         return q ? matchQ(pool, q).length : pool.length;
     }
-    function isOtherCity(q){ var n = norm(q); return OTHER.some(function(k){ return n.indexOf(norm(k)) >= 0; }); }
+    function isOtherCity(q){   // 글자 포함 + 소리 거의 같음(벳퓨·오사까 — search-ac.js soundLike)
+        var n = norm(q);
+        return OTHER.some(function(k){ return n.indexOf(norm(k)) >= 0; })
+            || !!(window.CFAutocomplete && window.CFAutocomplete.soundLike && window.CFAutocomplete.soundLike(q, OTHER));
+    }
+    function applyIntent(q, it){   // 조건 검색어 → 필터 칩·정렬. 검색어는 비우고 무엇으로 바꿨는지 토스트로 알린다
+        it.cats.forEach(function(c){ if (CAT_KEYS.indexOf(c) >= 0 && F.cats.indexOf(c) < 0) F.cats.push(c); });
+        F.no = normNo(F.no.concat(it.no));
+        if (it.area && areaOf(it.area)) F.area = it.area;
+        if (it.cats.length) { sortCat = it.cats[0]; sortBy = 'p'; }
+        else if (it.sort && SORT_LABEL[it.sort]) { sortCat = ''; sortBy = it.sort; }
+        $sortBtn.text(sortText()); markSort(sortCat ? 'cat:' + sortCat : sortBy);
+        ga('search', {search_term: q, results: 1}); ga('search_intent', {search_term: q});
+        var said = [];
+        if (it.area && areaOf(it.area)) said.push(areaOf(it.area).ko);
+        it.no.forEach(function(k){ if (MUST_BY[k]) said.push(MUST_BY[k].chip || MUST_BY[k].label); });
+        said.push(sortText());
+        $q.val(''); lastQ = '';
+        var u = new URLSearchParams(location.search); u.delete('q');   // 새로고침·공유 때 조건만 남게
+        history.replaceState(history.state, '', location.pathname + (u.toString() ? '?' + u : '') + location.hash);
+        applyFilters(true);
+        if (window.CF && CF.toast) CF.toast('‘' + q + '’ 조건으로 찾았어요 · ' + said.join(' · '));
+    }
 
     // 적용 조건마다 '하카타역 빼기' 칩 — 결과 0건에서 한 번에 풀 수 있게
     function removeChips(){
@@ -2200,6 +2222,9 @@ SEARCH_JS = r"""(function(){
         $notice.hide().empty();
         if (q) {
             list = matchQ(pool, q);
+            // 조건 검색어('방음 좋은 숙소') — 어느 호텔 이름과도 안 맞을 때만 필터·정렬로 바꾼다(2026-11-07, search-ac.js intent)
+            var it = (!list.length && window.CFAutocomplete && window.CFAutocomplete.intent && !matchQ(HOTELS, q).length) ? window.CFAutocomplete.intent(q) : null;
+            if (it) { applyIntent(q, it); return; }
             // 매칭 0건일 때만 측정·안내 (§7-d). 비슷한 이름은 '혹시 이 호텔인가요?'로
             if (q !== lastQ) {
                 var sIds = {}; if (!list.length && window.CFAutocomplete && window.CFAutocomplete.suggest) window.CFAutocomplete.suggest(q, 3).forEach(function(it){ sIds[it.id] = 1; });
@@ -5026,7 +5051,8 @@ def city_averages(monthly, monthly_cat):
     return city_n, city_avg, city_cat_avg
 
 
-REDIRECTS = [('/best/pool', '/best/luxury'), ('/best/pool.html', '/best/luxury')]
+REDIRECTS = [('/best/pool', '/best/luxury'), ('/best/pool.html', '/best/luxury'),
+             ('/hotel/*', '/hotels')]   # 옛 사이트 상세 주소(/hotel/{uuid}, 페이스북에 남은 링크 — 2026-11-07 GA에서 404 확인) → 전체 목록
 
 ROBOTS_TXT = f'''User-agent: *
 Allow: /

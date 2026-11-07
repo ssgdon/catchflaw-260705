@@ -154,8 +154,9 @@ report(3, '사이트맵 <loc> 수·파일', errs, f'{len(locs)}개 = 채점 상�
 # ── 4 ──
 errs = []
 lines = [l for l in rd.splitlines() if l.strip()]
-if len(lines) != 2 * len(details) + 2:   # 상세마다 무확장·.html 2줄 + 허브 2줄
-    errs.append(f'_redirects {len(lines)}줄 ≠ 상세 {len(details)}×2 + 2')
+EXTRA_RD = 3   # 허브 2줄(/best/pool) + 옛 사이트 상세 /hotel/* 1줄(2026-11-07) — generate.py REDIRECTS
+if len(lines) != 2 * len(details) + EXTRA_RD:   # 상세마다 무확장·.html 2줄 + EXTRA_RD
+    errs.append(f'_redirects {len(lines)}줄 ≠ 상세 {len(details)}×2 + {EXTRA_RD}')
 targets, sources = {}, set()
 for l in lines:
     parts = l.split()
@@ -175,7 +176,7 @@ for l in lines:
 for p in sorted(detail_urls):
     if targets.get(p, 0) != 2:   # 무확장 + .html
         errs.append(f'옛 주소 301 {targets.get(p, 0)}줄(2여야): {p}')
-report(4, '_redirects 줄 수·대상', errs, f'{len(lines)}줄 = 상세 {len(details)}×2(무확장·.html) + 허브 2')
+report(4, '_redirects 줄 수·대상', errs, f'{len(lines)}줄 = 상세 {len(details)}×2(무확장·.html) + 허브 2 + 옛 사이트 1')
 
 # ── 5 ──
 errs = []

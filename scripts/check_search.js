@@ -20,7 +20,22 @@ if (!A || !IDX.length) { console.error('검색 인덱스나 search-ac.js를 읽�
 
 const { cases } = JSON.parse(fs.readFileSync(path.join(ROOT, 'scripts', 'search_cases.json'), 'utf8'));
 const fails = [];
+// 미지원 도시 목록 = 빌드된 검색 페이지의 OTHER(generate.py UNSUPPORTED_KEYWORDS)
+let OTHER = [];
+try { const m = fs.readFileSync(path.join(path.dirname(idxPath), '..', 'search.html'), 'utf8').match(/var OTHER = (\[[^\]]*\]);/); if (m) OTHER = JSON.parse(m[1]); } catch (e) { /* 검색 페이지 없으면 city 사례는 글자 포함만 */ }
+const norm = (s) => String(s || '').toLowerCase().replace(/\s+/g, '');
 for (const c of cases) {
+  if ('intent' in c) {   // 조건 검색어 해석
+    const got = A.intent(c.q), want = c.intent;
+    const key = (x) => x ? JSON.stringify({ cats: x.cats, no: x.no, area: x.area || '', sort: x.sort || '' }) : 'null';
+    if (key(got) !== key(want)) fails.push(`조건 '${c.q}' → ${key(got)} · 기대 ${key(want)}`);
+    continue;
+  }
+  if ('city' in c) {     // 미지원 도시 판정(search.html isOtherCity와 같은 규칙)
+    const got = OTHER.some((k) => norm(c.q).indexOf(norm(k)) >= 0) || A.soundLike(c.q, OTHER);
+    if (got !== c.city) fails.push(`도시 '${c.q}' → ${got} · 기대 ${c.city}`);
+    continue;
+  }
   const strong = A.match(c.q, 3).map((x) => x.u);
   const sug = strong.length ? strong : A.suggest(c.q, 3).map((x) => x.u);
   let ok;

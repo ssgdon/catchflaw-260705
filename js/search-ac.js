@@ -411,6 +411,54 @@
     return { render: render, showAreas: showAreas, hide: hide, matchIds: matchIds };
   }
 
+  /* ── 조건 검색어 (2026-11-07, changes.json pending '의도 검색어 라우팅') ──
+     '방음 좋은 숙소'·'벌레 없는 호텔'·'텐진 가성비'처럼 호텔 이름이 아니라 조건을 찾는 말 → 검색 필터·정렬.
+     호텔 이름이 하나도 안 맞을 때만 쓴다(search.html run()). 조건·지역·군말을 다 빼고 조사만 남아야 조건으로 본다 —
+     모르는 말이 남으면 null(이름 검색으로 계속). cat = 검색 '불만 적은 항목'(CAT_KEYS 한글 이름), no = '한 번도 없어야'(NO_KEYS) */
+  var INTENTS = [
+    { re: /방음|조용|소음|시끄|정숙|층간/g, cat: '소음' },
+    { re: /깨끗|청결|깔끔|위생|청소/g, cat: '청결' },
+    { re: /냄새|담배|금연|흡연|곰팡내/g, cat: '냄새' },
+    { re: /넓은 ?방|넓은|넓고|큰 ?방|침대|객실/g, cat: '객실' },
+    { re: /친절|직원|응대|서비스/g, cat: '직원' },
+    { re: /역세권|역 ?가까운?|역 ?근처|역에서 ?가까운?|교통|접근성|위치/g, cat: '위치' },
+    { re: /바퀴 ?벌레|바퀴|벌레/g, no: 'roach' },
+    { re: /빈대/g, no: 'bedbug' },
+    { re: /안전|치안|보안/g, no: 'safe' },
+    { re: /가성비|저렴|싼|싸게|싸고|최저가|값싼/g, sort: 'price' }
+  ];
+  var INTENT_AREAS = [[/하카타 ?역|하카타/g, 'hakata'], [/텐진|덴진/g, 'tenjin'], [/나카스|캐널 ?시티/g, 'nakasu'], [/기온|오호리/g, 'gion']];
+  var INTENT_FILL = /잘 ?되는|좋은|좋고|좋다|괜찮은|있는|없는|없고|적은|적고|많은|되는|하고|하는|숙소|호텔|료칸|후쿠오카|추천|근처|주변|위주|곳|데|중에/g;
+  function intent(q) {
+    var s = String(q || '').normalize('NFKC').toLowerCase(), r = { cats: [], no: [], sort: '', area: '' }, hit = false;
+    if (/https?:/.test(s)) return null;
+    // 지역을 먼저 뺀다 — '하카타역 근처'의 '역 근처'가 위치 조건으로 잡히지 않게
+    INTENT_AREAS.forEach(function (a) { a[0].lastIndex = 0; if (a[0].test(s)) { a[0].lastIndex = 0; s = s.replace(a[0], ' '); if (!r.area) r.area = a[1]; } });
+    var pos = {};
+    INTENTS.forEach(function (it) {
+      it.re.lastIndex = 0;
+      var at = s.search(it.re);
+      if (at < 0) return;
+      it.re.lastIndex = 0; s = s.replace(it.re, function (m) { return new Array(m.length + 1).join(' '); }); hit = true;   // 같은 길이 공백 — 뒤 조건의 위치가 안 밀리게
+      if (it.cat && r.cats.indexOf(it.cat) < 0) { r.cats.push(it.cat); pos[it.cat] = at; }
+      if (it.no && r.no.indexOf(it.no) < 0) r.no.push(it.no);
+      if (it.sort) r.sort = it.sort;
+    });
+    if (!hit) return null;   // 지역만 있는 말은 이름 검색·지역 칩이 맡는다
+    r.cats.sort(function (a, b) { return pos[a] - pos[b]; });   // 먼저 쓴 조건이 정렬 기준
+    s = s.replace(INTENT_FILL, ' ').replace(/[\s\d.,!?~·\-]+/g, '');
+    return /^[한은는이가을를의에도인된운요해]*$/.test(s) ? r : null;   // 조사·어미만 남아야 조건
+  }
+
+  // 소리가 거의 같은 말(벳퓨↔벳푸)인지 — 미지원 도시 판정용. 낱말마다 소리 키 편집거리 1 이하(4자모 이상만)
+  function soundLike(q, list) {
+    var qs = words(q).map(fold).filter(function (t) { return t.length >= 4; });
+    return qs.length > 0 && list.some(function (k) {
+      var kf = fold(String(k).toLowerCase().replace(/\s+/g, ''));
+      return kf.length >= 4 && qs.some(function (t) { return lev(t, kf, 1) <= 1; });
+    });
+  }
+
   window.CFAutocomplete = { attach: attach, match: match, matchIds: matchIds, suggest: suggest, selfTest: selfTest, requestAnalysis: requestAnalysis,
-                            isMapsUrl: isMapsUrl, resolveUrl: resolveUrl, resolveLink: resolveLink, remote: remote };
+                            isMapsUrl: isMapsUrl, resolveUrl: resolveUrl, resolveLink: resolveLink, remote: remote, intent: intent, soundLike: soundLike };
 })();
