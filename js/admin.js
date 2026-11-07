@@ -327,10 +327,11 @@
       kpi({ label: '끝까지 읽음', value: pct(sr, 1), delta: delta(sr, psr, 'pp', true, nmin), prev: wl + pct(psr, 1),
         spark: spark(rollRate('d:scroll', 'd:page_view', w), '7일 이동 90% 스크롤 비율') })];
     if (extra) {
-      var se = ev(g, 'search'), nr = ev(g, 'search_no_result');
+      var st = searchStat(g);
       out.push(kpi({ label: '참여율', value: pct(engaged(g)), sub: '10초 넘게 머물렀거나 2쪽 이상 본 세션' }));
-      out.push(kpi({ label: '검색 실패율', value: se ? pct(clamp01(ratio(nr ? nr.sessions : 0, se.sessions))) : '—',
-        sub: se ? '검색 ' + num(se.sessions) + '세션 중 결과 없음 ' + num(nr ? nr.sessions : 0) : '검색 기록 없음' }));
+      out.push(kpi({ label: '검색 실패율', value: st.se ? pct(clamp01(ratio(st.nr, st.se))) : '—',
+        sub: st.se ? st.label + '검색 ' + num(st.se) + '세션 중 결과 없음 ' + num(st.nr)
+          : (st.since ? st.since.slice(5) + '(마지막 검색 변경 다음 날)부터 기록 없음' : '검색 기록 없음') }));
     }
     return out.join('');
   }
