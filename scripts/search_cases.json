@@ -173,11 +173,13 @@
   },
   {
    "q": "호텔 라이브맥스 에키마에",
-   "none": true
+   "top": "hotel-livemax-hakata-ekimae",
+   "name": "호텔 리브맥스 하카타 에키마에"
   },
   {
    "q": "Hotel LiveMax Hakata-Ekimae",
-   "none": true
+   "top": "hotel-livemax-hakata-ekimae",
+   "name": "호텔 리브맥스 하카타 에키마에"
   },
   {
    "q": "지라프",
