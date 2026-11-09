@@ -1373,3 +1373,6 @@ body.is-admin #wrapper{background:var(--surface-2);}
 #admin .ad-kv + .ad-tw{margin-top:var(--sp-4);}
 #admin .ad-log{margin:var(--sp-4) 0 0;padding:0;list-style:none;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink);word-break:break-all;}
 #admin .ad-log li + li{margin-top:var(--sp-1);}
+
+/* 상세 항목 범례 안내문 — 글자를 HTML 원문 대신 data-t에 두고 여기서 그린다(2026-11-09: 네이버가 호텔 내용 대신 이 공통 문장을 검색 요약문으로 뽑았다) */
+#detail .stat-legend [data-t]::before{content:attr(data-t);}

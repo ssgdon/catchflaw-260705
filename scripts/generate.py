@@ -816,7 +816,7 @@ def build_footer(depth=0, root=None):
     p = root if root is not None else (('../' * depth) or './')
     return f'''
     <footer id="site-foot">
-        <div class="foot-note">캐치플로의 실망 확률·항목 점수는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
+        <div class="foot-note" data-nosnippet>캐치플로의 실망 확률·항목 점수는 공개된 투숙객 리뷰를 AI로 분석한 <b>참고용 통계 의견</b>이에요. 특정 업소의 객관적 품질을 단정하지 않아요.</div>
         <div class="foot-links"><a href="{p}about">캐치플로 소개·산출 방법</a> · <a href="{p}hotels">전체 호텔 목록</a> · <a href="{p}privacy">개인정보 처리방침</a> · <a href="mailto:{CONTACT_EMAIL}">정정·이의제기</a></div>
         <div class="foot-copy">ⓒ 2026 CATCHFLAW</div>
     </footer>'''
@@ -3358,6 +3358,77 @@ def faq_jsonld(faq):
     if not entries: return None
     return {'@context': 'https://schema.org', '@type': 'FAQPage', 'mainEntity': entries}
 
+SERP = Counter()   # 빌드 로그용: 검색 제목·썸네일 분포
+RARE_SHORT = {'벌레': '벌레', '곰팡이': '곰팡이', '동네 분위기': '밤길', '객실 보안': '보안'}   # 썸네일 배지·제목용 짧은 이름
+FAMILY_MIN_EVID = 10   # '아이랑 가도 될까?' 제목 = 아이 동반 실전정보(FAQ family)의 근거 리뷰가 이만큼 있을 때만
+
+
+def serp_pack(pid, name, meta, h, city, per, neg, pos, faq):
+    """검색 결과 한 줄(제목·요약·썸네일)의 재료 — SEO-GOOGLE 후속(2026-11-09 사용자 확정). 채점 호텔 전용.
+       근거: 네이버 카페 숙소 글 1,000건의 질문은 'A vs B'·'아이랑'·'위치' 순이고, 호텔명 뒤 검색어는 조식·대욕장·위치·후기·단점.
+             '실망 확률'은 처음 보는 사람이 모르는 말이라 제목·썸네일에서 빼고 요약문 끝에만 남긴다.
+       새 계산 없음 — 전부 상세 화면의 다른 자리와 같은 값:
+         확인할 3가지 = ① 한눈에 보기 '걸리는 점' 1위(없으면 '두드러진 불만 없음') ② '괜찮은 점' 1위(없으면 가까운 역) ③ 벌레 심각 리뷰 건수
+         제목 = 아이 동반 FAQ 근거가 FAMILY_MIN_EVID건 이상(캡슐 제외)이면 '{호텔} 아이랑 가도 될까? 확인할 3가지', 아니면 '{호텔} 예약 전 확인할 3가지: a·b·c'
+         썸네일(scripts/og_card.py) = 위 노랑 배지 '{①의 항목} 주의'(걸리는 점이 있을 때만 — 빨강 없음) + 아래 '벌레 0건'(최근 1년 벌레 리뷰 0건일 때)
+                                     → 곰팡이 0건 → '{②} 적음' → '리뷰 분석'. 매주 바뀌는 숫자는 넣지 않는다."""
+    nm, n = card_name(name), h['analyzed']
+    sub = lambda k: h['cats'][SUB_CAT[k]]['subs'][k]
+    crit = lambda k: int(sub(k).get('crit_1y', 0) or 0)
+    cnt = lambda k: int(sub(k).get('count_1y', 0) or 0)
+
+    def neg_item(x):      # (짧은 이름, 문장용 평문) — '옆방·복도 소음 불만(최근 1년 리뷰의 4.5%)' → '… 불만 4.5%'
+        kind, plain = x[5]
+        return (RARE_SHORT.get(x[6]) or cat_ko(x[3]),
+                re.sub(r'\([^()]*리뷰의 ([\d.]+%)\)$', r' \1', plain) if kind == 'np' else f'{plain}은 점')
+
+    neg, pos = list(neg), list(pos)
+    chip = None
+    if neg:
+        la, A = neg_item(neg[0])
+        chip = f'{la} 주의'
+    else:
+        la, A = '단점', '두드러진 불만 없음'
+    lb = B = None
+    if pos:
+        kind, a, b = pos[0]
+        lb, B = (a.replace(' 불만', ''), f'{a} {re.sub(r"적어요$", "적음", b)}') if kind == 'cat' else ('역 거리', a)
+    if not B:
+        st = nearest_station(meta.get('latitude'), meta.get('longitude'))
+        if st: lb, B = '역 거리', f'{st[0]} 도보 {st[1]}분'
+    if not B and len(neg) > 1:
+        lb, B = neg_item(neg[1])
+        if lb == la: lb = neg[1][4] or lb
+    if not B:
+        lb, B = '구글 평점', f'구글 평점 ★{meta.get("total_score")}'
+    if neg and neg[0][6] == '벌레':
+        lc, C = '곰팡이', f'곰팡이 심각 리뷰 {crit("곰팡이")}건'
+    else:
+        lc, C = '벌레', f'벌레 심각 리뷰 {crit("벌레")}건'
+    if cnt('벌레') == 0: cap, dot = '벌레 0건', True
+    elif cnt('곰팡이') == 0: cap, dot = '곰팡이 0건', True
+    elif pos and pos[0][0] == 'cat': cap, dot = f'{pos[0][1]} 적음', True
+    else: cap, dot = '리뷰 분석', False
+
+    fam = next((x for x in (faq or []) if x.get('t') == 'family'), None)
+    family = bool(fam and (fam.get('n') or 0) >= FAMILY_MIN_EVID and not _is_capsule(pid, meta))
+    title = f'{nm} 아이랑 가도 될까? 확인할 3가지' if family else f'{nm} 예약 전 확인할 3가지: {la}·{lb}·{lc}'
+
+    v, avg = pct(h['p_crit']), pct(city['crit'])
+    s3 = f'확인할 3가지는 {A}, {B}, {C}{josa(C, "이에요", "예요")}.'
+    sp = (f'실망 확률 {v}%({CITY["ko"]} 평균 {avg}%).' if h['ranked'] else
+          f'실망 확률 {v}%({CITY["ko"]} 평균 {avg}%), 리뷰가 {n:,}건뿐이라 참고용이에요.')
+    chips = [c for c in (fam.get('c') or []) if c][:2] if family else []
+    cands = []
+    if chips:
+        cands += [f'{nm} 아이 동반 후기 요약: {", ".join(chips)}. {s3} {sp}', f'{nm} 아이 동반 후기 요약: {chips[0]}. {s3} {sp}']
+    cands += [f'{nm}{josa(nm, "은", "는")} {per} 리뷰 {n:,}건을 분석했어요. {s3} {sp}', f'{nm} {s3} {sp}',
+              f'{nm} 확인할 3가지: {la}·{lb}·{lc}. 실망 확률 {v}%({CITY["ko"]} 평균 {avg}%).']
+    desc = next((c for c in cands if len(c) <= 150), cands[-1])
+    SERP['n'] += 1; SERP['family'] += family; SERP['chip'] += bool(chip); SERP['cap:' + (cap if not dot or cap.endswith('0건') else '불만 적음')] += 1
+    return {'title': title, 'desc': desc, 'chip': chip, 'cap': cap, 'dot': dot, 'family': family, 'items': (A, B, C)}
+
+
 def answer_paragraph(name, h, city, per, v_ans='', tier_txt='', neg=(), pos=(), has_price=False):
     """상세 '답 문단'(SEO-CRAWL-DESIGN §4) — 호텔명·기간·리뷰 수·실망 확률·평균·판정·걸리는 점·괜찮은 점·기준일이 한 문단에 다 있는
        인용용 첫 문단(AI가 문단 하나만 떼어 가도 뜻이 서게). 반환 (<p class="info-answer"> HTML, meta description 평문).
@@ -4041,7 +4112,7 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
             {gauge_html(h['p_crit'], city['crit'], v_tone, h.get('rank_tier'))}
             {verdict_why_html}
             {overall_trend}
-            <div class="basis-fold">
+            <div class="basis-fold" data-nosnippet>
                 <div class="basis">
                     <div class="steps-lead">{v}%는 이렇게 나온 숫자예요</div>
                     <ol class="steps-list">{_steps_html}</ol>
@@ -4097,10 +4168,10 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
         <div class="sect analysis is-merged" id="risk-detail">
             <div class="risk-acc">{''.join(groups)}</div>
             {('<script>window.TRENDC=' + json.dumps(trendc, ensure_ascii=False) + ';</script>') if trendc else ''}
-            <div class="stat-legend">
+            <div class="stat-legend" data-nosnippet>
                 <span class="lg is-danger">불만 많음</span><span class="lg is-warning">평균 수준·많은 편</span><span class="lg is-safe">적은 편</span>
-                <span class="note">인용문은 리뷰 원문 발췌예요{DSEP}<span class="seg">불만 리뷰 5건 미만 항목은 위험 등급을 붙이지 않아요</span></span>
-                <span class="note">벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고는 드물지만 치명적이라 리뷰 건수로 보여드려요</span>
+                <span class="note"><span data-t="인용문은 리뷰 원문 발췌예요"></span>{DSEP}<span class="seg" data-t="불만 리뷰 5건 미만 항목은 위험 등급을 붙이지 않아요"></span></span>
+                <span class="note" data-t="벌레, 곰팡이, 밤길·동네 분위기, 보안·안전사고는 드물지만 치명적이라 리뷰 건수로 보여드려요"></span>
             </div>
         </div>
 '''
@@ -4288,19 +4359,23 @@ def build_detail(pid, meta, h, quotes, stars, city, hotels_meta, H, kr=None, kr_
     # 공유 미리보기(2026-11-05): 채점 호텔은 사진 + 실망 확률 카드(docs/og/{slug}.jpg), 실패·미채점은 원본 사진 그대로
     og_title = og_alt = None
     share_txt = f'{name} — 캐치플로 리뷰 분석'
+    _sp = None
     if h['scored']:
         _v, _avg = pct(h['p_crit']), pct(city['crit'])
+        _sp = serp_pack(pid, name, meta, h, city, per, _neg, _pos_txt, faq)   # 검색 결과 제목·요약·썸네일 재료(2026-11-09)
         _local = os.path.join(ROOT, 'assets', 'hotels', f'{pid}.jpg') if (meta.get('local_img') and not meta.get('r2_img')) else None
-        _ch = og_card.card(OUT, SLUG[pid], meta.get('r2_img'), _local, name, _v, v_head, v_tone, CITY['ko'], _avg)
+        _urls = meta.get('r2_imgs') or []
+        _photo = og_card.pick_photo(pid, _urls, [thumb(u) for u in _urls]) or meta.get('r2_img')   # 밝은 가로 사진(scripts/og_photo.json)
+        _ch = og_card.card(OUT, SLUG[pid], _photo, _local, _sp['chip'], _sp['cap'], _sp['dot'])
         og_title = f'{name} · 실망 확률 {_v}%'
         share_txt = f'{name} 실망 확률 {_v}% ({CITY["ko"]} 평균 {_avg}%) — {v_head}'
         if _ch:
             og_img = f'{BASE}/og/{SLUG[pid]}.jpg?v={_ch}'
-            og_alt = f'{name} 실망 확률 {_v}%, {v_head} ({CITY["ko"]} 평균 {_avg}%)'
+            og_alt = f'{name} 사진 — ' + ' · '.join(x for x in (_sp['chip'], _sp['cap']) if x)
     # 답 문단 + description(SEO-CRAWL §4): 같은 문장 — description은 첫 문장 + 걸리는 점(150자 안)
     answer_html, seo_desc = answer_paragraph(name, h, city, per, v_ans, tier_txt, _neg, _pos_txt, has_price=bool(_pt))
     if h['scored']:
-        seo_title = f'{name} 후기·단점 분석 · 실망 확률 {pct(h["p_crit"])}% | {CITY["ko"]} 호텔 캐치플로'   # 검색어 = '{호텔} 후기/단점'(SEO-GOOGLE §3-1) — 화면 문구는 '리뷰' 그대로
+        seo_title, seo_desc = _sp['title'], _sp['desc']   # 2026-11-09: '아이랑 가도 될까? 확인할 3가지'/'예약 전 확인할 3가지: a·b·c'(serp_pack) — 화면 문구는 그대로
     else:
         seo_title = f'{name} 후기 분석 준비 중 | {CITY["ko"]} 호텔 캐치플로'
     _faqld = faq_jsonld(faq) if h['scored'] else None
@@ -5386,6 +5461,8 @@ def main():
     print(f'OK: 상세 {n}p (점수 노출 {scored}, 분석 준비 중 {n - scored}) · sitemap {sitemap_n} URL · 도시평균 실망확률 {pct(city["crit"])}%')
     print(f'컬렉션 생성 {len(built_cols)}개: ' + ', '.join(f'{c["slug"]}({len(p)})' for c, p in built_cols))
     print(f'추천순 모수 {len(REC)}곳 · 비교 쌍 {len(PAIRS)}개(검색량 자동 {len(_auto)}) · 검색량 {len(SV)}곳 · 한국인 리뷰 최대 {max(list(KRN.values()) or [0])}건')
+    print(f"검색 제목 {SERP['n']}곳: 아이랑 {SERP['family']} · 예약 전 확인 {SERP['n'] - SERP['family']} / 썸네일: 주의 배지 {SERP['chip']} · "
+          + ' · '.join(f'{k[4:]} {v}' for k, v in sorted(SERP.items()) if k.startswith('cap:')))
     if skipped_cols:
         print('컬렉션 스킵 ' + str(len(skipped_cols)) + '개: ' + ', '.join(f'{s}({r})' for s, r in skipped_cols))
 
