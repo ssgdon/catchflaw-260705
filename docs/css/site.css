@@ -2565,3 +2565,4 @@ body.is-admin #wrapper{background:var(--surface-2);}
 #admin .ad-kv + .ad-tw{margin-top:var(--sp-4);}
 #admin .ad-log{margin:var(--sp-4) 0 0;padding:0;list-style:none;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:var(--fs-meta);line-height:var(--lh-ui);color:var(--ink);word-break:break-all;}
 #admin .ad-log li + li{margin-top:var(--sp-1);}
+#detail .stat-legend [data-t]::before{content:attr(data-t);}
