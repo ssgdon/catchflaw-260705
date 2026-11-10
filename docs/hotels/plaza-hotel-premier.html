@@ -47,7 +47,10 @@
       var c = document.createElement('script'); c.async = true; c.src = 'https://www.clarity.ms/tag/xi5o022ef1'; document.head.appendChild(c);
     }
     function arm(){ setTimeout(go, 1500); }
-    if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
+    var cfAd = false;
+    try { cfAd = /[?&](utm_medium=(paid|cpc|ppc|paid_social|display)|fbclid=|gclid=|gbraid=|wbraid=|n_media=)/i.test(location.search); } catch (e) {}
+    if (cfAd) go();
+    else if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
     ['pointerdown', 'keydown', 'scroll'].forEach(function(e){ window.addEventListener(e, go, {once: true, passive: true}); });
   })();
 </script>
@@ -59,7 +62,7 @@
     <script>(function(){var u="../css/fonts.css?v=e17eafa9c4",K="cf_fonts",ok=false;try{ok=localStorage.getItem(K)==="1";}catch(e){}function mark(){try{localStorage.setItem(K,"1");}catch(e){}}function add(b){var c=document.createElement("link");c.rel="preconnect";c.href="https://cdn.jsdelivr.net";c.crossOrigin="";document.head.appendChild(c);var l=document.createElement("link");l.rel="stylesheet";l.href=u;if(b)l.setAttribute("blocking","render");if(!b)l.onload=function(){setTimeout(function(){if(document.fonts&&document.fonts.ready)document.fonts.ready.then(mark);else mark();},100);};document.head.appendChild(l);}if(ok)add(true);else window.addEventListener("load",function(){add(false);});})();</script>
     <link rel="stylesheet" href="../css/site.css?v=e7648e8729">
     <link rel="stylesheet" href="../css/pc.css?v=ffe7a852ee" media="(min-width:770px)">
-    <script>window.CF_BUILD='1794291906';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
+    <script>window.CF_BUILD='1794306199';window.CF_IMGV='757efe2127';window.$=window.jQuery=function(f){(window.__cfq=window.__cfq||[]).push(f);};</script>
     <script src="../js/backnav.js?v=d7c70f42cf" defer></script>
     <script src="../js/common.js?v=c8b1cf2e25" defer></script>
     <script src="../js/vendor/jquery-3.7.1.min.js?v=c9a1b0aa01" defer></script>
