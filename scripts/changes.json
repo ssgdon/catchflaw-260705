@@ -1,6 +1,10 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-11", "commit": "15aa7176", "title": "Meta 픽셀 이벤트를 광고 계정용 데이터 세트(Nitpicker)로도 전송",
+   "what": "광고 계정에 CatchFlaw 픽셀을 연결할 수 없어, 그 계정에서 고를 수 있는 Nitpicker 픽셀을 두 번째로 넣었다. 같은 이벤트 4개를 두 곳에 보낸다. 화면·속도 지표에는 변화가 없어야 한다",
+   "watch": [],
+   "doc": "marketing/ig-ad/PLAN.md"},
   {"date": "2026-11-11", "commit": "6d9e2e0c", "title": "Meta 픽셀 추가(방문·상세 조회·검색·가격 버튼)",
    "what": "전 페이지에 Meta 픽셀을 GA·Clarity와 같은 때 싣는다. 보내는 이벤트는 PageView·ViewContent(상세)·Search·InitiateCheckout(가격 버튼 = check_price_click) 4개뿐이고 자동 수집은 껐다. 운영자 기기는 전송 없음. 개인정보 처리방침에 Meta 픽셀을 추가하고 시행일을 11-11로 고침. 화면·속도 지표에는 변화가 없어야 한다",
    "watch": [],
