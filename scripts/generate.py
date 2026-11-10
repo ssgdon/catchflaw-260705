@@ -698,6 +698,7 @@ CLARITY = ''   # 2026-10-20: ANALYTICS(아래)에 합쳐 로드 뒤로 미룸
 # Google Analytics 4 (전 페이지 head). gtag 로드 + 자동 페이지뷰.
 GA4_ID = 'G-4M1BGXJZYQ'
 CLARITY_ID = 'xi5o022ef1'
+META_PIXEL_ID = '2124557868180355'   # Meta 픽셀(데이터 세트 'CatchFlaw') — 인스타·페이스북 광고 성과 측정·전환 최적화용(2026-11-11)
 # 2026-10-20 속도: gtag.js(176KB)·clarity(30KB)는 첫 화면이 끝난 뒤(load + 1.5초) 또는 첫 터치·키·스크롤 때 싣는다.
 # gtag()·clarity() 호출은 그 전에도 큐(dataLayer·clarity.q)에 쌓여 로드되면 그대로 보내진다(페이지뷰 포함).
 # 2026-11-10 광고·소셜 클릭 유입(utm_medium=paid|cpc…, fbclid, gclid, 네이버 n_media)은 기다리지 않고 바로 싣는다 —
@@ -706,6 +707,12 @@ CLARITY_ID = 'xi5o022ef1'
 # 2026-11-04 운영자 방문 표시: ?cf_internal=1로 한 번 들어온 기기는 localStorage cf_internal을 남기고, 그 뒤 모든 방문을
 # traffic_type=internal로 보낸다 → GA 데이터 필터 'Internal Traffic'(활성)이 IP 규칙과 같이 걸러 낸다(휴대폰 데이터망 포함).
 # ?cf_internal=0이면 표시를 지운다. 주소의 파라미터는 replaceState로 지워 page_location에 안 남긴다. Clarity는 태그로만 구분.
+# 2026-11-11 Meta 픽셀: 인스타 광고를 '가격 버튼 누름' 쪽으로 최적화하려면 그 행동을 Meta가 받아야 한다. GA·Clarity와 같은 때에 싣고
+# (광고 유입은 바로, 그 외는 load+1.5초·첫 조작), 그 전 호출은 fbq 큐에 쌓였다가 보내진다. 보내는 것 = cfPx()가 부르는 표준 이벤트 4개뿐:
+# PageView(전 페이지) · ViewContent(상세, js/engage.js) · Search(검색 페이지) · InitiateCheckout(가격 버튼 = GA check_price_click, js/engage.js).
+# autoConfig를 꺼서 버튼 글자·페이지 메타데이터 자동 수집을 막는다(보내겠다고 적은 것만 — privacy 페이지 문구와 맞춤).
+# 운영자 기기(cf_internal)는 아무것도 안 보내고, catchflaw.com이 아닌 호스트(로컬 미리보기)는 큐에만 쌓고 스크립트를 싣지 않는다.
+# 이벤트 관리자의 '자동 고급 매칭'은 켜지 말 것 — 피드백 창의 휴대폰 번호가 해시로 넘어간다.
 GA4 = f'''<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
@@ -725,12 +732,22 @@ GA4 = f'''<script>
   gtag('config', '{GA4_ID}', cfIn ? {{traffic_type: 'internal'}} : {{}});
   window.clarity = window.clarity || function(){{(window.clarity.q = window.clarity.q || []).push(arguments);}};
   if (cfIn) clarity('set', 'traffic', 'internal');
+  (function(f){{
+    if (f.fbq) return;
+    var n = f.fbq = function(){{ n.callMethod ? n.callMethod.apply(n, arguments) : n.queue.push(arguments); }};
+    if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
+  }})(window);
+  window.cfPx = function(ev, p){{ if (!cfIn) fbq('track', ev, p || {{}}); }};
+  if (!cfIn) {{ fbq('set', 'autoConfig', false, '{META_PIXEL_ID}'); fbq('init', '{META_PIXEL_ID}'); cfPx('PageView'); }}
   (function(){{
     var done = false;
     function go(){{
       if (done) return; done = true;
       var g = document.createElement('script'); g.async = true; g.src = 'https://www.googletagmanager.com/gtag/js?id={GA4_ID}'; document.head.appendChild(g);
       var c = document.createElement('script'); c.async = true; c.src = 'https://www.clarity.ms/tag/{CLARITY_ID}'; document.head.appendChild(c);
+      if (!cfIn && /(^|\\.)catchflaw\\.com$/.test(location.hostname)) {{
+        var m = document.createElement('script'); m.async = true; m.src = 'https://connect.facebook.net/en_US/fbevents.js'; document.head.appendChild(m);
+      }}
     }}
     function arm(){{ setTimeout(go, 1500); }}
     var cfAd = false;
@@ -1927,7 +1944,10 @@ SEARCH_JS = r"""(function(){
         var x=Math.sin(dp/2)*Math.sin(dp/2)+Math.cos(p1)*Math.cos(p2)*Math.sin(dl/2)*Math.sin(dl/2); return 2*R*Math.asin(Math.sqrt(x)); }
     function areaOf(code){ return AREAS.filter(function(x){ return x.code === code; })[0] || null; }
     function imgSrc(h){ return h.img ? (h.img.indexOf('http') === 0 ? h.img : './' + h.img) : './img/placeholder.svg'; }
-    function ga(name, p){ if (typeof gtag === 'function') gtag('event', name, p || {}); }
+    function ga(name, p){
+        if (typeof gtag === 'function') gtag('event', name, p || {});
+        if (name === 'search' && window.cfPx) cfPx('Search');   // Meta 픽셀 — 검색어는 보내지 않는다
+    }
 
     // ───── 지도 ─────
     var BAND_COLOR = {safe:CF.tok('--safe'), warning:CF.tok('--warning'), danger:CF.tok('--danger')};
@@ -4968,12 +4988,12 @@ def build_about(hotels_meta, H, city):
     </main>''' + build_footer(0) + FOOT
 
 # ───────────────────────── privacy (개인정보 처리방침 · 2026-10-22, 구글 OAuth 동의 화면·YouTube API 심사용) ─────────────────────────
-PRIVACY_DATE = '2026년 10월 22일'
+PRIVACY_DATE = '2026년 11월 11일'
 
 def build_privacy():
     """개인정보 처리방침 — about 과 같은 문서 리듬(.about-* 부품, #privacy 셀렉터). sitemap 제외(check_links 정적 5 유지)·색인은 허용.
        마지막 절은 구글 API 서비스 이용 고지(한글 + 영문) — OAuth 동의 화면의 '개인정보처리방침 링크'와 YouTube API 규정 심사가 이 주소를 본다."""
-    desc = '캐치플로가 받는 정보(피드백·분석 요청·접속 기록), 쓰는 도구(Google Analytics·Microsoft Clarity·Supabase·Cloudflare), 보관 기간과 삭제 요청 방법을 안내해요.'
+    desc = '캐치플로가 받는 정보(피드백·분석 요청·접속 기록), 쓰는 도구(Google Analytics·Microsoft Clarity·Meta 픽셀·Supabase·Cloudflare), 보관 기간과 삭제 요청 방법을 안내해요.'
 
     def sect(title, body, en=False):
         lang = ' lang="en"' if en else ''
@@ -4989,7 +5009,7 @@ def build_privacy():
         '<li><b>직접 적어 주시는 것</b> — 상세 페이지 피드백 창의 의견 글과 휴대폰 번호(선택), 검색에서 못 찾은 호텔의 <b>분석 요청</b>에 적은 호텔 이름. '
         '보내신 뒤에는 운영자만 열람해요.</li>'
         '<li><b>자동으로 남는 것</b> — 방문한 페이지, 누른 곳, 스크롤, 기기·브라우저 종류, 대략적인 지역, 접속 시각. '
-        'Google Analytics와 Microsoft Clarity가 쿠키와 비슷한 식별자로 모으고, Cloudflare가 보안을 위해 접속 기록(IP 주소 포함)을 짧게 남겨요. '
+        'Google Analytics·Microsoft Clarity·Meta 픽셀이 쿠키와 비슷한 식별자로 모으고, Cloudflare가 보안을 위해 접속 기록(IP 주소 포함)을 짧게 남겨요. '
         '이름이나 연락처 같은 개인을 알아보는 정보는 여기에 넣지 않아요.</li>'
         '<li><b>내 기기에만 저장되는 것</b> — 최근 본 호텔, 비교함, 신고·피드백 중복을 막는 무작위 식별자, 글꼴 캐시. '
         '브라우저 저장소(localStorage)에만 있고 서버로 보내지 않아요. 브라우저 데이터를 지우면 함께 지워져요.</li>'
@@ -5000,14 +5020,17 @@ def build_privacy():
         '<li>분석 요청한 호텔을 심사해 사이트에 추가하려고</li>'
         '<li>어떤 화면이 어렵거나 느린지 알아 개선하려고(통계·사용성 기록)</li>'
         '<li>공격과 오남용을 막으려고(접속 기록)</li>'
+        '<li>인스타그램·페이스북에 낸 캐치플로 광고가 효과가 있었는지 재고, 광고를 보여 줄 대상을 정하려고(Meta 픽셀)</li>'
         '</ul>'
-        '그 밖의 목적으로 쓰거나 광고에 팔지 않아요.')
+        '그 밖의 목적으로 쓰지 않고, 누구에게도 팔지 않아요.')
     s4 = sect('어디에 맡기나요',
         '아래 서비스가 캐치플로를 대신해 정보를 저장하거나 처리해요. 모두 해외(미국 등) 서버라, 정보가 국외로 옮겨져요.'
         '<ul class="about-list">'
         '<li><b>Supabase</b> — 피드백·분석 요청 저장</li>'
         '<li><b>Google Analytics</b> — 방문 통계</li>'
         '<li><b>Microsoft Clarity</b> — 화면 사용 기록(누른 곳·스크롤), 입력한 글자는 가려져요</li>'
+        '<li><b>Meta 픽셀</b>(인스타그램·페이스북을 운영하는 Meta) — 광고 성과 측정. 방문한 페이지와 호텔 상세를 본 것, 검색한 것, 가격 버튼을 누른 것을 보내요. '
+        '검색어·이름·연락처·입력한 글자는 보내지 않아요</li>'
         '<li><b>Cloudflare</b> — 사이트 전송·보안, 호텔 사진 저장</li>'
         '</ul>'
         '예약·지도 버튼을 눌러 구글, 트립닷컴 등 바깥 사이트로 가면 그곳의 정책이 적용돼요. '
@@ -5015,12 +5038,14 @@ def build_privacy():
     s5 = sect('얼마나 보관하나요',
         '<ul class="about-list">'
         '<li>피드백·분석 요청: 처리가 끝난 뒤 1년 안에 지워요. 휴대폰 번호는 답변을 마치면 바로 지워요</li>'
-        '<li>방문 통계·사용 기록: 각 도구의 기본 기간(Google Analytics 14개월, Microsoft Clarity 최대 13개월)</li>'
+        '<li>방문 통계·사용 기록: 각 도구의 기본 기간(Google Analytics 14개월, Microsoft Clarity 최대 13개월, Meta 픽셀은 Meta가 정한 기간)</li>'
         '<li>접속 기록: Cloudflare의 보안 로그 기본 기간</li>'
         '</ul>')
     s6 = sect('통계·사용 기록을 끄려면',
         '브라우저 설정에서 쿠키와 사이트 데이터를 막거나, 방문 뒤 지우면 돼요. '
         'Google Analytics는 <a href="https://tools.google.com/dlpage/gaoptout" rel="noopener">구글 차단 부가기능</a>으로도 끌 수 있어요. '
+        'Meta 픽셀 기록이 광고에 쓰이는 것은 인스타그램·페이스북 계정의 광고 설정에서 끌 수 있어요'
+        '(<a href="https://www.facebook.com/privacy/policy/" rel="noopener">Meta 개인정보처리방침</a>). '
         '끄더라도 캐치플로는 그대로 쓸 수 있어요.')
     s7 = sect('내 정보에 대한 권리',
         f'보낸 피드백·분석 요청을 보여 달라거나 고쳐 달라거나 지워 달라고 {mail}로 요청하면, 확인 뒤 10일 안에 처리하고 알려드려요. '
