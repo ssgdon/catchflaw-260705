@@ -1,6 +1,14 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-11", "commit": "6d9e2e0c", "title": "Meta 픽셀 추가(방문·상세 조회·검색·가격 버튼)",
+   "what": "전 페이지에 Meta 픽셀을 GA·Clarity와 같은 때 싣는다. 보내는 이벤트는 PageView·ViewContent(상세)·Search·InitiateCheckout(가격 버튼 = check_price_click) 4개뿐이고 자동 수집은 껐다. 운영자 기기는 전송 없음. 개인정보 처리방침에 Meta 픽셀을 추가하고 시행일을 11-11로 고침. 화면·속도 지표에는 변화가 없어야 한다",
+   "watch": [],
+   "doc": "marketing/ig-ad/PLAN.md"},
+  {"date": "2026-11-11", "commit": "9fb34843", "title": "관리자 지표에서 광고 유입 제외",
+   "what": "VM 집계가 세션 매체가 유료인 세션을 GA 조회 전부(세션·착지·채널·깔때기·호텔별·일별·변경 전후)에서 뺀다. 화면에는 뺀 건수만 적는다. 광고 집행 여부가 배포 전후 판정을 흔들지 않게 하려는 것이라 지표 자체는 그대로다",
+   "watch": [],
+   "doc": "marketing/ig-ad/PLAN.md"},
   {"date": "2026-11-10", "commit": "06cef7b2", "title": "광고·소셜 클릭 유입은 GA·Clarity 즉시 로드",
    "what": "주소에 utm_medium=paid·cpc, fbclid, gclid가 있으면 load+1.5초를 기다리지 않고 바로 측정 스크립트를 싣는다(1~2초 보고 나가는 광고 방문도 세션으로 남김). 일반·검색 유입은 그대로라 자연 유입 지표는 안 변함. 광고 집행 뒤 측정은 marketing/ig-ad/ad_report.py",
    "watch": [],

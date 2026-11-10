@@ -7,6 +7,8 @@
   ready(function () {
     var H = window.CF_HOTEL;
     if (!H) return;
+    // Meta 픽셀(2026-11-11, generate.py GA4의 cfPx) — 상세 조회. 이름과 분류만 보낸다
+    if (window.cfPx) window.cfPx('ViewContent', { content_name: H.name || '', content_category: 'hotel' });
 
     // ───────── 최근 본 호텔 기록 (F40) ─────────
     // localStorage 'cf_recent' = 최신순 pid 배열(중복 제거, 최대 20) + 'cf_recent_ts' = {pid: 본 시각} — recent 페이지(build_recent)가 동일 키로 읽음
@@ -175,6 +177,10 @@
           partner: this.getAttribute('data-out-to') || 'google',
           placement: OUT_PLACEMENT[kind] || 'map_link'
         });
+      }
+      // Meta 픽셀 — 가격 버튼 누름(GA check_price_click와 같은 순간). 광고 세트의 전환 이벤트 '결제 시작'이 이것
+      if (kind === 'cta' && window.cfPx) {
+        window.cfPx('InitiateCheckout', { content_name: (window.CF_HOTEL || {}).name || '', content_category: this.getAttribute('data-out-to') || 'google' });
       }
       try { sessionStorage.setItem(OUT_KEY, String(Date.now())); } catch (e) {}
     });
