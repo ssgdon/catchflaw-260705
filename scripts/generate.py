@@ -700,6 +700,9 @@ GA4_ID = 'G-4M1BGXJZYQ'
 CLARITY_ID = 'xi5o022ef1'
 # 2026-10-20 속도: gtag.js(176KB)·clarity(30KB)는 첫 화면이 끝난 뒤(load + 1.5초) 또는 첫 터치·키·스크롤 때 싣는다.
 # gtag()·clarity() 호출은 그 전에도 큐(dataLayer·clarity.q)에 쌓여 로드되면 그대로 보내진다(페이지뷰 포함).
+# 2026-11-10 광고·소셜 클릭 유입(utm_medium=paid|cpc…, fbclid, gclid, 네이버 n_media)은 기다리지 않고 바로 싣는다 —
+# 인앱 브라우저에서 1~2초 보고 나가는 방문이 세션으로 안 남아 광고 이탈을 잴 수 없었다(2월 인스타 광고 클릭 132 → GA 36세션).
+# 일반 방문·검색 유입·PSI 측정에는 이 주소 표시가 없어 속도(LCP)는 그대로.
 # 2026-11-04 운영자 방문 표시: ?cf_internal=1로 한 번 들어온 기기는 localStorage cf_internal을 남기고, 그 뒤 모든 방문을
 # traffic_type=internal로 보낸다 → GA 데이터 필터 'Internal Traffic'(활성)이 IP 규칙과 같이 걸러 낸다(휴대폰 데이터망 포함).
 # ?cf_internal=0이면 표시를 지운다. 주소의 파라미터는 replaceState로 지워 page_location에 안 남긴다. Clarity는 태그로만 구분.
@@ -730,7 +733,10 @@ GA4 = f'''<script>
       var c = document.createElement('script'); c.async = true; c.src = 'https://www.clarity.ms/tag/{CLARITY_ID}'; document.head.appendChild(c);
     }}
     function arm(){{ setTimeout(go, 1500); }}
-    if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
+    var cfAd = false;
+    try {{ cfAd = /[?&](utm_medium=(paid|cpc|ppc|paid_social|display)|fbclid=|gclid=|gbraid=|wbraid=|n_media=)/i.test(location.search); }} catch (e) {{}}
+    if (cfAd) go();
+    else if (document.readyState === 'complete') arm(); else window.addEventListener('load', arm);
     ['pointerdown', 'keydown', 'scroll'].forEach(function(e){{ window.addEventListener(e, go, {{once: true, passive: true}}); }});
   }})();
 </script>'''
