@@ -699,6 +699,10 @@ CLARITY = ''   # 2026-10-20: ANALYTICS(아래)에 합쳐 로드 뒤로 미룸
 GA4_ID = 'G-4M1BGXJZYQ'
 CLARITY_ID = 'xi5o022ef1'
 META_PIXEL_ID = '2124557868180355'   # Meta 픽셀(데이터 세트 'CatchFlaw') — 인스타·페이스북 광고 성과 측정·전환 최적화용(2026-11-11)
+# 두 번째 픽셀(데이터 세트 'Nitpicker'): 지금 쓰는 광고 계정(858208527214268)은 스넛지 비즈니스 소유가 아니라 CatchFlaw 픽셀을 연결할 수 없고
+# (비즈니스 설정 '자산 연결'에 광고 계정 0개), 그 계정에서 고를 수 있는 픽셀이 Nitpicker다. 같은 이벤트를 두 곳에 같이 보낸다.
+# 광고 계정에 CatchFlaw가 연결되면 이 줄을 ''로 비우면 된다(2026-11-11).
+META_PIXEL_ID_ADS = '1979642769286351'
 # 2026-10-20 속도: gtag.js(176KB)·clarity(30KB)는 첫 화면이 끝난 뒤(load + 1.5초) 또는 첫 터치·키·스크롤 때 싣는다.
 # gtag()·clarity() 호출은 그 전에도 큐(dataLayer·clarity.q)에 쌓여 로드되면 그대로 보내진다(페이지뷰 포함).
 # 2026-11-10 광고·소셜 클릭 유입(utm_medium=paid|cpc…, fbclid, gclid, 네이버 n_media)은 기다리지 않고 바로 싣는다 —
@@ -713,6 +717,7 @@ META_PIXEL_ID = '2124557868180355'   # Meta 픽셀(데이터 세트 'CatchFlaw')
 # autoConfig를 꺼서 버튼 글자·페이지 메타데이터 자동 수집을 막는다(보내겠다고 적은 것만 — privacy 페이지 문구와 맞춤).
 # 운영자 기기(cf_internal)는 아무것도 안 보내고, catchflaw.com이 아닌 호스트(로컬 미리보기)는 큐에만 쌓고 스크립트를 싣지 않는다.
 # 이벤트 관리자의 '자동 고급 매칭'은 켜지 말 것 — 피드백 창의 휴대폰 번호가 해시로 넘어간다.
+META_PIXEL_INIT = ' '.join(f"fbq('set', 'autoConfig', false, '{i}'); fbq('init', '{i}');" for i in (META_PIXEL_ID, META_PIXEL_ID_ADS) if i)
 GA4 = f'''<script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
@@ -738,7 +743,7 @@ GA4 = f'''<script>
     if (!f._fbq) f._fbq = n; n.push = n; n.loaded = true; n.version = '2.0'; n.queue = [];
   }})(window);
   window.cfPx = function(ev, p){{ if (!cfIn) fbq('track', ev, p || {{}}); }};
-  if (!cfIn) {{ fbq('set', 'autoConfig', false, '{META_PIXEL_ID}'); fbq('init', '{META_PIXEL_ID}'); cfPx('PageView'); }}
+  if (!cfIn) {{ {META_PIXEL_INIT} cfPx('PageView'); }}
   (function(){{
     var done = false;
     function go(){{
