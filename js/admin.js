@@ -176,6 +176,12 @@
   // 1 사람이 늘었나 2 어디서 오나(쏠림) 3 상세에서 결정까지 가나 4 돈이 되는 클릭인가 5 어느 입구가 새나 6 찾다 실패하나 7 많이 보는데 링크가 없나 8 무엇을 쓰나
   var CH_NAME = { naver: '네이버', direct: '직접(북마크·앱)', organic: '검색(구글 등)', social: '소셜(유튜브 등)', other: '기타 링크' };
   var CH_CLS = { naver: 'ad-s1-chart', direct: 'ad-s2-chart', organic: 'ad-s3-chart', social: 'ad-s4-chart', other: 'ad-s5-chart' };
+  // 광고 유입 세션은 VM 집계가 모든 숫자에서 뺀다(admin_export PAID_RX, 2026-11-11) — 뺀 건수를 적어 GA 화면과 왜 다른지 알린다.
+  // paid 칸이 없는 옛 판(?day=)은 빼지 않은 숫자라 아무 말도 붙이지 않는다.
+  function paidNote(g) {
+    var p = g && g.paid;
+    return !p ? '' : p.sessions ? '광고 유입 ' + num(p.sessions) + '세션 제외' : '광고 유입 제외';
+  }
   var TONE_TXT = { danger: '문제', warning: '살펴보기', safe: '좋아요', '': '참고' };
   var TONE_ORD = { danger: 0, warning: 1, safe: 2, '': 3 };
   var FEATS = [['비교', ['compare_view', 'compare_add', 'compare_open']], ['블로그 후기 열기', ['blog_open']], ['누구와 가세요', ['who_select']],
@@ -354,7 +360,7 @@
       var chg = ratio(g.sessions - g.prev_sessions, g.prev_sessions);
       html += sec('방문 추이', '<div class="ad-legend"><span><i class="ad-leg-line ad-s1-chart"></i>전체 세션</span><span><i class="ad-leg-line is-dash"></i>상세 페이지 세션</span></div>' +
         '<div class="ad-chart"><canvas id="ad-chart-28" aria-label="최근 28일 일별 세션 선 그래프" role="img"></canvas></div>' +
-        '<p class="ad-foot">앞 28일 ' + num(g.prev_sessions) + ' → 최근 28일 ' + num(g.sessions) + ' <b>(' + (chg == null ? '—' : (chg >= 0 ? '+' : '') + Math.round(chg * 100) + '%') + ')</b> · 내부 트래픽 제외(GA 필터)</p>');
+        '<p class="ad-foot">앞 28일 ' + num(g.prev_sessions) + ' → 최근 28일 ' + num(g.sessions) + ' <b>(' + (chg == null ? '—' : (chg >= 0 ? '+' : '') + Math.round(chg * 100) + '%') + ')</b> · 내부 트래픽 제외(GA 필터)' + (paidNote(g) ? ' · ' + paidNote(g) : '') + '</p>');
     }
     var cs = candidates().slice(0, 5);
     html += sec('지금 고칠 것', cs.length ? '<ol class="ad-todo">' + cs.map(function (x) {
@@ -437,7 +443,9 @@
     }).join('') + '</div><ul class="ad-leg">' + ch.map(function (c) {
       return '<li><span class="ad-leg-dot ' + (CH_CLS[c.name] || 'ad-s5-chart') + '"></span><span class="ad-leg-n">' + esc(CH_NAME[c.name] || c.name) + '</span>' +
         '<span class="ad-leg-v">' + pct(ratio(c.sessions, tot)) + '</span><span class="ad-leg-s">' + num(c.sessions) + '</span></li>';
-    }).join('') + '</ul>', '유입 채널별 세션 비중');
+    }).join('') + '</ul>' + (g.paid && g.paid.sessions ? '<p class="ad-foot">광고로 들어온 <b>' + num(g.paid.sessions) + '</b>세션(머묾 ' + pct(g.paid.engaged_rate) +
+      ')은 이 화면의 모든 숫자에서 뺐어요 · 광고 성과는 marketing/ig-ad/ad_report.py</p>' : ''),
+      '유입 채널별 세션 비중' + (g.paid ? ' · 광고 유입 제외' : ''));
   }
   function renderLanding(g) {
     var tot = g.sessions || 0;

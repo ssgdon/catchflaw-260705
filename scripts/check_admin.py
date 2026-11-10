@@ -155,6 +155,8 @@ if data_path:
             for e in x['events'][:3]:
                 need(e, ['name', 'count', 'sessions', 'by'], f'ga.days[{w}].events')
             if x['sessions'] <= 0: W(f'ga.days[{w}].sessions = 0')
+            if 'paid' not in x: W(f'ga.days[{w}].paid 없음 — 광고 유입을 빼기 전 판(2026-11-11 이전 admin_export)')
+            else: need(x['paid'], ['sessions', 'engaged_rate', 'prev_sessions'], f'ga.days[{w}].paid')
         daily = g.get('daily') or []
         if len(daily) != 90: E(f'ga.daily {len(daily)}일 ≠ 90일')
         if daily and not need(daily[-1], ['day', 'sessions', 'detail_sessions', 'cta', 'm'], 'ga.daily[]'): pass
