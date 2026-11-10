@@ -1,6 +1,10 @@
 {
  "_doc": "배포 기록 정본(ADMIN-DESIGN §4-2). 배포하는 세션이 changes 맨 위에 1건 추가한다: date(배포일 KST) · commit · title · what(바뀐 것 한 줄) · watch(pipeline/admin_export.py METRICS 이름) · doc(설계서). 관리자 페이지 '변경 전후'가 배포일 전 14일 / 다음 날부터 14일을 비교한다. pending = 설계서에서 아직 안 한 것(title · from · why · needs).",
  "changes": [
+  {"date": "2026-11-10", "commit": "67ec1703", "title": "아고다 제휴 링크 93곳 추가(101→194) — 채점 상세 전부 아고다",
+   "what": "링크 없던 93곳(라이프 텐진·서튼·베이직스·포르자 II·마이스테이 텐진 등)의 가격 버튼이 구글 → 아고다. 같은 호텔 중복 등록은 리뷰 많은 옛 등록으로",
+   "watch": ["cta_rate", "cta_agoda_share"],
+   "doc": "affiliate"},
   {"date": "2026-11-09", "commit": "48e66499", "title": "검색 결과 제목·요약문·썸네일 다시 쓰기 (SEO-GOOGLE §8)",
    "what": "제목 '아이랑 가도 될까? 확인할 3가지'/'예약 전 확인할 3가지: a·b·c', 썸네일 = 객실 사진 + 노랑 주의 배지 + '벌레 0건'(카톡 미리보기 그림도 같이 바뀜), 범례 문장을 검색 요약문에서 빼기. 검색 CTR은 구글 검색 탭·네이버 서치어드바이저에서 4주 뒤 비교",
    "watch": ["share"],
