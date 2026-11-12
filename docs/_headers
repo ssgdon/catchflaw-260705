@@ -27,27 +27,27 @@
 /img/hotels/*
   Cache-Control: public, max-age=31536000, immutable
 /
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /hotels/*
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /area/*
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /best/*
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /search
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /recommend
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /about
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /privacy
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /compare
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /recent
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /hotels
-  Link: </css/site.css?v=e7648e8729>; rel=preload; as=style
+  Link: </css/site.css?v=753ff56aeb>; rel=preload; as=style
 /admin/*
   Cache-Control: private, no-store
   X-Robots-Tag: noindex, nofollow

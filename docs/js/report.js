@@ -45,7 +45,7 @@
     var d = done();
     (root || document).querySelectorAll('.rep-btn[data-fid]').forEach(function (b) {
       var on = d.indexOf(String(b.getAttribute('data-fid'))) >= 0;
-      b.disabled = on; b.classList.toggle('is-done', on); b.textContent = on ? '신고함' : '분류가 이상해요';
+      b.disabled = on; b.classList.toggle('is-done', on); b.textContent = on ? '신고 완료' : '분류 오류 신고';
     });
   }
 

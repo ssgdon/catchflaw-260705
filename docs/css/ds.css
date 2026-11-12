@@ -432,8 +432,11 @@ html.ov-lock{overflow:hidden;}
 .btn-ink.is-loading::after,.btn-brand.is-loading::after,.btn-gray.is-loading::after,.btn-line.is-loading::after{content:"";position:absolute;left:50%;top:50%;width:36px;height:6px;margin:-3px 0 0 -18px;background:radial-gradient(circle at 3px 3px,var(--dot) 3px,transparent 3.5px) 0 0 / 12px 6px repeat-x;animation:cf-dots 1s steps(1) infinite;}
 @keyframes cf-dots{0%{opacity:1;}50%{opacity:.35;}}
 .btn-text{display:inline-flex;align-items:center;min-height:var(--h-icon);padding:0;border:0;background:none;font-family:inherit;font-size:var(--fs-body);line-height:var(--lh-ui);font-weight:var(--fw-semi);color:var(--ink);text-decoration:underline;text-underline-offset:3px;white-space:nowrap;cursor:pointer;}
-.btn-text--sm{font-size:var(--fs-meta);}   /* 작은 맥락(건수 링크·'근거 보기'·'분류가 이상해요') — 터치는 그대로 44 */
-.btn-text.rep-btn{font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* '분류가 이상해요' = 보조 행동, 회색(2026-10-10 톤 다운) */
+.btn-text--sm{font-size:var(--fs-meta);}   /* 작은 맥락(건수 링크·'근거 보기'·'분류 오류 신고') — 터치는 그대로 44 */
+.btn-text.rep-btn{font-weight:var(--fw-regular);color:var(--ink-3);text-decoration:none;}   /* '분류 오류 신고' = 보조 행동, 회색(2026-10-10 톤 다운) */
+/* 신고 깃발(2026-11-12): '분류가 이상해요'가 안내문처럼 읽혀 이 리뷰 분류가 틀렸다는 표시로 오해 → 깃발 + 행동 문구로. 신고 뒤엔 깃발을 뺀다 */
+.rep-btn::before{content:"";flex:none;width:14px;height:14px;margin-right:var(--sp-1);background:currentColor;-webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4h12l-2 4 2 4H5'/%3E%3C/svg%3E") center/contain no-repeat;mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 21V4h12l-2 4 2 4H5'/%3E%3C/svg%3E") center/contain no-repeat;}
+.rep-btn.is-done::before{display:none;}
 .btn-text.is-done{color:var(--ink-3);text-decoration:none;cursor:default;}
 /* 아이콘 버튼: 터치 44 · 보이는 원 36(--h-circle). --surface = 목록 헤더 · --photo = 사진 위(흰 원 + 얕은 그림자) · 기본 = 원 없음 */
 .btn-icon{position:relative;flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-icon);height:var(--h-icon);padding:0;border:0;border-radius:50%;background:none;color:var(--ink);cursor:pointer;}
