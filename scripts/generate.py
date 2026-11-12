@@ -2760,7 +2760,7 @@ def quote_cards(qlist, limit=6):
         llabel = lang_label(lang)
         lang_chip = f'<span class="q-lang">{E(llabel)}</span>' if llabel else ''
         rep = (f'<div class="q-foot"><button type="button" class="rep-btn btn-text btn-text--sm" data-fid="{E(q["fid"])}" data-cat="{E(q.get("mcat"))}" '
-               f'data-sub="{E(q.get("scat"))}" data-grade="{E(q["grade"])}">분류가 이상해요</button></div>') if q.get('fid') else ''   # 오분류 신고(FEEDBACK-2610 §13)
+               f'data-sub="{E(q.get("scat"))}" data-grade="{E(q["grade"])}">분류 오류 신고</button></div>') if q.get('fid') else ''   # 오분류 신고(FEEDBACK-2610 §13)
         out.append(f'''<li class="swiper-slide"><div class="item">
             <div class="item-top">
                 <div class="name">{E(mask_name(q.get('reviewer_name')))}</div>
