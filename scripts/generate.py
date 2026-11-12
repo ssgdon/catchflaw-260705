@@ -3321,6 +3321,8 @@ def social_section(soc, name):
     if blogs:
         cards = []
         for i, b in enumerate(blogs):
+            # 네이버 API 제목의 &lt; &quot; 등을 글자로 되돌린 뒤 이스케이프(그대로 E()하면 '&lt;'가 화면에 보였다, 2026-11-12)
+            b = dict(b, t=html.unescape(html.unescape(b.get('t') or '')), by=html.unescape(b.get('by') or ''))
             # referrerpolicy=no-referrer 필수 — pstatic 썸네일이 외부 referer를 핫링크 차단(403 실측)
             img = (f'<img src="{E(b["img"])}" alt="" loading="lazy" referrerpolicy="no-referrer" '
                    f'onerror="this.parentNode.classList.add(\'no-img\')">'
