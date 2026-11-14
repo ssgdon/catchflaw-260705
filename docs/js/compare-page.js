@@ -278,7 +278,7 @@
         var it = e.target.closest('[data-pick]'); if (!it) return;
         var a = ids(); if (a.length >= MAX) return;
         a.push(it.getAttribute('data-pick'));
-        ev('compare_add', { hotel_id: it.getAttribute('data-pick'), count: a.length, source: 'compare_page' });
+        ev('compare_add', { hotel_id: it.getAttribute('data-pick'), count: a.length, from: 'compare_page' });   // 'source'는 GA가 방문 출처로 읽어 세션 출처를 덮어쓴다(2026-11-14 확인, 41세션) — 이름 바꿈
         // 시트를 먼저 닫고(버퍼 소비 back) 그 뒤에 주소를 바꾼다 — 반대 순서면 back()이 옛 ?ids=로 되돌림
         CF.sheet.close(pick, { afterHistory: function () { saveIds(a); render(); } });
       });
